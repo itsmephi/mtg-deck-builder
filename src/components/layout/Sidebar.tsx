@@ -213,7 +213,7 @@ export default function Sidebar() {
             {/* Attribution */}
             <div className="px-1 border-l-2 border-neutral-800 ml-1 pl-3">
               <p className="text-[10px] font-bold text-neutral-400 tracking-tight">
-                Designed by Phiyen & Thurgood
+                Designed by Phi & Thurgood
               </p>
               <p className="text-[9px] text-neutral-600 uppercase font-medium mt-0.5">
                 © 2026 All Rights Reserved
