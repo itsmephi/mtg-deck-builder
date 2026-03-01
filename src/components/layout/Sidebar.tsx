@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Search, Flame, Coins, Mountain, Swords, Hexagon, ChevronDown } from 'lucide-react';
+import { Search, Flame, Coins, Mountain, Swords, Hexagon, ChevronDown, Coffee } from 'lucide-react';
 import { searchCards } from '@/lib/scryfall';
 import { ScryfallCard } from '@/types';
 import { useDeckManager } from '@/hooks/useDeckManager';
@@ -83,15 +83,13 @@ export default function Sidebar() {
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    const cardWidth = 256; 
     const cardHeight = 358;
     const offsetX = 20;
-    const offsetY = -150; // Offset adjusted to center the preview vertically to the mouse
+    const offsetY = -150; 
 
     let x = e.clientX + offsetX;
     let y = e.clientY + offsetY;
 
-    // Prevent clipping off the bottom or top of the window
     if (y + cardHeight > window.innerHeight) {
       y = window.innerHeight - cardHeight - 10;
     }
@@ -124,7 +122,7 @@ export default function Sidebar() {
             >
               <div className="flex items-center gap-2 truncate">
                 <ActiveIcon className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
-                <span className="truncate">{query.trim() !== '' ? 'Search Results' : activeCategory.label}</span>
+                <span className="truncate">{query.trim() !== '' ? 'Results' : activeCategory.label}</span>
               </div>
               <ChevronDown className={`w-3.5 h-3.5 text-neutral-500 transition-transform shrink-0 ${isDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
@@ -184,9 +182,47 @@ export default function Sidebar() {
             </ul>
           )}
         </div>
+
+        {/* FOOTER SECTION */}
+        <div className="mt-auto p-4 border-t border-neutral-800 bg-neutral-900/50">
+          <div className="flex flex-col gap-4">
+            {/* Version & Changelog Row */}
+            <div className="flex items-center justify-between px-1">
+              <span className="flex items-center gap-1.5 px-2 py-0.5 bg-blue-500/10 border border-blue-500/20 rounded-full text-[9px] font-bold text-blue-400 uppercase tracking-wider">
+                v1.0.0
+              </span>
+              <button 
+                className="text-[9px] font-bold text-neutral-500 hover:text-neutral-300 uppercase tracking-widest transition-colors"
+                onClick={() => alert("Initial Release: Visual Deck Builder, Goldfish Simulator, and Art Swapping.")}
+              >
+                Changelog
+              </button>
+            </div>
+
+            {/* Donation Button */}
+            <a 
+              href="https://www.buymeacoffee.com/YOUR_USERNAME" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 w-full py-2 bg-[#FFDD00] hover:bg-[#FFEA00] text-black rounded-lg text-[10px] font-bold transition-all shadow-sm active:scale-95"
+            >
+              <Coffee className="w-3 h-3" />
+              Support our Project
+            </a>
+
+            {/* Attribution */}
+            <div className="px-1 border-l-2 border-neutral-800 ml-1 pl-3">
+              <p className="text-[10px] font-bold text-neutral-400 tracking-tight">
+                Designed by Phiyen & Thurgood
+              </p>
+              <p className="text-[9px] text-neutral-600 uppercase font-medium mt-0.5">
+                © 2026 All Rights Reserved
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Floating Dynamic Card Preview */}
       {hoveredCard && (hoveredCard.image_uris?.normal || hoveredCard.card_faces?.[0]?.image_uris?.normal) && (
         <div 
           className="hidden md:block fixed z-[100] pointer-events-none w-64 rounded-xl overflow-hidden shadow-2xl border border-neutral-700 animate-in fade-in zoom-in-95 duration-200"
