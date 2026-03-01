@@ -201,7 +201,7 @@ export default function Sidebar() {
 
             {/* Donation Button */}
             <a 
-              href="https://www.buymeacoffee.com/YOUR_USERNAME" 
+              href="https://www.buymeacoffee.com/itsmephi" 
               target="_blank" 
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 w-full py-2 bg-[#FFDD00] hover:bg-[#FFEA00] text-black rounded-lg text-[10px] font-bold transition-all shadow-sm active:scale-95"
