@@ -2,6 +2,7 @@ export interface ScryfallCard {
   id: string;
   name: string;
   set: string;
+  set_name: string;
   image_uris?: {
     normal: string;
     large: string;
@@ -12,12 +13,12 @@ export interface ScryfallCard {
   legalities: Record<string, string>;
   oracle_id: string;
   type_line: string;
-  // Add support for double-faced cards
   card_faces?: {
     name: string;
     mana_cost: string;
     type_line: string;
     oracle_text: string;
+    flavor_text?: string;
     artist?: string;
     image_uris?: {
       normal: string;
@@ -25,10 +26,12 @@ export interface ScryfallCard {
     };
   }[];
   oracle_text?: string;
+  flavor_text?: string;
   rarity: string;
   collector_number: string;
   artist?: string;
   mana_cost?: string;
+  cmc?: number;
 }
 
 export interface DeckCard extends ScryfallCard {
