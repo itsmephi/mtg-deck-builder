@@ -12,6 +12,8 @@ interface ListCardTableProps {
   onHoverStart: (card: ScryfallCard) => void;
   onHoverEnd: () => void;
   onMouseMove: (e: React.MouseEvent) => void;
+  highlightedId?: string | null;
+  cardRefs?: React.MutableRefObject<Map<string, HTMLElement>>;
 }
 
 export default function ListCardTable({
@@ -24,6 +26,8 @@ export default function ListCardTable({
   onHoverStart,
   onHoverEnd,
   onMouseMove,
+  highlightedId,
+  cardRefs,
 }: ListCardTableProps) {
   const renderManaSymbols = (manaCost: string | undefined) => {
     if (!manaCost) return null;
@@ -65,9 +69,15 @@ export default function ListCardTable({
           {cards.map((card) => (
             <tr
               key={card.id}
+              ref={(el) => {
+                if (el && cardRefs) {
+                  if (el) cardRefs.current.set(card.id, el);
+                  else cardRefs.current.delete(card.id);
+                }
+              }}
               onMouseEnter={() => onHoverStart(card)}
               onMouseLeave={onHoverEnd}
-              className={`border-b border-neutral-800/40 hover:bg-neutral-800/40 transition-colors ${card.quantity === 0 ? "opacity-30 grayscale" : ""}`}
+              className={`border-b border-neutral-800/40 hover:bg-neutral-800/40 transition-colors ${card.quantity === 0 ? "opacity-30 grayscale" : ""} ${highlightedId === card.id ? "bg-yellow-400/10 outline outline-1 outline-yellow-400/50" : ""}`}
             >
               <td className="pl-3 py-1 text-center">
                 <Check

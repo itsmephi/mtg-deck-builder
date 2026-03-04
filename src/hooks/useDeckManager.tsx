@@ -19,6 +19,10 @@ interface DeckContextType {
   createNewDeck: () => void;
   deleteDeck: (id: string) => void;
   isMounted: boolean;
+  showThumbnail: boolean;
+  setShowThumbnail: (val: boolean) => void;
+  lastAddedId: string | null;
+  setLastAddedId: (id: string | null) => void;
 }
 
 const DeckContext = createContext<DeckContextType | null>(null);
@@ -27,6 +31,8 @@ export function DeckProvider({ children }: { children: ReactNode }) {
   const [decks, setDecks] = useState<Deck[]>([]);
   const [activeDeckId, setActiveDeckId] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState(false);
+  const [showThumbnail, setShowThumbnail] = useState(true);
+  const [lastAddedId, setLastAddedId] = useState<string | null>(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -48,18 +54,7 @@ export function DeckProvider({ children }: { children: ReactNode }) {
           setActiveDeckId(defaultDeck.id);
         }
       } catch (e) {
-        // Fix: recover gracefully instead of silently failing
-        console.error(
-          "Failed to parse decks from localStorage — resetting to default",
-          e,
-        );
-        const defaultDeck = {
-          id: crypto.randomUUID(),
-          name: "New Deck",
-          cards: [],
-        };
-        setDecks([defaultDeck]);
-        setActiveDeckId(defaultDeck.id);
+        console.error("Failed to parse decks from local storage");
       }
     } else {
       const defaultDeck = {
@@ -98,7 +93,7 @@ export function DeckProvider({ children }: { children: ReactNode }) {
     setDecks((prev) => {
       const filtered = prev.filter((d) => d.id !== id);
 
-      // If we deleted the last deck, create a fresh one immediately
+      // If we just deleted the last deck, create a fresh one immediately
       if (filtered.length === 0) {
         const freshDeck = {
           id: crypto.randomUUID(),
@@ -109,7 +104,7 @@ export function DeckProvider({ children }: { children: ReactNode }) {
         return [freshDeck];
       }
 
-      // If we deleted the active deck, move focus to the next available one
+      // If we deleted the active deck, move the focus to the next available one
       if (activeDeckId === id) {
         setActiveDeckId(filtered[0].id);
       }
@@ -128,6 +123,10 @@ export function DeckProvider({ children }: { children: ReactNode }) {
         createNewDeck,
         deleteDeck,
         isMounted,
+        showThumbnail,
+        setShowThumbnail,
+        lastAddedId,
+        setLastAddedId,
       }}
     >
       {children}

@@ -36,6 +36,9 @@ export default function Workspace() {
     createNewDeck,
     deleteDeck,
     isMounted,
+    showThumbnail,
+    lastAddedId,
+    setLastAddedId,
   } = useDeckManager();
   const {
     isImporting,
@@ -53,6 +56,9 @@ export default function Workspace() {
   const [isSampleHandOpen, setIsSampleHandOpen] = useState(false);
   const [isDeckDropdownOpen, setIsDeckDropdownOpen] = useState(false);
   const deckDropdownRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<Map<string, HTMLElement>>(new Map());
+  const [highlightedId, setHighlightedId] = useState<string | null>(null);
   const [hoveredCardList, setHoveredCardList] = useState<ScryfallCard | null>(
     null,
   );
@@ -65,6 +71,19 @@ export default function Workspace() {
       else setActiveDeckId(decks[0].id);
     }
   }, [isMounted, activeDeck, decks, createNewDeck, setActiveDeckId]);
+
+  useEffect(() => {
+    if (!lastAddedId) return;
+    const el = cardRefs.current.get(lastAddedId);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      setHighlightedId(lastAddedId);
+      setTimeout(() => {
+        setHighlightedId(null);
+        setLastAddedId(null);
+      }, 1000);
+    }
+  }, [lastAddedId]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -443,7 +462,10 @@ export default function Workspace() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto pr-1 pb-20">
+      <div
+        ref={scrollContainerRef}
+        className="flex-1 overflow-y-auto overflow-x-hidden pr-1 pb-20"
+      >
         {isGrouped ? (
           <div className="space-y-10">
             {Object.entries(groupedCards).map(
@@ -456,15 +478,25 @@ export default function Workspace() {
                     {viewMode === "visual" ? (
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
                         {cards.map((card) => (
-                          <VisualCard
+                          <div
                             key={card.id}
-                            card={card}
-                            {...cardActionProps}
-                          />
+                            ref={(el) => {
+                              if (el) cardRefs.current.set(card.id, el);
+                              else cardRefs.current.delete(card.id);
+                            }}
+                            className={`rounded-xl transition-all duration-300 ${highlightedId === card.id ? "ring-2 ring-yellow-400 ring-offset-2 ring-offset-neutral-950" : ""}`}
+                          >
+                            <VisualCard card={card} {...cardActionProps} />
+                          </div>
                         ))}
                       </div>
                     ) : (
-                      <ListCardTable cards={cards} {...listActionProps} />
+                      <ListCardTable
+                        cards={cards}
+                        highlightedId={highlightedId}
+                        cardRefs={cardRefs}
+                        {...listActionProps}
+                      />
                     )}
                   </div>
                 ),
@@ -473,11 +505,25 @@ export default function Workspace() {
         ) : viewMode === "visual" ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
             {sortedCards.map((card) => (
-              <VisualCard key={card.id} card={card} {...cardActionProps} />
+              <div
+                key={card.id}
+                ref={(el) => {
+                  if (el) cardRefs.current.set(card.id, el);
+                  else cardRefs.current.delete(card.id);
+                }}
+                className={`rounded-xl transition-all duration-300 ${highlightedId === card.id ? "ring-2 ring-yellow-400 ring-offset-2 ring-offset-neutral-950" : ""}`}
+              >
+                <VisualCard key={card.id} card={card} {...cardActionProps} />
+              </div>
             ))}
           </div>
         ) : (
-          <ListCardTable cards={sortedCards} {...listActionProps} />
+          <ListCardTable
+            cards={sortedCards}
+            highlightedId={highlightedId}
+            cardRefs={cardRefs}
+            {...listActionProps}
+          />
         )}
       </div>
 
@@ -488,7 +534,7 @@ export default function Workspace() {
         onCancel={cancelImport}
       />
 
-      {viewMode === "list" && hoveredCardList && (
+      {viewMode === "list" && hoveredCardList && showThumbnail && (
         <div
           className="fixed z-50 pointer-events-none w-56 rounded-xl overflow-hidden shadow-2xl border border-neutral-700"
           style={{ left: `${mousePos.x}px`, top: `${mousePos.y}px` }}

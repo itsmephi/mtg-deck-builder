@@ -13,6 +13,7 @@ import {
   ChevronDown,
   Coffee,
   Github,
+  Settings,
 } from "lucide-react";
 import { searchCards } from "@/lib/scryfall";
 import { ScryfallCard } from "@/types";
@@ -62,8 +63,15 @@ export default function Sidebar() {
   const [hoveredCard, setHoveredCard] = useState<ScryfallCard | null>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
-  const { activeDeck, updateActiveDeck } = useDeckManager();
+  const {
+    activeDeck,
+    updateActiveDeck,
+    showThumbnail,
+    setShowThumbnail,
+    setLastAddedId,
+  } = useDeckManager();
   const [isFooterOpen, setIsFooterOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -104,23 +112,38 @@ export default function Sidebar() {
     return () => clearTimeout(delayDebounceFn);
   }, [query]);
 
-  const handleAddCard = (card: ScryfallCard) => {
+  const handleAddCard = async (card: ScryfallCard) => {
     if (!activeDeck) return;
+
+    // Rescue $0.00 or missing price before adding
+    let cardToAdd = card;
+    if (!card.prices.usd || card.prices.usd === "0.00") {
+      const results = await searchCards(`!"${card.name}"`);
+      if (
+        results.length > 0 &&
+        results[0].prices.usd &&
+        results[0].prices.usd !== "0.00"
+      ) {
+        cardToAdd = { ...results[0], id: card.id }; // keep original id for dedup
+      }
+    }
+
     updateActiveDeck((deck) => {
-      const existing = deck.cards.find((c) => c.id === card.id);
+      const existing = deck.cards.find((c) => c.id === cardToAdd.id);
       if (existing) {
         return {
           ...deck,
           cards: deck.cards.map((c) =>
-            c.id === card.id ? { ...c, quantity: c.quantity + 1 } : c,
+            c.id === cardToAdd.id ? { ...c, quantity: c.quantity + 1 } : c,
           ),
         };
       }
       return {
         ...deck,
-        cards: [...deck.cards, { ...card, quantity: 1, isOwned: false }],
+        cards: [...deck.cards, { ...cardToAdd, quantity: 1, isOwned: false }],
       };
     });
+    setLastAddedId(cardToAdd.id);
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -273,16 +296,50 @@ export default function Sidebar() {
                 <Github className="w-3.5 h-3.5" />
               </a>
             </div>
-            {/* Expand/collapse toggle */}
-            <button
-              onClick={() => setIsFooterOpen(!isFooterOpen)}
-              className="p-1 text-neutral-600 hover:text-neutral-300 transition-colors"
-            >
-              <ChevronDown
-                className={`w-3.5 h-3.5 transition-transform ${isFooterOpen ? "rotate-180" : ""}`}
-              />
-            </button>
+            {/* Right side: settings + expand toggle */}
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => {
+                  setIsSettingsOpen(!isSettingsOpen);
+                  setIsFooterOpen(false);
+                }}
+                className={`p-1 rounded transition-colors ${isSettingsOpen ? "text-white" : "text-neutral-600 hover:text-neutral-300"}`}
+              >
+                <Settings className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={() => {
+                  setIsFooterOpen(!isFooterOpen);
+                  setIsSettingsOpen(false);
+                }}
+                className="p-1 text-neutral-600 hover:text-neutral-300 transition-colors"
+              >
+                <ChevronDown
+                  className={`w-3.5 h-3.5 transition-transform ${isFooterOpen ? "rotate-180" : ""}`}
+                />
+              </button>
+            </div>
           </div>
+
+          {/* Settings panel */}
+          {isSettingsOpen && (
+            <div className="px-4 pb-3 pt-1 border-t border-neutral-800/50">
+              <p className="text-[9px] font-bold text-neutral-500 uppercase tracking-widest mb-3">
+                Settings
+              </p>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-neutral-400">Card Preview</span>
+                <button
+                  onClick={() => setShowThumbnail(!showThumbnail)}
+                  className={`relative w-8 h-4 rounded-full transition-colors ${showThumbnail ? "bg-blue-500" : "bg-neutral-700"}`}
+                >
+                  <span
+                    className={`absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full shadow transition-transform ${showThumbnail ? "translate-x-4" : "translate-x-0"}`}
+                  />
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Expandable content */}
           {isFooterOpen && (
@@ -311,6 +368,7 @@ export default function Sidebar() {
       </div>
 
       {hoveredCard &&
+        showThumbnail &&
         (hoveredCard.image_uris?.normal ||
           hoveredCard.card_faces?.[0]?.image_uris?.normal) && (
           <div
