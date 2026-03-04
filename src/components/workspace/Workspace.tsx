@@ -9,6 +9,7 @@ import {
   Plus,
   Trash2,
   Layout,
+  ChevronDown,
   ArrowUpDown,
   Dices,
   Download,
@@ -50,6 +51,8 @@ export default function Workspace() {
   const [sortMode, setSortMode] = useState<SortOption>("original");
   const [selectedCard, setSelectedCard] = useState<ScryfallCard | null>(null);
   const [isSampleHandOpen, setIsSampleHandOpen] = useState(false);
+  const [isDeckDropdownOpen, setIsDeckDropdownOpen] = useState(false);
+  const deckDropdownRef = useRef<HTMLDivElement>(null);
   const [hoveredCardList, setHoveredCardList] = useState<ScryfallCard | null>(
     null,
   );
@@ -62,6 +65,19 @@ export default function Workspace() {
       else setActiveDeckId(decks[0].id);
     }
   }, [isMounted, activeDeck, decks, createNewDeck, setActiveDeckId]);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (
+        deckDropdownRef.current &&
+        !deckDropdownRef.current.contains(e.target as Node)
+      ) {
+        setIsDeckDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const sortedCards = useMemo(() => {
     if (!activeDeck) return [];
@@ -84,7 +100,10 @@ export default function Workspace() {
 
   const buyOnTCGPlayer = () => {
     const list = activeDeck.cards
-      .map((c) => `${c.quantity} ${c.name}`)
+      .map(
+        (c) =>
+          `${c.quantity} ${c.name}${c.set ? ` [${c.set.toUpperCase()}]` : ""}`,
+      )
       .join("||");
     window.open(
       `https://www.tcgplayer.com/massentry?c=${encodeURIComponent(list)}`,
@@ -197,120 +216,167 @@ export default function Workspace() {
   };
 
   return (
-    <div className="w-full h-full flex flex-col relative text-sm">
+    <div className="w-full h-full flex flex-col relative text-sm overflow-x-hidden">
       <div className="flex flex-col mb-4 pb-3 border-b border-neutral-800 gap-3">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-          <div className="flex flex-col gap-3 flex-1">
-            <div className="flex flex-wrap items-center gap-4">
-              <div className="flex items-center gap-2">
-                <select
-                  value={activeDeck.id}
-                  onChange={(e) => setActiveDeckId(e.target.value)}
-                  className="bg-neutral-900 border border-neutral-800 text-xs rounded-lg px-2 py-1 text-neutral-300 focus:outline-none focus:border-neutral-700"
-                >
-                  {decks.map((d) => (
-                    <option key={d.id} value={d.id}>
-                      {d.name}
-                    </option>
-                  ))}
-                </select>
+        {/* Row 1: Deck Name */}
+        <div className="flex items-center gap-2">
+          <div
+            className="relative flex items-center gap-2 min-w-0"
+            ref={deckDropdownRef}
+          >
+            <button
+              onClick={() => setIsDeckDropdownOpen(!isDeckDropdownOpen)}
+              className="p-1 text-neutral-500 hover:text-white transition-colors shrink-0"
+            >
+              <ChevronDown
+                className={`w-4 h-4 transition-transform ${isDeckDropdownOpen ? "rotate-180" : ""}`}
+              />
+            </button>
+            <input
+              value={activeDeck.name}
+              onChange={(e) =>
+                updateActiveDeck((d) => ({ ...d, name: e.target.value }))
+              }
+              size={Math.max(10, activeDeck.name.length)}
+              className="text-xl font-bold text-white bg-transparent border-b border-transparent hover:border-neutral-700 focus:border-blue-500 focus:outline-none transition-all px-0 outline-none"
+              placeholder="Enter deck name..."
+            />
+            {isDeckDropdownOpen && (
+              <div className="absolute top-full left-0 mt-2 w-56 bg-neutral-900 border border-neutral-700 rounded-lg shadow-xl overflow-hidden py-1 z-50">
+                {decks.map((d) => (
+                  <button
+                    key={d.id}
+                    onClick={() => {
+                      setActiveDeckId(d.id);
+                      setIsDeckDropdownOpen(false);
+                    }}
+                    className={`flex items-center justify-between w-full text-left px-3 py-2 text-xs transition-colors ${d.id === activeDeck.id ? "bg-neutral-800 text-white" : "text-neutral-400 hover:bg-neutral-800/50 hover:text-white"}`}
+                  >
+                    <span className="truncate">{d.name}</span>
+                    {d.id === activeDeck.id && (
+                      <span className="text-blue-400 text-[10px] font-bold ml-2">
+                        ACTIVE
+                      </span>
+                    )}
+                  </button>
+                ))}
+                <div className="border-t border-neutral-800 mt-1 pt-1">
+                  <button
+                    onClick={() => {
+                      createNewDeck();
+                      setIsDeckDropdownOpen(false);
+                    }}
+                    className="flex items-center gap-2 w-full text-left px-3 py-2 text-xs text-neutral-400 hover:bg-neutral-800/50 hover:text-white transition-colors"
+                  >
+                    <Plus className="w-3 h-3" /> New Deck
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleDeleteActiveDeck();
+                      setIsDeckDropdownOpen(false);
+                    }}
+                    className="flex items-center gap-2 w-full text-left px-3 py-2 text-xs text-red-500 hover:bg-red-500/10 transition-colors"
+                  >
+                    <Trash2 className="w-3 h-3" /> Delete Current Deck
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Row 2: Stats */}
+        <div className="flex items-center gap-4 text-xs text-neutral-400">
+          <p className={totalCards >= 60 ? "text-yellow-400 font-bold" : ""}>
+            {totalCards} Cards
+          </p>
+          <p>
+            Value:{" "}
+            <span className="text-neutral-200 font-medium">
+              {hasPriceData ? `$${totalValue.toFixed(2)}` : "N/A"}
+            </span>
+          </p>
+          <p>
+            To Buy:{" "}
+            <span className="text-green-500 font-medium">
+              {hasPriceData ? `$${remainingCost.toFixed(2)}` : "N/A"}
+            </span>
+          </p>
+        </div>
+
+        {/* Row 3: Actions */}
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 p-1 bg-neutral-900 border border-neutral-800 rounded-lg">
+              <div className="group relative flex items-center justify-center">
                 <button
-                  onClick={createNewDeck}
-                  title="New Deck"
-                  className="p-1 bg-neutral-900 border border-neutral-800 rounded-md text-neutral-400 hover:text-white transition-colors"
+                  onClick={exportDeck}
+                  className="p-1 text-neutral-400 hover:text-white transition-colors"
                 >
-                  <Plus className="w-3.5 h-3.5" />
+                  <Download className="w-3.5 h-3.5" />
                 </button>
+                <span className="absolute top-full mt-2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                  Export List
+                </span>
+              </div>
+
+              <div className="group relative flex items-center justify-center">
                 <button
-                  onClick={handleDeleteActiveDeck}
-                  title="Delete Deck"
-                  className="p-1 bg-neutral-900 border border-neutral-800 rounded-md text-neutral-400 hover:text-red-400 transition-colors"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isImporting}
+                  className="p-1 text-neutral-400 hover:text-white transition-colors disabled:opacity-50"
                 >
-                  <Trash2 className="w-3.5 h-3.5" />
+                  {isImporting ? (
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Upload className="w-3.5 h-3.5" />
+                  )}
                 </button>
+                <span className="absolute top-full mt-2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                  Import List
+                </span>
               </div>
               <input
-                value={activeDeck.name}
-                onChange={(e) =>
-                  updateActiveDeck((d) => ({ ...d, name: e.target.value }))
-                }
-                className="text-xl font-bold text-white bg-transparent border-b border-transparent hover:border-neutral-700 focus:border-blue-500 focus:outline-none transition-all px-0 w-auto flex-1 max-w-sm"
-                placeholder="Enter deck name..."
+                type="file"
+                ref={fileInputRef}
+                onChange={(e) => handleImportFile(e, fileInputRef)}
+                className="hidden"
+                accept=".txt"
               />
             </div>
 
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="flex items-center gap-1.5 p-1 bg-neutral-900 border border-neutral-800 rounded-lg">
-                <div className="group relative flex items-center justify-center">
-                  <button
-                    onClick={exportDeck}
-                    className="p-1 text-neutral-400 hover:text-white transition-colors"
-                  >
-                    <Download className="w-3.5 h-3.5" />
-                  </button>
-                  <span className="absolute top-full mt-2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
-                    Export List
-                  </span>
-                </div>
+            <div className="group relative flex items-center justify-center">
+              <button
+                onClick={buyOnTCGPlayer}
+                className="flex items-center gap-2 px-3 py-1.5 bg-orange-600/10 border border-orange-600/30 rounded-lg text-xs font-bold text-orange-400 hover:bg-orange-600/20 transition-colors"
+              >
+                <ShoppingCart className="w-3.5 h-3.5" /> TCGPlayer
+              </button>
+              <span className="absolute top-full mt-2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                Shop TCGPlayer
+              </span>
+            </div>
 
-                <div className="group relative flex items-center justify-center">
-                  <button
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={isImporting}
-                    className="p-1 text-neutral-400 hover:text-white transition-colors disabled:opacity-50"
-                  >
-                    {isImporting ? (
-                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                    ) : (
-                      <Upload className="w-3.5 h-3.5" />
-                    )}
-                  </button>
-                  <span className="absolute top-full mt-2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
-                    Import List
-                  </span>
-                </div>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={(e) => handleImportFile(e, fileInputRef)}
-                  className="hidden"
-                  accept=".txt"
-                />
-              </div>
-
-              <div className="group relative flex items-center justify-center">
-                <button
-                  onClick={buyOnTCGPlayer}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-orange-600/10 border border-orange-600/30 rounded-lg text-xs font-bold text-orange-400 hover:bg-orange-600/20 transition-colors"
-                >
-                  <ShoppingCart className="w-3.5 h-3.5" /> TCGPlayer
-                </button>
-                <span className="absolute top-full mt-2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
-                  Shop TCGPlayer
-                </span>
-              </div>
-
-              <div className="group relative flex items-center justify-center">
-                <button
-                  onClick={buyOnCardKingdom}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-blue-600/10 border border-blue-600/30 rounded-lg text-xs font-bold text-blue-400 hover:bg-blue-600/20 transition-colors"
-                >
-                  <ShoppingCart className="w-3.5 h-3.5" /> Card Kingdom
-                </button>
-                <span className="absolute top-full mt-2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
-                  Shop Card Kingdom
-                </span>
-              </div>
+            <div className="group relative flex items-center justify-center">
+              <button
+                onClick={buyOnCardKingdom}
+                className="flex items-center gap-2 px-3 py-1.5 bg-blue-600/10 border border-blue-600/30 rounded-lg text-xs font-bold text-blue-400 hover:bg-blue-600/20 transition-colors"
+              >
+                <ShoppingCart className="w-3.5 h-3.5" /> Card Kingdom
+              </button>
+              <span className="absolute top-full mt-2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                Shop Card Kingdom
+              </span>
             </div>
           </div>
-
-          <div className="flex items-center gap-3 mt-4 sm:mt-0 ml-auto h-8">
+          <div className="flex items-center gap-3 h-8">
             <div className="group relative h-full flex items-center justify-center">
               <button
                 onClick={() => setIsSampleHandOpen(true)}
                 className="flex items-center gap-2 h-full px-3 bg-neutral-900 border border-neutral-800 rounded-lg text-xs font-bold text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors shadow-sm"
               >
-                <Dices className="w-4 h-4" /> Test Deck
+                <Dices className="w-4 h-4" />{" "}
+                <span className="whitespace-nowrap">Test Deck</span>
               </button>
               <span className="absolute top-full mt-2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
                 Simulate opening hand
@@ -374,22 +440,6 @@ export default function Workspace() {
               </div>
             </div>
           </div>
-        </div>
-
-        <div className="flex items-center gap-4 text-xs text-neutral-400 px-1 mt-1">
-          <p>{totalCards} Cards</p>
-          <p>
-            Value:{" "}
-            <span className="text-neutral-200 font-medium">
-              {hasPriceData ? `$${totalValue.toFixed(2)}` : "N/A"}
-            </span>
-          </p>
-          <p>
-            To Buy:{" "}
-            <span className="text-green-500 font-medium">
-              {hasPriceData ? `$${remainingCost.toFixed(2)}` : "N/A"}
-            </span>
-          </p>
         </div>
       </div>
 

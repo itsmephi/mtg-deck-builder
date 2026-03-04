@@ -47,14 +47,15 @@ export default function ListCardTable({
       className="bg-neutral-900 border border-neutral-800 rounded-lg overflow-hidden shadow-sm"
       onMouseMove={onMouseMove}
     >
-      <table className="w-full text-left text-xs">
+      <table className="w-full table-fixed text-left text-xs">
         {showHeader && (
           <thead className="bg-neutral-950 text-[10px] text-neutral-500 border-b border-neutral-800 uppercase tracking-wider">
             <tr>
               <th className="pl-3 py-1.5 w-8 text-center"></th>
               <th className="px-2 py-1.5 w-16">Qty</th>
-              <th className="px-2 py-1.5">Name</th>
-              <th className="px-2 py-1.5 w-24">Cost</th>
+              <th className="px-2 py-1.5 min-w-0">Name</th>
+              <th className="px-2 py-1.5 w-48">Type</th>
+              <th className="px-2 py-1.5 w-24">Mana</th>
               <th className="px-2 py-1.5 text-right w-20">Price</th>
               <th className="pr-3 py-1.5 w-8 text-center"></th>
             </tr>
@@ -91,14 +92,16 @@ export default function ListCardTable({
               </td>
               <td
                 onClick={() => onSelect(card)}
-                className="px-2 py-1 cursor-pointer hover:underline truncate"
+                className="px-2 py-1 cursor-pointer hover:underline truncate min-w-0"
               >
-                <span className="font-medium text-white">{card.name}</span>
-                {card.set_name && (
-                  <span className="text-neutral-500 text-[10px] ml-1">
-                    ({card.set_name})
-                  </span>
-                )}
+                <span
+                  className={`font-medium ${card.isOwned ? "text-green-500/70" : "text-white"}`}
+                >
+                  {card.name}
+                </span>
+              </td>
+              <td className="px-2 py-1 text-[10px] text-neutral-500 truncate">
+                {card.type_line || "—"}
               </td>
               <td className="px-2 py-1">
                 {card.card_faces ? (
@@ -113,7 +116,9 @@ export default function ListCardTable({
                   renderManaSymbols((card as any).mana_cost)
                 )}
               </td>
-              <td className="px-2 py-1 text-right text-[10px] text-neutral-400 tabular-nums">
+              <td
+                className={`px-2 py-1 text-right text-[10px] tabular-nums ${card.isOwned ? "text-green-500/50" : "text-neutral-400"}`}
+              >
                 {card.prices.usd ? `$${card.prices.usd}` : "N/A"}
               </td>
               <td className="pr-3 py-1 text-center">
