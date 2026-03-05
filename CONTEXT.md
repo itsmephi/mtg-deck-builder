@@ -3,74 +3,51 @@ Authors: Phi & Thurgood Nguyen
 Stack: Next.js + TypeScript + Tailwind CSS
 Deployed: Vercel | Repo: GitHub (itsmephi/mtg-deck-builder)
 IDE: Zed on Steam Deck (Linux)
-
-## Completed
-
-### v1.0.0
-- Deck builder with visual grid + list view
-- Scryfall search with EDHREC category browsing
-- Goldfish Simulator with Fisher-Yates shuffle and stats
-- Import/export (.txt decklist format)
-- TCGPlayer + Card Kingdom buy links
-- Card Modal with art swap, rulings, legalities
-
-### v1.0.1
-- Inline mana symbols in oracle text
-- Flavor text in card modal
-- Full set name in modal subtitle and list view
-- Price added to card modal product details
-- N/A pricing for cards with no USD data
-- Import pricing rescue lookup for $0.00 cards
-- Confirm swap button always visible, no flicker
-- Art fills modal panel properly
-- localStorage silent failure recovery
-- Scryfall network error handling
-- Test Deck rename, To Buy label, UI polish
-
-### v1.0.2
-- Deck name + dropdown unified (chevron on left, click to switch decks)
-- Auto-highlight search field text on click
-- Owned cards green tint in list view (name + price)
-- WotC Fan Content disclaimer in footer
-- 60 card yellow highlight on card count
-- Opening Hand Simulator rename
-- TCGPlayer export with set code format [SET]
-- Search sidebar spacing tightened
-- Type column added to list view
-- Mana column renamed from Cost
-- Set name removed from list view (visible in modal)
-- Toolbar restructured: 3 rows (deck name / stats / actions)
-- Actions row: left-justified buy buttons, right-justified controls
-- Horizontal scroll eliminated
-- Collapsible footer (collapsed by default)
-- Footer: version badge opens changelog, coffee icon, GitHub icon
-- Version config extracted to src/config/version.ts
-
-### v1.0.3
-- $0.00 pricing rescue on card add from search (handleAddCard now async)
-- $0.00 pricing rescue on import (in addition to null rescue)
-- Full fidelity export: [SET] and [owned] tags in .txt format
-- Full fidelity import: parses [SET] and [owned] tags, passes owned status through
-- Scryfall collection fetch uses set identifier when available
-- Auto-scroll to card in workspace when added from sidebar (grid + list view)
-- Yellow ring highlight on added card, fades after 1 second
-- lastAddedId shared via useDeckManager context
-- Themed dark scrollbars (4px, neutral-700, rounded)
-- Settings menu in footer (gear icon) with Card Preview toggle
-- Card preview toggle shared via useDeckManager context (showThumbnail)
-- Eye/EyeOff icons removed from search bar and workspace toolbar
-- overflow-x-hidden on workspace scroll container (no horizontal scrollbar in grid view)
+Current Version: v1.0.3 — see CHANGELOG.md for full history
 
 ## Up Next — v1.0.4 (Refactor)
+→ GitHub Milestone: v1.0.4 | Issues: #1 #2 #3
 - Extract WorkspaceToolbar.tsx from Workspace.tsx (~200 lines)
 - Extract DeckDropdown.tsx (~60 lines)
 - Extract useDeckStats.ts hook (totalCards, totalValue, remainingCost, buy functions)
 - Target: bring Workspace.tsx from ~590 lines down to ~250 lines
 
 ## Up Next — v1.1.0
+→ GitHub Milestone: v1.1.0 | Issues: #4 #5 #6 #7 #8 #9 #10 #11 #12 #13 #14
 - Mana Curve Chart
 - Color Identity Bar
 - Deck Legality Checker
+- Draw probability stats per card (Test Hand Modal)
+- Turn tracker + mulligan count (Test Hand Modal)
+- Owned vs. to-buy cards independently
+- Card scale toggle (grid + sidebar)
+- Toggle card inactive while retaining count
+- Row color shading by color identity (list view)
+- TCGPlayer orange / Card Kingdom blue price colors
+
+## Backlog
+→ GitHub Milestone: Backlog | Issues: #15–#27
+- New app name (#15)
+- Drag and drop custom sorting (#16)
+- Standard / Commander deck modes (#17)
+- Search autocomplete (#18)
+- 15-card sideboard (#19)
+- Main/sideboard toggle (#20)
+- Choose store + generate buy list (#21)
+- Sort list view by color/type/name (#22)
+- Share / email deck list (#23)
+- Move X icon to left in list view (#24)
+- Search shows cards already in workspace (#25)
+- EDHREC improved search suggestions (#26)
+- Confirm Vivi 0/3 copy limit rule (#27)
+
+## Issue & Changelog Workflow
+- Bugs, features, ideas → GitHub Issues (itsmephi/mtg-deck-builder)
+- Labels: bug · feature · enhancement · chore · backlog · high · med · low
+- Milestones: v1.0.4 · v1.1.0 · Backlog
+- CHANGELOG.md lives in repo root — update each release
+- When starting work: reference issue # in commit message (e.g. "Closes #4")
+- After shipping: close milestone, bump version in src/config/version.ts, push
 
 ## File Structure
 src/
