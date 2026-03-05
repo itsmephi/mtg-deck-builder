@@ -3,14 +3,7 @@ Authors: Phi & Thurgood Nguyen
 Stack: Next.js + TypeScript + Tailwind CSS
 Deployed: Vercel | Repo: GitHub (itsmephi/mtg-deck-builder)
 IDE: Zed on Steam Deck (Linux)
-Current Version: v1.0.3 — see CHANGELOG.md for full history
-
-## Up Next — v1.0.4 (Refactor)
-→ GitHub Milestone: v1.0.4 | Issues: #1 #2 #3
-- Extract WorkspaceToolbar.tsx from Workspace.tsx (~200 lines)
-- Extract DeckDropdown.tsx (~60 lines)
-- Extract useDeckStats.ts hook (totalCards, totalValue, remainingCost, buy functions)
-- Target: bring Workspace.tsx from ~590 lines down to ~250 lines
+Current Version: v1.0.4 — see CHANGELOG.md for full history
 
 ## Up Next — v1.1.0
 → GitHub Milestone: v1.1.0 | Issues: #4 #5 #6 #7 #8 #9 #10 #11 #12 #13 #14
@@ -55,8 +48,8 @@ src/
   config/            → version.ts ← bump APP_VERSION and add CHANGELOG entry each release
   components/
     layout/          → Sidebar.tsx, CardModal.tsx, SampleHandModal.tsx
-    workspace/       → Workspace.tsx, VisualCard.tsx, ListCardTable.tsx, ImportModal.tsx
-  hooks/             → useDeckManager.tsx, useDeckImportExport.tsx
+    workspace/       → Workspace.tsx, WorkspaceToolbar.tsx, DeckDropdown.tsx, VisualCard.tsx, ListCardTable.tsx, ImportModal.tsx
+  hooks/             → useDeckManager.tsx, useDeckImportExport.tsx, useDeckStats.ts
   lib/               → scryfall.ts
   types/             → index.ts
 

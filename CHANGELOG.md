@@ -5,13 +5,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-## [Unreleased] — v1.0.4 (Refactor)
+## [1.0.4] — Refactor
 
 ### Changed
-- Extract `WorkspaceToolbar.tsx` from `Workspace.tsx` (~200 lines)
-- Extract `DeckDropdown.tsx` (~60 lines)
-- Extract `useDeckStats.ts` hook (totalCards, totalValue, remainingCost, buy functions)
-- Target: bring `Workspace.tsx` from ~590 lines down to ~250 lines
+- Extracted `WorkspaceToolbar.tsx` from `Workspace.tsx` (3-row header, import/export, buy links, view controls)
+- Extracted `DeckDropdown.tsx` — self-contained with own open state, ref, and click-outside effect
+- Extracted `useDeckStats.ts` hook — `totalCards`, `totalValue`, `remainingCost`, `hasPriceData`, `buyOnTCGPlayer`, `buyOnCardKingdom`
+- `Workspace.tsx` reduced from 607 → 333 lines
+- `fileInputRef` internalized to `WorkspaceToolbar` (no longer threaded through Workspace)
 
 ---
 
