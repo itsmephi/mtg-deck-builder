@@ -1,6 +1,8 @@
-export const APP_VERSION = "1.0.4";
+export const APP_VERSION = "1.0.5";
 
 export const CHANGELOG: Record<string, string> = {
+  "1.0.5":
+    "4-copy soft warning badge in list view, buy buttons now exclude owned cards, swap art button always shows as active.",
   "1.0.4":
     "Refactor: extracted WorkspaceToolbar.tsx, DeckDropdown.tsx, and useDeckStats.ts hook — Workspace.tsx reduced from 607 to 333 lines.",
   "1.0.3":

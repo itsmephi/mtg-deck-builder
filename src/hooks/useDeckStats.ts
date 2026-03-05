@@ -26,6 +26,7 @@ export function useDeckStats(activeDeck: Deck | null) {
   const buyOnTCGPlayer = () => {
     if (!activeDeck) return;
     const list = activeDeck.cards
+      .filter((c) => !c.isOwned)
       .map(
         (c) =>
           `${c.quantity} ${c.name}${c.set ? ` [${c.set.toUpperCase()}]` : ""}`,
@@ -40,6 +41,7 @@ export function useDeckStats(activeDeck: Deck | null) {
   const buyOnCardKingdom = () => {
     if (!activeDeck) return;
     const list = activeDeck.cards
+      .filter((c) => !c.isOwned)
       .map((c) => `${c.quantity} ${c.name}`)
       .join("\n");
     window.open(

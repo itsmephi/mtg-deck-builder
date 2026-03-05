@@ -5,6 +5,22 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.0.5] — Patch Fixes
+
+### Added
+- ⚠️ badge in list view when a card's quantity reaches 5+ (soft 4-copy limit warning)
+- Tooltip on badge: "Exceeds the 4-copy limit for standard play"
+- Exempt: Basic Lands and cards with "A deck can have any number" oracle text
+
+### Fixed
+- TCGPlayer and Card Kingdom buy lists now exclude fully owned cards (`isOwned === true`)
+- Swap Art confirm button now shows as active blue by default (was rendering as gray/disabled on open)
+
+### Verified
+- `handleAddCard` in Sidebar.tsx is still async with $0.00 / null pricing rescue intact after v1.0.4 refactor
+
+---
+
 ## [1.0.4] — Refactor
 
 ### Changed
