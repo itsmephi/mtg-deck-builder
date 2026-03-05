@@ -35,7 +35,7 @@ export function useDeckImportExport() {
         let line = `${c.quantity} ${c.name}`;
         if (c.set && c.collector_number)
           line += ` [${c.set.toUpperCase()}] #${c.collector_number}`;
-        if (c.isOwned) line += ` [owned]`;
+        if (c.ownedQty > 0) line += ` [owned:${c.ownedQty}]`;
         return line;
       })
       .join("\n");
@@ -87,25 +87,31 @@ export function useDeckImportExport() {
       quantity: number;
       set?: string;
       collector_number?: string;
-      isOwned: boolean;
+      ownedQty: number;
     }[] = [];
     for (const line of lines) {
       if (line.trim().startsWith("//")) continue;
       const match = line.trim().match(/^(\d+)[xX]?\s+([^\[\(]+)/);
       if (match) {
+        const quantity = parseInt(match[1], 10);
         const name = match[2].trim();
         const setMatch = line.match(/\[([A-Z0-9]+)\]/i);
         const numMatch = line.match(/#(\d+)/);
-        const isOwned = line.includes("[owned]");
+        const ownedNumMatch = line.match(/\[owned:(\d+)\]/i);
+        const ownedQty = ownedNumMatch
+          ? parseInt(ownedNumMatch[1], 10)
+          : line.includes("[owned]")
+          ? quantity
+          : 0;
         parsedCards.push({
-          quantity: parseInt(match[1], 10),
+          quantity,
           name,
           set: setMatch ? setMatch[1].toLowerCase() : undefined,
           collector_number: numMatch ? numMatch[1] : undefined,
-          isOwned,
+          ownedQty,
         });
       } else if (line.trim()) {
-        parsedCards.push({ quantity: 1, name: line.trim(), isOwned: false });
+        parsedCards.push({ quantity: 1, name: line.trim(), ownedQty: 0 });
       }
     }
 
@@ -157,7 +163,7 @@ export function useDeckImportExport() {
               fetchedDeckCards.push({
                 ...cardToUse,
                 quantity,
-                isOwned: parsed?.isOwned ?? false,
+                ownedQty: parsed?.ownedQty ?? 0,
               });
             },
           );

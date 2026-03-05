@@ -21,6 +21,7 @@ export default function Workspace() {
     activeDeck,
     setActiveDeckId,
     updateActiveDeck,
+    updateOwnedQty,
     createNewDeck,
     deleteDeck,
     isMounted,
@@ -122,14 +123,6 @@ export default function Workspace() {
     }));
   };
 
-  const toggleOwned = (cardId: string) => {
-    updateActiveDeck((deck) => ({
-      ...deck,
-      cards: deck.cards.map((c) =>
-        c.id === cardId ? { ...c, isOwned: !c.isOwned } : c,
-      ),
-    }));
-  };
 
   const removeCard = (cardId: string) => {
     updateActiveDeck((deck) => ({
@@ -149,7 +142,7 @@ export default function Workspace() {
 
   const cardActionProps = {
     onUpdateQuantity: updateQuantity,
-    onToggleOwned: toggleOwned,
+    onUpdateOwnedQty: updateOwnedQty,
     onRemove: removeCard,
     onSelect: setSelectedCard,
   };
@@ -297,7 +290,7 @@ export default function Workspace() {
                       ? ({
                           ...newCard,
                           quantity: c.quantity,
-                          isOwned: c.isOwned,
+                          ownedQty: c.ownedQty,
                         } as DeckCard)
                       : c,
                   ),
@@ -305,7 +298,7 @@ export default function Workspace() {
                 setSelectedCard({
                   ...newCard,
                   quantity: (selectedCard as any).quantity,
-                  isOwned: (selectedCard as any).isOwned,
+                  ownedQty: (selectedCard as any).ownedQty,
                 } as any);
               }}
               onNext={

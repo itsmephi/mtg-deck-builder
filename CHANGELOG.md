@@ -1,7 +1,23 @@
 # Changelog
 
-All notable changes to **MTG Deck Builder & Simulator** are documented here.  
+All notable changes to **MTG Deck Builder & Simulator** are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+
+---
+
+## [1.0.6] — Owned Quantity Tracking
+
+### Changed
+- `isOwned: boolean` replaced with `ownedQty: number` on `DeckCard` type
+- `updateOwnedQty(cardId, qty)` added to `useDeckManager` context (clamped 0–quantity)
+
+### Added
+- **Grid view**: owned count badge (visible when `ownedQty > 0`), soft green progress bar above quantity controls, gray overlay on card image that scales proportionally with ownership
+- **List view**: Owned column (checkbox + count + mini progress bar), row opacity fades as ownership increases; columns reordered to Qty | Name | Type | Mana | Price | Owned | ✕
+- **Buy lists**: TCGPlayer and Card Kingdom export `quantity - ownedQty` per card; fully owned cards excluded entirely
+- **Export**: `.txt` format encodes owned qty as `[owned:N]` tag
+- **Import**: parses `[owned:N]` (new) and `[owned]` (legacy, treated as fully owned)
+- **Migration**: loading old saves with `isOwned: true` → `ownedQty = quantity`; `isOwned: false` → `ownedQty = 0`; existing `ownedQty` values preserved as-is
 
 ---
 

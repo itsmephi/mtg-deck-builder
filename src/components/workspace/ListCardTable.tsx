@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Plus, Minus, Check, X } from "lucide-react";
 import { DeckCard, ScryfallCard } from "@/types";
 
@@ -6,7 +6,7 @@ interface ListCardTableProps {
   cards: DeckCard[];
   showHeader?: boolean;
   onUpdateQuantity: (id: string, delta: number) => void;
-  onToggleOwned: (id: string) => void;
+  onUpdateOwnedQty: (id: string, qty: number) => void;
   onRemove: (id: string) => void;
   onSelect: (card: ScryfallCard) => void;
   onHoverStart: (card: ScryfallCard) => void;
@@ -20,7 +20,7 @@ export default function ListCardTable({
   cards,
   showHeader = true,
   onUpdateQuantity,
-  onToggleOwned,
+  onUpdateOwnedQty,
   onRemove,
   onSelect,
   onHoverStart,
@@ -29,6 +29,9 @@ export default function ListCardTable({
   highlightedId,
   cardRefs,
 }: ListCardTableProps) {
+  // Remembers last non-zero ownedQty per card so checkbox can restore it on re-check
+  const lastOwnedQtyRef = useRef<Map<string, number>>(new Map());
+
   const renderManaSymbols = (manaCost: string | undefined) => {
     if (!manaCost) return null;
     const symbols = manaCost.match(/\{[^}]+\}/g) || [];
@@ -55,8 +58,8 @@ export default function ListCardTable({
         {showHeader && (
           <thead className="bg-neutral-950 text-[10px] text-neutral-500 border-b border-neutral-800 uppercase tracking-wider">
             <tr>
-              <th className="pl-3 py-1.5 w-8 text-center"></th>
               <th className="px-2 py-1.5 w-16">Qty</th>
+              <th className="py-1.5 w-24">Owned</th>
               <th className="px-2 py-1.5 min-w-0">Name</th>
               <th className="px-2 py-1.5 w-48">Type</th>
               <th className="px-2 py-1.5 w-24">Mana</th>
@@ -66,96 +69,151 @@ export default function ListCardTable({
           </thead>
         )}
         <tbody>
-          {cards.map((card) => (
-            <tr
-              key={card.id}
-              ref={(el) => {
-                if (el && cardRefs) {
-                  if (el) cardRefs.current.set(card.id, el);
-                  else cardRefs.current.delete(card.id);
-                }
-              }}
-              onMouseEnter={() => onHoverStart(card)}
-              onMouseLeave={onHoverEnd}
-              className={`border-b border-neutral-800/40 hover:bg-neutral-800/40 transition-colors ${card.quantity === 0 ? "opacity-30 grayscale" : ""} ${highlightedId === card.id ? "bg-yellow-400/10 outline outline-1 outline-yellow-400/50" : ""}`}
-            >
-              <td className="pl-3 py-1 text-center">
-                <Check
-                  onClick={() => onToggleOwned(card.id)}
-                  className={`w-3.5 h-3.5 inline cursor-pointer ${card.isOwned ? "text-green-500" : "text-neutral-700"}`}
-                />
-              </td>
-              <td className="px-2 py-1">
-                <div className="flex items-center gap-2">
-                  <Minus
-                    onClick={() => onUpdateQuantity(card.id, -1)}
-                    className="w-3 h-3 cursor-pointer text-neutral-500"
-                  />
-                  {(() => {
-                    const overLimit =
-                      card.quantity >= 5 &&
-                      !card.type_line?.toLowerCase().includes("basic land") &&
-                      !card.oracle_text?.includes("A deck can have any number");
-                    return overLimit ? (
-                      <div className="group relative flex items-center justify-center">
-                        <span className="w-3 text-center font-medium text-yellow-400">
+          {cards.map((card) => {
+            const isFullyOwned = card.quantity > 0 && card.ownedQty >= card.quantity;
+            const isChecked = card.ownedQty > 0;
+            // Visual-only cap at 100% — underlying ownedQty is never clamped
+            const ownershipRatio = card.quantity > 0 ? Math.min(card.ownedQty / card.quantity, 1) : 0;
+            // Opacity applied per-cell (not row-level) so Owned column stays full brightness
+            const cellOpacity = card.quantity === 0 ? 0.3 : 1 - ownershipRatio * 0.6;
+            const cellGrayscale = card.quantity === 0 ? "grayscale" : "";
+            const nameColor = card.quantity === 0
+              ? "text-neutral-500"
+              : isFullyOwned
+              ? "text-green-400"
+              : "text-neutral-100";
+
+            // Keep ref up to date whenever ownedQty is non-zero
+            if (card.ownedQty > 0) lastOwnedQtyRef.current.set(card.id, card.ownedQty);
+
+            return (
+              <tr
+                key={card.id}
+                ref={(el) => {
+                  if (el && cardRefs) {
+                    if (el) cardRefs.current.set(card.id, el);
+                    else cardRefs.current.delete(card.id);
+                  }
+                }}
+                onMouseEnter={() => onHoverStart(card)}
+                onMouseLeave={onHoverEnd}
+                className={`border-b border-neutral-800/40 hover:bg-neutral-800/40 transition-colors ${highlightedId === card.id ? "bg-yellow-400/10 outline outline-1 outline-yellow-400/50" : ""}`}
+              >
+                {/* Qty */}
+                <td className={`px-2 py-1 ${cellGrayscale}`} style={{ opacity: cellOpacity }}>
+                  <div className="flex items-center gap-2">
+                    <Minus
+                      onClick={() => onUpdateQuantity(card.id, -1)}
+                      className="w-3 h-3 cursor-pointer text-neutral-500"
+                    />
+                    {(() => {
+                      const overLimit =
+                        card.quantity >= 5 &&
+                        !card.type_line?.toLowerCase().includes("basic land") &&
+                        !card.oracle_text?.includes("A deck can have any number");
+                      return overLimit ? (
+                        <div className="group relative flex items-center justify-center">
+                          <span className="w-3 text-center font-medium text-yellow-400">
+                            {card.quantity}
+                          </span>
+                          <span className="absolute bottom-full mb-1.5 left-1/2 -translate-x-1/2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                            Exceeds the 4-copy limit for standard play
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="w-3 text-center font-medium text-neutral-300">
                           {card.quantity}
                         </span>
-                        <span className="absolute bottom-full mb-1.5 left-1/2 -translate-x-1/2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
-                          Exceeds the 4-copy limit for standard play
-                        </span>
-                      </div>
-                    ) : (
-                      <span className="w-3 text-center font-medium text-neutral-300">
-                        {card.quantity}
-                      </span>
-                    );
-                  })()}
-                  <Plus
-                    onClick={() => onUpdateQuantity(card.id, 1)}
-                    className="w-3 h-3 cursor-pointer text-neutral-500"
-                  />
-                </div>
-              </td>
-              <td
-                onClick={() => onSelect(card)}
-                className="px-2 py-1 cursor-pointer hover:underline truncate min-w-0"
-              >
-                <span
-                  className={`font-medium ${card.isOwned ? "text-green-500/70" : "text-white"}`}
-                >
-                  {card.name}
-                </span>
-              </td>
-              <td className="px-2 py-1 text-[10px] text-neutral-500 truncate">
-                {card.type_line || "—"}
-              </td>
-              <td className="px-2 py-1">
-                {card.card_faces ? (
-                  <div className="flex items-center gap-1">
-                    {renderManaSymbols(card.card_faces[0].mana_cost)}
-                    <span className="text-[10px] text-neutral-600 font-bold">
-                      //
-                    </span>
-                    {renderManaSymbols(card.card_faces[1].mana_cost)}
+                      );
+                    })()}
+                    <Plus
+                      onClick={() => onUpdateQuantity(card.id, 1)}
+                      className="w-3 h-3 cursor-pointer text-neutral-500"
+                    />
                   </div>
-                ) : (
-                  renderManaSymbols((card as any).mana_cost)
-                )}
-              </td>
-              <td
-                className={`px-2 py-1 text-right text-[10px] tabular-nums ${card.isOwned ? "text-green-500/50" : "text-neutral-400"}`}
-              >
-                {card.prices.usd ? `$${card.prices.usd}` : "N/A"}
-              </td>
-              <td className="pr-3 py-1 text-center">
-                <X
-                  onClick={() => onRemove(card.id)}
-                  className="w-3 h-3 inline cursor-pointer text-neutral-700 hover:text-red-500"
-                />
-              </td>
-            </tr>
-          ))}
+                </td>
+
+                {/* Owned — always full brightness, progress bar spans full cell width */}
+                <td className="py-1 w-24">
+                  <div className="px-2">
+                    <div className="flex items-center gap-1">
+                      <Check
+                        onClick={() => onUpdateOwnedQty(card.id, isChecked ? 0 : (lastOwnedQtyRef.current.get(card.id) ?? Math.max(card.quantity, 1)))}
+                        className={`w-3.5 h-3.5 flex-shrink-0 cursor-pointer ${isChecked ? "text-green-500 hover:text-green-400" : "text-neutral-700 hover:text-green-400"}`}
+                      />
+                      {card.ownedQty > 0 && (
+                        <div className="flex items-center gap-0.5">
+                          <Minus
+                            onClick={() => onUpdateOwnedQty(card.id, card.ownedQty - 1)}
+                            className="w-3 h-3 cursor-pointer text-neutral-500 hover:text-white transition-colors"
+                          />
+                          <span className="text-[9px] text-green-400/80 font-medium w-3 text-center tabular-nums">{card.ownedQty}</span>
+                          <Plus
+                            onClick={() => onUpdateOwnedQty(card.id, card.ownedQty + 1)}
+                            className="w-3 h-3 cursor-pointer text-neutral-500 hover:text-white transition-colors"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {/* Progress bar — no px padding so it spans the full cell width */}
+                  <div className="h-0.5 bg-neutral-700 overflow-hidden mt-0.5">
+                    <div
+                      className="h-full bg-green-500/60 transition-all duration-200"
+                      style={{ width: `${ownershipRatio * 100}%` }}
+                    />
+                  </div>
+                </td>
+
+                {/* Name */}
+                <td
+                  onClick={() => onSelect(card)}
+                  className={`px-2 py-1 cursor-pointer hover:underline truncate min-w-0 ${cellGrayscale}`}
+                  style={{ opacity: cellOpacity }}
+                >
+                  <span className={`font-medium ${nameColor}`}>
+                    {card.name}
+                  </span>
+                </td>
+
+                {/* Type */}
+                <td className={`px-2 py-1 text-[10px] text-neutral-500 truncate ${cellGrayscale}`} style={{ opacity: cellOpacity }}>
+                  {card.type_line || "—"}
+                </td>
+
+                {/* Mana */}
+                <td className={`px-2 py-1 ${cellGrayscale}`} style={{ opacity: cellOpacity }}>
+                  {card.card_faces ? (
+                    <div className="flex items-center gap-1">
+                      {renderManaSymbols(card.card_faces[0].mana_cost)}
+                      <span className="text-[10px] text-neutral-600 font-bold">
+                        //
+                      </span>
+                      {renderManaSymbols(card.card_faces[1].mana_cost)}
+                    </div>
+                  ) : (
+                    renderManaSymbols((card as any).mana_cost)
+                  )}
+                </td>
+
+                {/* Price */}
+                <td
+                  className={`px-2 py-1 text-right text-[10px] tabular-nums ${isFullyOwned ? "text-green-500/50" : "text-neutral-400"} ${cellGrayscale}`}
+                  style={{ opacity: cellOpacity }}
+                >
+                  {card.prices.usd ? `$${card.prices.usd}` : "N/A"}
+                </td>
+
+                {/* Remove */}
+                <td className="pr-3 py-1 text-center">
+                  <X
+                    onClick={() => onRemove(card.id)}
+                    className="w-3 h-3 inline cursor-pointer text-neutral-700 hover:text-red-500"
+                  />
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

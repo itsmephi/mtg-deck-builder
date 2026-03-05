@@ -16,6 +16,7 @@ interface DeckContextType {
   activeDeck: Deck | undefined;
   setActiveDeckId: (id: string) => void;
   updateActiveDeck: (updater: (deck: Deck) => Deck) => void;
+  updateOwnedQty: (cardId: string, qty: number) => void;
   createNewDeck: () => void;
   deleteDeck: (id: string) => void;
   isMounted: boolean;
@@ -42,8 +43,15 @@ export function DeckProvider({ children }: { children: ReactNode }) {
       try {
         const parsedDecks = JSON.parse(stored);
         if (Array.isArray(parsedDecks) && parsedDecks.length > 0) {
-          setDecks(parsedDecks);
-          setActiveDeckId(parsedDecks[0].id);
+          const migratedDecks = parsedDecks.map((deck: any) => ({
+            ...deck,
+            cards: deck.cards.map((card: any) => {
+              if (card.ownedQty !== undefined) return card;
+              return { ...card, ownedQty: card.isOwned ? card.quantity : 0 };
+            }),
+          }));
+          setDecks(migratedDecks);
+          setActiveDeckId(migratedDecks[0].id);
         } else {
           const defaultDeck = {
             id: crypto.randomUUID(),
@@ -79,6 +87,23 @@ export function DeckProvider({ children }: { children: ReactNode }) {
     setDecks((currentDecks) =>
       currentDecks.map((deck) =>
         deck.id === activeDeckId ? updater(deck) : deck,
+      ),
+    );
+  };
+
+  const updateOwnedQty = (cardId: string, qty: number) => {
+    setDecks((currentDecks) =>
+      currentDecks.map((deck) =>
+        deck.id === activeDeckId
+          ? {
+              ...deck,
+              cards: deck.cards.map((c) =>
+                c.id === cardId
+                  ? { ...c, ownedQty: Math.max(0, qty) }
+                  : c,
+              ),
+            }
+          : deck,
       ),
     );
   };
@@ -120,6 +145,7 @@ export function DeckProvider({ children }: { children: ReactNode }) {
         activeDeck,
         setActiveDeckId,
         updateActiveDeck,
+        updateOwnedQty,
         createNewDeck,
         deleteDeck,
         isMounted,

@@ -140,7 +140,7 @@ export default function Sidebar() {
       }
       return {
         ...deck,
-        cards: [...deck.cards, { ...cardToAdd, quantity: 1, isOwned: false }],
+        cards: [...deck.cards, { ...cardToAdd, quantity: 1, ownedQty: 0 }],
       };
     });
     setLastAddedId(cardToAdd.id);

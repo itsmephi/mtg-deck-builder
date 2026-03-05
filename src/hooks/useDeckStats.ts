@@ -14,9 +14,9 @@ export function useDeckStats(activeDeck: Deck | null) {
   const remainingCost =
     activeDeck?.cards.reduce(
       (sum, card) =>
-        card.isOwned
-          ? sum
-          : sum + parseFloat(card.prices.usd || "0") * card.quantity,
+        sum +
+        parseFloat(card.prices.usd || "0") *
+          Math.max(0, card.quantity - card.ownedQty),
       0,
     ) ?? 0;
 
@@ -26,10 +26,11 @@ export function useDeckStats(activeDeck: Deck | null) {
   const buyOnTCGPlayer = () => {
     if (!activeDeck) return;
     const list = activeDeck.cards
-      .filter((c) => !c.isOwned)
+      .map((c) => ({ ...c, buyQty: c.quantity - c.ownedQty }))
+      .filter((c) => c.buyQty > 0)
       .map(
         (c) =>
-          `${c.quantity} ${c.name}${c.set ? ` [${c.set.toUpperCase()}]` : ""}`,
+          `${c.buyQty} ${c.name}${c.set ? ` [${c.set.toUpperCase()}]` : ""}`,
       )
       .join("||");
     window.open(
@@ -41,8 +42,9 @@ export function useDeckStats(activeDeck: Deck | null) {
   const buyOnCardKingdom = () => {
     if (!activeDeck) return;
     const list = activeDeck.cards
-      .filter((c) => !c.isOwned)
-      .map((c) => `${c.quantity} ${c.name}`)
+      .map((c) => ({ ...c, buyQty: c.quantity - c.ownedQty }))
+      .filter((c) => c.buyQty > 0)
+      .map((c) => `${c.buyQty} ${c.name}`)
       .join("\n");
     window.open(
       `https://www.cardkingdom.com/builder?main_deck=${encodeURIComponent(list)}`,

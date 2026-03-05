@@ -1,6 +1,8 @@
-export const APP_VERSION = "1.0.5";
+export const APP_VERSION = "1.0.6";
 
 export const CHANGELOG: Record<string, string> = {
+  "1.0.6":
+    "Owned quantity tracking: per-card ownedQty replaces boolean isOwned. Grid and list views show ownership progress bar, gray overlay, and owned count. Buy lists export only unowned copies. Migrates old isOwned saves automatically.",
   "1.0.5":
     "4-copy soft warning badge in list view, buy buttons now exclude owned cards, swap art button always shows as active.",
   "1.0.4":
