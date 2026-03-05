@@ -288,7 +288,7 @@ export default function CardModal({
                     setView("details");
                   }}
                   disabled={previewCard.id === card.id}
-                  className="w-full py-2 rounded-lg text-sm font-medium transition-colors bg-blue-600 hover:bg-blue-500 text-white disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="w-full py-2 rounded-lg text-sm font-medium transition-colors disabled:cursor-not-allowed bg-blue-600 hover:bg-blue-500 text-white disabled:bg-neutral-800 disabled:text-neutral-600"
                 >
                   Confirm Art Swap
                 </button>

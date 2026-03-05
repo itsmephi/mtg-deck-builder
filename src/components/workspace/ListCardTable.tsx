@@ -91,23 +91,30 @@ export default function ListCardTable({
                     onClick={() => onUpdateQuantity(card.id, -1)}
                     className="w-3 h-3 cursor-pointer text-neutral-500"
                   />
-                  <span className="w-3 text-center font-medium text-neutral-300">
-                    {card.quantity}
-                  </span>
+                  {(() => {
+                    const overLimit =
+                      card.quantity >= 5 &&
+                      !card.type_line?.toLowerCase().includes("basic land") &&
+                      !card.oracle_text?.includes("A deck can have any number");
+                    return overLimit ? (
+                      <div className="group relative flex items-center justify-center">
+                        <span className="w-3 text-center font-medium text-yellow-400">
+                          {card.quantity}
+                        </span>
+                        <span className="absolute bottom-full mb-1.5 left-1/2 -translate-x-1/2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                          Exceeds the 4-copy limit for standard play
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="w-3 text-center font-medium text-neutral-300">
+                        {card.quantity}
+                      </span>
+                    );
+                  })()}
                   <Plus
                     onClick={() => onUpdateQuantity(card.id, 1)}
                     className="w-3 h-3 cursor-pointer text-neutral-500"
                   />
-                  {card.quantity >= 5 &&
-                    !card.type_line?.toLowerCase().includes("basic land") &&
-                    !card.oracle_text?.includes("A deck can have any number") && (
-                      <div className="group relative flex items-center">
-                        <span className="text-[11px] leading-none cursor-default">⚠️</span>
-                        <span className="absolute left-full ml-2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
-                          Exceeds the 4-copy limit for standard play
-                        </span>
-                      </div>
-                    )}
                 </div>
               </td>
               <td
