@@ -1,16 +1,17 @@
 import { Plus, Minus, Check, X } from 'lucide-react';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { DeckCard, ScryfallCard } from '@/types';
 
 interface VisualCardProps {
   card: DeckCard;
   onUpdateQuantity: (id: string, delta: number) => void;
+  onSetQuantity: (id: string, qty: number) => void;
   onUpdateOwnedQty: (id: string, qty: number) => void;
   onRemove: (id: string) => void;
   onSelect: (card: ScryfallCard) => void;
 }
 
-export default function VisualCard({ card, onUpdateQuantity, onUpdateOwnedQty, onRemove, onSelect }: VisualCardProps) {
+export default function VisualCard({ card, onUpdateQuantity, onSetQuantity, onUpdateOwnedQty, onRemove, onSelect }: VisualCardProps) {
   const isDoubleFaced = !!card.card_faces && card.card_faces.length > 1;
   const isRoom = card.type_line?.includes('Room');
   const hasBackArt = isDoubleFaced && !!card.card_faces![1].image_uris && !isRoom;
@@ -28,6 +29,30 @@ export default function VisualCard({ card, onUpdateQuantity, onUpdateOwnedQty, o
   // Remember last non-zero ownedQty so the checkbox can restore it on re-check
   const lastOwnedQtyRef = useRef<number>(card.ownedQty > 0 ? card.ownedQty : Math.max(card.quantity, 1));
   if (card.ownedQty > 0) lastOwnedQtyRef.current = card.ownedQty;
+
+  // Inline quantity editing
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState("");
+  const isEscaping = useRef(false);
+
+  const startEdit = () => {
+    setIsEditing(true);
+    setEditValue(String(card.quantity));
+  };
+
+  const commitEdit = () => {
+    const trimmed = editValue.trim();
+    const parsed = parseInt(trimmed, 10);
+    if (trimmed === "" || parsed === 0) {
+      // 0 or empty: qty → 0, card grays out and stays in deck (matches − button behavior)
+      onSetQuantity(card.id, 0);
+    } else if (!isNaN(parsed) && parsed > 0) {
+      // Allow any positive value — over-4 shows warning badge (soft warning, not a cap)
+      onSetQuantity(card.id, parsed);
+    }
+    // non-numeric or negative: silently revert
+    setIsEditing(false);
+  };
 
   const imgStyles = `w-full h-full rounded-lg object-cover transition-opacity duration-300 ${
     card.quantity === 0 ? 'opacity-25 grayscale' : ''
@@ -109,7 +134,8 @@ export default function VisualCard({ card, onUpdateQuantity, onUpdateOwnedQty, o
         />
       </div>
 
-      <div className="flex justify-between items-center mt-0.5 bg-neutral-950 p-0.5 rounded-lg border border-neutral-800">
+      {/* Bottom bar: − qty + grouped and centered */}
+      <div className="flex justify-center items-center mt-0.5 bg-neutral-950 p-0.5 rounded-lg border border-neutral-800 gap-1">
         <div className="group relative flex items-center justify-center">
           <Minus
             onClick={() => onUpdateQuantity(card.id, -1)}
@@ -121,10 +147,41 @@ export default function VisualCard({ card, onUpdateQuantity, onUpdateOwnedQty, o
         </div>
 
         <div className="group relative flex items-center justify-center">
-          <span className={`text-xs font-bold ${overCopyLimit ? "text-yellow-400" : "text-neutral-200"}`}>
-            {card.quantity}
-          </span>
-          {overCopyLimit && (
+          {isEditing ? (
+            <input
+              type="text"
+              value={editValue}
+              onChange={(e) => setEditValue(e.target.value)}
+              onFocus={(e) => e.target.select()}
+              onBlur={() => {
+                if (isEscaping.current) {
+                  isEscaping.current = false;
+                  return;
+                }
+                commitEdit();
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  commitEdit();
+                }
+                if (e.key === "Escape") {
+                  isEscaping.current = true;
+                  setIsEditing(false);
+                }
+              }}
+              className="w-8 text-center text-xs font-bold bg-neutral-800 border border-blue-500 rounded text-neutral-200 focus:outline-none"
+              autoFocus
+            />
+          ) : (
+            <span
+              onClick={startEdit}
+              className={`text-xs font-bold cursor-text px-1 rounded hover:bg-neutral-800 transition-colors ${overCopyLimit ? "text-yellow-400" : "text-neutral-200"}`}
+            >
+              {card.quantity}
+            </span>
+          )}
+          {overCopyLimit && !isEditing && (
             <span className="absolute bottom-full mb-1.5 left-1/2 -translate-x-1/2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
               Exceeds the 4-copy limit for standard play
             </span>

@@ -1,6 +1,8 @@
-export const APP_VERSION = "1.0.6";
+export const APP_VERSION = "1.0.7";
 
 export const CHANGELOG: Record<string, string> = {
+  "1.0.7":
+    "Inline quantity editing: click any qty number in grid or list view to type a new value. Grid view − qty + controls grouped and centered. Sort By dropdown (Original · Name · Color · Mana Value) with ↑↓ direction toggle; sort preference saved across sessions. Sort controls also available in Settings sidebar.",
   "1.0.6":
     "Owned quantity tracking: per-card ownedQty replaces boolean isOwned. Grid and list views show ownership progress bar, gray overlay, and owned count. Buy lists export only unowned copies. Migrates old isOwned saves automatically.",
   "1.0.5":

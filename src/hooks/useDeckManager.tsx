@@ -10,6 +10,10 @@ import {
 import { Deck } from "@/types";
 
 const STORAGE_KEY = "mtg_builder_decks";
+const SORT_PREF_KEY = "mtg-sort-preference";
+
+export type SortBy = "original" | "name" | "color" | "mv";
+export type SortDir = "asc" | "desc";
 
 interface DeckContextType {
   decks: Deck[];
@@ -24,6 +28,10 @@ interface DeckContextType {
   setShowThumbnail: (val: boolean) => void;
   lastAddedId: string | null;
   setLastAddedId: (id: string | null) => void;
+  sortBy: SortBy;
+  setSortBy: (by: SortBy) => void;
+  sortDir: SortDir;
+  setSortDir: (dir: SortDir) => void;
 }
 
 const DeckContext = createContext<DeckContextType | null>(null);
@@ -34,6 +42,8 @@ export function DeckProvider({ children }: { children: ReactNode }) {
   const [isMounted, setIsMounted] = useState(false);
   const [showThumbnail, setShowThumbnail] = useState(true);
   const [lastAddedId, setLastAddedId] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<SortBy>("original");
+  const [sortDir, setSortDir] = useState<SortDir>("asc");
 
   useEffect(() => {
     setIsMounted(true);
@@ -73,6 +83,18 @@ export function DeckProvider({ children }: { children: ReactNode }) {
       setDecks([defaultDeck]);
       setActiveDeckId(defaultDeck.id);
     }
+
+    // Load sort preference
+    try {
+      const sortPref = localStorage.getItem(SORT_PREF_KEY);
+      if (sortPref) {
+        const { by, dir } = JSON.parse(sortPref);
+        if (by) setSortBy(by);
+        if (dir) setSortDir(dir);
+      }
+    } catch {
+      // ignore
+    }
   }, []);
 
   useEffect(() => {
@@ -80,6 +102,12 @@ export function DeckProvider({ children }: { children: ReactNode }) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(decks));
     }
   }, [decks, isMounted]);
+
+  useEffect(() => {
+    if (isMounted) {
+      localStorage.setItem(SORT_PREF_KEY, JSON.stringify({ by: sortBy, dir: sortDir }));
+    }
+  }, [sortBy, sortDir, isMounted]);
 
   const activeDeck = decks.find((d) => d.id === activeDeckId);
 
@@ -153,6 +181,10 @@ export function DeckProvider({ children }: { children: ReactNode }) {
         setShowThumbnail,
         lastAddedId,
         setLastAddedId,
+        sortBy,
+        setSortBy,
+        sortDir,
+        setSortDir,
       }}
     >
       {children}

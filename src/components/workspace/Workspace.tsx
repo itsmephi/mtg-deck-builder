@@ -13,7 +13,24 @@ import ImportModal from "./ImportModal";
 import WorkspaceToolbar from "./WorkspaceToolbar";
 import { ScryfallCard, DeckCard } from "@/types";
 
-type SortOption = "original" | "name-asc" | "name-desc";
+// Color sort: WUBRG mono → multicolor (by combination) → colorless/missing
+const COLOR_ORDER = ["W", "U", "B", "R", "G"] as const;
+const COLOR_BITS: Record<string, number> = { W: 16, U: 8, B: 4, R: 2, G: 1 };
+
+function colorSortKey(card: DeckCard): number {
+  const mc =
+    card.mana_cost ??
+    (card.card_faces?.map((f) => f.mana_cost).join("") ?? "");
+  if (!mc) return 1000;
+  const colors = COLOR_ORDER.filter((c) => mc.includes(`{${c}}`));
+  if (colors.length === 0) return 1000; // colorless
+  if (colors.length === 1) return COLOR_ORDER.indexOf(colors[0]); // 0–4
+  const bitmask = colors.reduce(
+    (acc, c) => acc | COLOR_BITS[c],
+    0,
+  );
+  return 100 + (31 - bitmask); // multicolor, sorted by WUBRG bitmask desc
+}
 
 export default function Workspace() {
   const {
@@ -28,6 +45,10 @@ export default function Workspace() {
     showThumbnail,
     lastAddedId,
     setLastAddedId,
+    sortBy,
+    setSortBy,
+    sortDir,
+    setSortDir,
   } = useDeckManager();
   const {
     isImporting,
@@ -42,7 +63,6 @@ export default function Workspace() {
 
   const [viewMode, setViewMode] = useState<"visual" | "list">("visual");
   const [isGrouped, setIsGrouped] = useState(false);
-  const [sortMode, setSortMode] = useState<SortOption>("original");
   const [selectedCard, setSelectedCard] = useState<ScryfallCard | null>(null);
   const [isSampleHandOpen, setIsSampleHandOpen] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -73,13 +93,21 @@ export default function Workspace() {
 
   const sortedCards = useMemo(() => {
     if (!activeDeck) return [];
+    if (sortBy === "original") return [...activeDeck.cards];
     const cards = [...activeDeck.cards];
-    if (sortMode === "name-asc")
-      return cards.sort((a, b) => a.name.localeCompare(b.name));
-    if (sortMode === "name-desc")
-      return cards.sort((a, b) => b.name.localeCompare(a.name));
+    cards.sort((a, b) => {
+      let cmp = 0;
+      if (sortBy === "name") {
+        cmp = a.name.localeCompare(b.name);
+      } else if (sortBy === "color") {
+        cmp = colorSortKey(a) - colorSortKey(b);
+      } else if (sortBy === "mv") {
+        cmp = (a.cmc ?? Infinity) - (b.cmc ?? Infinity);
+      }
+      return sortDir === "asc" ? cmp : -cmp;
+    });
     return cards;
-  }, [activeDeck, sortMode]);
+  }, [activeDeck, sortBy, sortDir]);
 
   if (!isMounted || !activeDeck)
     return (
@@ -123,6 +151,14 @@ export default function Workspace() {
     }));
   };
 
+  const setQuantity = (cardId: string, qty: number) => {
+    updateActiveDeck((deck) => ({
+      ...deck,
+      cards: deck.cards.map((c) =>
+        c.id === cardId ? { ...c, quantity: Math.max(0, qty) } : c,
+      ),
+    }));
+  };
 
   const removeCard = (cardId: string) => {
     updateActiveDeck((deck) => ({
@@ -142,6 +178,7 @@ export default function Workspace() {
 
   const cardActionProps = {
     onUpdateQuantity: updateQuantity,
+    onSetQuantity: setQuantity,
     onUpdateOwnedQty: updateOwnedQty,
     onRemove: removeCard,
     onSelect: setSelectedCard,
@@ -174,8 +211,10 @@ export default function Workspace() {
         isImporting={isImporting}
         viewMode={viewMode}
         setViewMode={setViewMode}
-        sortMode={sortMode}
-        setSortMode={setSortMode}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+        sortDir={sortDir}
+        setSortDir={setSortDir}
         isGrouped={isGrouped}
         setIsGrouped={setIsGrouped}
         onOpenSampleHand={() => setIsSampleHandOpen(true)}

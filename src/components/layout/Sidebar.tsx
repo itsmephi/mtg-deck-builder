@@ -14,10 +14,12 @@ import {
   Coffee,
   Github,
   Settings,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
 import { searchCards } from "@/lib/scryfall";
 import { ScryfallCard } from "@/types";
-import { useDeckManager } from "@/hooks/useDeckManager";
+import { useDeckManager, SortBy, SortDir } from "@/hooks/useDeckManager";
 
 const CATEGORIES = [
   {
@@ -69,6 +71,10 @@ export default function Sidebar() {
     showThumbnail,
     setShowThumbnail,
     setLastAddedId,
+    sortBy,
+    setSortBy,
+    sortDir,
+    setSortDir,
   } = useDeckManager();
   const [isFooterOpen, setIsFooterOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -336,6 +342,33 @@ export default function Sidebar() {
                   <span
                     className={`absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full shadow transition-transform ${showThumbnail ? "translate-x-4" : "translate-x-0"}`}
                   />
+                </button>
+              </div>
+              <div className="flex items-center justify-between mt-3">
+                <span className="text-xs text-neutral-400">Sort By</span>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as SortBy)}
+                  className="bg-neutral-800 border border-neutral-700 text-xs text-neutral-300 rounded px-1.5 py-0.5 focus:outline-none cursor-pointer"
+                >
+                  <option value="original">Original</option>
+                  <option value="name">Name</option>
+                  <option value="color">Color</option>
+                  <option value="mv">Mana Value</option>
+                </select>
+              </div>
+              <div className="flex items-center justify-between mt-2">
+                <span className="text-xs text-neutral-400">Direction</span>
+                <button
+                  onClick={() => setSortDir(sortDir === "asc" ? "desc" : "asc")}
+                  disabled={sortBy === "original"}
+                  className={`flex items-center gap-1 px-2 py-0.5 text-xs rounded border transition-colors ${sortBy === "original" ? "text-neutral-600 border-neutral-800 cursor-not-allowed" : "text-neutral-300 border-neutral-700 hover:text-white hover:border-neutral-500"}`}
+                >
+                  {sortDir === "asc" ? (
+                    <><ArrowUp className="w-3 h-3" /> Asc</>
+                  ) : (
+                    <><ArrowDown className="w-3 h-3" /> Desc</>
+                  )}
                 </button>
               </div>
             </div>

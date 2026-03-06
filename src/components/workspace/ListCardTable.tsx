@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Plus, Minus, Check, X } from "lucide-react";
 import { DeckCard, ScryfallCard } from "@/types";
 
@@ -6,6 +6,7 @@ interface ListCardTableProps {
   cards: DeckCard[];
   showHeader?: boolean;
   onUpdateQuantity: (id: string, delta: number) => void;
+  onSetQuantity: (id: string, qty: number) => void;
   onUpdateOwnedQty: (id: string, qty: number) => void;
   onRemove: (id: string) => void;
   onSelect: (card: ScryfallCard) => void;
@@ -20,6 +21,7 @@ export default function ListCardTable({
   cards,
   showHeader = true,
   onUpdateQuantity,
+  onSetQuantity,
   onUpdateOwnedQty,
   onRemove,
   onSelect,
@@ -31,6 +33,30 @@ export default function ListCardTable({
 }: ListCardTableProps) {
   // Remembers last non-zero ownedQty per card so checkbox can restore it on re-check
   const lastOwnedQtyRef = useRef<Map<string, number>>(new Map());
+
+  // Inline quantity editing state
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState("");
+  const isEscaping = useRef(false);
+
+  const startEdit = (card: DeckCard) => {
+    setEditingId(card.id);
+    setEditValue(String(card.quantity));
+  };
+
+  const commitEdit = (card: DeckCard) => {
+    const trimmed = editValue.trim();
+    const parsed = parseInt(trimmed, 10);
+    if (trimmed === "" || parsed === 0) {
+      // 0 or empty: qty → 0, card grays out and stays in deck (matches − button behavior)
+      onSetQuantity(card.id, 0);
+    } else if (!isNaN(parsed) && parsed > 0) {
+      // Allow any positive value — over-4 shows warning badge (soft warning, not a cap)
+      onSetQuantity(card.id, parsed);
+    }
+    // non-numeric or negative: silently revert (do nothing, card keeps current qty)
+    setEditingId(null);
+  };
 
   const renderManaSymbols = (manaCost: string | undefined) => {
     if (!manaCost) return null;
@@ -83,6 +109,11 @@ export default function ListCardTable({
               ? "text-green-400"
               : "text-neutral-100";
 
+            const overLimit =
+              card.quantity >= 5 &&
+              !card.type_line?.toLowerCase().includes("basic land") &&
+              !card.oracle_text?.includes("A deck can have any number");
+
             // Keep ref up to date whenever ownedQty is non-zero
             if (card.ownedQty > 0) lastOwnedQtyRef.current.set(card.id, card.ownedQty);
 
@@ -106,26 +137,52 @@ export default function ListCardTable({
                       onClick={() => onUpdateQuantity(card.id, -1)}
                       className="w-3 h-3 cursor-pointer text-neutral-500"
                     />
-                    {(() => {
-                      const overLimit =
-                        card.quantity >= 5 &&
-                        !card.type_line?.toLowerCase().includes("basic land") &&
-                        !card.oracle_text?.includes("A deck can have any number");
-                      return overLimit ? (
-                        <div className="group relative flex items-center justify-center">
-                          <span className="w-3 text-center font-medium text-yellow-400">
-                            {card.quantity}
-                          </span>
-                          <span className="absolute bottom-full mb-1.5 left-1/2 -translate-x-1/2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
-                            Exceeds the 4-copy limit for standard play
-                          </span>
-                        </div>
-                      ) : (
-                        <span className="w-3 text-center font-medium text-neutral-300">
+                    {editingId === card.id ? (
+                      <input
+                        type="text"
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        onFocus={(e) => e.target.select()}
+                        onBlur={() => {
+                          if (isEscaping.current) {
+                            isEscaping.current = false;
+                            return;
+                          }
+                          commitEdit(card);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            commitEdit(card);
+                          }
+                          if (e.key === "Escape") {
+                            isEscaping.current = true;
+                            setEditingId(null);
+                          }
+                        }}
+                        className="w-6 text-center text-xs font-medium bg-neutral-800 border border-blue-500 rounded text-neutral-200 focus:outline-none"
+                        autoFocus
+                      />
+                    ) : overLimit ? (
+                      <div className="group relative flex items-center justify-center">
+                        <span
+                          onClick={() => startEdit(card)}
+                          className="w-6 text-center font-medium text-yellow-400 cursor-text hover:bg-neutral-800 rounded"
+                        >
                           {card.quantity}
                         </span>
-                      );
-                    })()}
+                        <span className="absolute bottom-full mb-1.5 left-1/2 -translate-x-1/2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                          Exceeds the 4-copy limit for standard play
+                        </span>
+                      </div>
+                    ) : (
+                      <span
+                        onClick={() => startEdit(card)}
+                        className="w-6 text-center font-medium text-neutral-300 cursor-text hover:bg-neutral-800 rounded"
+                      >
+                        {card.quantity}
+                      </span>
+                    )}
                     <Plus
                       onClick={() => onUpdateQuantity(card.id, 1)}
                       className="w-3 h-3 cursor-pointer text-neutral-500"

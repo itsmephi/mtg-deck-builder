@@ -6,6 +6,8 @@ import {
   List,
   Layout,
   ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
   Dices,
   Download,
   Upload,
@@ -14,8 +16,7 @@ import {
 } from "lucide-react";
 import DeckDropdown from "./DeckDropdown";
 import { Deck } from "@/types";
-
-type SortOption = "original" | "name-asc" | "name-desc";
+import { SortBy, SortDir } from "@/hooks/useDeckManager";
 
 interface Props {
   // Deck
@@ -43,8 +44,10 @@ interface Props {
   // View controls
   viewMode: "visual" | "list";
   setViewMode: (v: "visual" | "list") => void;
-  sortMode: SortOption;
-  setSortMode: (s: SortOption) => void;
+  sortBy: SortBy;
+  setSortBy: (by: SortBy) => void;
+  sortDir: SortDir;
+  setSortDir: (dir: SortDir) => void;
   isGrouped: boolean;
   setIsGrouped: (g: boolean) => void;
   // Modals
@@ -69,8 +72,10 @@ export default function WorkspaceToolbar({
   isImporting,
   viewMode,
   setViewMode,
-  sortMode,
-  setSortMode,
+  sortBy,
+  setSortBy,
+  sortDir,
+  setSortDir,
   isGrouped,
   setIsGrouped,
   onOpenSampleHand,
@@ -197,23 +202,30 @@ export default function WorkspaceToolbar({
           </div>
 
           <div className="flex items-center h-full bg-neutral-900 p-0.5 rounded-lg border border-neutral-800 space-x-0.5 shadow-sm">
-            <div className="flex items-center px-2 border-r border-neutral-800 h-full">
-              <ArrowUpDown className="w-3 h-3 text-neutral-500 mr-2" />
+            {/* Sort By + Direction */}
+            <div className="flex items-center px-2 border-r border-neutral-800 h-full gap-1">
+              <ArrowUpDown className="w-3 h-3 text-neutral-500 shrink-0" />
               <select
-                value={sortMode}
-                onChange={(e) => setSortMode(e.target.value as SortOption)}
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as SortBy)}
                 className="bg-transparent text-xs text-neutral-300 focus:outline-none cursor-pointer h-full"
               >
-                <option value="original" className="bg-neutral-900">
-                  Original
-                </option>
-                <option value="name-asc" className="bg-neutral-900">
-                  Name (A-Z)
-                </option>
-                <option value="name-desc" className="bg-neutral-900">
-                  Name (Z-A)
-                </option>
+                <option value="original" className="bg-neutral-900">Original</option>
+                <option value="name" className="bg-neutral-900">Name</option>
+                <option value="color" className="bg-neutral-900">Color</option>
+                <option value="mv" className="bg-neutral-900">Mana Value</option>
               </select>
+              <button
+                onClick={() => setSortDir(sortDir === "asc" ? "desc" : "asc")}
+                disabled={sortBy === "original"}
+                className={`flex items-center justify-center w-5 h-5 rounded transition-colors ${sortBy === "original" ? "text-neutral-700 cursor-not-allowed" : "text-neutral-400 hover:text-white"}`}
+              >
+                {sortDir === "asc" ? (
+                  <ArrowUp className="w-3 h-3" />
+                ) : (
+                  <ArrowDown className="w-3 h-3" />
+                )}
+              </button>
             </div>
 
             <div className="group relative h-full flex items-center justify-center">

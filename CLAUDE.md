@@ -3,7 +3,7 @@ Authors: Phi & Thurgood Nguyen
 Stack: Next.js + TypeScript + Tailwind CSS
 Deployed: Vercel | Repo: GitHub (itsmephi/mtg-deck-builder)
 IDE: Zed on Steam Deck (Linux)
-Current Version: v1.0.6 — see CHANGELOG.md for full history
+Current Version: v1.0.7 — see CHANGELOG.md for full history
 
 ---
 
@@ -23,16 +23,7 @@ Rules:
 ---
 
 ## Active Milestone
-→ v1.0.7 — Quick Wins | Design session required before building
-
-- Type-in quantity field (#32)
-- Sort list view by color, type, or name (#22)
-- Close already-fixed issues: #24, #29, #21
-
----
-
-## v1.1.0 — Sideboard Support
-→ Planned | Full design session required before building
+→ v1.1.0 — Sideboard Support | Full design session required before building
 
 - 15-card sideboard (#19)
 - Main deck / sideboard toggle (#20)
@@ -66,6 +57,7 @@ New ideas captured here first, then promoted to a milestone when ready to build.
 - EDHREC improved search suggestions (#26)
 - Search shows cards already in workspace (#25)
 - Share / email deck list (#23)
+- Commander deck sort performance — color sort with 100+ cards may need optimization
 
 ---
 
@@ -89,7 +81,7 @@ Claude Code creates and closes issues automatically. Convention for commit messa
 ❌ Closes #27 #28 #29
 
 Labels: bug · feature · enhancement · chore · backlog · high · med · low
-Milestones: v1.0.7 · v1.1.0 · Backlog
+Milestones: v1.1.0 · Backlog
 
 ---
 
@@ -120,3 +112,6 @@ src/
 - overflow-x-hidden needed on both outer wrapper AND scroll container in Workspace
 - table-fixed on ListCardTable prevents horizontal overflow
 - 4-copy rule exemptions: check type_line for "Basic Land" and oracle_text for "A deck can have any number"
+- Inline qty editing: Escape uses isEscaping ref to suppress onBlur commit; 0/empty → remove card
+- Sort state (sortBy/sortDir) lives in useDeckManager context, persisted to localStorage under mtg-sort-preference
+- Color sort key: mono WUBRG → 0-4, multi → 100+(31-bitmask), colorless/missing → 1000
