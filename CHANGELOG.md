@@ -5,6 +5,30 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.0.7] — Inline Quantity Editing & Sort Controls
+
+### Added
+- **Inline qty editing (grid + list)**: click any quantity number to edit it inline; input selects all on focus; text/pointer cursor signals clickability
+- **Enter or blur** commits; **Escape** reverts without saving; non-numeric input silently reverts
+- **0 or empty** sets quantity to 0 — card grays out and stays in the deck, matching existing `−` button behavior
+- Values above 4 are accepted with a yellow warning highlight — soft warning only, matching existing `+` button behavior; Basic Lands and "A deck can have any number" cards are exempt
+- **Sort By dropdown** in toolbar: Original · Name · Color · Mana Value
+- **Direction toggle** (↑/↓) in toolbar: flips ascending/descending, disabled when Original is selected
+- Color sort order: White → Blue → Black → Red → Green → multicolor (grouped by color pair/combination) → colorless; cards missing color or CMC data sort to the bottom
+- Sort applies to both grid and list view
+- Sort preference (type + direction) persisted to `localStorage` under key `mtg-sort-preference`
+- Sort By and Direction controls also surfaced in the Settings sidebar
+
+### Changed
+- `SortBy` and `SortDir` types exported from `useDeckManager`; sort state lives in context (was local `useState` in Workspace)
+- Grid view bottom bar: `− qty +` controls now grouped and centered (were corner-pinned with `justify-between`)
+- `setQuantity(id, qty)` handler added to Workspace — sets an absolute value instead of a delta; qty=0 grays out rather than removes
+
+### Housekeeping
+- Closed #21, #24, #29 — no code changes required
+
+---
+
 ## [1.0.6] — Owned Quantity Tracking
 
 ### Changed

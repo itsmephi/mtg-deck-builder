@@ -7,6 +7,17 @@ Current Version: v1.0.7 — see CHANGELOG.md for full history
 
 ---
 
+## Session Start — Claude Chat
+Every planning session, Claude Chat should automatically run through this checklist before any design work begins:
+- [ ] Confirm current version matches what shipped
+- [ ] Confirm active milestone and open issues look correct
+- [ ] Flag any loose ends or inconsistencies from last session
+- [ ] Call out any backlog items ready to promote to a milestone
+- [ ] Proactively suggest workflow or process improvements based on what we learned last session
+- [ ] Remind Phi to **sync CLAUDE.md via the Claude project files sync button** — not upload manually
+
+---
+
 ## How This File Works
 This is the single source of truth for the project, shared between:
 - **Claude Chat** — upload this file at the start of every planning session
@@ -57,21 +68,42 @@ New ideas captured here first, then promoted to a milestone when ready to build.
 - EDHREC improved search suggestions (#26)
 - Search shows cards already in workspace (#25)
 - Share / email deck list (#23)
-- Commander deck sort performance — color sort with 100+ cards may need optimization
+- Commander deck sort performance — revisit when 100+ card support is implemented (#33)
 
 ---
 
 ## Release Workflow
-1. Plan with Claude Chat — design fully before building
-2. Claude Chat generates the Claude Code prompt
+1. **Design with Claude Chat** — for each feature:
+   - Ask all requirements questions
+   - Walk through the design checklist:
+     - [ ] What does the user see by default / on first load?
+     - [ ] What happens on every user interaction?
+     - [ ] What are the empty states? (no data, zero results, etc.)
+     - [ ] What are the error states?
+     - [ ] How does it behave at maximum scale? (100 cards, long names, etc.)
+     - [ ] How does it look in every view? (grid, list, modal, mobile)
+     - [ ] Is the behavior obvious to someone who has never seen it before?
+     - [ ] Does this match or intentionally diverge from existing behavior?
+   - Present full spec for review
+   - Get explicit sign-off before moving to the next feature
+   - Only generate the Claude Code prompt after ALL features are signed off
+   - Present the Claude Code prompt as a downloadable/copyable markdown file
+
+2. Claude Chat generates the Claude Code prompt as a downloadable markdown file — prompt must always include:
+   - A CHANGELOG outline based on the design spec (Claude Code fills it in accurately based on what was actually built)
+   - What to update in CLAUDE.md (version bump, milestone changes, new backlog items)
 3. `git checkout -b vX.X.X`
-4. Claude Code executes — pauses before committing for your approval
-5. Review and type APPROVED
-6. Claude Code commits: `vX.X.X - description - Closes #N, Closes #N`
-7. `git checkout main && git merge vX.X.X && git push`
-8. Vercel auto-deploys
-9. Update this file — bump version, move completed issues out of backlog, update active milestone
-10. Commit: `git add CLAUDE.md && git commit -m "update CLAUDE.md post vX.X.X"`
+4. Claude Code executes:
+   - **Small releases (quick wins)** — build everything in one pass, then pause
+   - **Large releases (v1.1.0+)** — pause and output testing checklist after each feature before proceeding
+5. Claude Code pauses before committing and outputs a testing checklist broken out per feature
+6. Review checklist, test in browser, type APPROVED
+7. Claude Code commits: `vX.X.X - description - Closes #N, Closes #N`
+8. **Claude Code updates CLAUDE.md and CHANGELOG.md** — bump version, move completed issues, update active milestone, add changelog entry for what shipped, add any new backlog items
+9. Claude Code commits: `git add CLAUDE.md CHANGELOG.md && git commit -m "update CLAUDE.md and CHANGELOG.md post vX.X.X"`
+10. `git checkout main && git merge vX.X.X && git push`
+11. Vercel auto-deploys
+12. **Sync CLAUDE.md into the Claude project** — hit sync in the Claude project files so the next planning session starts with current context
 
 ---
 
@@ -112,6 +144,5 @@ src/
 - overflow-x-hidden needed on both outer wrapper AND scroll container in Workspace
 - table-fixed on ListCardTable prevents horizontal overflow
 - 4-copy rule exemptions: check type_line for "Basic Land" and oracle_text for "A deck can have any number"
-- Inline qty editing: Escape uses isEscaping ref to suppress onBlur commit; 0/empty → remove card
-- Sort state (sortBy/sortDir) lives in useDeckManager context, persisted to localStorage under mtg-sort-preference
-- Color sort key: mono WUBRG → 0-4, multi → 100+(31-bitmask), colorless/missing → 1000
+- Qty 0 behavior: card stays in deck, grays out, excluded from total count and to-buy cost — matches − button behavior
+- 4-copy rule is a soft warning (highlight) not a hard cap — matches existing + button behavior
