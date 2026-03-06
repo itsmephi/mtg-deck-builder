@@ -23,42 +23,49 @@ Rules:
 ---
 
 ## Active Milestone
-→ None — no active milestone. Start fresh next planning session.
+→ v1.0.7 — Quick Wins | Design session required before building
+
+- Type-in quantity field (#32)
+- Sort list view by color, type, or name (#22)
+- Close already-fixed issues: #24, #29, #21
+
+---
+
+## v1.1.0 — Sideboard Support
+→ Planned | Full design session required before building
+
+- 15-card sideboard (#19)
+- Main deck / sideboard toggle (#20)
+
+---
+
+## v1.2.0 and beyond (deferred)
+→ GitHub Milestone: v1.1.0 | Issues: #4–#14
+
+- Mana Curve Chart (#4)
+- Color Identity Bar (#5)
+- Deck Legality Checker (#6)
+- Draw probability stats per card (#7)
+- Add turn tracker during deck testing (#8)
+- Show mulligan count in parenthesis (#9)
+- Ability to mark cards as owned vs. to-buy independently (#10)
+- Toggle card scale for art previews (#11)
+- Ability to toggle a card inactive while retaining count (#12)
+- Shade list view row by card color identity (#13)
+- Display TCGPlayer price in orange, Card Kingdom in blue (#14)
 
 ---
 
 ## Backlog
-Issues exist in GitHub. New ideas captured here first, then promoted to a milestone when ready to build.
+New ideas captured here first, then promoted to a milestone when ready to build.
 
-- New app name (#15)
-- Drag and drop custom sorting (#16)
-- Standard / Commander deck modes (#17)
-- Search autocomplete (#18)
-- 15-card sideboard (#19)
-- Main/sideboard toggle (#20)
-- Choose store + generate buy list (#21)
-- Sort list view by color/type/name (#22)
-- Share / email deck list (#23)
-- Move X icon to left in list view (#24)
-- Search shows cards already in workspace (#25)
+- New app name — Phi & Thurgood to brainstorm (#15)
+- Custom card sorting by drag and drop (#16)
+- Support Standard and Commander deck modes (#17)
+- Search autocomplete / autofill (#18)
 - EDHREC improved search suggestions (#26)
-- Owned quantity tracking — buy 2 of 4 owned copies (#31)
-
----
-
-## v1.1.0 (deferred)
-→ GitHub Milestone: v1.1.0 | Issues: #4–#14
-
-- Mana Curve Chart
-- Color Identity Bar
-- Deck Legality Checker
-- Draw probability stats per card (Test Hand Modal)
-- Turn tracker + mulligan count (Test Hand Modal)
-- Owned vs. to-buy cards independently
-- Card scale toggle (grid + sidebar)
-- Toggle card inactive while retaining count
-- Row color shading by color identity (list view)
-- TCGPlayer orange / Card Kingdom blue price colors
+- Search shows cards already in workspace (#25)
+- Share / email deck list (#23)
 
 ---
 
@@ -82,7 +89,7 @@ Claude Code creates and closes issues automatically. Convention for commit messa
 ❌ Closes #27 #28 #29
 
 Labels: bug · feature · enhancement · chore · backlog · high · med · low
-Milestones: v1.1.0 · Backlog
+Milestones: v1.0.7 · v1.1.0 · Backlog
 
 ---
 
