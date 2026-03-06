@@ -12,9 +12,14 @@ Every planning session, Claude Chat should automatically run through this checkl
 - [ ] Confirm current version matches what shipped
 - [ ] Confirm active milestone and open issues look correct
 - [ ] Flag any loose ends or inconsistencies from last session
-- [ ] Call out any backlog items ready to promote to a milestone
+- [ ] Review the **Capture Log** chat together — triage anything ready to promote to the milestone or backlog before starting design
 - [ ] Proactively suggest workflow or process improvements based on what we learned last session
 - [ ] Remind Phi to **sync CLAUDE.md via the Claude project files sync button** — not upload manually
+
+---
+
+## Capture Log
+A dedicated chat in this Claude project named "Capture Log" is the single place for all bugs, ideas, features, and UI tweaks captured between planning sessions. At the start of every planning session, Claude Chat and Phi review the Capture Log together and promote items into the Claude Code prompt and CLAUDE.md update instructions. Claude Code never reads the Capture Log directly — Claude Chat handles the triage and includes everything explicitly in the prompt.
 
 ---
 
