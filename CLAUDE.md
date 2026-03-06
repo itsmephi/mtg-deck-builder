@@ -1,15 +1,35 @@
-# MTG Deck Builder & Simulator — Session Context
+# MTG Deck Builder & Simulator — Source of Truth
 Authors: Phi & Thurgood Nguyen
 Stack: Next.js + TypeScript + Tailwind CSS
 Deployed: Vercel | Repo: GitHub (itsmephi/mtg-deck-builder)
 IDE: Zed on Steam Deck (Linux)
 Current Version: v1.0.6 — see CHANGELOG.md for full history
 
-## Up Next — v1.0.7 or v1.1.0
-→ No active milestone yet — start fresh next session
+---
+
+## How This File Works
+This is the single source of truth for the project, shared between:
+- **Claude Chat** — upload this file at the start of every planning session
+- **Claude Code** — reads this automatically at session start
+- **GitHub** — issues and milestones are created automatically by Claude Code on commit
+
+Rules:
+- New ideas and bugs go in the Backlog section below — not directly into GitHub
+- Claude Chat updates this file at the end of every planning session
+- Claude Code updates this file when issues are opened or closed
+- Always commit this file alongside any release or planning change
+- GitHub is read-only — use it to review status, history, and what's shipped
+
+---
+
+## Active Milestone
+→ None — no active milestone. Start fresh next planning session.
+
+---
 
 ## Backlog
-→ GitHub Milestone: Backlog | Issues: #15–#26
+Issues exist in GitHub. New ideas captured here first, then promoted to a milestone when ready to build.
+
 - New app name (#15)
 - Drag and drop custom sorting (#16)
 - Standard / Commander deck modes (#17)
@@ -22,8 +42,13 @@ Current Version: v1.0.6 — see CHANGELOG.md for full history
 - Move X icon to left in list view (#24)
 - Search shows cards already in workspace (#25)
 - EDHREC improved search suggestions (#26)
+- Owned quantity tracking — buy 2 of 4 owned copies (#31)
+
+---
+
 ## v1.1.0 (deferred)
 → GitHub Milestone: v1.1.0 | Issues: #4–#14
+
 - Mana Curve Chart
 - Color Identity Bar
 - Deck Legality Checker
@@ -35,25 +60,34 @@ Current Version: v1.0.6 — see CHANGELOG.md for full history
 - Row color shading by color identity (list view)
 - TCGPlayer orange / Card Kingdom blue price colors
 
-## Issue & Changelog Workflow
-- Bugs, features, ideas → GitHub Issues (itsmephi/mtg-deck-builder)
-- Labels: bug · feature · enhancement · chore · backlog · high · med · low
-- Milestones: v1.1.0 · Backlog
-- CHANGELOG.md lives in repo root — update each release
-- When starting work: reference issue # in commit message
-- After shipping: close milestone, bump version in src/config/version.ts, push
+---
 
-## GitHub Issue Closing Convention
-Always close issues individually in commit messages:
+## Release Workflow
+1. Plan with Claude Chat — design fully before building
+2. Claude Chat generates the Claude Code prompt
+3. `git checkout -b vX.X.X`
+4. Claude Code executes — pauses before committing for your approval
+5. Review and type APPROVED
+6. Claude Code commits: `vX.X.X - description - Closes #N, Closes #N`
+7. `git checkout main && git merge vX.X.X && git push`
+8. Vercel auto-deploys
+9. Update this file — bump version, move completed issues out of backlog, update active milestone
+10. Commit: `git add CLAUDE.md && git commit -m "update CLAUDE.md post vX.X.X"`
+
+---
+
+## GitHub Issue Convention
+Claude Code creates and closes issues automatically. Convention for commit messages:
 ✅ Closes #27, Closes #28, Closes #29
 ❌ Closes #27 #28 #29
 
-## Branch Strategy
-- Always branch off main for new releases: git checkout -b v1.0.6
-- Test locally before merging: git checkout main && git merge v1.0.5 && git push
-- Vercel auto-deploys from main
+Labels: bug · feature · enhancement · chore · backlog · high · med · low
+Milestones: v1.1.0 · Backlog
+
+---
 
 ## File Structure
+```
 src/
   app/               → layout.tsx, page.tsx, globals.css
   config/            → version.ts ← bump APP_VERSION and add CHANGELOG entry each release
@@ -63,17 +97,11 @@ src/
   hooks/             → useDeckManager.tsx, useDeckImportExport.tsx, useDeckStats.ts
   lib/               → scryfall.ts
   types/             → index.ts
+```
 
-## Release Workflow
-1. git checkout -b vX.X.X
-2. Make changes
-3. Update src/config/version.ts — bump APP_VERSION and add CHANGELOG entry
-4. git add . && git commit -m "vX.X.X - description - Closes #N, Closes #N" && git push
-5. git checkout main && git merge vX.X.X && git push
-6. Vercel auto-deploys
-7. Update CONTEXT.md for next session
+---
 
-## Key Notes
+## Key Technical Notes
 - Scryfall API: searchCards appends order:usd to prefer priced printings
 - $0.00 rescue: check !prices.usd || prices.usd === "0.00" — both cases need rescue
 - handleAddCard is async — rescue happens before updateActiveDeck is called
