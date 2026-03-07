@@ -41,6 +41,10 @@ export default function Workspace() {
     updateOwnedQty,
     createNewDeck,
     deleteDeck,
+    enableSideboard,
+    deleteSideboard,
+    deckViewMode,
+    setDeckViewMode,
     isMounted,
     showThumbnail,
     lastAddedId,
@@ -61,8 +65,20 @@ export default function Workspace() {
   const { totalCards, totalValue, remainingCost, hasPriceData, buyOnTCGPlayer, buyOnCardKingdom } =
     useDeckStats(activeDeck ?? null);
 
-  const [viewMode, setViewMode] = useState<"visual" | "list">("visual");
-  const [isGrouped, setIsGrouped] = useState(false);
+  // Fix 1: restore view preferences from localStorage
+  const [viewMode, setViewModeState] = useState<"visual" | "list">("visual");
+  const [isGrouped, setIsGroupedState] = useState(false);
+
+  const setViewMode = (v: "visual" | "list") => {
+    setViewModeState(v);
+    localStorage.setItem("mtg-view-mode", v);
+  };
+
+  const setIsGrouped = (g: boolean) => {
+    setIsGroupedState(g);
+    localStorage.setItem("mtg-group-by-type", String(g));
+  };
+
   const [selectedCard, setSelectedCard] = useState<ScryfallCard | null>(null);
   const [isSampleHandOpen, setIsSampleHandOpen] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -71,12 +87,27 @@ export default function Workspace() {
   const [hoveredCardList, setHoveredCardList] = useState<ScryfallCard | null>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
+  // Restore view preferences on mount
+  useEffect(() => {
+    const storedView = localStorage.getItem("mtg-view-mode");
+    if (storedView === "list" || storedView === "visual") setViewModeState(storedView);
+    const storedGrouped = localStorage.getItem("mtg-group-by-type");
+    if (storedGrouped === "true") setIsGroupedState(true);
+  }, []);
+
   useEffect(() => {
     if (isMounted && !activeDeck) {
       if (decks.length === 0) createNewDeck();
       else setActiveDeckId(decks[0].id);
     }
   }, [isMounted, activeDeck, decks, createNewDeck, setActiveDeckId]);
+
+  // If sideboard is deleted while in sideboard view, switch back to main
+  useEffect(() => {
+    if (deckViewMode === "sideboard" && activeDeck?.sideboard === undefined) {
+      setDeckViewMode("main");
+    }
+  }, [activeDeck?.sideboard, deckViewMode, setDeckViewMode]);
 
   useEffect(() => {
     if (!lastAddedId) return;
@@ -91,10 +122,14 @@ export default function Workspace() {
     }
   }, [lastAddedId]);
 
+  const activeCards = deckViewMode === "sideboard"
+    ? (activeDeck?.sideboard ?? [])
+    : (activeDeck?.cards ?? []);
+
   const sortedCards = useMemo(() => {
     if (!activeDeck) return [];
-    if (sortBy === "original") return [...activeDeck.cards];
-    const cards = [...activeDeck.cards];
+    if (sortBy === "original") return [...activeCards];
+    const cards = [...activeCards];
     cards.sort((a, b) => {
       let cmp = 0;
       if (sortBy === "name") {
@@ -107,7 +142,25 @@ export default function Workspace() {
       return sortDir === "asc" ? cmp : -cmp;
     });
     return cards;
-  }, [activeDeck, sortBy, sortDir]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeDeck, sortBy, sortDir, deckViewMode]);
+
+  // Build qty maps for combined 4-copy rule check
+  const otherPoolQtyMap = useMemo(() => {
+    const map = new Map<string, number>();
+    if (!activeDeck) return map;
+    const otherPool = deckViewMode === "sideboard"
+      ? activeDeck.cards
+      : (activeDeck.sideboard ?? []);
+    for (const card of otherPool) {
+      map.set(card.name.toLowerCase(), card.quantity);
+    }
+    return map;
+  }, [activeDeck, deckViewMode]);
+
+  const sideboardCardCount = useMemo(() => {
+    return activeDeck?.sideboard?.reduce((sum, c) => sum + c.quantity, 0) ?? 0;
+  }, [activeDeck?.sideboard]);
 
   if (!isMounted || !activeDeck)
     return (
@@ -140,6 +193,7 @@ export default function Workspace() {
     return groups;
   };
 
+  // Main deck card actions
   const updateQuantity = (cardId: string, delta: number) => {
     updateActiveDeck((deck) => ({
       ...deck,
@@ -167,6 +221,43 @@ export default function Workspace() {
     }));
   };
 
+  // Sideboard card actions
+  const updateSideboardQuantity = (cardId: string, delta: number) => {
+    updateActiveDeck((deck) => ({
+      ...deck,
+      sideboard: deck.sideboard?.map((c) =>
+        c.id === cardId
+          ? { ...c, quantity: Math.max(0, c.quantity + delta) }
+          : c,
+      ),
+    }));
+  };
+
+  const setSideboardQuantity = (cardId: string, qty: number) => {
+    updateActiveDeck((deck) => ({
+      ...deck,
+      sideboard: deck.sideboard?.map((c) =>
+        c.id === cardId ? { ...c, quantity: Math.max(0, qty) } : c,
+      ),
+    }));
+  };
+
+  const removeSideboardCard = (cardId: string) => {
+    updateActiveDeck((deck) => ({
+      ...deck,
+      sideboard: deck.sideboard?.filter((c) => c.id !== cardId),
+    }));
+  };
+
+  const updateSideboardOwnedQty = (cardId: string, qty: number) => {
+    updateActiveDeck((deck) => ({
+      ...deck,
+      sideboard: deck.sideboard?.map((c) =>
+        c.id === cardId ? { ...c, ownedQty: Math.max(0, qty) } : c,
+      ),
+    }));
+  };
+
   const handleMouseMove = (e: React.MouseEvent) => {
     setMousePos({
       x: e.clientX + 20,
@@ -174,15 +265,23 @@ export default function Workspace() {
     });
   };
 
-  const groupedCards = groupCardsByType(sortedCards);
+  const isSideboard = deckViewMode === "sideboard";
 
-  const cardActionProps = {
-    onUpdateQuantity: updateQuantity,
-    onSetQuantity: setQuantity,
-    onUpdateOwnedQty: updateOwnedQty,
-    onRemove: removeCard,
-    onSelect: setSelectedCard,
-  };
+  const cardActionProps = isSideboard
+    ? {
+        onUpdateQuantity: updateSideboardQuantity,
+        onSetQuantity: setSideboardQuantity,
+        onUpdateOwnedQty: updateSideboardOwnedQty,
+        onRemove: removeSideboardCard,
+        onSelect: setSelectedCard,
+      }
+    : {
+        onUpdateQuantity: updateQuantity,
+        onSetQuantity: setQuantity,
+        onUpdateOwnedQty: updateOwnedQty,
+        onRemove: removeCard,
+        onSelect: setSelectedCard,
+      };
 
   const listActionProps = {
     ...cardActionProps,
@@ -191,8 +290,10 @@ export default function Workspace() {
     onMouseMove: handleMouseMove,
   };
 
+  const groupedCards = groupCardsByType(sortedCards);
+
   return (
-    <div className="w-full h-full flex flex-col relative text-sm overflow-x-hidden">
+    <div className="w-full h-full flex flex-col relative text-sm">
       <WorkspaceToolbar
         activeDeck={activeDeck}
         decks={decks}
@@ -200,6 +301,9 @@ export default function Workspace() {
         createNewDeck={createNewDeck}
         onDeleteDeck={() => deleteDeck(activeDeck.id)}
         onUpdateDeckName={(name) => updateActiveDeck((d) => ({ ...d, name }))}
+        onEnableSideboard={enableSideboard}
+        onSwitchToSideboard={() => setDeckViewMode("sideboard")}
+        onDeleteSideboard={() => deleteSideboard(activeDeck.id)}
         totalCards={totalCards}
         totalValue={totalValue}
         remainingCost={remainingCost}
@@ -217,12 +321,16 @@ export default function Workspace() {
         setSortDir={setSortDir}
         isGrouped={isGrouped}
         setIsGrouped={setIsGrouped}
+        deckViewMode={deckViewMode}
+        setDeckViewMode={setDeckViewMode}
+        activeDeckHasSideboard={activeDeck.sideboard !== undefined}
+        sideboardCardCount={sideboardCardCount}
         onOpenSampleHand={() => setIsSampleHandOpen(true)}
       />
 
       <div
         ref={scrollContainerRef}
-        className="flex-1 overflow-y-auto overflow-x-hidden pr-1 pb-20"
+        className="flex-1 overflow-y-auto p-1 pb-20"
       >
         {isGrouped ? (
           <div className="space-y-10">
@@ -244,7 +352,11 @@ export default function Workspace() {
                             }}
                             className={`rounded-xl transition-all duration-300 ${highlightedId === card.id ? "ring-2 ring-yellow-400 ring-offset-2 ring-offset-neutral-950" : ""}`}
                           >
-                            <VisualCard card={card} {...cardActionProps} />
+                            <VisualCard
+                              card={card}
+                              {...cardActionProps}
+                              extraQty={otherPoolQtyMap.get(card.name.toLowerCase()) ?? 0}
+                            />
                           </div>
                         ))}
                       </div>
@@ -253,6 +365,7 @@ export default function Workspace() {
                         cards={cards}
                         highlightedId={highlightedId}
                         cardRefs={cardRefs}
+                        sideboardQtyMap={otherPoolQtyMap}
                         {...listActionProps}
                       />
                     )}
@@ -271,7 +384,12 @@ export default function Workspace() {
                 }}
                 className={`rounded-xl transition-all duration-300 ${highlightedId === card.id ? "ring-2 ring-yellow-400 ring-offset-2 ring-offset-neutral-950" : ""}`}
               >
-                <VisualCard key={card.id} card={card} {...cardActionProps} />
+                <VisualCard
+                  key={card.id}
+                  card={card}
+                  {...cardActionProps}
+                  extraQty={otherPoolQtyMap.get(card.name.toLowerCase()) ?? 0}
+                />
               </div>
             ))}
           </div>
@@ -280,6 +398,7 @@ export default function Workspace() {
             cards={sortedCards}
             highlightedId={highlightedId}
             cardRefs={cardRefs}
+            sideboardQtyMap={otherPoolQtyMap}
             {...listActionProps}
           />
         )}
@@ -322,18 +441,33 @@ export default function Workspace() {
               card={selectedCard}
               onClose={() => setSelectedCard(null)}
               onSwap={(oldId, newCard) => {
-                updateActiveDeck((deck) => ({
-                  ...deck,
-                  cards: deck.cards.map((c) =>
-                    c.id === oldId
-                      ? ({
-                          ...newCard,
-                          quantity: c.quantity,
-                          ownedQty: c.ownedQty,
-                        } as DeckCard)
-                      : c,
-                  ),
-                }));
+                if (isSideboard) {
+                  updateActiveDeck((deck) => ({
+                    ...deck,
+                    sideboard: deck.sideboard?.map((c) =>
+                      c.id === oldId
+                        ? ({
+                            ...newCard,
+                            quantity: c.quantity,
+                            ownedQty: c.ownedQty,
+                          } as DeckCard)
+                        : c,
+                    ),
+                  }));
+                } else {
+                  updateActiveDeck((deck) => ({
+                    ...deck,
+                    cards: deck.cards.map((c) =>
+                      c.id === oldId
+                        ? ({
+                            ...newCard,
+                            quantity: c.quantity,
+                            ownedQty: c.ownedQty,
+                          } as DeckCard)
+                        : c,
+                    ),
+                  }));
+                }
                 setSelectedCard({
                   ...newCard,
                   quantity: (selectedCard as any).quantity,
@@ -354,6 +488,7 @@ export default function Workspace() {
           );
         })()}
 
+      {/* Goldfish Simulator always uses main deck only */}
       {isSampleHandOpen && (
         <SampleHandModal
           deck={activeDeck.cards}

@@ -15,6 +15,8 @@ interface ListCardTableProps {
   onMouseMove: (e: React.MouseEvent) => void;
   highlightedId?: string | null;
   cardRefs?: React.MutableRefObject<Map<string, HTMLElement>>;
+  // Combined 4-copy check: qty of same card (by name) in the other pool
+  sideboardQtyMap?: Map<string, number>;
 }
 
 export default function ListCardTable({
@@ -30,6 +32,7 @@ export default function ListCardTable({
   onMouseMove,
   highlightedId,
   cardRefs,
+  sideboardQtyMap,
 }: ListCardTableProps) {
   // Remembers last non-zero ownedQty per card so checkbox can restore it on re-check
   const lastOwnedQtyRef = useRef<Map<string, number>>(new Map());
@@ -77,7 +80,7 @@ export default function ListCardTable({
 
   return (
     <div
-      className="bg-neutral-900 border border-neutral-800 rounded-lg overflow-hidden shadow-sm"
+      className="bg-neutral-900 border border-neutral-800 rounded-lg shadow-sm"
       onMouseMove={onMouseMove}
     >
       <table className="w-full table-fixed text-left text-xs">
@@ -109,8 +112,9 @@ export default function ListCardTable({
               ? "text-green-400"
               : "text-neutral-100";
 
+            const extraQty = sideboardQtyMap?.get(card.name.toLowerCase()) ?? 0;
             const overLimit =
-              card.quantity >= 5 &&
+              (card.quantity + extraQty) >= 5 &&
               !card.type_line?.toLowerCase().includes("basic land") &&
               !card.oracle_text?.includes("A deck can have any number");
 
@@ -171,8 +175,8 @@ export default function ListCardTable({
                         >
                           {card.quantity}
                         </span>
-                        <span className="absolute bottom-full mb-1.5 left-1/2 -translate-x-1/2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
-                          Exceeds the 4-copy limit for standard play
+                        <span className="absolute top-full mt-1.5 left-1/2 -translate-x-1/2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-normal max-w-xs z-50">
+                          Exceeds 4-copy limit
                         </span>
                       </div>
                     ) : (

@@ -26,6 +26,9 @@ interface Props {
   createNewDeck: () => void;
   onDeleteDeck: () => void;
   onUpdateDeckName: (name: string) => void;
+  onEnableSideboard: (deckId: string) => void;
+  onSwitchToSideboard: () => void;
+  onDeleteSideboard: () => void;
   // Stats
   totalCards: number;
   totalValue: number;
@@ -50,6 +53,11 @@ interface Props {
   setSortDir: (dir: SortDir) => void;
   isGrouped: boolean;
   setIsGrouped: (g: boolean) => void;
+  // Deck view mode (main / sideboard)
+  deckViewMode: "main" | "sideboard";
+  setDeckViewMode: (v: "main" | "sideboard") => void;
+  activeDeckHasSideboard: boolean;
+  sideboardCardCount: number;
   // Modals
   onOpenSampleHand: () => void;
 }
@@ -61,6 +69,9 @@ export default function WorkspaceToolbar({
   createNewDeck,
   onDeleteDeck,
   onUpdateDeckName,
+  onEnableSideboard,
+  onSwitchToSideboard,
+  onDeleteSideboard,
   totalCards,
   totalValue,
   remainingCost,
@@ -78,6 +89,10 @@ export default function WorkspaceToolbar({
   setSortDir,
   isGrouped,
   setIsGrouped,
+  deckViewMode,
+  setDeckViewMode,
+  activeDeckHasSideboard,
+  sideboardCardCount,
   onOpenSampleHand,
 }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -91,7 +106,10 @@ export default function WorkspaceToolbar({
           activeDeck={activeDeck}
           setActiveDeckId={setActiveDeckId}
           createNewDeck={createNewDeck}
-          onDelete={onDeleteDeck}
+          onDeleteDeck={onDeleteDeck}
+          onEnableSideboard={onEnableSideboard}
+          onSwitchToSideboard={onSwitchToSideboard}
+          onDeleteSideboard={onDeleteSideboard}
         />
         <input
           value={activeDeck.name}
@@ -104,9 +122,15 @@ export default function WorkspaceToolbar({
 
       {/* Row 2: Stats */}
       <div className="flex items-center gap-4 text-xs text-neutral-400">
-        <p className={totalCards >= 60 ? "text-yellow-400 font-bold" : ""}>
-          {totalCards} Cards
-        </p>
+        {deckViewMode === "sideboard" ? (
+          <p className={sideboardCardCount > 15 ? "text-yellow-400 font-bold" : ""}>
+            {sideboardCardCount} / 15
+          </p>
+        ) : (
+          <p className={totalCards >= 60 ? "text-yellow-400 font-bold" : ""}>
+            {totalCards} Cards
+          </p>
+        )}
         <p>
           Value:{" "}
           <span className="text-neutral-200 font-medium">
@@ -132,7 +156,7 @@ export default function WorkspaceToolbar({
               >
                 <Download className="w-3.5 h-3.5" />
               </button>
-              <span className="absolute top-full mt-2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+              <span className="absolute top-full mt-2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-normal max-w-xs z-50">
                 Export List
               </span>
             </div>
@@ -149,7 +173,7 @@ export default function WorkspaceToolbar({
                   <Upload className="w-3.5 h-3.5" />
                 )}
               </button>
-              <span className="absolute top-full mt-2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+              <span className="absolute top-full mt-2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-normal max-w-xs z-50">
                 Import List
               </span>
             </div>
@@ -169,7 +193,7 @@ export default function WorkspaceToolbar({
             >
               <ShoppingCart className="w-3.5 h-3.5" /> TCGPlayer
             </button>
-            <span className="absolute top-full mt-2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+            <span className="absolute top-full mt-2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-normal max-w-xs z-50">
               Shop TCGPlayer
             </span>
           </div>
@@ -181,13 +205,13 @@ export default function WorkspaceToolbar({
             >
               <ShoppingCart className="w-3.5 h-3.5" /> Card Kingdom
             </button>
-            <span className="absolute top-full mt-2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+            <span className="absolute top-full mt-2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-normal max-w-xs z-50">
               Shop Card Kingdom
             </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 h-8">
+        <div className="flex items-center gap-2 h-8">
           <div className="group relative h-full flex items-center justify-center">
             <button
               onClick={onOpenSampleHand}
@@ -196,9 +220,45 @@ export default function WorkspaceToolbar({
               <Dices className="w-4 h-4" />{" "}
               <span className="whitespace-nowrap">Test Deck</span>
             </button>
-            <span className="absolute top-full mt-2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+            <span className="absolute top-full mt-2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-normal max-w-xs z-50">
               Simulate opening hand
             </span>
+          </div>
+
+          {/* Main / Side pill toggle */}
+          <div className="flex items-center h-full bg-neutral-900 p-0.5 rounded-lg border border-neutral-800 shadow-sm">
+            <div className="group relative h-full flex items-center justify-center">
+              <button
+                onClick={() => setDeckViewMode("main")}
+                className={`h-full px-2.5 text-xs rounded-md transition-all ${
+                  deckViewMode === "main"
+                    ? "bg-neutral-800 text-white border border-neutral-700/50"
+                    : "text-neutral-500 hover:text-neutral-300 border border-transparent"
+                }`}
+              >
+                Main
+              </button>
+              <span className="absolute top-full mt-2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-normal max-w-xs z-50">
+                Switch to main deck
+              </span>
+            </div>
+            <div className="group relative h-full flex items-center justify-center">
+              <button
+                onClick={() => activeDeckHasSideboard && setDeckViewMode("sideboard")}
+                className={`h-full px-2.5 text-xs rounded-md transition-all ${
+                  deckViewMode === "sideboard"
+                    ? "bg-neutral-800 text-white border border-neutral-700/50"
+                    : activeDeckHasSideboard
+                    ? "text-neutral-500 hover:text-neutral-300 border border-transparent"
+                    : "text-neutral-700 cursor-not-allowed border border-transparent"
+                }`}
+              >
+                Side
+              </button>
+              <span className="absolute top-full mt-2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-normal max-w-xs z-50">
+                Switch to sideboard
+              </span>
+            </div>
           </div>
 
           <div className="flex items-center h-full bg-neutral-900 p-0.5 rounded-lg border border-neutral-800 space-x-0.5 shadow-sm">
@@ -215,17 +275,23 @@ export default function WorkspaceToolbar({
                 <option value="color" className="bg-neutral-900">Color</option>
                 <option value="mv" className="bg-neutral-900">Mana Value</option>
               </select>
-              <button
-                onClick={() => setSortDir(sortDir === "asc" ? "desc" : "asc")}
-                disabled={sortBy === "original"}
-                className={`flex items-center justify-center w-5 h-5 rounded transition-colors ${sortBy === "original" ? "text-neutral-700 cursor-not-allowed" : "text-neutral-400 hover:text-white"}`}
-              >
-                {sortDir === "asc" ? (
-                  <ArrowUp className="w-3 h-3" />
-                ) : (
-                  <ArrowDown className="w-3 h-3" />
-                )}
-              </button>
+              {/* Fix 3: Sort direction tooltip */}
+              <div className="group relative flex items-center justify-center">
+                <button
+                  onClick={() => setSortDir(sortDir === "asc" ? "desc" : "asc")}
+                  disabled={sortBy === "original"}
+                  className={`flex items-center justify-center w-5 h-5 rounded transition-colors ${sortBy === "original" ? "text-neutral-700 cursor-not-allowed" : "text-neutral-400 hover:text-white"}`}
+                >
+                  {sortDir === "asc" ? (
+                    <ArrowUp className="w-3 h-3" />
+                  ) : (
+                    <ArrowDown className="w-3 h-3" />
+                  )}
+                </button>
+                <span className="absolute bottom-full mb-1.5 left-1/2 -translate-x-1/2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-normal max-w-xs z-50">
+                  {sortDir === "asc" ? "Sort ascending" : "Sort descending"}
+                </span>
+              </div>
             </div>
 
             <div className="group relative h-full flex items-center justify-center">
@@ -235,7 +301,7 @@ export default function WorkspaceToolbar({
               >
                 <Layout className="w-3.5 h-3.5" />
               </button>
-              <span className="absolute top-full mt-2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+              <span className="absolute top-full mt-2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-normal max-w-xs z-50">
                 Toggle Type Groups
               </span>
             </div>
@@ -247,7 +313,7 @@ export default function WorkspaceToolbar({
               >
                 <LayoutGrid className="w-3.5 h-3.5" />
               </button>
-              <span className="absolute top-full mt-2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+              <span className="absolute top-full mt-2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-normal max-w-xs z-50">
                 Grid View
               </span>
             </div>
@@ -259,7 +325,7 @@ export default function WorkspaceToolbar({
               >
                 <List className="w-3.5 h-3.5" />
               </button>
-              <span className="absolute top-full mt-2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+              <span className="absolute top-full mt-2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-normal max-w-xs z-50">
                 List View
               </span>
             </div>

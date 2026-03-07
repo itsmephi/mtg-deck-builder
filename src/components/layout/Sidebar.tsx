@@ -75,6 +75,7 @@ export default function Sidebar() {
     setSortBy,
     sortDir,
     setSortDir,
+    deckViewMode,
   } = useDeckManager();
   const [isFooterOpen, setIsFooterOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -134,21 +135,42 @@ export default function Sidebar() {
       }
     }
 
-    updateActiveDeck((deck) => {
-      const existing = deck.cards.find((c) => c.id === cardToAdd.id);
-      if (existing) {
+    if (deckViewMode === "sideboard") {
+      // Add to sideboard (only if sideboard is enabled)
+      updateActiveDeck((deck) => {
+        if (deck.sideboard === undefined) return deck;
+        const existing = deck.sideboard.find((c) => c.id === cardToAdd.id);
+        if (existing) {
+          return {
+            ...deck,
+            sideboard: deck.sideboard.map((c) =>
+              c.id === cardToAdd.id ? { ...c, quantity: c.quantity + 1 } : c,
+            ),
+          };
+        }
         return {
           ...deck,
-          cards: deck.cards.map((c) =>
-            c.id === cardToAdd.id ? { ...c, quantity: c.quantity + 1 } : c,
-          ),
+          sideboard: [...deck.sideboard, { ...cardToAdd, quantity: 1, ownedQty: 0 }],
         };
-      }
-      return {
-        ...deck,
-        cards: [...deck.cards, { ...cardToAdd, quantity: 1, ownedQty: 0 }],
-      };
-    });
+      });
+    } else {
+      // Add to main deck
+      updateActiveDeck((deck) => {
+        const existing = deck.cards.find((c) => c.id === cardToAdd.id);
+        if (existing) {
+          return {
+            ...deck,
+            cards: deck.cards.map((c) =>
+              c.id === cardToAdd.id ? { ...c, quantity: c.quantity + 1 } : c,
+            ),
+          };
+        }
+        return {
+          ...deck,
+          cards: [...deck.cards, { ...cardToAdd, quantity: 1, ownedQty: 0 }],
+        };
+      });
+    }
     setLastAddedId(cardToAdd.id);
   };
 

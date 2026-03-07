@@ -9,15 +9,17 @@ interface VisualCardProps {
   onUpdateOwnedQty: (id: string, qty: number) => void;
   onRemove: (id: string) => void;
   onSelect: (card: ScryfallCard) => void;
+  // Qty of same card in the other pool (main/sideboard) for combined 4-copy check
+  extraQty?: number;
 }
 
-export default function VisualCard({ card, onUpdateQuantity, onSetQuantity, onUpdateOwnedQty, onRemove, onSelect }: VisualCardProps) {
+export default function VisualCard({ card, onUpdateQuantity, onSetQuantity, onUpdateOwnedQty, onRemove, onSelect, extraQty = 0 }: VisualCardProps) {
   const isDoubleFaced = !!card.card_faces && card.card_faces.length > 1;
   const isRoom = card.type_line?.includes('Room');
   const hasBackArt = isDoubleFaced && !!card.card_faces![1].image_uris && !isRoom;
 
   const overCopyLimit =
-    card.quantity >= 5 &&
+    (card.quantity + extraQty) >= 5 &&
     !card.type_line?.toLowerCase().includes("basic land") &&
     !card.oracle_text?.includes("A deck can have any number");
 
@@ -85,21 +87,15 @@ export default function VisualCard({ card, onUpdateQuantity, onSetQuantity, onUp
               onClick={(e: React.MouseEvent) => { e.stopPropagation(); onUpdateOwnedQty(card.id, isChecked ? 0 : lastOwnedQtyRef.current); }}
               className={`w-3 h-3 cursor-pointer transition-colors ${isChecked ? 'text-green-500' : 'text-neutral-600 hover:text-green-400'}`}
             />
-            <span className="absolute top-full mt-1.5 left-0 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+            <span className="absolute top-full mt-1.5 left-0 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-normal max-w-xs z-50">
               {isChecked ? 'Unmark Owned' : 'Mark Owned'}
             </span>
           </div>
 
-          {/* Flipped Tooltip: Drops DOWN to avoid top frame clipping */}
-          <div className="group relative flex items-center justify-center">
-            <X
-              onClick={(e: React.MouseEvent) => { e.stopPropagation(); onRemove(card.id); }}
-              className="w-3 h-3 cursor-pointer text-neutral-600 hover:text-red-500 transition-colors"
-            />
-            <span className="absolute top-full mt-1.5 right-0 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
-              Remove Card
-            </span>
-          </div>
+          <X
+            onClick={(e: React.MouseEvent) => { e.stopPropagation(); onRemove(card.id); }}
+            className="w-3 h-3 cursor-pointer text-neutral-600 hover:text-red-500 transition-colors"
+          />
 
         </div>
       </div>
@@ -136,14 +132,11 @@ export default function VisualCard({ card, onUpdateQuantity, onSetQuantity, onUp
 
       {/* Bottom bar: − qty + grouped and centered */}
       <div className="flex justify-center items-center mt-0.5 bg-neutral-950 p-0.5 rounded-lg border border-neutral-800 gap-1">
-        <div className="group relative flex items-center justify-center">
+        <div className="flex items-center justify-center">
           <Minus
             onClick={() => onUpdateQuantity(card.id, -1)}
             className="w-4 h-4 p-0.5 cursor-pointer text-neutral-500 hover:text-white transition-colors"
           />
-          <span className="absolute top-full mt-1.5 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
-            Decrease
-          </span>
         </div>
 
         <div className="group relative flex items-center justify-center">
@@ -182,20 +175,17 @@ export default function VisualCard({ card, onUpdateQuantity, onSetQuantity, onUp
             </span>
           )}
           {overCopyLimit && !isEditing && (
-            <span className="absolute bottom-full mb-1.5 left-1/2 -translate-x-1/2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
-              Exceeds the 4-copy limit for standard play
+            <span className="absolute bottom-full mb-1.5 left-1/2 -translate-x-1/2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-normal max-w-xs z-50">
+              Exceeds 4-copy limit
             </span>
           )}
         </div>
 
-        <div className="group relative flex items-center justify-center">
+        <div className="flex items-center justify-center">
           <Plus
             onClick={() => onUpdateQuantity(card.id, 1)}
             className="w-4 h-4 p-0.5 cursor-pointer text-neutral-500 hover:text-white transition-colors"
           />
-          <span className="absolute top-full mt-1.5 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
-            Increase
-          </span>
         </div>
       </div>
     </div>

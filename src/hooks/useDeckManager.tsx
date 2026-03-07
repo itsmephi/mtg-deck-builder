@@ -7,10 +7,12 @@ import {
   useContext,
   ReactNode,
 } from "react";
-import { Deck } from "@/types";
+import { Deck, DeckCard } from "@/types";
 
 const STORAGE_KEY = "mtg_builder_decks";
 const SORT_PREF_KEY = "mtg-sort-preference";
+const ACTIVE_DECK_KEY = "mtg-active-deck";
+const DECK_VIEW_MODE_KEY = "mtg-deck-view-mode";
 
 export type SortBy = "original" | "name" | "color" | "mv";
 export type SortDir = "asc" | "desc";
@@ -23,6 +25,11 @@ interface DeckContextType {
   updateOwnedQty: (cardId: string, qty: number) => void;
   createNewDeck: () => void;
   deleteDeck: (id: string) => void;
+  enableSideboard: (deckId: string) => void;
+  deleteSideboard: (deckId: string) => void;
+  activeSideboardCards: DeckCard[];
+  deckViewMode: "main" | "sideboard";
+  setDeckViewMode: (v: "main" | "sideboard") => void;
   isMounted: boolean;
   showThumbnail: boolean;
   setShowThumbnail: (val: boolean) => void;
@@ -38,16 +45,20 @@ const DeckContext = createContext<DeckContextType | null>(null);
 
 export function DeckProvider({ children }: { children: ReactNode }) {
   const [decks, setDecks] = useState<Deck[]>([]);
-  const [activeDeckId, setActiveDeckId] = useState<string | null>(null);
+  const [activeDeckId, setActiveDeckIdState] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState(false);
   const [showThumbnail, setShowThumbnail] = useState(true);
   const [lastAddedId, setLastAddedId] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<SortBy>("original");
   const [sortDir, setSortDir] = useState<SortDir>("asc");
+  const [deckViewMode, setDeckViewMode] = useState<"main" | "sideboard">("main");
 
   useEffect(() => {
     setIsMounted(true);
     const stored = localStorage.getItem(STORAGE_KEY);
+    const storedActiveId = localStorage.getItem(ACTIVE_DECK_KEY);
+
+    const storedDeckViewMode = localStorage.getItem(DECK_VIEW_MODE_KEY);
 
     if (stored) {
       try {
@@ -61,7 +72,18 @@ export function DeckProvider({ children }: { children: ReactNode }) {
             }),
           }));
           setDecks(migratedDecks);
-          setActiveDeckId(migratedDecks[0].id);
+          const restoredId =
+            storedActiveId && migratedDecks.find((d: Deck) => d.id === storedActiveId)
+              ? storedActiveId
+              : migratedDecks[0].id;
+          setActiveDeckIdState(restoredId);
+          // Restore deck view mode — fall back to 'main' if active deck has no sideboard
+          if (storedDeckViewMode === "sideboard") {
+            const activeD = migratedDecks.find((d: Deck) => d.id === restoredId);
+            if (activeD?.sideboard !== undefined) {
+              setDeckViewMode("sideboard");
+            }
+          }
         } else {
           const defaultDeck = {
             id: crypto.randomUUID(),
@@ -69,7 +91,7 @@ export function DeckProvider({ children }: { children: ReactNode }) {
             cards: [],
           };
           setDecks([defaultDeck]);
-          setActiveDeckId(defaultDeck.id);
+          setActiveDeckIdState(defaultDeck.id);
         }
       } catch (e) {
         console.error("Failed to parse decks from local storage");
@@ -81,7 +103,7 @@ export function DeckProvider({ children }: { children: ReactNode }) {
         cards: [],
       };
       setDecks([defaultDeck]);
-      setActiveDeckId(defaultDeck.id);
+      setActiveDeckIdState(defaultDeck.id);
     }
 
     // Load sort preference
@@ -104,12 +126,29 @@ export function DeckProvider({ children }: { children: ReactNode }) {
   }, [decks, isMounted]);
 
   useEffect(() => {
+    if (isMounted && activeDeckId) {
+      localStorage.setItem(ACTIVE_DECK_KEY, activeDeckId);
+    }
+  }, [activeDeckId, isMounted]);
+
+  useEffect(() => {
     if (isMounted) {
       localStorage.setItem(SORT_PREF_KEY, JSON.stringify({ by: sortBy, dir: sortDir }));
     }
   }, [sortBy, sortDir, isMounted]);
 
+  useEffect(() => {
+    if (isMounted) {
+      localStorage.setItem(DECK_VIEW_MODE_KEY, deckViewMode);
+    }
+  }, [deckViewMode, isMounted]);
+
+  const setActiveDeckId = (id: string) => {
+    setActiveDeckIdState(id);
+  };
+
   const activeDeck = decks.find((d) => d.id === activeDeckId);
+  const activeSideboardCards = activeDeck?.sideboard ?? [];
 
   const updateActiveDeck = (updater: (deck: Deck) => Deck) => {
     setDecks((currentDecks) =>
@@ -139,31 +178,51 @@ export function DeckProvider({ children }: { children: ReactNode }) {
   const createNewDeck = () => {
     const newDeck = { id: crypto.randomUUID(), name: "New Deck", cards: [] };
     setDecks((prev) => [...prev, newDeck]);
-    setActiveDeckId(newDeck.id);
+    setActiveDeckIdState(newDeck.id);
   };
 
   const deleteDeck = (id: string) => {
     setDecks((prev) => {
       const filtered = prev.filter((d) => d.id !== id);
 
-      // If we just deleted the last deck, create a fresh one immediately
       if (filtered.length === 0) {
         const freshDeck = {
           id: crypto.randomUUID(),
           name: "New Deck",
           cards: [],
         };
-        setActiveDeckId(freshDeck.id);
+        setActiveDeckIdState(freshDeck.id);
         return [freshDeck];
       }
 
-      // If we deleted the active deck, move the focus to the next available one
       if (activeDeckId === id) {
-        setActiveDeckId(filtered[0].id);
+        setActiveDeckIdState(filtered[0].id);
       }
 
       return filtered;
     });
+  };
+
+  const enableSideboard = (deckId: string) => {
+    setDecks((currentDecks) =>
+      currentDecks.map((deck) =>
+        deck.id === deckId && deck.sideboard === undefined
+          ? { ...deck, sideboard: [] }
+          : deck,
+      ),
+    );
+  };
+
+  const deleteSideboard = (deckId: string) => {
+    setDecks((currentDecks) =>
+      currentDecks.map((deck) =>
+        deck.id === deckId ? { ...deck, sideboard: undefined } : deck,
+      ),
+    );
+    // If we're viewing the sideboard for this deck, switch back to main
+    if (deckId === activeDeckId && deckViewMode === "sideboard") {
+      setDeckViewMode("main");
+    }
   };
 
   return (
@@ -176,6 +235,11 @@ export function DeckProvider({ children }: { children: ReactNode }) {
         updateOwnedQty,
         createNewDeck,
         deleteDeck,
+        enableSideboard,
+        deleteSideboard,
+        activeSideboardCards,
+        deckViewMode,
+        setDeckViewMode,
         isMounted,
         showThumbnail,
         setShowThumbnail,
