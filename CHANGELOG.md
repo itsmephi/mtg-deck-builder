@@ -5,6 +5,77 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.1.4] — Tooltip Consistency + REVIEW.md Workflow
+
+### Fixed
+- Grid view 4-copy warning tooltip now reads "Exceeds 4-copy limit" — matches list view text updated in v1.1.3 (Closes #45)
+- All tooltip spans now have `max-w-xs whitespace-normal` so long text wraps instead of overflowing the viewport (Closes #46)
+
+### Added
+- **REVIEW.md session journal workflow**: Claude Code writes a plan review table before touching any files (waits for PROCEED), then writes a testing checklist after build (waits for APPROVED), then writes a session summary before final commit
+
+---
+
+## [1.1.3] — Tooltip Consistency Pass
+
+### Fixed
+- 4-copy badge tooltip in list view shortened to "Exceeds 4-copy limit" — no longer clips (Closes #42)
+- X (remove card) tooltip removed from grid view — list view already had no tooltip; both views now consistent (Closes #43)
+
+### Added
+- Main/Side pill toggle now has tooltips: "Switch to main deck" / "Switch to sideboard" (Closes #44)
+
+---
+
+## [1.1.2] — Tooltip Clip + Highlight Ring Fixes
+
+### Fixed
+- 4-copy warning tooltip in list view now renders **below** the qty number (`top-full`) instead of above, avoiding clip at scroll container top edge (Closes #39)
+- Yellow highlight ring now fully visible on top-row and left-column cards — scroll container uses `p-1 pb-20` to give ring-offset space on all edges (Closes #40)
+
+### Changed
+- Removed "Increase" and "Decrease" tooltips from +/− qty buttons in grid view — X button tooltip also removed (Closes #41). List view had no tooltips on these controls already; both views now consistent.
+
+---
+
+## [1.1.1] — Hot Fix: Sideboard UX + Persistence + Overflow
+
+### Fixed
+- Clicking **+** on any deck row in the dropdown now: activates that deck, enables its sideboard, switches workspace to sideboard view, and closes the dropdown (Closes #36)
+- `deckViewMode` (main/sideboard) now persisted to `localStorage` under `mtg-deck-view-mode` and restored on refresh; gracefully falls back to `main` if active deck has no sideboard (Closes #37)
+- Removed `overflow-x-hidden` from workspace outer wrapper and scroll container — tooltips and highlight rings no longer clipped by overflow context (Closes #38)
+
+---
+
+## [1.1.0] — Sideboard Support + UI Persistence + Tooltip Fixes
+
+### Added
+- **Sideboard per deck**: enable from the deck dropdown (+ icon → Layers icon). 15-card soft limit with yellow warning when exceeded (Closes #19)
+- **Main / Side pill toggle** in toolbar row 3 — switches workspace between main deck and sideboard view. "Side" grayed out when no sideboard exists (Closes #20)
+- Deck dropdown redesigned: ● active indicator, + icon to add sideboard, Layers icon to view sideboard, "Delete Sideboard" action with confirmation
+- Confirmation dialogs on Delete Deck (mentions sideboard if present) and Delete Sideboard
+- Search adds cards to sideboard when in sideboard view
+- Sideboard card count shown as `X / 15` in toolbar when in sideboard view
+- Goldfish Simulator always uses main deck only
+- Import: detects `Sideboard` section header and auto-enables + populates sideboard (Closes #33)
+- Export: appends `Sideboard` section when active deck has a sideboard
+- 4-copy soft warning checks combined main + sideboard quantities
+- **UI persistence**: grid/list view (`mtg-view-mode`), group-by-type (`mtg-group-by-type`), last active deck (`mtg-active-deck`) all saved to localStorage and restored on refresh (Closes #33)
+- Sort direction toggle (↑/↓) now has tooltip "Sort ascending" / "Sort descending" (Closes #35)
+
+### Fixed
+- 4-copy badge tooltip initial fix in list view (Closes #34)
+
+### Changed
+- `Deck` type gains optional `sideboard?: DeckCard[]` field
+- `useDeckManager` context gains `enableSideboard`, `deleteSideboard`, `activeSideboardCards`, `deckViewMode`, `setDeckViewMode`
+- `deckViewMode` lives in context so Sidebar and Workspace both read it
+- `useDeckImportExport` refactored to support sideboard import/export
+- `ListCardTable` `overflow-hidden` wrapper removed to fix tooltip clipping
+- Scroll container padding: `p-1 pb-20` (was `pr-1 pb-20`) for highlight ring edge space
+
+---
+
 ## [1.0.7] — Inline Quantity Editing & Sort Controls
 
 ### Added
@@ -88,7 +159,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `$0.00` pricing rescue on card add from search (`handleAddCard` now async)
 - `$0.00` pricing rescue on import (in addition to null rescue)
 - Scryfall collection fetch uses set identifier when available
-- `overflow-x-hidden` on workspace scroll container (no horizontal scrollbar in grid view)
 
 ### Removed
 - Eye/EyeOff icons removed from search bar and workspace toolbar

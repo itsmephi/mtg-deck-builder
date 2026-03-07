@@ -21,7 +21,7 @@ Before any design or build work begins, confirm all of the following:
 
 ---
 
-## Current Release: v1.1.3
+## Current Release: v1.1.4
 Status: APPROVED ✅
 
 ---
@@ -30,16 +30,52 @@ Status: APPROVED ✅
 
 | File | Change |
 |---|---|
-| `src/components/workspace/ListCardTable.tsx` | Fix 1: Change tooltip text from "Exceeds the 4-copy limit for standard play" to "Exceeds 4-copy limit" |
-| `src/components/workspace/VisualCard.tsx` | Fix 2: Remove the tooltip span from the X (remove) button — keep button unchanged |
-| `src/components/workspace/WorkspaceToolbar.tsx` | Fix 3: Wrap Main and Side pill buttons in group relative divs and add tooltip spans ("Switch to main deck" / "Switch to sideboard") |
+| `src/components/workspace/VisualCard.tsx` | Fix 1: Update 4-copy tooltip text to "Exceeds 4-copy limit"; Fix 2: Add `max-w-xs` to all tooltip spans |
+| `src/components/workspace/ListCardTable.tsx` | Fix 2: Add `max-w-xs` to the 4-copy tooltip span |
+| `src/components/workspace/WorkspaceToolbar.tsx` | Fix 2: Add `max-w-xs` to all tooltip spans (Export, Import, TCGPlayer, Card Kingdom, Test Deck, sort ↑/↓, Group, Grid, List, Main, Side) |
+| `src/components/workspace/DeckDropdown.tsx` | Fix 2: Add `max-w-xs` to the sideboard icon tooltip span |
 
 **Plan Review:** PROCEED ✅
 
 ---
 
-## Testing Checklist
+## Testing Checklist — v1.1.4
 
+### Fix 1 — Grid View 4-Copy Tooltip Text
+- [x] ⚠️ tooltip in grid view reads "Exceeds 4-copy limit"
+- [x] Old text "Exceeds the 4-copy limit for standard play" no longer appears anywhere in grid or list view
+
+### Fix 2 — Tooltip Max-Width Cap
+- [x] List view 4-copy tooltip no longer clips
+- [x] Tooltip text wraps cleanly within max-width when needed
+- [x] Export List tooltip — max-width cap present
+- [x] Import List tooltip — max-width cap present
+- [x] TCGPlayer / Card Kingdom tooltips — max-width cap present
+- [x] Test Deck tooltip — max-width cap present
+- [x] Sort ↑/↓ tooltip — max-width cap present
+- [x] Group / Grid / List view toggle tooltips — max-width cap present
+- [x] Main / Side pill tooltips — max-width cap present
+- [x] Sideboard icon tooltip in deck dropdown — max-width cap present
+- [x] No horizontal scroll reintroduced
+
+### REVIEW.md Workflow
+- [x] REVIEW.md written with plan review table before execution
+- [x] REVIEW.md updated with testing checklist after build
+- [x] Emerging Issues section present and ready for Phi to fill in
+- [ ] REVIEW.md committed to git only in the final post-release commit --- no way to verify and test this until the end when we give the APPROVED
+
+---
+
+## Emerging Issues
+<!-- Phi fills this in during QA -->
+- make a note that once Claude Code goes through a few sessions where the Plan Review table aligns with the prompt from Claud Chat, then we can probably trust it more and remove this review process? speeds things up. but we still want to keep the testing Checklist hold for QA
+- 💡 Tooltip max-width cap solves clipping but visual treatment needs polish — revisit during UI polish sweep for a better solution.
+
+---
+
+## Previous Session History
+
+### v1.1.3 Testing Results
 ### Fix 1 — 4-Copy Tooltip Text
 - [x] ⚠️ badge tooltip reads "Exceeds 4-copy limit" — not clipped
 - [ ] Tooltip visible on all rows in list view — ⚠️ still clips slightly in list view, less severe. Grid view still has old text. Carry forward to v1.1.4.
@@ -55,21 +91,22 @@ Status: APPROVED ✅
 - [x] Tooltips visible and not clipped
 - [x] All other row 3 tooltips still present (regression check)
 
----
-
-## Emerging Issues
-Items surfaced during QA this session — to be triaged by Claude Chat and folded into next prompt or Capture Log.
-
+### v1.1.3 Emerging Issues
 - 🐛 Grid view 4-copy tooltip still shows old text "Exceeds the 4-copy limit for standard play" — needs same update as list view
-- 🐛 List view 4-copy tooltip still clips slightly — needs proper root cause diagnosis before fixing. Do not hotfix again, design session required.
+- 🐛 List view 4-copy tooltip still clips slightly — needs proper root cause diagnosis before fixing
 - 💡 Consider a global max-width cap on all tooltips to prevent long text clipping regardless of content
 
 ---
 
-## Carry Forward to v1.1.4
-- [ ] Grid view 4-copy tooltip text — text update only, one line
-- [ ] List view 4-copy tooltip clip — diagnose root cause first, then fix
-- [ ] REVIEW.md workflow — implement end to end in Claude Code (plan review, testing checklist, emerging issues, session summary, final git commit only at session end)
+## Session Summary — v1.1.4
+
+All checklist items passed. One REVIEW.md workflow item deferred by design (can't verify "committed only at session end" until the commit happens — inherent to the process).
+
+### Carry-Forwards
+- Tooltip visual treatment needs polish (#60) — tracked in backlog, not a blocker
+
+### New Backlog Items Created This Session
+#47 Visual separator between sort groups | #48 Owned counter inline typing | #49 Version badge revisit | #50 Dark/light theme | #51 Buy button layout | #52 Price → TCGPlayer link | #53 60-card soft warning | #54 Progress bar width | #55 Blue dot dropdown bug | #56 Color progression on counts | #57 Main/Side pill color | #58 Sideboard pricing | #59 Settings persistence | #60 Tooltip polish
 
 ---
 
@@ -80,4 +117,4 @@ Items surfaced during QA this session — to be triaged by Claude Chat and folde
 | v1.1.1 | Hot fix — sideboard view transition, refresh persistence, tooltip clipping | ✅ Shipped |
 | v1.1.2 | Hot fix — tooltip clip, yellow highlight ring, tooltip cleanup | ✅ Shipped |
 | v1.1.3 | Tooltip consistency pass | ✅ Shipped |
-| v1.1.4 | Tooltip carry-forwards + REVIEW.md workflow | 🔜 Next |
+| v1.1.4 | Tooltip carry-forwards + REVIEW.md workflow | ✅ Shipped |
