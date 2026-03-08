@@ -3,7 +3,7 @@ Authors: Phi & Thurgood Nguyen
 Stack: Next.js + TypeScript + Tailwind CSS
 Deployed: Vercel | Repo: GitHub (itsmephi/mtg-deck-builder)
 IDE: Zed on Steam Deck (Linux)
-Current Version: v1.1.4 — see CHANGELOG.md for full history
+Current Version: v1.1.5 — see CHANGELOG.md for full history
 
 ---
 
@@ -20,6 +20,15 @@ Every planning session, Claude Chat should automatically run through this checkl
 - [ ] Remind Phi to **sync CLAUDE.md via the Claude project files sync button** — not upload manually
 
 > **Note:** Claude Chat reads CLAUDE.md + REVIEW.md at the start of every chat — not just planning sessions — to determine current session state.
+
+### Backlog Triage (run at the start of every session before choosing what to design)
+1. Pull full backlog and present as a categorized table with suggested action for each item
+2. Categories: Keep · Discard · Defer to v2.0 · Needs discussion
+3. Pre-fill every item based on: type, age, complexity, active milestone relevance, v2.0 fit
+4. Phi reviews and calls out overrides only — everything else locks as suggested
+5. Needs discussion items are talked through briefly before locking
+6. Discarded items: close GitHub issue, remove from CLAUDE.md
+7. v2.0 deferrals: move to v2.0 section in CLAUDE.md
 
 ---
 
@@ -94,6 +103,16 @@ Rules:
 - Shade list view row by card color identity (#13)
 - Display TCGPlayer price in orange, Card Kingdom in blue (#14)
 
+## v2.0 (deferred)
+
+- Dark/light/system theme toggle (#50)
+- TCGPlayer and Card Kingdom buy button layout — revisit row 2 (#51)
+- List view ownership progress bar too wide — revisit after UI review (#54)
+- Tooltip visual treatment needs polish — revisit during UI polish sweep (#60)
+- Major search sidebar redesign — functionality and UI overhaul (#71)
+- Mobile version — cleaner, tighter, more intuitive for vertical small screens (#74)
+- UI/UX overhaul (#75)
+
 ---
 
 ## Backlog
@@ -102,24 +121,19 @@ New ideas captured here first, then promoted to a milestone when ready to build.
 - New app name — Phi & Thurgood to brainstorm (#15)
 - Custom card sorting by drag and drop (#16)
 - Support Standard and Commander deck modes (#17)
-- Search autocomplete / autofill (#18)
-- EDHREC improved search suggestions (#26)
-- Search shows cards already in workspace (#25)
-- Share / email deck list (#23)
+- EDHREC improved search suggestions (#26) ↑ priority
 - Visual separator/padding between sort groups (color or mana value) (#47)
-- Owned counter should allow inline typing like qty counter (#48)
+- Owned counter should allow inline typing like qty counter (#48) *(closed this release)*
 - Version badge popup — revisit behavior (#49)
-- Dark/light theme toggle or match system theme (#50)
-- TCGPlayer and Card Kingdom buy button layout — revisit row 2 (#51)
-- Clicking a card price opens that card on TCGPlayer (#52)
 - Soft warning for exceeding 60-card main deck limit (#53)
-- List view ownership progress bar too wide — revisit after UI review (#54)
-- Clicking blue dot indicator in dropdown switches active deck without closing dropdown (#55)
+- Clicking blue dot indicator in dropdown switches active deck without closing dropdown (#55) *(closed this release)*
 - Color progression on count indicators: green at cap, yellow at soft limit, red when exceeded (#56)
 - Main/Side pill toggle colored to reflect current view state (#57)
-- Sideboard pricing — show combined total with main deck by default (#58)
-- Settings state does not persist on refresh (e.g. thumbnail toggle) (#59)
-- Tooltip visual treatment needs polish — revisit during UI polish sweep (#60)
+- Sideboard pricing — show combined total with main deck by default (#58) ↑ priority
+- Settings state does not persist on refresh (e.g. thumbnail toggle) (#59) ↑ priority *(closed this release)*
+- Move cards between boards or decks (#62) ↑ priority
+- Default new deck name is "Untitled" in gray; turns white and saves when user enters a name (#70) ↑ priority
+- Grid view card icons and action buttons appear on hover/rollover — requires design session before building (#76)
 
 ---
 
@@ -233,7 +247,7 @@ src/
 - 4-copy rule exemptions: check type_line for "Basic Land" and oracle_text for "A deck can have any number"
 - Qty 0 behavior: card stays in deck, grays out, excluded from total count and to-buy cost — matches − button behavior
 - 4-copy rule is a soft warning (highlight) not a hard cap — matches existing + button behavior
-- UI state persistence keys: mtg-view-mode (visual/list), mtg-group-by-type, mtg-active-deck, mtg-deck-view-mode (main/sideboard), mtg-sort-preference
+- UI state persistence keys: mtg-view-mode (visual/list), mtg-group-by-type, mtg-active-deck, mtg-deck-view-mode (main/sideboard), mtg-sort-preference, mtg-show-thumbnail
 - Sideboard: enabled per-deck as sideboard?: DeckCard[] on the Deck type. undefined = no sideboard, [] = enabled but empty
 - deckViewMode lives in useDeckManager context so both Sidebar and Workspace can read it
 - REVIEW.md is the live session journal — written by Claude Code, read by all three parties. Never committed mid-session. Committed alongside CLAUDE.md and CHANGELOG.md at session end.

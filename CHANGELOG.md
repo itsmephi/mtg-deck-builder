@@ -5,6 +5,23 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.1.5] — Bug Fix Sprint
+
+### Fixed
+- Blue dot active deck indicator in dropdown no longer triggers dropdown close (Closes #55)
+- Card thumbnail toggle setting now persists across page refreshes via localStorage key `mtg-show-thumbnail` (Closes #59)
+- Owned counter now supports inline typing in both grid and list view — behavior mirrors qty counter; validation matches existing `updateOwnedQty` rules (Closes #48)
+
+### Housekeeping
+- Backlog triage: closed #18, #23, #25, #52, #67, #72, #73 (discarded)
+- Moved #50, #51, #54, #60, #71 to v2.0
+- Promoted #76 — Grid view hover controls
+- Priority bumps: #26, #58, #62, #70
+- Triage process defined and added to CLAUDE.md Session Start
+- BACKLOG.md consolidation prompt updated: guards against empty consolidation, enforces items-before-timestamp order
+
+---
+
 ## [1.1.4] — Tooltip Consistency + REVIEW.md Workflow
 
 ### Fixed
