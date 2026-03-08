@@ -40,4 +40,8 @@ Then drop the matching timestamp marker here in this chat using the same datetim
 - Mobile version — cleaner, tighter, more intuitive for vertical small screens (v2.0) (#74)
 - UI/UX overhaul (v2.0) (#75)
 
+- [ ] **enhancement** | Grid view card icons and action buttons appear on hover/rollover — requires design session before building
+
 --- consolidated to BACKLOG.md 2026-03-08T00:00 ---  🎴
+
+--- consolidated to BACKLOG.md 2026-03-08T12:00 ---  🎴
