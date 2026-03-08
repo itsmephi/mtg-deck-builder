@@ -26,6 +26,28 @@ Status: APPROVED ✅
 
 ---
 
+## Workflow & Docs Update — 2026-03-08
+
+### Plan Review
+
+| File | Change |
+|---|---|
+| `CLAUDE.md` | Edit 1: Add ownership table + ownership rule to "How This File Works" section |
+| `CLAUDE.md` | Edit 2: Replace single Capture Log step in Session Start checklist with three-step timestamp-check flow |
+| `CLAUDE.md` | Edit 3: Replace last paragraph of Capture Log section with new consolidation-as-standalone-action text + session start check rule |
+| `CLAUDE.md` | Edit 4: Replace BACKLOG.md section bullet list with expanded rules including new labels, consolidation timestamps, and triage convention |
+| `CLAUDE.md` | Edit 5: Replace Capture Log + BACKLOG.md bullets in Key Technical Notes; add new Claude Chat ownership bullet; add 4 new workflow bullets (cross-platform, Steam Deck, allowed tools, Claude Chat file ownership) |
+| `CLAUDE.md` | Edit 5 (Release Workflow): Add WIP commit note under step 3; update step 8 to note Claude Code handles merge+push after APPROVED |
+| `CLAUDE.md` | Edit 5 (Capture Log section): Add out-of-session signal + multi-chat context bullets |
+| `CLAUDE.md` | Edit 5 (Session Start checklist): Add session detection note |
+| `BACKLOG.md` | Edit 1: Replace top comment block with new header block including standard consolidation prompt |
+| `BACKLOG.md` | Edit 2: Replace unpromoted raw items with promoted items #61–#75; remove items already in CLAUDE.md backlog (#47–#60) |
+| `BACKLOG.md` | Edit 3: Append consolidation timestamp at bottom |
+
+**Awaiting PROCEED**
+
+---
+
 ## Plan Review
 
 | File | Change |
