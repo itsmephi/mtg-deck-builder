@@ -1,6 +1,8 @@
-export const APP_VERSION = "1.1.4";
+export const APP_VERSION = "1.1.5";
 
 export const CHANGELOG: Record<string, string> = {
+  "1.1.5":
+    "Bug fix sprint: blue dot in deck dropdown is now visual-only and no longer closes the dropdown on click. Card thumbnail toggle setting persists across page refreshes. Owned counter supports inline typing in both grid and list view.",
   "1.1.4":
     "Tooltip consistency: grid view 4-copy warning now reads 'Exceeds 4-copy limit' (matching list view). Max-width cap added to all tooltips so long text wraps instead of clipping. REVIEW.md session journal workflow introduced.",
   "1.1.3":

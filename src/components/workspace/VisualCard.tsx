@@ -37,6 +37,26 @@ export default function VisualCard({ card, onUpdateQuantity, onSetQuantity, onUp
   const [editValue, setEditValue] = useState("");
   const isEscaping = useRef(false);
 
+  // Inline owned editing
+  const [isOwnedEditing, setIsOwnedEditing] = useState(false);
+  const [ownedEditValue, setOwnedEditValue] = useState("");
+  const isOwnedEscaping = useRef(false);
+
+  const startOwnedEdit = () => {
+    setIsOwnedEditing(true);
+    setOwnedEditValue(String(card.ownedQty));
+  };
+
+  const commitOwnedEdit = () => {
+    const trimmed = ownedEditValue.trim();
+    const parsed = parseInt(trimmed, 10);
+    if (trimmed !== "" && !isNaN(parsed) && parsed >= 0) {
+      onUpdateOwnedQty(card.id, parsed);
+    }
+    // empty or non-numeric: silently revert
+    setIsOwnedEditing(false);
+  };
+
   const startEdit = () => {
     setIsEditing(true);
     setEditValue(String(card.quantity));
@@ -73,7 +93,41 @@ export default function VisualCard({ card, onUpdateQuantity, onSetQuantity, onUp
                 onClick={(e: React.MouseEvent) => { e.stopPropagation(); onUpdateOwnedQty(card.id, card.ownedQty - 1); }}
                 className="w-3 h-3 cursor-pointer text-neutral-500 hover:text-white transition-colors"
               />
-              <span className="text-[10px] text-green-400/80 font-medium w-3 text-center tabular-nums">{card.ownedQty}</span>
+              {isOwnedEditing ? (
+                <input
+                  type="text"
+                  value={ownedEditValue}
+                  onChange={(e) => setOwnedEditValue(e.target.value)}
+                  onFocus={(e) => e.target.select()}
+                  onBlur={() => {
+                    if (isOwnedEscaping.current) {
+                      isOwnedEscaping.current = false;
+                      return;
+                    }
+                    commitOwnedEdit();
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      commitOwnedEdit();
+                    }
+                    if (e.key === "Escape") {
+                      isOwnedEscaping.current = true;
+                      setIsOwnedEditing(false);
+                    }
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="w-5 text-center text-[10px] font-medium bg-neutral-800 border border-blue-500 rounded text-green-400/80 focus:outline-none"
+                  autoFocus
+                />
+              ) : (
+                <span
+                  onClick={(e: React.MouseEvent) => { e.stopPropagation(); startOwnedEdit(); }}
+                  className="text-[10px] text-green-400/80 font-medium w-3 text-center tabular-nums cursor-text hover:bg-neutral-800 rounded transition-colors"
+                >
+                  {card.ownedQty}
+                </span>
+              )}
               <Plus
                 onClick={(e: React.MouseEvent) => { e.stopPropagation(); onUpdateOwnedQty(card.id, card.ownedQty + 1); }}
                 className="w-3 h-3 cursor-pointer text-neutral-500 hover:text-white transition-colors"

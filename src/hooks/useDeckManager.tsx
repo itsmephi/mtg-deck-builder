@@ -13,6 +13,7 @@ const STORAGE_KEY = "mtg_builder_decks";
 const SORT_PREF_KEY = "mtg-sort-preference";
 const ACTIVE_DECK_KEY = "mtg-active-deck";
 const DECK_VIEW_MODE_KEY = "mtg-deck-view-mode";
+const THUMBNAIL_KEY = "mtg-show-thumbnail";
 
 export type SortBy = "original" | "name" | "color" | "mv";
 export type SortDir = "asc" | "desc";
@@ -117,6 +118,12 @@ export function DeckProvider({ children }: { children: ReactNode }) {
     } catch {
       // ignore
     }
+
+    // Load thumbnail preference
+    const storedThumbnail = localStorage.getItem(THUMBNAIL_KEY);
+    if (storedThumbnail !== null) {
+      setShowThumbnail(storedThumbnail === "true");
+    }
   }, []);
 
   useEffect(() => {
@@ -142,6 +149,12 @@ export function DeckProvider({ children }: { children: ReactNode }) {
       localStorage.setItem(DECK_VIEW_MODE_KEY, deckViewMode);
     }
   }, [deckViewMode, isMounted]);
+
+  useEffect(() => {
+    if (isMounted) {
+      localStorage.setItem(THUMBNAIL_KEY, String(showThumbnail));
+    }
+  }, [showThumbnail, isMounted]);
 
   const setActiveDeckId = (id: string) => {
     setActiveDeckIdState(id);
