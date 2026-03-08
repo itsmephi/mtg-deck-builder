@@ -9,7 +9,7 @@ Current Version: v1.1.4 — see CHANGELOG.md for full history
 
 ## Session Start — Claude Chat
 Every planning session, Claude Chat should automatically run through this checklist before any design work begins:
-- [ ] Search for the "Capture Log — MTG Deck Builder" chat in this Claude project and triage all items with Phi before starting design
+- [ ] Find the Capture Log using recent_chats tool (not conversation_search) — look for the chat titled "Capture Log" or "MTG Deck Builder / Capture Log" in the project. The Capture Log URL is https://claude.ai/chat/39f0cbd5-b1f5-4995-8b54-c0f6769fcec7 — use recent_chats to retrieve its latest summary, then triage all items with Phi before starting design
 - [ ] Confirm REVIEW.md shows APPROVED ✅ with no open carry-forwards from last session
 - [ ] Confirm version in CLAUDE.md matches latest CHANGELOG.md entry
 - [ ] Confirm no unclosed GitHub issues from last session
@@ -197,3 +197,4 @@ src/
 - deckViewMode lives in useDeckManager context so both Sidebar and Workspace can read it
 - REVIEW.md is the live session journal — written by Claude Code, read by all three parties. Never committed mid-session. Committed alongside CLAUDE.md and CHANGELOG.md at session end.
 - Plan Review step: Claude Code always outputs a plan table to REVIEW.md before touching any files, then waits for PROCEED
+- Capture Log chat URL: https://claude.ai/chat/39f0cbd5-b1f5-4995-8b54-c0f6769fcec7 — always find via recent_chats tool (not conversation_search by keyword, which is unreliable for finding it). recent_chats returns summaries that include all logged items.
