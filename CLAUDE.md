@@ -22,6 +22,18 @@ Every planning session, Claude Chat should automatically run through this checkl
 ## Capture Log
 A dedicated chat in this Claude project named "Capture Log — MTG Deck Builder" is the single place for all bugs, ideas, features, and UI tweaks captured between planning sessions. At the start of every planning session, Claude Chat and Phi review the Capture Log together and promote items into the Claude Code prompt and CLAUDE.md update instructions. Claude Code never reads the Capture Log directly — Claude Chat handles the triage and includes everything explicitly in the prompt.
 
+Before each planning session: open Capture Log chat, ask Claude Chat to consolidate new items into a Claude Code prompt, run the prompt, Claude Code bundles BACKLOG.md into the session commit, sync project files, then start the planning session.
+Drop a timestamp marker in Capture Log after each consolidation: `--- consolidated to BACKLOG.md [date] ---`
+
+---
+
+## BACKLOG.md
+Temporary capture scratch pad. Lives in the repo root. Items are promoted to the Backlog section of CLAUDE.md (with GitHub issue numbers) during planning sessions, then cleared from BACKLOG.md.
+- Claude Code appends items using format: `- [ ] **label** | description`
+- Valid labels: bug · feature · enhancement · chore · workflow
+- workflow items get folded into CLAUDE.md directly — no GitHub issue created
+- BACKLOG.md is bundled into the final session commit alongside CLAUDE.md, CHANGELOG.md, REVIEW.md
+
 ---
 
 ## How This File Works
@@ -120,7 +132,7 @@ New ideas captured here first, then promoted to a milestone when ready to build.
 
 7. Claude Code writes session summary to REVIEW.md, then commits:
    - `vX.X.X - description - Closes #N, Closes #N`
-   - `git add CLAUDE.md CHANGELOG.md REVIEW.md && git commit -m "update CLAUDE.md, CHANGELOG.md, and REVIEW.md post vX.X.X"`
+   - `git add CLAUDE.md CHANGELOG.md REVIEW.md BACKLOG.md && git commit -m "update CLAUDE.md, CHANGELOG.md, REVIEW.md, and BACKLOG.md post vX.X.X"`
 
 8. `git checkout main && git merge vX.X.X && git push`
 
@@ -150,6 +162,12 @@ Run through these on every design session:
 - [ ] Are tooltips only on non-obvious controls? Remove from universally understood icons (X, +, −).
 - [ ] Are tooltips consistent across all views (grid, list, modal) for the same control?
 - [ ] Do all tooltips have a max-width cap to prevent clipping?
+
+### Session Close Sweep
+Before generating the Claude Code prompt, Claude Chat sweeps the full chat session for:
+- Any emergent items discussed but not explicitly folded into CLAUDE.md — fold them in now or flag for Capture Log
+- Any previously captured items made obsolete by decisions made during this session — remove or update them
+No chat session ends without this sweep completing.
 
 ---
 
@@ -198,3 +216,4 @@ src/
 - REVIEW.md is the live session journal — written by Claude Code, read by all three parties. Never committed mid-session. Committed alongside CLAUDE.md and CHANGELOG.md at session end.
 - Plan Review step: Claude Code always outputs a plan table to REVIEW.md before touching any files, then waits for PROCEED
 - Capture Log chat URL: https://claude.ai/chat/39f0cbd5-b1f5-4995-8b54-c0f6769fcec7 — always find via recent_chats tool (not conversation_search by keyword, which is unreliable for finding it). recent_chats returns summaries that include all logged items.
+- BACKLOG.md is the between-session capture scratch pad — promoted items move to CLAUDE.md Backlog with issue numbers, then cleared. Bundled into the final session commit alongside the other 3 files.
