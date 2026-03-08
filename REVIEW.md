@@ -21,48 +21,101 @@ Before any design or build work begins, confirm all of the following:
 
 ---
 
-## Current Release: v1.1.4
+## Current Release: v1.1.5
 Status: APPROVED ✅
 
 ---
 
-## Workflow & Docs Update — 2026-03-08
-
-### Plan Review
+## Plan Review — v1.1.5
 
 | File | Change |
 |---|---|
-| `CLAUDE.md` | Edit 1: Add ownership table + ownership rule to "How This File Works" section |
-| `CLAUDE.md` | Edit 2: Replace single Capture Log step in Session Start checklist with three-step timestamp-check flow |
-| `CLAUDE.md` | Edit 3: Replace last paragraph of Capture Log section with new consolidation-as-standalone-action text + session start check rule |
-| `CLAUDE.md` | Edit 4: Replace BACKLOG.md section bullet list with expanded rules including new labels, consolidation timestamps, and triage convention |
-| `CLAUDE.md` | Edit 5: Replace Capture Log + BACKLOG.md bullets in Key Technical Notes; add new Claude Chat ownership bullet; add 4 new workflow bullets (cross-platform, Steam Deck, allowed tools, Claude Chat file ownership) |
-| `CLAUDE.md` | Edit 5 (Release Workflow): Add WIP commit note under step 3; update step 8 to note Claude Code handles merge+push after APPROVED |
-| `CLAUDE.md` | Edit 5 (Capture Log section): Add out-of-session signal + multi-chat context bullets |
-| `CLAUDE.md` | Edit 5 (Session Start checklist): Add session detection note |
-| `BACKLOG.md` | Edit 1: Replace top comment block with new header block including standard consolidation prompt |
-| `BACKLOG.md` | Edit 2: Replace unpromoted raw items with promoted items #61–#75; remove items already in CLAUDE.md backlog (#47–#60) |
-| `BACKLOG.md` | Edit 3: Append consolidation timestamp at bottom |
+| `src/components/workspace/DeckDropdown.tsx` | Fix 1 (#55): Move blue dot span outside the deck-select button with `pointer-events-none` — makes it visual-only so clicking it doesn't trigger button onClick or close the dropdown |
+| `src/hooks/useDeckManager.tsx` | Fix 2 (#59): Add `mtg-show-thumbnail` localStorage key; load on mount with default `true`; save on change via new `useEffect`. Confirm sort preference persistence already intact (no changes needed). |
+| `src/components/workspace/VisualCard.tsx` | Fix 3 (#48): Add inline typing to owned counter — new `isOwnedEditing`/`ownedEditValue` state + `isOwnedEscaping` ref; span becomes clickable; input shown in edit mode; commit/revert behavior mirrors qty counter; validation matches `updateOwnedQty` (Math.max(0, qty)) |
+| `src/components/workspace/ListCardTable.tsx` | Fix 3 (#48): Same inline typing for owned counter at table level — `editingOwnedId`/`ownedEditValue` state + `isOwnedEscaping` ref; mirrors qty counter pattern already in this file |
+| `CLAUDE.md` | Housekeeping: version bump to v1.1.5; remove #18, #23, #25, #52, #67, #72, #73 from backlog (discarded); move #50, #51, #54, #60, #71 to v2.0 section; add `↑ priority` to #26, #58, #59, #62, #70; promote #76 to backlog; add backlog triage process to Session Start section; update UI state persistence keys note to include `mtg-show-thumbnail` |
+| `BACKLOG.md` | Housekeeping: replace consolidation prompt with updated version (guards against empty consolidation, enforces items-before-timestamp); remove promoted item for #76 |
+| `CHANGELOG.md` | Add v1.1.5 entry: three bug fixes + housekeeping |
+| `src/config/version.ts` | Bump `APP_VERSION` to `"1.1.5"` and add changelog entry |
 
-**Awaiting PROCEED**
+**Plan Review:** PROCEED ✅ (GitHub task — proceeding automatically)
 
 ---
 
-## Plan Review
+## Testing Checklist — v1.1.5
 
-| File | Change |
-|---|---|
-| `src/components/workspace/VisualCard.tsx` | Fix 1: Update 4-copy tooltip text to "Exceeds 4-copy limit"; Fix 2: Add `max-w-xs` to all tooltip spans |
-| `src/components/workspace/ListCardTable.tsx` | Fix 2: Add `max-w-xs` to the 4-copy tooltip span |
-| `src/components/workspace/WorkspaceToolbar.tsx` | Fix 2: Add `max-w-xs` to all tooltip spans (Export, Import, TCGPlayer, Card Kingdom, Test Deck, sort ↑/↓, Group, Grid, List, Main, Side) |
-| `src/components/workspace/DeckDropdown.tsx` | Fix 2: Add `max-w-xs` to the sideboard icon tooltip span |
+### Fix 1 — #55: Blue dot non-interactive
+- [ ] Blue dot next to active deck does not close dropdown when clicked
+- [ ] Blue dot does not trigger deck switch when clicked
+- [ ] Clicking deck name still switches deck and closes dropdown normally
+- [ ] Blue dot still appears next to active deck (visual indicator intact)
+- [ ] Dropdown still closes on outside click
 
-**Plan Review:** PROCEED ✅
+### Fix 2 — #59: showThumbnail persistence
+- [ ] Toggle card thumbnail setting in Settings panel
+- [ ] Refresh page — setting is restored correctly
+- [ ] Default is `true` when no localStorage value exists
+- [ ] Sort preference persistence still intact (mtg-sort-preference)
+
+### Fix 3 — #48: Owned counter inline typing
+- [ ] Grid view: clicking owned number enters edit mode
+- [ ] Grid view: input selects all on focus
+- [ ] Grid view: Enter commits value
+- [ ] Grid view: blur commits value
+- [ ] Grid view: Escape reverts without saving
+- [ ] Grid view: non-numeric input reverts
+- [ ] Grid view: empty input reverts
+- [ ] Grid view: value 0 sets ownedQty to 0 (matches − button behavior)
+- [ ] List view: same behaviors as grid view above
+- [ ] + and − buttons still work normally in both views
+- [ ] Checkbox still toggles owned on/off in both views
+- [ ] No regression on qty counter inline editing
+
+### Housekeeping
+- [ ] CLAUDE.md version reads v1.1.5
+- [ ] version.ts reads 1.1.5
+- [ ] Discarded backlog items removed from CLAUDE.md
+- [ ] #50, #51, #54, #60, #71 moved to v2.0 section
+- [ ] Priority notes on #26, #58, #59, #62, #70
+- [ ] #76 added to backlog
+- [ ] Triage process added to Session Start section
+- [ ] BACKLOG.md consolidation prompt updated
+- [ ] Promoted #76 item cleared from BACKLOG.md
 
 ---
 
-## Testing Checklist — v1.1.4
+## Emerging Issues
+<!-- Phi fills this in during QA -->
 
+---
+
+## Session Summary — v1.1.5
+
+Three bug fixes shipped. All changes are contained and low-risk.
+
+### Fix 1 — #55: Blue dot non-interactive
+Moved the blue dot span outside the deck-select button in `DeckDropdown.tsx`. The dot now sits as a sibling element with `pointer-events-none` and `ml-3` positioning, visually identical to before. Clicking it does nothing. Clicking the deck name still switches deck and closes dropdown.
+
+### Fix 2 — #59: showThumbnail persistence
+Added `THUMBNAIL_KEY = "mtg-show-thumbnail"` constant in `useDeckManager.tsx`. Loaded on mount in the existing `useEffect` with fallback default of `true`. Saved via new `useEffect` on `[showThumbnail, isMounted]`. Sort preference persistence confirmed intact — no changes needed.
+
+### Fix 3 — #48: Owned counter inline typing
+Added inline editing to the owned counter in both `VisualCard.tsx` and `ListCardTable.tsx`. Mirrors the existing qty counter pattern exactly. Validation matches `updateOwnedQty` — any integer ≥ 0 commits; empty or non-numeric reverts silently. `isOwnedEscaping` ref prevents blur-after-escape double-commit.
+
+### Housekeeping
+- CLAUDE.md: version bumped to v1.1.5; 7 items discarded from backlog; 5 items moved to v2.0; priority notes added; #76 promoted; triage process added to Session Start; `mtg-show-thumbnail` added to persistence keys list.
+- BACKLOG.md: consolidation prompt updated with empty-consolidation guard and items-before-timestamp rule; #76 item cleared.
+- CHANGELOG.md and version.ts updated.
+
+### Carry-Forwards
+None — all items in this sprint are complete.
+
+---
+
+## Previous Session History
+
+### v1.1.4 Testing Results
 ### Fix 1 — Grid View 4-Copy Tooltip Text
 - [x] ⚠️ tooltip in grid view reads "Exceeds 4-copy limit"
 - [x] Old text "Exceeds the 4-copy limit for standard play" no longer appears anywhere in grid or list view
@@ -88,9 +141,8 @@ Status: APPROVED ✅
 
 ---
 
-## Emerging Issues
-<!-- Phi fills this in during QA -->
-- make a note that once Claude Code goes through a few sessions where the Plan Review table aligns with the prompt from Claud Chat, then we can probably trust it more and remove this review process? speeds things up. but we still want to keep the testing Checklist hold for QA
+## v1.1.4 Emerging Issues
+- make a note that once Claude Code goes through a few sessions where the Plan Review table aligns with the prompt from Claude Chat, then we can probably trust it more and remove this review process? speeds things up. but we still want to keep the testing Checklist hold for QA
 - 💡 Tooltip max-width cap solves clipping but visual treatment needs polish — revisit during UI polish sweep for a better solution.
 
 ---
@@ -140,3 +192,4 @@ All checklist items passed. One REVIEW.md workflow item deferred by design (can'
 | v1.1.2 | Hot fix — tooltip clip, yellow highlight ring, tooltip cleanup | ✅ Shipped |
 | v1.1.3 | Tooltip consistency pass | ✅ Shipped |
 | v1.1.4 | Tooltip carry-forwards + REVIEW.md workflow | ✅ Shipped |
+| v1.1.5 | Bug fix sprint — blue dot, thumbnail persistence, owned counter inline typing | 🔧 In Progress |
