@@ -9,7 +9,9 @@ Current Version: v1.1.4 — see CHANGELOG.md for full history
 
 ## Session Start — Claude Chat
 Every planning session, Claude Chat should automatically run through this checklist before any design work begins:
-- [ ] Find the Capture Log using recent_chats tool (not conversation_search) — look for the chat titled "Capture Log" or "MTG Deck Builder / Capture Log" in the project. The Capture Log URL is https://claude.ai/chat/39f0cbd5-b1f5-4995-8b54-c0f6769fcec7 — use recent_chats to retrieve its latest summary, then triage all items with Phi before starting design
+- [ ] Read BACKLOG.md (project file) — grab the latest consolidation timestamp at the bottom
+- [ ] Pull Capture Log via recent_chats tool — find the most recent consolidation marker in the summary. Capture Log URL: https://claude.ai/chat/39f0cbd5-b1f5-4995-8b54-c0f6769fcec7
+- [ ] If timestamps match → backlog is current ✅. If they don't match → flag as blocker before any design work ⚠️
 - [ ] Confirm REVIEW.md shows APPROVED ✅ with no open carry-forwards from last session
 - [ ] Confirm version in CLAUDE.md matches latest CHANGELOG.md entry
 - [ ] Confirm no unclosed GitHub issues from last session
@@ -17,20 +19,30 @@ Every planning session, Claude Chat should automatically run through this checkl
 - [ ] Proactively suggest workflow or process improvements based on what we learned last session
 - [ ] Remind Phi to **sync CLAUDE.md via the Claude project files sync button** — not upload manually
 
+> **Note:** Claude Chat reads CLAUDE.md + REVIEW.md at the start of every chat — not just planning sessions — to determine current session state.
+
 ---
 
 ## Capture Log
 A dedicated chat in this Claude project named "Capture Log — MTG Deck Builder" is the single place for all bugs, ideas, features, and UI tweaks captured between planning sessions. At the start of every planning session, Claude Chat and Phi review the Capture Log together and promote items into the Claude Code prompt and CLAUDE.md update instructions. Claude Code never reads the Capture Log directly — Claude Chat handles the triage and includes everything explicitly in the prompt.
 
-Before each planning session: open Capture Log chat, ask Claude Chat to consolidate new items into a Claude Code prompt, run the prompt, Claude Code bundles BACKLOG.md into the session commit, sync project files, then start the planning session.
-Drop a timestamp marker in Capture Log after each consolidation: `--- consolidated to BACKLOG.md [date] ---`
+Consolidation is a between-session action — run it anytime, not just before a planning session. Use the standard consolidation prompt in the Capture Log chat (stored at the top of BACKLOG.md). Claude Chat outputs a Claude Code prompt → Claude Code appends interpreted items to BACKLOG.md, appends a timestamp, and commits. Claude Chat drops a matching timestamp marker in the Capture Log chat. Phi syncs project files.
+
+At session start, Claude Chat checks that the latest timestamp in BACKLOG.md matches the most recent marker in the Capture Log summary. If they match, backlog is current. If not, consolidate before proceeding.
+
+When Phi says "we're out of session", Claude Chat shifts to capture-only mode — no design work.
+
+Active feature session lives in its own chat. All other chats default to capture-only mode unless Phi says otherwise.
 
 ---
 
 ## BACKLOG.md
 Temporary capture scratch pad. Lives in the repo root. Items are promoted to the Backlog section of CLAUDE.md (with GitHub issue numbers) during planning sessions, then cleared from BACKLOG.md.
 - Claude Code appends items using format: `- [ ] **label** | description`
-- Valid labels: bug · feature · enhancement · chore · workflow
+- Valid labels: bug · feature · enhancement · chore · workflow · review · v2.0
+- Claude Code interprets and cleans up captured items — does not sort, deduplicate, or assign issue numbers during consolidation
+- Consolidation timestamps appended at bottom: `--- consolidated to BACKLOG.md YYYY-MM-DDTHH:MM ---` 🎴
+- During planning session triage: Claude Chat cross-references CLAUDE.md, assigns issue numbers, folds workflow items into CLAUDE.md, promotes the rest to CLAUDE.md backlog with issue numbers, then clears promoted items from BACKLOG.md
 - workflow items get folded into CLAUDE.md directly — no GitHub issue created
 - BACKLOG.md is bundled into the final session commit alongside CLAUDE.md, CHANGELOG.md, REVIEW.md
 
@@ -38,6 +50,16 @@ Temporary capture scratch pad. Lives in the repo root. Items are promoted to the
 
 ## How This File Works
 This is the single source of truth for the project, shared between:
+
+| File | Written by | Read by |
+|---|---|---|
+| CLAUDE.md | Claude Code only (prompted by Claude Chat) | All three |
+| BACKLOG.md | Claude Code only (prompted by Claude Chat) | Claude Chat, Claude Code |
+| REVIEW.md | Claude Code only | All three |
+| CHANGELOG.md | Claude Code only | All three |
+
+**Claude Chat never drafts, generates, or edits CLAUDE.md, BACKLOG.md, REVIEW.md, or CHANGELOG.md directly — not even as a helpful shortcut. Claude Chat designs and produces prompts. Claude Code owns all file changes. If Claude Chat catches itself about to generate one of these files, it should stop and write a prompt instead.**
+
 - **Claude Chat** — upload this file at the start of every planning session
 - **Claude Code** — reads this automatically at session start
 - **GitHub** — issues and milestones are created automatically by Claude Code on commit
@@ -115,6 +137,7 @@ New ideas captured here first, then promoted to a milestone when ready to build.
    - What to update in CLAUDE.md (version bump, milestone changes, new backlog items)
 
 3. `git checkout -b vX.X.X`
+   > **Note:** WIP commits stay on the branch — never merge to main until APPROVED.
 
 4. **Plan Review** — Claude Code outputs every file it plans to touch and a one-line summary of changes per file, writes this to `REVIEW.md`, and waits for **PROCEED** from Phi before executing any changes.
    - Phi syncs REVIEW.md, tells Claude Chat "synced"
@@ -134,7 +157,7 @@ New ideas captured here first, then promoted to a milestone when ready to build.
    - `vX.X.X - description - Closes #N, Closes #N`
    - `git add CLAUDE.md CHANGELOG.md REVIEW.md BACKLOG.md && git commit -m "update CLAUDE.md, CHANGELOG.md, REVIEW.md, and BACKLOG.md post vX.X.X"`
 
-8. `git checkout main && git merge vX.X.X && git push`
+8. `git checkout main && git merge vX.X.X && git push` — Claude Code handles this after APPROVED.
 
 9. Vercel auto-deploys
 
@@ -215,5 +238,9 @@ src/
 - deckViewMode lives in useDeckManager context so both Sidebar and Workspace can read it
 - REVIEW.md is the live session journal — written by Claude Code, read by all three parties. Never committed mid-session. Committed alongside CLAUDE.md and CHANGELOG.md at session end.
 - Plan Review step: Claude Code always outputs a plan table to REVIEW.md before touching any files, then waits for PROCEED
-- Capture Log chat URL: https://claude.ai/chat/39f0cbd5-b1f5-4995-8b54-c0f6769fcec7 — always find via recent_chats tool (not conversation_search by keyword, which is unreliable for finding it). recent_chats returns summaries that include all logged items.
-- BACKLOG.md is the between-session capture scratch pad — promoted items move to CLAUDE.md Backlog with issue numbers, then cleared. Bundled into the final session commit alongside the other 3 files.
+- Capture Log chat URL: https://claude.ai/chat/39f0cbd5-b1f5-4995-8b54-c0f6769fcec7 — always find via recent_chats tool (not conversation_search by keyword, which is unreliable). At session start, only check that the latest consolidation timestamp in BACKLOG.md matches the most recent marker in the Capture Log summary — do not re-triage the full log.
+- BACKLOG.md is owned by Claude Code — Claude Chat never drafts or edits it directly. Standard consolidation prompt lives at the top of BACKLOG.md. Promoted items move to CLAUDE.md Backlog with issue numbers, then cleared. Bundled into the final session commit alongside the other 3 files.
+- Claude Chat never drafts, generates, or edits CLAUDE.md, BACKLOG.md, REVIEW.md, or CHANGELOG.md directly — not even as a helpful shortcut. Claude Chat designs and produces prompts. Claude Code owns all file changes. If Claude Chat catches itself about to generate one of these files, it should stop and write a prompt instead.
+- One active machine per Claude Code session — git commit is the handoff between machines.
+- Steam Deck is a second dev environment alongside Windows. Always git pull before starting a session and git push after. Node installed via nvm (not pacman) to survive SteamOS updates. Claude Code authenticated separately.
+- Claude Code allowedTools whitelist: Bash(git *) and Bash(npm *) — reduces confirmation prompts. This is intentional.
