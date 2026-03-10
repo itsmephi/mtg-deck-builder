@@ -27,8 +27,6 @@ If there are new items, output a Claude Code prompt that does the following:
 
 Then drop the matching timestamp marker here in this chat using the same datetime.
 -->
-
-- [ ] **workflow** | APPROVED gate reminder — APPROVED should only be typed after Phi has tested against the checklist in REVIEW.md; with allowedTools configured, git commands execute immediately with no confirmation prompt
 - [ ] **bug** | BACKLOG.md not cleared post-promotion — promoted items were not cleared during v1.1.5 session commit; needs manual cleanup pass and a Claude Code behavior fix to ensure promoted items are always cleared in the final session commit
 - [ ] **workflow** | PROCEED/APPROVED gates bypassed in first web Claude Code session with allowedTools config — gates were respected in terminal sessions prior; root cause unclear (web vs terminal behavior, allowedTools side effect, or both); test on next session: terminal + new settings to confirm gates still hold
 
