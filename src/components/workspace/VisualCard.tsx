@@ -223,7 +223,7 @@ export default function VisualCard({ card, onUpdateQuantity, onSetQuantity, onUp
           ) : (
             <span
               onClick={startEdit}
-              className={`text-xs font-bold cursor-text px-1 rounded hover:bg-neutral-800 transition-colors ${overCopyLimit ? "text-yellow-400" : "text-neutral-200"}`}
+              className={`text-xs font-bold cursor-text px-1 rounded hover:bg-neutral-800 transition-colors ${overCopyLimit ? "text-red-400" : "text-neutral-200"}`}
             >
               {card.quantity}
             </span>

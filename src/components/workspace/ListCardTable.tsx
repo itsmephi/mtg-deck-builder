@@ -1,4 +1,37 @@
 import React, { useRef, useState } from "react";
+
+const COLOR_ORDER_L = ["W", "U", "B", "R", "G"];
+
+function getRowTint(card: DeckCard): string {
+  const colors: string[] = (card as any).colors ?? [];
+  if (colors.length > 1) return "rgba(199, 162, 75, 0.10)";
+  if (colors.length === 0) return "rgba(150, 150, 150, 0.07)";
+  switch (colors[0]) {
+    case "W": return "rgba(248, 231, 187, 0.08)";
+    case "U": return "rgba(14, 104, 171, 0.10)";
+    case "B": return "rgba(148, 110, 174, 0.10)";
+    case "R": return "rgba(211, 73, 53, 0.10)";
+    case "G": return "rgba(0, 115, 62, 0.10)";
+    default:  return "rgba(150, 150, 150, 0.07)";
+  }
+}
+
+function getGroupKey(card: DeckCard, sortBy: string): string {
+  if (sortBy === "color") {
+    const mc =
+      (card as any).mana_cost ??
+      card.card_faces?.map((f: any) => f.mana_cost).join("") ??
+      "";
+    const colors = COLOR_ORDER_L.filter((c) => mc.includes(`{${c}}`));
+    if (colors.length === 0) return "colorless";
+    if (colors.length === 1) return colors[0];
+    return "multi-" + colors.join("");
+  }
+  if (sortBy === "mv") {
+    return String((card as any).cmc ?? "none");
+  }
+  return "";
+}
 import { Plus, Minus, Check, X } from "lucide-react";
 import { DeckCard, ScryfallCard } from "@/types";
 
@@ -17,6 +50,8 @@ interface ListCardTableProps {
   cardRefs?: React.MutableRefObject<Map<string, HTMLElement>>;
   // Combined 4-copy check: qty of same card (by name) in the other pool
   sideboardQtyMap?: Map<string, number>;
+  sortBy?: string;
+  isGrouped?: boolean;
 }
 
 export default function ListCardTable({
@@ -33,6 +68,8 @@ export default function ListCardTable({
   highlightedId,
   cardRefs,
   sideboardQtyMap,
+  sortBy,
+  isGrouped,
 }: ListCardTableProps) {
   // Remembers last non-zero ownedQty per card so checkbox can restore it on re-check
   const lastOwnedQtyRef = useRef<Map<string, number>>(new Map());
@@ -118,7 +155,13 @@ export default function ListCardTable({
           </thead>
         )}
         <tbody>
-          {cards.map((card) => {
+          {cards.map((card, index) => {
+            const showGroupSpacer =
+              !isGrouped &&
+              !!sortBy &&
+              (sortBy === "color" || sortBy === "mv") &&
+              index > 0 &&
+              getGroupKey(cards[index - 1], sortBy) !== getGroupKey(card, sortBy);
             const isFullyOwned = card.quantity > 0 && card.ownedQty >= card.quantity;
             const isChecked = card.ownedQty > 0;
             // Visual-only cap at 100% — underlying ownedQty is never clamped
@@ -142,8 +185,15 @@ export default function ListCardTable({
             if (card.ownedQty > 0) lastOwnedQtyRef.current.set(card.id, card.ownedQty);
 
             return (
+              <React.Fragment key={card.id}>
+              {showGroupSpacer && (
+                <tr aria-hidden>
+                  <td colSpan={7} className="p-0 bg-transparent">
+                    <div className="h-3" />
+                  </td>
+                </tr>
+              )}
               <tr
-                key={card.id}
                 ref={(el) => {
                   if (el && cardRefs) {
                     if (el) cardRefs.current.set(card.id, el);
@@ -153,6 +203,7 @@ export default function ListCardTable({
                 onMouseEnter={() => onHoverStart(card)}
                 onMouseLeave={onHoverEnd}
                 className={`border-b border-neutral-800/40 hover:bg-neutral-800/40 transition-colors ${highlightedId === card.id ? "bg-yellow-400/10 outline outline-1 outline-yellow-400/50" : ""}`}
+                style={highlightedId !== card.id ? { backgroundColor: getRowTint(card) } : undefined}
               >
                 {/* Qty */}
                 <td className={`px-2 py-1 ${cellGrayscale}`} style={{ opacity: cellOpacity }}>
@@ -191,7 +242,7 @@ export default function ListCardTable({
                       <div className="group relative flex items-center justify-center">
                         <span
                           onClick={() => startEdit(card)}
-                          className="w-6 text-center font-medium text-yellow-400 cursor-text hover:bg-neutral-800 rounded"
+                          className="w-6 text-center font-medium text-red-400 cursor-text hover:bg-neutral-800 rounded"
                         >
                           {card.quantity}
                         </span>
@@ -326,6 +377,7 @@ export default function ListCardTable({
                   />
                 </td>
               </tr>
+              </React.Fragment>
             );
           })}
         </tbody>

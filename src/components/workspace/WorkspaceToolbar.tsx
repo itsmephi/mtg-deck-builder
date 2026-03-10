@@ -115,19 +115,19 @@ export default function WorkspaceToolbar({
           value={activeDeck.name}
           onChange={(e) => onUpdateDeckName(e.target.value)}
           size={Math.max(10, activeDeck.name.length)}
-          className="text-xl font-bold text-white bg-transparent border-b border-transparent hover:border-neutral-700 focus:border-blue-500 focus:outline-none transition-all px-0 outline-none"
-          placeholder="Enter deck name..."
+          className="text-xl font-bold text-white bg-transparent border-b border-transparent hover:border-neutral-700 focus:border-blue-500 focus:outline-none transition-all px-0 outline-none placeholder:text-neutral-500"
+          placeholder="Untitled"
         />
       </div>
 
       {/* Row 2: Stats */}
       <div className="flex items-center gap-4 text-xs text-neutral-400">
         {deckViewMode === "sideboard" ? (
-          <p className={sideboardCardCount > 15 ? "text-yellow-400 font-bold" : ""}>
+          <p className={sideboardCardCount > 15 ? "text-red-400 font-bold" : sideboardCardCount === 15 ? "text-green-400 font-bold" : ""}>
             {sideboardCardCount} / 15
           </p>
         ) : (
-          <p className={totalCards >= 60 ? "text-yellow-400 font-bold" : ""}>
+          <p className={totalCards > 60 ? "text-red-400 font-bold" : totalCards === 60 ? "text-green-400 font-bold" : ""}>
             {totalCards} Cards
           </p>
         )}
@@ -232,7 +232,7 @@ export default function WorkspaceToolbar({
                 onClick={() => setDeckViewMode("main")}
                 className={`h-full px-2.5 text-xs rounded-md transition-all ${
                   deckViewMode === "main"
-                    ? "bg-neutral-800 text-white border border-neutral-700/50"
+                    ? "bg-blue-600 text-white border border-blue-500/50"
                     : "text-neutral-500 hover:text-neutral-300 border border-transparent"
                 }`}
               >
@@ -247,7 +247,7 @@ export default function WorkspaceToolbar({
                 onClick={() => activeDeckHasSideboard && setDeckViewMode("sideboard")}
                 className={`h-full px-2.5 text-xs rounded-md transition-all ${
                   deckViewMode === "sideboard"
-                    ? "bg-neutral-800 text-white border border-neutral-700/50"
+                    ? "bg-blue-600 text-white border border-blue-500/50"
                     : activeDeckHasSideboard
                     ? "text-neutral-500 hover:text-neutral-300 border border-transparent"
                     : "text-neutral-700 cursor-not-allowed border border-transparent"

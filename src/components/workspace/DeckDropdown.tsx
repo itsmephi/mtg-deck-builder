@@ -78,9 +78,24 @@ export default function DeckDropdown({
             const hasSideboard = d.sideboard !== undefined;
             return (
               <div key={d.id} className="flex items-center">
-                <span
-                  className={`w-1.5 h-1.5 rounded-full shrink-0 pointer-events-none ml-3 ${isActive ? "bg-blue-400" : "bg-transparent"}`}
-                />
+                <div className="group relative flex items-center justify-center ml-3 shrink-0">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (!isActive) setActiveDeckId(d.id);
+                    }}
+                    className={isActive ? "cursor-default" : "cursor-pointer"}
+                  >
+                    <span
+                      className={`block rounded-full ${isActive ? "w-1.5 h-1.5 bg-blue-400" : "w-2 h-2 border border-neutral-500"}`}
+                    />
+                  </button>
+                  {!isActive && (
+                    <span className="absolute left-1/2 -translate-x-1/2 top-full mt-1 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-normal max-w-xs z-[60]">
+                      Switch deck
+                    </span>
+                  )}
+                </div>
                 <button
                   onClick={() => {
                     setActiveDeckId(d.id);

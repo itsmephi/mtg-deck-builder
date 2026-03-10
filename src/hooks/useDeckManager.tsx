@@ -88,7 +88,7 @@ export function DeckProvider({ children }: { children: ReactNode }) {
         } else {
           const defaultDeck = {
             id: crypto.randomUUID(),
-            name: "New Deck",
+            name: "",
             cards: [],
           };
           setDecks([defaultDeck]);
@@ -100,7 +100,7 @@ export function DeckProvider({ children }: { children: ReactNode }) {
     } else {
       const defaultDeck = {
         id: crypto.randomUUID(),
-        name: "New Deck",
+        name: "",
         cards: [],
       };
       setDecks([defaultDeck]);
@@ -189,7 +189,7 @@ export function DeckProvider({ children }: { children: ReactNode }) {
   };
 
   const createNewDeck = () => {
-    const newDeck = { id: crypto.randomUUID(), name: "New Deck", cards: [] };
+    const newDeck = { id: crypto.randomUUID(), name: "", cards: [] };
     setDecks((prev) => [...prev, newDeck]);
     setActiveDeckIdState(newDeck.id);
   };
@@ -201,7 +201,7 @@ export function DeckProvider({ children }: { children: ReactNode }) {
       if (filtered.length === 0) {
         const freshDeck = {
           id: crypto.randomUUID(),
-          name: "New Deck",
+          name: "",
           cards: [],
         };
         setActiveDeckIdState(freshDeck.id);

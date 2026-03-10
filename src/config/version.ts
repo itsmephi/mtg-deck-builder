@@ -1,6 +1,8 @@
-export const APP_VERSION = "1.1.5";
+export const APP_VERSION = "1.1.6";
 
 export const CHANGELOG: Record<string, string> = {
+  "1.1.6":
+    "UI polish: deck dropdown now has radio buttons for inactive decks — click to switch without closing. Card count turns green at exactly 60 cards and red above 60. 4-copy warning badge changed from yellow to red. Active Main/Side pill is now blue. Deck name shows 'Untitled' placeholder when unnamed. List view adds spacing between color and mana value sort groups.",
   "1.1.5":
     "Bug fix sprint: blue dot in deck dropdown is now visual-only and no longer closes the dropdown on click. Card thumbnail toggle setting persists across page refreshes. Owned counter supports inline typing in both grid and list view.",
   "1.1.4":

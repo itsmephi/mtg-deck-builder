@@ -366,6 +366,8 @@ export default function Workspace() {
                         highlightedId={highlightedId}
                         cardRefs={cardRefs}
                         sideboardQtyMap={otherPoolQtyMap}
+                        sortBy={sortBy}
+                        isGrouped={isGrouped}
                         {...listActionProps}
                       />
                     )}
@@ -399,6 +401,8 @@ export default function Workspace() {
             highlightedId={highlightedId}
             cardRefs={cardRefs}
             sideboardQtyMap={otherPoolQtyMap}
+            sortBy={sortBy}
+            isGrouped={isGrouped}
             {...listActionProps}
           />
         )}
