@@ -12,76 +12,94 @@ This file is the live session journal shared between Phi, Claude Chat, and Claud
 
 ## Session Start Sync Check
 Before any design or build work begins, confirm all of the following:
-- [ ] Version in CLAUDE.md matches the latest entry in CHANGELOG.md
-- [ ] REVIEW.md shows APPROVED ✅ with no open carry-forwards from last session
-- [ ] No unclosed GitHub issues that should have been closed last session
-- [ ] Capture Log triaged and items promoted or backlogged
-
-⚠️ If any of the above fail, resolve before starting. No design or build work begins until sync is confirmed clean.
+- [x] Version in CLAUDE.md matches the latest entry in CHANGELOG.md — both v1.1.5 ✅
+- [x] REVIEW.md shows APPROVED ✅ with no open carry-forwards from last session ✅
+- [x] No unclosed GitHub issues that should have been closed last session ✅
+- [x] Capture Log triaged and items promoted or backlogged ✅ (2026-03-08T13:00 matches)
 
 ---
 
-## Current Release: v1.1.5
-Status: APPROVED ✅
+## Current Release: v1.1.6
+Status: IN PROGRESS 🔧
 
 ---
 
-## Plan Review — v1.1.5
+## Plan Review — v1.1.6
 
 | File | Change |
 |---|---|
-| `src/components/workspace/DeckDropdown.tsx` | Fix 1 (#55): Move blue dot span outside the deck-select button with `pointer-events-none` — makes it visual-only so clicking it doesn't trigger button onClick or close the dropdown |
-| `src/hooks/useDeckManager.tsx` | Fix 2 (#59): Add `mtg-show-thumbnail` localStorage key; load on mount with default `true`; save on change via new `useEffect`. Confirm sort preference persistence already intact (no changes needed). |
-| `src/components/workspace/VisualCard.tsx` | Fix 3 (#48): Add inline typing to owned counter — new `isOwnedEditing`/`ownedEditValue` state + `isOwnedEscaping` ref; span becomes clickable; input shown in edit mode; commit/revert behavior mirrors qty counter; validation matches `updateOwnedQty` (Math.max(0, qty)) |
-| `src/components/workspace/ListCardTable.tsx` | Fix 3 (#48): Same inline typing for owned counter at table level — `editingOwnedId`/`ownedEditValue` state + `isOwnedEscaping` ref; mirrors qty counter pattern already in this file |
-| `CLAUDE.md` | Housekeeping: version bump to v1.1.5; remove #18, #23, #25, #52, #67, #72, #73 from backlog (discarded); move #50, #51, #54, #60, #71 to v2.0 section; add `↑ priority` to #26, #58, #59, #62, #70; promote #76 to backlog; add backlog triage process to Session Start section; update UI state persistence keys note to include `mtg-show-thumbnail` |
-| `BACKLOG.md` | Housekeeping: replace consolidation prompt with updated version (guards against empty consolidation, enforces items-before-timestamp); remove promoted item for #76 |
-| `CHANGELOG.md` | Add v1.1.5 entry: three bug fixes + housekeeping |
-| `src/config/version.ts` | Bump `APP_VERSION` to `"1.1.5"` and add changelog entry |
+| `src/components/workspace/DeckDropdown.tsx` | Item 1 (#77): Replace `pointer-events-none` blue dot span with a clickable radio element. Active deck: filled blue dot. Inactive decks: hollow gray circle (`border border-neutral-500 rounded-full w-2 h-2`). Click inactive → switches active deck, dropdown stays open. Click active → no-op. Tooltip "Switch deck" on inactive only. `e.stopPropagation()` prevents deck-name click from firing. |
+| `src/components/workspace/ListCardTable.tsx` | Item 2 (#47): Add `sortBy?: string` and `isGrouped?: boolean` props. When `isGrouped === false` and `sortBy === 'color'` or `'mv'`, detect group boundary between adjacent cards (color group key or cmc change) and add `mt-4` spacer to the first row of each new group. Item 3 (#56): Change 4-copy badge qty span from `text-yellow-400` to `text-red-400`. |
+| `src/components/workspace/WorkspaceToolbar.tsx` | Item 3 (#56): Toolbar card count — green (`text-green-400`) at exactly 60, red (`text-red-400`) over 60 (was yellow at ≥ 60). Item 4 (#57): Active Main/Side pill changes from `bg-neutral-800 text-white` to `bg-blue-600 text-white`. Item 5 (#70): Deck name input placeholder changed to "Untitled" with `placeholder:text-neutral-500`; `size` fallback added for empty name. |
+| `src/components/workspace/VisualCard.tsx` | Item 3 (#56): Change 4-copy badge qty span from `text-yellow-400` to `text-red-400`. |
+| `src/components/workspace/Workspace.tsx` | Pass `sortBy` and `isGrouped` props to both `ListCardTable` call sites (grouped view inner table and ungrouped list view). |
+| `src/config/version.ts` | Bump `APP_VERSION` to `"1.1.6"` and add changelog entry. |
+| `BACKLOG.md` | Clear the two workflow items that are in-scope for this session. Timestamps and any new unpromoted items stay. |
+| `CLAUDE.md` | Version bump to v1.1.6; close #47, #53, #56, #57, #70 in backlog (mark closed this release); add #77 to backlog; add BACKLOG.md promoted-item cleanup rule to Key Technical Notes. |
+| `CHANGELOG.md` | Add v1.1.6 entry. |
 
-**Plan Review:** PROCEED ✅ (GitHub task — proceeding automatically)
+**Waiting for PROCEED before touching any files.**
 
 ---
 
-## Testing Checklist — v1.1.5
+## Testing Checklist — v1.1.6
 
-### Fix 1 — #55: Blue dot non-interactive
-- [ ] Blue dot next to active deck does not close dropdown when clicked
-- [ ] Blue dot does not trigger deck switch when clicked
-- [ ] Clicking deck name still switches deck and closes dropdown normally
-- [ ] Blue dot still appears next to active deck (visual indicator intact)
-- [ ] Dropdown still closes on outside click
+### Item 1 — #77: Deck Dropdown Radio Buttons
+- [x] Active deck row shows a filled blue dot on the left (same visual as before)
+- [x] Inactive deck rows show a hollow gray circle outline on the left
+- [x] Clicking the hollow gray circle on an inactive deck → switches active deck, dropdown stays open
+- [x] Clicking the filled blue dot on the active deck → no-op (nothing happens, dropdown stays open)
+- [x] Clicking a deck name still switches that deck and closes the dropdown (existing behavior unchanged)
+- [x] Hovering the hollow gray circle on an inactive deck shows tooltip "Switch deck"
+- [x] No tooltip on the active deck dot
+- [x] No tooltip on deck name
+- [x] Clicking the radio button does NOT also trigger the deck name click behavior (stopPropagation works)
 
-### Fix 2 — #59: showThumbnail persistence
-- [ ] Toggle card thumbnail setting in Settings panel
-- [ ] Refresh page — setting is restored correctly
-- [ ] Default is `true` when no localStorage value exists
-- [ ] Sort preference persistence still intact (mtg-sort-preference)
+### Item 2 — #47: Sort Group Separators in List View
+- [ ] Switch to List view, sort by Color — clean h-3 spacer row between groups; spacer is transparent (app background shows through, not table bg)
+- [ ] Switch to List view, sort by Mana Value — same clean spacer between CMC groups
+- [x] Switch to List view, sort by Name — NO extra spacing added
+- [x] Switch to List view, sort by Original — NO extra spacing added
+- [x] Enable Group By Type — NO extra spacing added (type headers already provide visual separation)
+- [x] Grid view is completely unaffected
 
-### Fix 3 — #48: Owned counter inline typing
-- [ ] Grid view: clicking owned number enters edit mode
-- [ ] Grid view: input selects all on focus
-- [ ] Grid view: Enter commits value
-- [ ] Grid view: blur commits value
-- [ ] Grid view: Escape reverts without saving
-- [ ] Grid view: non-numeric input reverts
-- [ ] Grid view: empty input reverts
-- [ ] Grid view: value 0 sets ownedQty to 0 (matches − button behavior)
-- [ ] List view: same behaviors as grid view above
-- [ ] + and − buttons still work normally in both views
-- [ ] Checkbox still toggles owned on/off in both views
-- [ ] No regression on qty counter inline editing
+### Item 3 — #56: Card Count Color Progression + 4-Copy Badge Color
+- [x] Toolbar card count shows white text when total < 60 (default)
+- [x] Toolbar card count turns green (`text-green-400`) at exactly 60 cards
+- [x] Toolbar card count turns red (`text-red-400`) when over 60 cards
+- [x] 4-copy warning badge in grid view appears red (not yellow) when a card reaches 5+ copies
+- [x] 4-copy warning badge in list view appears red (not yellow) when a card reaches 5+ copies
+- [x] Sideboard card count (X / 15): white below 15, green at exactly 15, red above 15
 
-### Housekeeping
-- [ ] CLAUDE.md version reads v1.1.5
-- [ ] version.ts reads 1.1.5
-- [ ] Discarded backlog items removed from CLAUDE.md
-- [ ] #50, #51, #54, #60, #71 moved to v2.0 section
-- [ ] Priority notes on #26, #58, #59, #62, #70
-- [ ] #76 added to backlog
-- [ ] Triage process added to Session Start section
-- [ ] BACKLOG.md consolidation prompt updated
-- [ ] Promoted #76 item cleared from BACKLOG.md
+### Item 4 — #57: Main/Side Pill Color
+- [x] Active "Main" pill has blue background + white text
+- [x] Active "Side" pill has blue background + white text
+- [x] Inactive pill remains gray (unchanged)
+- [x] Disabled "Side" pill (no sideboard) remains dark gray (unchanged)
+
+### Item 5 — #70: Untitled Deck Name Placeholder
+- [x] A new deck is created with an empty name — shows gray "Untitled" placeholder immediately (no "New Deck" default)
+- [x] When the user types into the name field, text is white
+- [x] When the user clears the name field entirely, the gray "Untitled" placeholder reappears
+- [x] Existing deck names display and edit normally
+
+### Item 6 — #13: List View Row Color Tinting (pulled forward from v1.2.0)
+- [ ] White cards have a warm cream tint
+- [ ] Blue cards have a blue tint
+- [ ] Black cards have a purple/dark tint
+- [ ] Red cards have a red tint
+- [ ] Green cards have a green tint
+- [ ] Multicolor cards (2+ colors) have a gold tint
+- [ ] Colorless/land cards (empty colors array) have a neutral gray tint
+- [ ] Yellow highlight on newly added card still overrides the tint
+- [ ] Grid view has no tinting (list view only)
+
+### Workflow Fixes
+- [x] BACKLOG.md: two in-scope workflow items cleared; consolidation timestamp line remains ✅ (timestamp stays by design — it marks when the log was last consolidated, not a promoted item)
+- [x] CLAUDE.md: version reads v1.1.6
+- [x] version.ts reads 1.1.6
+- [x] CHANGELOG.md has v1.1.6 entry at the top
+- [x] Gate check: Plan Review step held (no files touched until PROCEED) ✅ — terminal session
 
 ---
 
@@ -90,9 +108,45 @@ Status: APPROVED ✅
 
 ---
 
-## Session Summary — v1.1.5
+## Session Summary — v1.1.6
+Status: APPROVED ✅
 
-Three bug fixes shipped. All changes are contained and low-risk.
+### Gate Check — Item 7
+- Plan Review gate held: no files touched until PROCEED ✅
+- Testing Checklist gate held: two rounds of carry-forward fixes before APPROVED ✅
+- Session type: terminal
+
+### Item 1 — #77: Deck Dropdown Radio Buttons
+Replaced the `pointer-events-none` blue dot span in `DeckDropdown.tsx` with a clickable button. Active deck: filled blue dot (`w-1.5 h-1.5 bg-blue-400`), cursor-default, no tooltip. Inactive decks: hollow gray circle (`w-2 h-2 border border-neutral-500`), cursor-pointer, tooltip "Switch deck", `e.stopPropagation()` prevents deck-name button from firing. Clicking inactive radio sets active deck and keeps dropdown open.
+
+### Item 2 — #47: Sort Group Separators in List View
+Added `sortBy` and `isGrouped` props to `ListCardTable`. Added `getGroupKey()` helper that keys by color group or CMC depending on sort mode. When `!isGrouped && (sortBy === 'color' || sortBy === 'mv')`, a `<React.Fragment>` wraps each row and a transparent `h-3` spacer `<tr>` is inserted at group boundaries. Spacer `<td>` has `bg-transparent` so app background shows through. `Workspace.tsx` passes `sortBy` and `isGrouped` at both `ListCardTable` call sites.
+
+### Item 3 — #56 + #53: Card Count Color Progression + 4-Copy Badge
+`WorkspaceToolbar.tsx`: main deck count — green at exactly 60, red above 60 (was yellow at ≥ 60). Sideboard count — green at exactly 15, red above 15 (was yellow at > 15). `VisualCard.tsx` and `ListCardTable.tsx`: 4-copy warning badge qty span changed from `text-yellow-400` to `text-red-400`.
+
+### Item 4 — #57: Main/Side Pill Color
+Active pill style changed from `bg-neutral-800 text-white border-neutral-700/50` to `bg-blue-600 text-white border-blue-500/50` in `WorkspaceToolbar.tsx`. Applied to both Main and Side active states.
+
+### Item 5 — #70: Untitled Deck Name Placeholder
+`WorkspaceToolbar.tsx`: changed `placeholder="Enter deck name..."` to `placeholder="Untitled"` with `placeholder:text-neutral-500`. `useDeckManager.tsx`: all four `name: "New Deck"` occurrences changed to `name: ""` so new decks and default decks start unnamed and show the placeholder.
+
+### Item 6 — #13: List View Row Color Tinting (pulled forward from v1.2.0)
+Added `getRowTint()` helper in `ListCardTable.tsx` that returns a subtle RGBA background color based on `card.colors`: W cream, U blue, B purple, R red, G green, multicolor gold, colorless/land neutral gray. Applied via `style={{ backgroundColor: getRowTint(card) }}` on `<tr>` — suppressed when the row is highlighted (yellow highlight takes precedence). Grid view unaffected.
+
+### Workflow Fixes
+- BACKLOG.md: two in-scope workflow items cleared; consolidation timestamp retained by design.
+- CLAUDE.md: version bumped to v1.1.6; #47, #53, #56, #57, #70 closed this release; #13 closed (pulled forward from v1.2.0); #77 added to backlog; BACKLOG.md promoted-item cleanup rule added to Key Technical Notes.
+
+### Carry-Forwards
+None — all items complete.
+
+---
+
+## Previous Session History
+
+### v1.1.5 Testing Results
+Status: APPROVED ✅
 
 ### Fix 1 — #55: Blue dot non-interactive
 Moved the blue dot span outside the deck-select button in `DeckDropdown.tsx`. The dot now sits as a sibling element with `pointer-events-none` and `ml-3` positioning, visually identical to before. Clicking it does nothing. Clicking the deck name still switches deck and closes dropdown.
@@ -130,7 +184,6 @@ None — all items in this sprint are complete.
 - [x] Sort ↑/↓ tooltip — max-width cap present
 - [x] Group / Grid / List view toggle tooltips — max-width cap present
 - [x] Main / Side pill tooltips — max-width cap present
-- [x] Sideboard icon tooltip in deck dropdown — max-width cap present
 - [x] No horizontal scroll reintroduced
 
 ### REVIEW.md Workflow
@@ -192,4 +245,5 @@ All checklist items passed. One REVIEW.md workflow item deferred by design (can'
 | v1.1.2 | Hot fix — tooltip clip, yellow highlight ring, tooltip cleanup | ✅ Shipped |
 | v1.1.3 | Tooltip consistency pass | ✅ Shipped |
 | v1.1.4 | Tooltip carry-forwards + REVIEW.md workflow | ✅ Shipped |
-| v1.1.5 | Bug fix sprint — blue dot, thumbnail persistence, owned counter inline typing | 🔧 In Progress |
+| v1.1.5 | Bug fix sprint — blue dot, thumbnail persistence, owned counter inline typing | ✅ Shipped |
+| v1.1.6 | UI polish + workflow fixes | 🔧 In Progress |

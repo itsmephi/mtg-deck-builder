@@ -5,6 +5,24 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.1.6] — UI Polish + Workflow Fixes
+
+### Added
+- Deck dropdown radio buttons: inactive decks show a hollow gray circle; clicking it switches the active deck without closing the dropdown. Clicking the active dot is a no-op. Clicking the deck name still closes the dropdown. Tooltip "Switch deck" on inactive radio button. (Closes #77)
+
+### Changed
+- Card count in toolbar now turns green at exactly 60 cards and red above 60 — was flat yellow at ≥ 60 (Closes #53, Closes #56)
+- 4-copy warning badge in grid and list view changed from yellow to red to match the exceeded-limit signal
+- Active Main/Side pill is now blue (`bg-blue-600`) instead of dark gray; inactive remains gray (Closes #57)
+- List view adds vertical spacing between sort groups when sorting by Color or Mana Value with group-by-type off (Closes #47)
+- List view rows are now tinted by card color identity: white, blue, black, red, green, gold (multicolor), gray (colorless/land) (Closes #13)
+- Deck name input now shows gray "Untitled" placeholder when the name is empty; new decks start unnamed; text turns white on first keystroke (Closes #70)
+
+### Fixed
+- BACKLOG.md promoted items now correctly cleared in session commit alongside CLAUDE.md updates; behavior rule added to Key Technical Notes
+
+---
+
 ## [1.1.5] — Bug Fix Sprint
 
 ### Fixed

@@ -3,7 +3,7 @@ Authors: Phi & Thurgood Nguyen
 Stack: Next.js + TypeScript + Tailwind CSS
 Deployed: Vercel | Repo: GitHub (itsmephi/mtg-deck-builder)
 IDE: Zed on Steam Deck (Linux)
-Current Version: v1.1.5 — see CHANGELOG.md for full history
+Current Version: v1.1.6 — see CHANGELOG.md for full history
 
 ---
 
@@ -100,7 +100,7 @@ Rules:
 - Ability to mark cards as owned vs. to-buy independently (#10)
 - Toggle card scale for art previews (#11)
 - Ability to toggle a card inactive while retaining count (#12)
-- Shade list view row by card color identity (#13)
+- Shade list view row by card color identity (#13) *(closed this release)*
 - Display TCGPlayer price in orange, Card Kingdom in blue (#14)
 
 ## v2.0 (deferred)
@@ -122,18 +122,19 @@ New ideas captured here first, then promoted to a milestone when ready to build.
 - Custom card sorting by drag and drop (#16)
 - Support Standard and Commander deck modes (#17)
 - EDHREC improved search suggestions (#26) ↑ priority
-- Visual separator/padding between sort groups (color or mana value) (#47)
+- Visual separator/padding between sort groups (color or mana value) (#47) *(closed this release)*
 - Owned counter should allow inline typing like qty counter (#48) *(closed this release)*
 - Version badge popup — revisit behavior (#49)
-- Soft warning for exceeding 60-card main deck limit (#53)
+- Soft warning for exceeding 60-card main deck limit (#53) *(closed this release)*
 - Clicking blue dot indicator in dropdown switches active deck without closing dropdown (#55) *(closed this release)*
-- Color progression on count indicators: green at cap, yellow at soft limit, red when exceeded (#56)
-- Main/Side pill toggle colored to reflect current view state (#57)
+- Color progression on count indicators: green at cap, yellow at soft limit, red when exceeded (#56) *(closed this release)*
+- Main/Side pill toggle colored to reflect current view state (#57) *(closed this release)*
 - Sideboard pricing — show combined total with main deck by default (#58) ↑ priority
 - Settings state does not persist on refresh (e.g. thumbnail toggle) (#59) ↑ priority *(closed this release)*
 - Move cards between boards or decks (#62) ↑ priority
-- Default new deck name is "Untitled" in gray; turns white and saves when user enters a name (#70) ↑ priority
+- Default new deck name is "Untitled" in gray; turns white and saves when user enters a name (#70) ↑ priority *(closed this release)*
 - Grid view card icons and action buttons appear on hover/rollover — requires design session before building (#76)
+- Deck dropdown radio buttons — inactive decks show hollow gray circle; click switches active deck without closing dropdown (#77)
 
 ---
 
@@ -258,3 +259,4 @@ src/
 - One active machine per Claude Code session — git commit is the handoff between machines.
 - Steam Deck is a second dev environment alongside Windows. Always git pull before starting a session and git push after. Node installed via nvm (not pacman) to survive SteamOS updates. Claude Code authenticated separately.
 - Claude Code allowedTools whitelist: Bash(git *) and Bash(npm *) — reduces confirmation prompts. This is intentional.
+- BACKLOG.md promoted item cleanup: after promoting items to CLAUDE.md in a session commit, always clear those promoted items from BACKLOG.md in the same commit. Timestamps and unpromoted items stay.
