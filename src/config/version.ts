@@ -1,6 +1,8 @@
-export const APP_VERSION = "1.1.6";
+export const APP_VERSION = "1.1.7";
 
 export const CHANGELOG: Record<string, string> = {
+  "1.1.7":
+    "Bug fix sprint: list view hover highlight restored as brightened tint on row hover. Land cards now show tan/brown tint distinct from colorless gray. Clicking a deck name in the dropdown keeps it open. 4-copy badge follows gray → green → red progression (green at exactly 4, red at 5+). Unnamed decks show 'Untitled' in gray in the dropdown.",
   "1.1.6":
     "UI polish: deck dropdown now has radio buttons for inactive decks — click to switch without closing. Card count turns green at exactly 60 cards and red above 60. 4-copy warning badge changed from yellow to red. Active Main/Side pill is now blue. Deck name shows 'Untitled' placeholder when unnamed. List view adds spacing between color and mana value sort groups.",
   "1.1.5":

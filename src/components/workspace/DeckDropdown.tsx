@@ -97,9 +97,9 @@ export default function DeckDropdown({
                   )}
                 </div>
                 <button
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setActiveDeckId(d.id);
-                    setIsOpen(false);
                   }}
                   className={`flex items-center gap-2 flex-1 text-left pl-2 pr-1 py-2 text-xs transition-colors min-w-0 ${
                     isActive
@@ -107,7 +107,7 @@ export default function DeckDropdown({
                       : "text-neutral-400 hover:bg-neutral-800/50 hover:text-white"
                   }`}
                 >
-                  <span className="truncate">{d.name}</span>
+                  <span className={`truncate ${!d.name ? "text-neutral-500" : ""}`}>{d.name || "Untitled"}</span>
                 </button>
 
                 <div className="group relative flex items-center justify-center pr-3 shrink-0">
