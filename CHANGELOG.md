@@ -5,6 +5,20 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.2.0] — Opening Hand Simulator Stats Panel
+
+### Added
+- Mana curve histogram in Opening Hand Simulator sidebar: spells only (lands excluded), CMC buckets 1–7+ (CMC ≥ 7 grouped into 7+), bars normalized to tallest bucket, count label above each bar, CMC label below. (Closes #4)
+- Lands strip below histogram: emerald color swatch, land count, percentage of deck. Static — does not update as cards are drawn.
+- Current Hand stats panel: cards in hand, land count, avg CMC of spells only (shows `—` when hand contains no spells). Updates live on every Draw and Mulligan.
+- Draw Odds list in Opening Hand Simulator sidebar: one row per unique card remaining in library, showing live next-draw probability as a percentage with a normalized bar that depletes as copies are drawn. Color thresholds: green ≥ 8%, yellow ≥ 4%, red < 4%. Bar color and % number always match. Cards with 0 copies remaining are hidden. (Closes #7)
+- Lands toggle in Draw Odds header: default on; instantly filters lands in/out of the list. Active state uses emerald accent.
+- Pin interaction: click a card row in Draw Odds or click a card image in the hand grid to toggle pin. Pinned rows float to top of Draw Odds list with blue background, border, filled star icon, and blue name text. Pinned card images show blue ring and star badge. Multiple cards can be pinned simultaneously. Mulligan clears all pins.
+- Mulligan counter in Opening Hand Simulator header subtitle alongside Hand and Library counts. Starts at 0 on modal open, increments by 1 on each Mulligan, resets when modal is closed and reopened. (Closes #9)
+- Named probability threshold constants at top of file: `PROB_GREEN = 0.08`, `PROB_YELLOW = 0.04` — calibrated for 60-card decks; pre-named for Commander recalibration when that mode ships.
+
+---
+
 ## [1.1.7] — Bug Fix Sprint
 
 ### Fixed

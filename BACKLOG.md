@@ -38,3 +38,9 @@ Then drop the matching timestamp marker here in this chat using the same datetim
 - [ ] **bug** | Qty soft warning turns red at 4 copies; 4 is still legal — should stay gray at 4 and only turn red above 4; consider yellow warning state as intermediate
 - [ ] **bug** | Untitled decks show as blank in the dropdown — needs a visible name indicator; default display name should be "Untitled"
 --- consolidated to BACKLOG.md 2026-03-11T00:00 ---  🎴
+- [ ] **enhancement** | Turn-based draw probability slider — show odds of drawing a card by turn N; deferred because "turn" is ambiguous mid-simulation; revisit when building a dedicated pre-game deck analysis view
+- [ ] **enhancement** | Max % inline label — show static max possible % next to card name in Draw Odds (e.g. "6.7% max") as a reference anchor; deferred to keep UI clean; revisit once live with real decks
+- [ ] **enhancement** | Commander threshold calibration — color thresholds (green ≥8%, yellow ≥4%, red <4%) calibrated for 60-card decks; recalibrate when Commander mode ships (99 cards); constants are already named
+- [ ] **enhancement** | Category-level draw odds — odds of drawing any land, any 2-drop, any removal, etc.; requires card tagging system; deferred as stretch goal beyond per-card odds
+- [ ] **enhancement** | Mulligan strategy hints — contextual guidance based on hand stats (e.g. "only 1 land — consider mulligan"); out of scope for this version
+- [ ] **v2.0** | Mobile touch pin interaction — click-to-pin works on desktop; touch targets in sidebar may be small on mobile; flag for review at mobile optimization milestone

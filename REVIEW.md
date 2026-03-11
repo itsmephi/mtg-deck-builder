@@ -1,5 +1,95 @@
 # REVIEW.md — MTG Deck Builder Session Journal
 
+---
+
+## Current Release: v1.2.0
+Status: IN PROGRESS 🔧
+
+---
+
+## Plan Review — v1.2.0
+
+| File | Change |
+|---|---|
+| `src/components/layout/SampleHandModal.tsx` | Full replacement of the stats sidebar — add `marked`, `showLands`, `mulliganCount` state; add `PROB_GREEN`/`PROB_YELLOW` named constants; replace existing two-section sidebar with three-section unified panel: (1) Mana Curve histogram (spells only, CMC 1–7+, normalized bars, count above, CMC below) + Lands strip, (2) Current Hand stats (cards in hand, lands, avg CMC spells-only), (3) Draw Odds list (live %, normalized bar, color thresholds, lands toggle, pin/unpin via name click or card image click, sort pinned first then by live % desc, 0-copy hidden); update header subtitle to include Mulligans counter; add `Star` import from lucide-react; increment mulliganCount and reset marked on every Mulligan. |
+| `src/config/version.ts` | Bump `APP_VERSION` to `"1.2.0"` and add changelog entry. |
+| `CHANGELOG.md` | Add v1.2.0 entry. |
+| `CLAUDE.md` | Version bump to v1.2.0; mark #4, #7, #9 closed this release; update Active Milestone to TBD. |
+| `BACKLOG.md` | Append six new deferred items from this session. |
+| `REVIEW.md` | Plan review table, testing checklist (this file). |
+
+---
+
+## Testing Checklist — v1.2.0
+
+- [x] Mana curve: spells only, no lands in histogram
+- [x] Mana curve: CMC 7+ bucket includes all cards with CMC ≥ 7
+- [x] Mana curve: bar heights normalized to tallest bucket
+- [x] Mana curve: count label above each bar, CMC label below
+- [x] Lands strip: correct count and percentage
+- [x] Current Hand: cards in hand count matches hand display
+- [x] Current Hand: lands count correct
+- [x] Current Hand: avg CMC excludes lands; shows `—` with all-land hand
+- [x] Draw Odds: lands visible by default
+- [x] Draw Odds: lands toggle hides/shows lands instantly
+- [x] Draw: live % updates immediately after clicking Draw
+- [x] Draw: normalized bar shrinks when a copy is drawn
+- [x] Mulligan: all bars reset to full
+- [x] Mulligan: live % resets correctly
+- [x] Color thresholds: green ≥ 8%, yellow ≥ 4%, red < 4%
+- [x] Bar color and % always match
+- [x] 0-copy cards are hidden
+- [x] Pin via card name: star + blue row + floats to top
+- [x] Pin via card image: blue ring + star badge
+- [ ] Pin synced between list and grid --- we don't have list view/grid view toggle in the test hand modal but this would be useful for future verions.
+- [x] Multiple pins work simultaneously
+- [x] Mulligan clears all pins
+- [x] Sort order: pinned first, then by live % descending within each group
+- [x] Mulligan counter: starts at 0 on modal open
+- [x] Mulligan counter: increments by 1 each mulligan
+- [x] Mulligan counter: resets on modal close and reopen
+- [x] No regression: Draw button works as before
+- [x] No regression: Mulligan button works as before
+- [x] No regression: library depleted state works as before
+
+---
+
+## Emerging Issues
+- "Pin synced between list and grid" checklist item left unchecked — Phi noted there is no list/grid view toggle inside the modal. This is correct; the spec's "list" = Draw Odds sidebar rows, "grid" = card hand grid. Both surfaces update the same `marked` state, so pin sync IS working as designed. The checklist item wording is misleading — no follow-up needed.
+
+---
+
+## Session Summary — v1.2.0
+Status: APPROVED ✅
+
+### Gate Check
+- Plan Review gate held: no files touched until PROCEED ✅
+- Testing Checklist gate held: paused after build before APPROVED ✅
+- Build-in-one-pass pattern followed (single-file feature) ✅
+
+### Opening Hand Simulator Stats Panel — #4, #7, #9
+
+**New state:** `marked: Set<string>` (pinned card IDs), `showLands: boolean` (Draw Odds filter, default true), `mulliganCount: number` (starts at 0, increments on Mulligan, never persisted).
+
+**Named constants:** `PROB_GREEN = 0.08`, `PROB_YELLOW = 0.04` at top of file — pre-named for Commander recalibration.
+
+**Initial draw:** Separated from `shuffleAndDraw` so `mulliganCount` stays at 0 on modal open. `shuffleAndDraw` (Mulligan button) increments counter and resets `marked`.
+
+**Mana Curve (#4):** Histogram with CMC buckets 1–7+ (spells only; 0-CMC spells clamped to bucket 1). Bars normalized to tallest bucket, count label above, CMC label below. Lands strip immediately below: emerald swatch, `N / total`, percentage. Static — computed from deck prop with empty `useMemo` deps.
+
+**Current Hand:** Live stats: cards in hand, land count, avg CMC of spells only. Shows `—` when hand contains no spells (all lands). Wraps in `useMemo([hand])`.
+
+**Draw Odds (#7):** One row per unique card with >0 copies remaining in library. Live %, normalized bar (`barFill = liveProb / maxProb`), color-coded by threshold (both % and bar always same color). Sorted pinned-first then live% desc within each group. Lands toggle filters instantly. Wraps in `useMemo([library, libraryCounts, marked, showLands])`.
+
+**Pin interaction:** Clicking a card name row in Draw Odds or a card image in the hand grid both call `toggleMark(card.id)` — same state, always in sync. Pinned row: blue background, border, filled `Star` icon, `text-blue-300` name. Pinned card image: `ring-2 ring-blue-500` + blue `Star` badge top-right. Multiple pins allowed. Mulligan clears all with `setMarked(new Set())`.
+
+**Mulligan counter (#9):** Header subtitle updated from `Library: N | Hand: N` to `Hand: N · Library: N · Mulligans: N`.
+
+### Carry-Forwards
+None — all items complete.
+
+---
+
 ## How This File Works
 This file is the live session journal shared between Phi, Claude Chat, and Claude Code.
 - **Claude Code writes:** Plan review table, testing checklist, session summary — but only commits to git at the end of the session in a clean completed state
@@ -28,7 +118,6 @@ Status: APPROVED ✅
 | `REVIEW.md` | Plan review table, testing checklist (this file). |
 
 ---
-
 ## Testing Checklist — v1.1.7
 
 ### Item 1 — Hover Highlight

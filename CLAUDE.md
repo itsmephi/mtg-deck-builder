@@ -3,7 +3,7 @@ Authors: Phi & Thurgood Nguyen
 Stack: Next.js + TypeScript + Tailwind CSS
 Deployed: Vercel | Repo: GitHub (itsmephi/mtg-deck-builder)
 IDE: Zed on Steam Deck (Linux)
-Current Version: v1.1.7 — see CHANGELOG.md for full history
+Current Version: v1.2.0 — see CHANGELOG.md for full history
 
 ---
 
@@ -84,19 +84,19 @@ Rules:
 ---
 
 ## Active Milestone
-→ v1.2.0 — Next planned milestone | Design session required before building
+→ TBD — Design session required before building next milestone
 
 ---
 
 ## v1.2.0 and beyond (deferred)
 → Issues: #4–#14
 
-- Mana Curve Chart (#4)
+- Mana Curve Chart (#4) *(closed this release)*
 - Color Identity Bar (#5)
 - Deck Legality Checker (#6)
-- Draw probability stats per card (#7)
+- Draw probability stats per card (#7) *(closed this release)*
 - Add turn tracker during deck testing (#8)
-- Show mulligan count in parenthesis (#9)
+- Show mulligan count in parenthesis (#9) *(closed this release)*
 - Ability to mark cards as owned vs. to-buy independently (#10)
 - Toggle card scale for art previews (#11)
 - Ability to toggle a card inactive while retaining count (#12)
