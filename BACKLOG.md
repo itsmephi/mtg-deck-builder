@@ -28,3 +28,13 @@ If there are new items, output a Claude Code prompt that does the following:
 Then drop the matching timestamp marker here in this chat using the same datetime.
 -->
 --- consolidated to BACKLOG.md 2026-03-08T13:00 ---  🎴
+- [ ] **bug** | Clicking a deck name in the decklist dropdown should behave the same as clicking the radio button — no need to close the dropdown
+- [ ] **bug** | List view row hover highlight lost after color tint implementation; hover state should be restored and coexist with tint
+- [ ] **enhancement** | Colorless and Land row tints should be differentiated — colorless = gray, lands = tan/brown (reference: magic.iristormdesign.com)
+- [ ] **workflow** | Carry-forward vs hot-fix decision rule — carry-forwards are fine for one-liners or direct fixes to what was just built; if a carry-forward requires new design decisions mid-QA, flag as a separate hot-fix version; mid-QA scope additions (pulling in a backlog item while testing) should always be a separate version; Claude Chat should surface this rule at the start of QA any time a mid-session scope addition is being considered
+- [ ] **workflow** | Visual specs that touch row/cell backgrounds must explicitly state: transparency behavior, hover state coexistence, and layering with existing styles; Claude Chat should ask these questions during design
+- [ ] **workflow** | For bug specs where the issue title describes unwanted behavior, Claude Chat must explicitly confirm intended behavior before writing the spec — never assume the fix direction from the title alone
+- [ ] **v2.0** | UI overhaul — replace always-on buttons (close, owned, +/−, etc.) with hover-state reveals to keep the UI cleaner
+- [ ] **bug** | Qty soft warning turns red at 4 copies; 4 is still legal — should stay gray at 4 and only turn red above 4; consider yellow warning state as intermediate
+- [ ] **bug** | Untitled decks show as blank in the dropdown — needs a visible name indicator; default display name should be "Untitled"
+--- consolidated to BACKLOG.md 2026-03-11T00:00 ---  🎴
