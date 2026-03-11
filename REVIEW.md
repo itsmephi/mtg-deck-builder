@@ -11,7 +11,7 @@ This file is the live session journal shared between Phi, Claude Chat, and Claud
 ---
 
 ## Current Release: v1.1.7
-Status: IN PROGRESS 🔧
+Status: APPROVED ✅
 
 ---
 
@@ -67,7 +67,34 @@ Status: IN PROGRESS 🔧
 ---
 
 ## Emerging Issues
-<!-- Phi fills this in during QA -->
+None.
+
+---
+
+## Session Summary — v1.1.7
+
+### Gate Check
+- Build-in-one-pass pattern followed (small release) ✅
+- Testing Checklist written before pausing ✅
+- APPROVED received before final commit ✅
+
+### Item 1 — Hover Highlight Restored
+Added `getRowHoverTint()` helper alongside `getRowTint()` — returns a higher-alpha version of the same RGBA color. Added `hoveredRowId` state. Updated `onMouseEnter`/`onMouseLeave` to set/clear `hoveredRowId`. Row `style` now reads `hoveredRowId === card.id ? getRowHoverTint(card) : getRowTint(card)`. Yellow-highlighted rows keep `style` as `undefined`, so hover brightening is bypassed. Removed the now-redundant `hover:bg-neutral-800/40` Tailwind class (was overridden by inline style since v1.1.6 tint landed).
+
+### Item 2 — Land vs Colorless Tint
+Updated `getRowTint()` to check `card.type_line?.includes("Land")` before the `colors` array check. Land → `rgba(180, 140, 90, 0.15)` (tan/brown). Colorless non-land (empty `colors`, no `Land` in type_line) → `rgba(150, 150, 150, 0.12)` (gray, bumped from 0.07). `getRowHoverTint()` mirrors: land → `rgba(180, 140, 90, 0.28)`, colorless → `rgba(150, 150, 150, 0.22)`.
+
+### Item 3 — Deck Name Click Stays Open
+Removed `setIsOpen(false)` from the deck name button's `onClick`. Added `e.stopPropagation()` to match the radio button pattern exactly. No visual changes.
+
+### Item 4 — 4-Copy Badge Color Progression
+Replaced single `overLimit` boolean with `isExempt`, `atCopyLimit` (=4), `overCopyLimit` (≥5), `showCopyBadge` (≥4). Qty span: red at `overCopyLimit`, green at `atCopyLimit`, neutral otherwise. Tooltip only renders at `overCopyLimit`. Applied in both `VisualCard.tsx` and `ListCardTable.tsx`.
+
+### Item 5 — Untitled Deck in Dropdown
+Deck name `<span>` renders `{d.name || "Untitled"}`. `text-neutral-500` applied conditionally (`!d.name`) — named decks inherit existing color unchanged.
+
+### Carry-Forwards
+None — all items complete.
 
 ---
 
