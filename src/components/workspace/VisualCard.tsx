@@ -18,10 +18,13 @@ export default function VisualCard({ card, onUpdateQuantity, onSetQuantity, onUp
   const isRoom = card.type_line?.includes('Room');
   const hasBackArt = isDoubleFaced && !!card.card_faces![1].image_uris && !isRoom;
 
-  const overCopyLimit =
-    (card.quantity + extraQty) >= 5 &&
-    !card.type_line?.toLowerCase().includes("basic land") &&
-    !card.oracle_text?.includes("A deck can have any number");
+  const isExempt =
+    card.type_line?.toLowerCase().includes("basic land") ||
+    card.oracle_text?.includes("A deck can have any number");
+  const combinedQty = card.quantity + extraQty;
+  const atCopyLimit = combinedQty === 4 && !isExempt;
+  const overCopyLimit = combinedQty >= 5 && !isExempt;
+  const showCopyBadge = atCopyLimit || overCopyLimit;
 
   const isFullyOwned = card.quantity > 0 && card.ownedQty >= card.quantity;
   const isChecked = card.ownedQty > 0;
@@ -223,7 +226,7 @@ export default function VisualCard({ card, onUpdateQuantity, onSetQuantity, onUp
           ) : (
             <span
               onClick={startEdit}
-              className={`text-xs font-bold cursor-text px-1 rounded hover:bg-neutral-800 transition-colors ${overCopyLimit ? "text-red-400" : "text-neutral-200"}`}
+              className={`text-xs font-bold cursor-text px-1 rounded hover:bg-neutral-800 transition-colors ${overCopyLimit ? "text-red-400" : atCopyLimit ? "text-green-400" : "text-neutral-200"}`}
             >
               {card.quantity}
             </span>

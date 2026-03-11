@@ -10,6 +10,69 @@ This file is the live session journal shared between Phi, Claude Chat, and Claud
 
 ---
 
+## Current Release: v1.1.7
+Status: IN PROGRESS 🔧
+
+---
+
+## Plan Review — v1.1.7
+
+| File | Change |
+|---|---|
+| `src/components/workspace/ListCardTable.tsx` | Item 1: Add `getRowHoverTint()` helper; add `hoveredRowId` state; apply brightened tint on `onMouseEnter`/`onMouseLeave`; yellow highlight rows skip hover brightening. Item 2: Update `getRowTint()` — Land (type_line-based) → tan/brown `rgba(180,140,90,0.15)`; colorless non-land → gray `rgba(150,150,150,0.12)`. Item 4: Split `overLimit` into `atCopyLimit` (=4, green text) and `overCopyLimit` (≥5, red text + tooltip); badge shows at 4+. |
+| `src/components/workspace/DeckDropdown.tsx` | Item 3: Remove `setIsOpen(false)` from deck name button onClick; add `e.stopPropagation()` to match radio button pattern. Item 5: Replace `{d.name}` with `{d.name \|\| "Untitled"}`; apply `text-neutral-500` to fallback text only. |
+| `src/components/workspace/VisualCard.tsx` | Item 4: Split `overCopyLimit` into `atCopyLimit` (=4) / `overCopyLimit` (≥5) / `showCopyBadge`; qty span uses green at 4, red at 5+. |
+| `src/config/version.ts` | Bump `APP_VERSION` to `"1.1.7"`, add changelog entry. |
+| `CHANGELOG.md` | Add v1.1.7 entry. |
+| `CLAUDE.md` | Version bump to v1.1.7; add `.md` file format note to Release Workflow step 2. |
+| `REVIEW.md` | Plan review table, testing checklist (this file). |
+
+---
+
+## Testing Checklist — v1.1.7
+
+### Item 1 — Hover Highlight
+- [ ] List view: hovering a tinted row brightens the tint color subtly
+- [ ] List view: hovering a row with yellow highlight — hover brightening does NOT appear (yellow wins)
+- [ ] List view: moving mouse off a row — tint returns to base immediately
+- [ ] Grid view: no hover behavior change (unaffected)
+
+### Item 2 — Colorless vs Land Tint
+- [ ] Basic Land (e.g. Forest) shows tan/brown tint in list view
+- [ ] Fetch land (e.g. Verdant Catacombs) shows tan/brown tint
+- [ ] Triome (e.g. Jetmir's Garden — has colors) shows tan/brown tint
+- [ ] Colorless artifact (e.g. Sol Ring) shows neutral gray tint
+- [ ] Eldrazi or other colorless non-land shows neutral gray tint
+- [ ] Colored cards unaffected — existing tints intact
+- [ ] Hover brightening works correctly on tan/brown and gray tint rows
+
+### Item 3 — Deck Name Click
+- [ ] Clicking a deck name switches the active deck
+- [ ] Dropdown stays open after clicking a deck name
+- [ ] Clicking the radio button still works as before (switches deck, stays open)
+- [ ] No regression: deck name text still visible and styled correctly
+
+### Item 4 — 4-Copy Badge
+- [ ] Grid view: badge qty text is gray at 3 copies (or badge absent — per existing logic)
+- [ ] Grid view: badge qty text is green at exactly 4 copies
+- [ ] Grid view: badge qty text is red at 5+ copies
+- [ ] List view: same progression as grid view
+- [ ] No regression to other card count colors (toolbar, owned counter)
+
+### Item 5 — Untitled Deck in Dropdown
+- [ ] A deck with no name shows "Untitled" in gray in the dropdown
+- [ ] A deck with a user-entered name shows that name in normal white text
+- [ ] Active deck indicator (blue dot) still displays correctly on unnamed decks
+
+---
+
+## Emerging Issues
+<!-- Phi fills this in during QA -->
+
+---
+
+## Previous Session History
+
 ## Session Start Sync Check
 Before any design or build work begins, confirm all of the following:
 - [x] Version in CLAUDE.md matches the latest entry in CHANGELOG.md — both v1.1.5 ✅
@@ -19,8 +82,8 @@ Before any design or build work begins, confirm all of the following:
 
 ---
 
-## Current Release: v1.1.6
-Status: IN PROGRESS 🔧
+## Previous Release: v1.1.6
+Status: APPROVED ✅
 
 ---
 

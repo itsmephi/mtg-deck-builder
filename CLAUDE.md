@@ -3,7 +3,7 @@ Authors: Phi & Thurgood Nguyen
 Stack: Next.js + TypeScript + Tailwind CSS
 Deployed: Vercel | Repo: GitHub (itsmephi/mtg-deck-builder)
 IDE: Zed on Steam Deck (Linux)
-Current Version: v1.1.6 — see CHANGELOG.md for full history
+Current Version: v1.1.7 — see CHANGELOG.md for full history
 
 ---
 
@@ -150,6 +150,7 @@ New ideas captured here first, then promoted to a milestone when ready to build.
 2. Claude Chat generates the Claude Code prompt as a downloadable markdown file — prompt must always include:
    - A CHANGELOG outline based on the design spec (Claude Code fills it in accurately based on what was actually built)
    - What to update in CLAUDE.md (version bump, milestone changes, new backlog items)
+   - **Note:** Claude Code prompts are always generated as `.md` files — never `.docx` or any other format.
 
 3. `git checkout -b vX.X.X`
    > **Note:** WIP commits stay on the branch — never merge to main until APPROVED.

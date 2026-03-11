@@ -3,16 +3,34 @@ import React, { useRef, useState } from "react";
 const COLOR_ORDER_L = ["W", "U", "B", "R", "G"];
 
 function getRowTint(card: DeckCard): string {
+  const isLand = card.type_line?.includes("Land");
+  if (isLand) return "rgba(180, 140, 90, 0.15)";
   const colors: string[] = (card as any).colors ?? [];
   if (colors.length > 1) return "rgba(199, 162, 75, 0.10)";
-  if (colors.length === 0) return "rgba(150, 150, 150, 0.07)";
+  if (colors.length === 0) return "rgba(150, 150, 150, 0.12)";
   switch (colors[0]) {
     case "W": return "rgba(248, 231, 187, 0.08)";
     case "U": return "rgba(14, 104, 171, 0.10)";
     case "B": return "rgba(148, 110, 174, 0.10)";
     case "R": return "rgba(211, 73, 53, 0.10)";
     case "G": return "rgba(0, 115, 62, 0.10)";
-    default:  return "rgba(150, 150, 150, 0.07)";
+    default:  return "rgba(150, 150, 150, 0.12)";
+  }
+}
+
+function getRowHoverTint(card: DeckCard): string {
+  const isLand = card.type_line?.includes("Land");
+  if (isLand) return "rgba(180, 140, 90, 0.28)";
+  const colors: string[] = (card as any).colors ?? [];
+  if (colors.length > 1) return "rgba(199, 162, 75, 0.20)";
+  if (colors.length === 0) return "rgba(150, 150, 150, 0.22)";
+  switch (colors[0]) {
+    case "W": return "rgba(248, 231, 187, 0.16)";
+    case "U": return "rgba(14, 104, 171, 0.20)";
+    case "B": return "rgba(148, 110, 174, 0.20)";
+    case "R": return "rgba(211, 73, 53, 0.20)";
+    case "G": return "rgba(0, 115, 62, 0.20)";
+    default:  return "rgba(150, 150, 150, 0.22)";
   }
 }
 
@@ -73,6 +91,9 @@ export default function ListCardTable({
 }: ListCardTableProps) {
   // Remembers last non-zero ownedQty per card so checkbox can restore it on re-check
   const lastOwnedQtyRef = useRef<Map<string, number>>(new Map());
+
+  // Row hover state for tint brightening
+  const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
 
   // Inline quantity editing state
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -176,10 +197,13 @@ export default function ListCardTable({
               : "text-neutral-100";
 
             const extraQty = sideboardQtyMap?.get(card.name.toLowerCase()) ?? 0;
-            const overLimit =
-              (card.quantity + extraQty) >= 5 &&
-              !card.type_line?.toLowerCase().includes("basic land") &&
-              !card.oracle_text?.includes("A deck can have any number");
+            const isExempt =
+              card.type_line?.toLowerCase().includes("basic land") ||
+              card.oracle_text?.includes("A deck can have any number");
+            const combinedQty = card.quantity + extraQty;
+            const atCopyLimit = combinedQty === 4 && !isExempt;
+            const overCopyLimit = combinedQty >= 5 && !isExempt;
+            const showCopyBadge = atCopyLimit || overCopyLimit;
 
             // Keep ref up to date whenever ownedQty is non-zero
             if (card.ownedQty > 0) lastOwnedQtyRef.current.set(card.id, card.ownedQty);
@@ -200,10 +224,10 @@ export default function ListCardTable({
                     else cardRefs.current.delete(card.id);
                   }
                 }}
-                onMouseEnter={() => onHoverStart(card)}
-                onMouseLeave={onHoverEnd}
-                className={`border-b border-neutral-800/40 hover:bg-neutral-800/40 transition-colors ${highlightedId === card.id ? "bg-yellow-400/10 outline outline-1 outline-yellow-400/50" : ""}`}
-                style={highlightedId !== card.id ? { backgroundColor: getRowTint(card) } : undefined}
+                onMouseEnter={() => { onHoverStart(card); setHoveredRowId(card.id); }}
+                onMouseLeave={() => { onHoverEnd(); setHoveredRowId(null); }}
+                className={`border-b border-neutral-800/40 transition-colors ${highlightedId === card.id ? "bg-yellow-400/10 outline outline-1 outline-yellow-400/50" : ""}`}
+                style={highlightedId !== card.id ? { backgroundColor: hoveredRowId === card.id ? getRowHoverTint(card) : getRowTint(card) } : undefined}
               >
                 {/* Qty */}
                 <td className={`px-2 py-1 ${cellGrayscale}`} style={{ opacity: cellOpacity }}>
@@ -238,17 +262,19 @@ export default function ListCardTable({
                         className="w-6 text-center text-xs font-medium bg-neutral-800 border border-blue-500 rounded text-neutral-200 focus:outline-none"
                         autoFocus
                       />
-                    ) : overLimit ? (
+                    ) : showCopyBadge ? (
                       <div className="group relative flex items-center justify-center">
                         <span
                           onClick={() => startEdit(card)}
-                          className="w-6 text-center font-medium text-red-400 cursor-text hover:bg-neutral-800 rounded"
+                          className={`w-6 text-center font-medium cursor-text hover:bg-neutral-800 rounded ${atCopyLimit ? "text-green-400" : "text-red-400"}`}
                         >
                           {card.quantity}
                         </span>
-                        <span className="absolute top-full mt-1.5 left-1/2 -translate-x-1/2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-normal max-w-xs z-50">
-                          Exceeds 4-copy limit
-                        </span>
+                        {overCopyLimit && (
+                          <span className="absolute top-full mt-1.5 left-1/2 -translate-x-1/2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-normal max-w-xs z-50">
+                            Exceeds 4-copy limit
+                          </span>
+                        )}
                       </div>
                     ) : (
                       <span

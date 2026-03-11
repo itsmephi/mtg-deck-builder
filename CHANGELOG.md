@@ -5,6 +5,17 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.1.7] — Bug Fix Sprint
+
+### Fixed
+- List view hover highlight restored: hovering a tinted row now brightens the tint color subtly. Yellow highlight still overrides hover (yellow wins). Regression from v1.1.6 color tint implementation.
+- Colorless vs Land tint differentiated in list view: Land cards (type_line-based detection) now show tan/brown (`rgba(180, 140, 90, 0.15)`); colorless non-land cards show neutral gray (`rgba(150, 150, 150, 0.12)`). Correctly handles Basic Lands, fetchlands, Triomes, and dual lands.
+- Deck name click in dropdown no longer closes it — now behaves identically to the radio button (switches active deck, stays open).
+- 4-copy badge color follows gray → green → red progression: gray at ≤ 3 copies (badge absent), green at exactly 4 (at the legal limit), red at 5+ (over the limit). Applied in both grid and list view.
+- Unnamed decks now show "Untitled" in muted gray in the deck dropdown. Named decks unaffected.
+
+---
+
 ## [1.1.6] — UI Polish + Workflow Fixes
 
 ### Added
