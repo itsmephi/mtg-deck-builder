@@ -7,9 +7,14 @@ import {
   PlusCircle,
   AlertCircle,
   BarChart3,
-  HelpCircle,
+  Star,
 } from "lucide-react";
 import { DeckCard } from "@/types";
+
+// Color thresholds for draw probability (calibrated for 60-card decks)
+const PROB_GREEN = 0.08; // ≥ 8% — strong access
+const PROB_YELLOW = 0.04; // ≥ 4% — partial access
+// < 4% — red (nearly exhausted)
 
 interface SampleHandModalProps {
   deck: DeckCard[];
@@ -22,7 +27,14 @@ export default function SampleHandModal({
 }: SampleHandModalProps) {
   const [hand, setHand] = useState<DeckCard[]>([]);
   const [library, setLibrary] = useState<DeckCard[]>([]);
+  const [marked, setMarked] = useState<Set<string>>(new Set());
+  const [showLands, setShowLands] = useState(true);
+  const [mulliganCount, setMulliganCount] = useState(0);
   const scrollEndRef = useRef<HTMLDivElement>(null);
+
+  const isLand = (c: DeckCard) => c.type_line.toLowerCase().includes("land");
+
+  const totalCards = deck.reduce((s, c) => s + c.quantity, 0);
 
   const shuffleAndDraw = () => {
     const pool: DeckCard[] = [];
@@ -31,54 +43,124 @@ export default function SampleHandModal({
         pool.push(card);
       }
     });
-
     for (let i = pool.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [pool[i], pool[j]] = [pool[j], pool[i]];
     }
-
+    setMulliganCount((prev) => prev + 1);
+    setMarked(new Set());
     setHand(pool.slice(0, 7));
     setLibrary(pool.slice(7));
   };
 
   const drawCard = () => {
     if (library.length === 0) return;
-    const nextCard = library[0];
-    setHand((prev) => [...prev, nextCard]);
+    setHand((prev) => [...prev, library[0]]);
     setLibrary((prev) => prev.slice(1));
   };
 
-  const stats = useMemo(() => {
-    const handLands = hand.filter((c) =>
-      c.type_line.toLowerCase().includes("land"),
-    ).length;
-    const libraryLands = library.filter((c) =>
-      c.type_line.toLowerCase().includes("land"),
-    ).length;
-    const drawLandProb =
-      library.length > 0 ? (libraryLands / library.length) * 100 : 0;
+  const toggleMark = (cardId: string) => {
+    setMarked((prev) => {
+      const next = new Set(prev);
+      if (next.has(cardId)) {
+        next.delete(cardId);
+      } else {
+        next.add(cardId);
+      }
+      return next;
+    });
+  };
 
-    // Safety check for CMC property
-    const totalCMCValue = hand.reduce(
-      (acc, card: any) => acc + (card.cmc || 0),
-      0,
-    );
-    const avgCMC = totalCMCValue / (hand.length || 1);
+  // Static — computed once from deck prop, never changes during simulation
+  const curveBuckets = useMemo(() => {
+    const counts: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0 };
+    deck
+      .filter((c) => !c.type_line.toLowerCase().includes("land"))
+      .forEach((c) => {
+        const cmc = c.cmc || 0;
+        const bucket = cmc >= 7 ? 7 : Math.max(1, Math.floor(cmc));
+        counts[bucket] = (counts[bucket] || 0) + c.quantity;
+      });
+    const landCount = deck
+      .filter((c) => c.type_line.toLowerCase().includes("land"))
+      .reduce((s, c) => s + c.quantity, 0);
+    const landPct = totalCards > 0 ? (landCount / totalCards) * 100 : 0;
+    const maxCount = Math.max(...Object.values(counts), 1);
+    return { counts, maxCount, landCount, landPct };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-    return { handLands, drawLandProb, avgCMC };
-  }, [hand, library]);
+  // Live — recomputes on every draw/mulligan
+  const libraryCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    library.forEach((c) => {
+      counts[c.id] = (counts[c.id] || 0) + 1;
+    });
+    return counts;
+  }, [library]);
+
+  const drawOdds = useMemo(() => {
+    const rows = deck
+      .filter((c) => showLands || !c.type_line.toLowerCase().includes("land"))
+      .map((c) => {
+        const copiesInLibrary = libraryCounts[c.id] || 0;
+        const liveProb = library.length > 0 ? copiesInLibrary / library.length : 0;
+        const maxProb = totalCards > 0 ? c.quantity / totalCards : 0;
+        const barFill = maxProb > 0 ? liveProb / maxProb : 0;
+        const isPinned = marked.has(c.id);
+        return { card: c, copiesInLibrary, liveProb, barFill, isPinned };
+      })
+      .filter((r) => r.copiesInLibrary > 0);
+
+    rows.sort((a, b) => {
+      if (a.isPinned !== b.isPinned) return a.isPinned ? -1 : 1;
+      return b.liveProb - a.liveProb;
+    });
+
+    return rows;
+  }, [library, libraryCounts, marked, showLands]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handStats = useMemo(() => {
+    const lands = hand.filter((c) => c.type_line.toLowerCase().includes("land")).length;
+    const spells = hand.filter((c) => !c.type_line.toLowerCase().includes("land"));
+    const avgCMC =
+      spells.length > 0
+        ? spells.reduce((s, c) => s + (c.cmc || 0), 0) / spells.length
+        : null;
+    return { lands, avgCMC };
+  }, [hand]);
+
+  const getProbColor = (liveProb: number) => {
+    if (liveProb >= PROB_GREEN) return "text-emerald-400";
+    if (liveProb >= PROB_YELLOW) return "text-yellow-400";
+    return "text-red-400";
+  };
+
+  const getBarColor = (liveProb: number) => {
+    if (liveProb >= PROB_GREEN) return "bg-emerald-500";
+    if (liveProb >= PROB_YELLOW) return "bg-yellow-500";
+    return "bg-red-500";
+  };
 
   useEffect(() => {
     if (hand.length > 7) {
-      scrollEndRef.current?.scrollIntoView({
-        behavior: "smooth",
-        block: "end",
-      });
+      scrollEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
     }
   }, [hand.length]);
 
+  // Initial draw on mount — does not increment mulliganCount (starts at 0)
   useEffect(() => {
-    shuffleAndDraw();
+    const pool: DeckCard[] = [];
+    deck.forEach((card) => {
+      for (let i = 0; i < card.quantity; i++) {
+        pool.push(card);
+      }
+    });
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    setHand(pool.slice(0, 7));
+    setLibrary(pool.slice(7));
   }, [deck]);
 
   return (
@@ -101,7 +183,7 @@ export default function SampleHandModal({
                 Opening Hand Simulator
               </h2>
               <p className="text-neutral-500 text-[10px] md:text-xs uppercase tracking-widest font-bold">
-                Library: {library.length} | Hand: {hand.length}
+                Hand: {hand.length} · Library: {library.length} · Mulligans: {mulliganCount}
               </p>
             </div>
           </div>
@@ -129,69 +211,190 @@ export default function SampleHandModal({
         </div>
 
         <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
-          {/* Stats Header (Mobile/Tablet) / Sidebar (Desktop) */}
-          <div className="w-full lg:w-64 border-b lg:border-b-0 lg:border-r border-neutral-800 bg-neutral-950 p-4 lg:p-6 flex flex-row lg:flex-col gap-6 lg:gap-8 overflow-x-auto shrink-0 custom-scrollbar">
-            <section className="shrink-0 lg:shrink">
-              <h4 className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-2 lg:mb-4">
-                Current Hand
-              </h4>
-              <div className="flex lg:flex-col gap-4 lg:space-y-4">
-                <div className="flex items-center lg:justify-between gap-2 lg:gap-0">
-                  <span className="text-xs lg:text-sm text-neutral-400">
-                    Lands
-                  </span>
-                  <span className="text-xs lg:text-sm font-bold text-white">
-                    {stats.handLands}
-                  </span>
-                </div>
-                <div className="flex items-center lg:justify-between gap-2 lg:gap-0">
-                  <span className="text-xs lg:text-sm text-neutral-400">
-                    Avg. CMC
-                  </span>
-                  <span className="text-xs lg:text-sm font-bold text-white">
-                    {stats.avgCMC.toFixed(1)}
-                  </span>
-                </div>
-              </div>
-            </section>
+          {/* Stats Sidebar */}
+          <div className="w-full lg:w-72 border-b lg:border-b-0 lg:border-r border-neutral-800 bg-neutral-950 overflow-y-auto shrink-0 custom-scrollbar">
+            <div className="p-4 lg:p-5 flex flex-col gap-7">
 
-            <section className="shrink-0 lg:shrink">
-              <h4 className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-2 lg:mb-4">
-                Probability
-              </h4>
-              <div className="p-2 lg:p-4 bg-blue-500/5 border border-blue-500/10 rounded-lg lg:rounded-xl flex items-center lg:block gap-3">
-                <p className="text-[9px] lg:text-[10px] text-blue-400 font-bold uppercase lg:mb-1">
-                  Draw Land
-                </p>
-                <p className="text-lg lg:text-2xl font-bold text-white">
-                  {stats.drawLandProb.toFixed(1)}%
-                </p>
-              </div>
-            </section>
+              {/* Section 1 — Mana Curve */}
+              <section>
+                <h4 className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-3">
+                  Mana Curve
+                </h4>
+                {/* Histogram bars */}
+                <div className="flex items-end gap-1 mb-0.5" style={{ height: "64px" }}>
+                  {[1, 2, 3, 4, 5, 6, 7].map((cmc) => {
+                    const count = curveBuckets.counts[cmc] || 0;
+                    const heightPct =
+                      count > 0 ? (count / curveBuckets.maxCount) * 100 : 0;
+                    return (
+                      <div
+                        key={cmc}
+                        className="flex-1 flex flex-col items-center justify-end h-full gap-0.5"
+                      >
+                        <span className="text-[9px] text-neutral-400 font-bold leading-none">
+                          {count > 0 ? count : ""}
+                        </span>
+                        <div
+                          className="w-full bg-blue-500 rounded-t-sm"
+                          style={{
+                            height: count > 0 ? `${heightPct}%` : "0",
+                            minHeight: count > 0 ? "4px" : "0",
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+                {/* CMC labels */}
+                <div className="flex gap-1 mb-3">
+                  {[1, 2, 3, 4, 5, 6, 7].map((cmc) => (
+                    <div key={cmc} className="flex-1 text-center">
+                      <span className="text-[9px] text-neutral-600 font-bold">
+                        {cmc === 7 ? "7+" : cmc}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                {/* Lands strip */}
+                <div className="flex items-center gap-2 pt-2.5 border-t border-neutral-800">
+                  <div className="w-2.5 h-2.5 rounded-sm bg-emerald-500 shrink-0" />
+                  <span className="text-[11px] text-neutral-400">Lands</span>
+                  <span className="ml-auto text-[11px] font-bold text-neutral-300">
+                    {curveBuckets.landCount} / {totalCards}
+                  </span>
+                  <span className="text-[11px] font-bold text-emerald-400">
+                    {curveBuckets.landPct.toFixed(0)}%
+                  </span>
+                </div>
+              </section>
+
+              {/* Section 2 — Current Hand */}
+              <section>
+                <h4 className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-3">
+                  Current Hand
+                </h4>
+                <div className="space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-neutral-400">Cards in hand</span>
+                    <span className="text-sm font-bold text-white">{hand.length}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-neutral-400">Lands</span>
+                    <span className="text-sm font-bold text-white">{handStats.lands}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-neutral-400">Avg. CMC</span>
+                    <span className="text-sm font-bold text-white">
+                      {handStats.avgCMC !== null ? handStats.avgCMC.toFixed(1) : "—"}
+                    </span>
+                  </div>
+                </div>
+              </section>
+
+              {/* Section 3 — Draw Odds */}
+              <section>
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">
+                    Draw Odds
+                  </h4>
+                  <button
+                    onClick={() => setShowLands((prev) => !prev)}
+                    className={`text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded border transition-colors ${
+                      showLands
+                        ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-400"
+                        : "bg-neutral-800 border-neutral-700 text-neutral-500 hover:text-neutral-400"
+                    }`}
+                  >
+                    Lands
+                  </button>
+                </div>
+                <div className="space-y-1.5">
+                  {drawOdds.length === 0 && (
+                    <p className="text-[11px] text-neutral-600 italic">
+                      No cards remaining in library.
+                    </p>
+                  )}
+                  {drawOdds.map(({ card, copiesInLibrary, liveProb, barFill, isPinned }) => (
+                    <div
+                      key={card.id}
+                      onClick={() => toggleMark(card.id)}
+                      className={`rounded-lg px-2.5 py-2 cursor-pointer transition-all border ${
+                        isPinned
+                          ? "bg-blue-500/10 border-blue-500/30"
+                          : "bg-neutral-900 border-transparent hover:border-neutral-700"
+                      }`}
+                    >
+                      <div className="flex items-center gap-1 mb-1.5">
+                        {isPinned && (
+                          <Star className="w-3 h-3 text-blue-400 fill-blue-400 shrink-0" />
+                        )}
+                        <span
+                          className={`text-[11px] font-medium truncate flex-1 ${
+                            isPinned ? "text-blue-300" : "text-neutral-300"
+                          }`}
+                        >
+                          {card.name}
+                        </span>
+                        <span className="text-[10px] text-neutral-600 shrink-0 ml-1">
+                          ×{copiesInLibrary}
+                        </span>
+                        <span
+                          className={`text-[11px] font-bold shrink-0 ml-1 ${getProbColor(liveProb)}`}
+                        >
+                          {(liveProb * 100).toFixed(1)}%
+                        </span>
+                      </div>
+                      <div className="w-full h-1 bg-neutral-800 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all duration-300 ${getBarColor(liveProb)}`}
+                          style={{ width: `${Math.min(barFill * 100, 100)}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+            </div>
           </div>
 
           {/* Card Grid Area */}
           <div className="flex-1 overflow-y-auto p-4 md:p-8 bg-neutral-900 custom-scrollbar">
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-3 md:gap-5 pb-20 justify-items-center max-w-full mx-auto">
-              {hand.map((card, i) => (
-                <div
-                  key={`${card.id}-${i}`}
-                  className="w-full max-w-[180px] animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both"
-                  style={{ animationDelay: `${i * 30}ms` }}
-                >
-                  <img
-                    src={
-                      card.image_uris?.normal ||
-                      card.card_faces?.[0]?.image_uris?.normal
-                    }
-                    className="w-full rounded-lg shadow-xl border border-neutral-800 hover:scale-105 hover:border-blue-500/50 transition-all cursor-pointer"
-                    alt={card.name}
-                  />
-                  <p className="mt-2 text-[9px] text-neutral-500 font-bold truncate text-center uppercase tracking-tight">
-                    {card.name}
-                  </p>
-                </div>
-              ))}
+              {hand.map((card, i) => {
+                const isPinned = marked.has(card.id);
+                return (
+                  <div
+                    key={`${card.id}-${i}`}
+                    className="w-full max-w-[180px] animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both"
+                    style={{ animationDelay: `${i * 30}ms` }}
+                  >
+                    <div className="relative">
+                      <img
+                        src={
+                          card.image_uris?.normal ||
+                          card.card_faces?.[0]?.image_uris?.normal
+                        }
+                        className={`w-full rounded-lg shadow-xl border transition-all cursor-pointer hover:scale-105 ${
+                          isPinned
+                            ? "border-blue-500 ring-2 ring-blue-500"
+                            : "border-neutral-800 hover:border-blue-500/50"
+                        }`}
+                        alt={card.name}
+                        onClick={() => toggleMark(card.id)}
+                      />
+                      {isPinned && (
+                        <div className="absolute top-1.5 right-1.5 bg-blue-600 rounded-full p-0.5 shadow-md">
+                          <Star className="w-2.5 h-2.5 text-white fill-white" />
+                        </div>
+                      )}
+                    </div>
+                    <p className="mt-2 text-[9px] text-neutral-500 font-bold truncate text-center uppercase tracking-tight">
+                      {card.name}
+                    </p>
+                  </div>
+                );
+              })}
               <div ref={scrollEndRef} className="col-span-full h-1 w-full" />
 
               {library.length === 0 && (

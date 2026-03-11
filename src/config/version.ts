@@ -1,6 +1,8 @@
-export const APP_VERSION = "1.1.7";
+export const APP_VERSION = "1.2.0";
 
 export const CHANGELOG: Record<string, string> = {
+  "1.2.0":
+    "Opening Hand Simulator stats panel: mana curve histogram (spells only, CMC 1–7+, normalized bars), lands strip with count and percentage, live draw probability per card with normalized bars and green/yellow/red color thresholds, lands toggle, pin cards via sidebar row or card image, mulligan counter in header.",
   "1.1.7":
     "Bug fix sprint: list view hover highlight restored as brightened tint on row hover. Land cards now show tan/brown tint distinct from colorless gray. Clicking a deck name in the dropdown keeps it open. 4-copy badge follows gray → green → red progression (green at exactly 4, red at 5+). Unnamed decks show 'Untitled' in gray in the dropdown.",
   "1.1.6":
