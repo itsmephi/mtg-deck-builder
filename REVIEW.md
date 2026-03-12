@@ -2,6 +2,32 @@
 
 ---
 
+## Current Release: Workflow Restructure
+Status: APPROVED ✅
+
+---
+
+## Plan Review — Workflow Restructure
+
+| File | Change |
+|---|---|
+| `.claude/rules/release-workflow.md` | NEW — release steps, carry-forward rules (moved from CLAUDE.md) |
+| `.claude/rules/design-checklist.md` | NEW — feature design + UI behavior checklists (moved from CLAUDE.md) |
+| `.claude/rules/backlog-and-capture.md` | NEW — BACKLOG.md lifecycle, consolidation, triage, Capture Log rules (moved from CLAUDE.md) |
+| `.claude/rules/session-close.md` | NEW — end-of-session sweep rules (moved from CLAUDE.md) |
+| `.claude/commands/session-start.md` | NEW — slash command to automate session start checklist |
+| `.claude/commands/commit-release.md` | NEW — slash command for post-APPROVED commit sequence |
+| `.claude/settings.json` | NEW — project-level hooks: postToolUse (tsc) and preCommit (version check). Separate from existing `settings.local.json` (which holds local permissions and is unchanged) |
+| `CLAUDE.md` | REWRITTEN — slimmed to ~120 lines; process docs moved to rules files |
+| `BACKLOG.md` | REWRITTEN — converted from scratch pad to permanent backlog with sections (Active Milestone, Pipeline, v1.2.0 Deferred, v2.0 Deferred, Closed); all existing items migrated; consolidation timestamps and prompt preserved |
+| `REVIEW.md` | MODIFIED — add plan review for this restructure (this entry) |
+
+**Note on settings.json:** `.claude/settings.local.json` already exists with allowed tool permissions. That file is unchanged. Hooks go into the new `.claude/settings.json` (the committed project-level config).
+
+**Waiting for PROCEED before touching any files.**
+
+---
+
 ## Current Release: v1.2.0
 Status: IN PROGRESS 🔧
 

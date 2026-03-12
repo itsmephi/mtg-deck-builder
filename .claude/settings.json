@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "postToolUse": [
+      {
+        "matcher": "editFile",
+        "command": "npx tsc --noEmit --pretty 2>&1 | head -20"
+      }
+    ],
+    "preCommit": [
+      {
+        "command": "bash -c 'CLAUDE_VER=$(grep -oP \"Current Version: v\\K[0-9.]+\" CLAUDE.md) && TS_VER=$(grep -oP \"APP_VERSION.*\\\"\\K[0-9.]+\" src/config/version.ts) && if [ \"$CLAUDE_VER\" != \"$TS_VER\" ]; then echo \"ERROR: CLAUDE.md ($CLAUDE_VER) != version.ts ($TS_VER)\" && exit 1; else echo \"Version check passed: $CLAUDE_VER\"; fi'"
+      }
+    ]
+  }
+}
