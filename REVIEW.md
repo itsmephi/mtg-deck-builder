@@ -2,6 +2,43 @@
 
 ---
 
+## Plan Review — Quick Bug Sprint (pre-release)
+
+**Summary:** Fix missing sort group spacers for lands in list view color/MV sort by giving lands their own group key and sort bucket, separate from colorless non-lands.
+
+### Files to Touch
+
+| File | Change |
+|---|---|
+| `src/components/workspace/ListCardTable.tsx` | `getGroupKey()` for `color` sort — add `type_line` Land check before colorless fallback; return `"land"` instead of `"colorless"` so spacer fires at the colorless→land boundary |
+| `src/components/workspace/Workspace.tsx` | `colorSortKey()` — add Land check returning `2000` (after colorless `1000`) so lands sort after colorless non-lands and the groups are actually adjacent when grouped |
+| `src/config/version.ts` | Bump `APP_VERSION` to `"1.2.1"` and add changelog entry |
+| `CHANGELOG.md` | Add v1.2.1 entry |
+| `CLAUDE.md` | Version bump to v1.2.1; mark land spacer bug closed |
+| `BACKLOG.md` | Mark land spacer bug closed |
+| `REVIEW.md` | This plan + testing checklist (this file) |
+
+### Design Questions
+None — the root cause is clear. `getGroupKey()` and `colorSortKey()` both fall through lands to the colorless branch because `mana_cost` is empty on all lands. Two targeted one-liner additions fix both.
+
+### Checklist Flags
+- `type_line` Land check pattern already established in `getRowTint()` — same pattern as v1.1.6 land tint work. No new convention introduced.
+
+### Backlog Items Addressed
+- **bug** | Basic lands and fetch lands missing visual spacer when sorted — should match behavior of other sort group separators (no issue number)
+
+---
+
+### Bug Not Included: Deck Name Conflicts (`[name](#)`)
+
+Investigated and could not find a root cause in the codebase. `getUniqueDeckName()` in `useDeckImportExport.tsx` already handles duplicates correctly with `(1)`, `(2)` suffixes. No code path generates a `[name](#)` formatted string. This bug may be a user-triggered paste of markdown text into the name input, or a stale/misdescribed backlog item. Recommending it stay in Pipeline until a reproducible case can be documented. **Not included in this plan.**
+
+---
+
+**Waiting for PROCEED before touching any files.**
+
+---
+
 ## Current Release: Workflow Restructure
 Status: APPROVED ✅
 
