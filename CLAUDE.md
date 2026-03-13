@@ -27,14 +27,13 @@ Process documentation lives in `.claude/rules/` — Claude Code loads these on d
 ---
 
 ## Session Start Checklist
-- [ ] Confirm BACKLOG.md consolidation timestamp matches Capture Log marker
 - [ ] Confirm REVIEW.md shows APPROVED ✅ with no open carry-forwards
 - [ ] Confirm version in CLAUDE.md matches latest CHANGELOG.md entry
 - [ ] Confirm no unclosed GitHub issues from last session
 - [ ] Flag any of the above as blockers before proceeding
 
 Capture Log URL: https://claude.ai/chat/39f0cbd5-b1f5-4995-8b54-c0f6769fcec7
-Find via recent_chats tool (not conversation_search).
+Consolidation is Phi's responsibility — BACKLOG.md is always treated as the current backlog regardless of Capture Log state.
 
 ---
 

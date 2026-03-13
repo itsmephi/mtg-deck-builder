@@ -46,5 +46,5 @@ BACKLOG.md is organized into sections:
 ## Capture Log
 - Chat URL: https://claude.ai/chat/39f0cbd5-b1f5-4995-8b54-c0f6769fcec7
 - Always find via recent_chats tool (not conversation_search by keyword)
-- At session start: check that latest consolidation timestamp in BACKLOG.md matches most recent marker in Capture Log
+- Consolidation is Phi's responsibility — run it anytime between sessions. BACKLOG.md is always treated as current at session start regardless of Capture Log state.
 - Claude Code never reads the Capture Log directly — Claude Chat handles triage
