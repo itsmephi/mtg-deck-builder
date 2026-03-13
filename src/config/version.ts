@@ -1,6 +1,8 @@
-export const APP_VERSION = "1.2.0";
+export const APP_VERSION = "1.2.1";
 
 export const CHANGELOG: Record<string, string> = {
+  "1.2.1":
+    "Bug fix: land cards now appear in their own sort group when sorting by Color in list view — Basic lands, fetchlands, and all other lands were incorrectly grouped with colorless non-land cards and missing the visual spacer between groups.",
   "1.2.0":
     "Opening Hand Simulator stats panel: mana curve histogram (spells only, CMC 1–7+, normalized bars), lands strip with count and percentage, live draw probability per card with normalized bars and green/yellow/red color thresholds, lands toggle, pin cards via sidebar row or card image, mulligan counter in header.",
   "1.1.7":

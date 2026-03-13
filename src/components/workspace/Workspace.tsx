@@ -21,9 +21,9 @@ function colorSortKey(card: DeckCard): number {
   const mc =
     card.mana_cost ??
     (card.card_faces?.map((f) => f.mana_cost).join("") ?? "");
-  if (!mc) return 1000;
+  if (!mc) return card.type_line?.includes("Land") ? 2000 : 1000;
   const colors = COLOR_ORDER.filter((c) => mc.includes(`{${c}}`));
-  if (colors.length === 0) return 1000; // colorless
+  if (colors.length === 0) return card.type_line?.includes("Land") ? 2000 : 1000; // colorless or land
   if (colors.length === 1) return COLOR_ORDER.indexOf(colors[0]); // 0–4
   const bitmask = colors.reduce(
     (acc, c) => acc | COLOR_BITS[c],

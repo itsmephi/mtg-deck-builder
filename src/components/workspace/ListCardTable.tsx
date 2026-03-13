@@ -41,7 +41,7 @@ function getGroupKey(card: DeckCard, sortBy: string): string {
       card.card_faces?.map((f: any) => f.mana_cost).join("") ??
       "";
     const colors = COLOR_ORDER_L.filter((c) => mc.includes(`{${c}}`));
-    if (colors.length === 0) return "colorless";
+    if (colors.length === 0) return card.type_line?.includes("Land") ? "land" : "colorless";
     if (colors.length === 1) return colors[0];
     return "multi-" + colors.join("");
   }
