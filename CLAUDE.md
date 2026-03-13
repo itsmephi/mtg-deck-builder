@@ -21,19 +21,22 @@ Claude Chat never drafts, generates, or edits these files directly. Claude Chat 
 Process documentation lives in `.claude/rules/` — Claude Code loads these on demand:
 - `release-workflow.md` — full release steps, carry-forward rules
 - `design-checklist.md` — feature design and UI behavior checklists
-- `backlog-and-capture.md` — BACKLOG.md lifecycle, consolidation, triage process
-- `session-close.md` — end-of-session sweep rules
+- `backlog-and-capture.md` — BACKLOG.md lifecycle and triage process
 
 ---
 
-## Session Start Checklist
-- [ ] Confirm REVIEW.md shows APPROVED ✅ with no open carry-forwards
-- [ ] Confirm version in CLAUDE.md matches latest CHANGELOG.md entry
-- [ ] Confirm no unclosed GitHub issues from last session
-- [ ] Flag any of the above as blockers before proceeding
+## Workflow Shortcuts
+- `/capture` — add bugs, features, and ideas directly to BACKLOG.md Pipeline
+- `/plan` — plan an implementation before building (flags complex changes for Claude Chat review)
+- `/commit-release vX.X.X` — post-APPROVED commit, merge, and push
 
-Capture Log URL: https://claude.ai/chat/39f0cbd5-b1f5-4995-8b54-c0f6769fcec7
-Consolidation is Phi's responsibility — BACKLOG.md is always treated as the current backlog regardless of Capture Log state.
+## When to Involve Claude Chat
+- Feature design sessions (requirements, UX decisions, spec sign-off)
+- Any `/plan` output that flags ⚠️ (5+ files or new components)
+- Triage and milestone planning
+- Workflow process changes
+
+For straightforward bug fixes and small enhancements, `/plan` → PROCEED → build → QA → APPROVED → `/commit-release` can run entirely in Claude Code.
 
 ---
 

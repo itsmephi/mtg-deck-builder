@@ -26,6 +26,8 @@ globs:
 
 4. **Plan Review** — Claude Code outputs every file it plans to touch and a one-line summary of changes per file, writes this to REVIEW.md, and waits for PROCEED before executing.
 
+   **Complexity check:** If the plan review table lists more than 5 files or introduces a new component, sync REVIEW.md to Claude Chat for a cross-check before typing PROCEED. For standard releases (≤5 files, no new components), Phi reviews the plan directly and types PROCEED without the Claude Chat round-trip.
+
 5. Claude Code executes:
    - **Small releases (quick wins)** — build everything in one pass, then pause
    - **Large releases** — pause and output testing checklist after each feature before proceeding

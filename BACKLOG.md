@@ -2,29 +2,6 @@
 <!-- Permanent backlog. Items live here from capture through completion. -->
 <!-- See .claude/rules/backlog-and-capture.md for full lifecycle rules. -->
 
-<!-- STANDARD CONSOLIDATION PROMPT — paste into Capture Log chat to trigger:
-
-Consolidate the Capture Log.
-
-Scan from the last consolidation marker to the end of this chat. Collect all bugs, features,
-enhancements, workflow ideas, and UI tweaks logged since then.
-
-If there are no new items since the last consolidation marker, do nothing except note that
-the log is current. Do not append a timestamp if there are no new items.
-
-If there are new items, output a Claude Code prompt that does the following:
-- Append all new items to the Pipeline section of BACKLOG.md using: `- [ ] **label** | description`
-  - Valid labels: bug · feature · enhancement · chore · workflow · v2.0
-  - Interpret and clean up each item — don't copy raw chat text
-  - Do not sort, deduplicate, or assign issue numbers — just append
-- After appending all items, append a consolidation timestamp at the very bottom:
-  `--- consolidated YYYY-MM-DDTHH:MM ---`
-  (Items must always appear before the timestamp — never append a timestamp without items above it)
-- Commit BACKLOG.md with message: `chore: consolidate capture log YYYY-MM-DDTHH:MM`
-
-Then drop the matching timestamp marker in the Capture Log chat.
--->
-
 ---
 
 ## Active Milestone
@@ -111,7 +88,3 @@ Then drop the matching timestamp marker in the Capture Log chat.
 - [x] **enhancement** | Untitled deck name placeholder (#70)
 
 ---
-
---- consolidated 2026-03-08T13:00 ---
---- consolidated 2026-03-11T00:00 ---
---- consolidated 2026-03-12T00:00 ---
