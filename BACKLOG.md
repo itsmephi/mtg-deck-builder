@@ -28,7 +28,7 @@
 - [ ] **enhancement** | Category-level draw odds — requires card tagging system; stretch goal
 - [ ] **enhancement** | Mulligan strategy hints — contextual guidance based on hand stats; out of scope this version
 - [ ] **bug** | Deck name conflicts produce malformed names like `[name](#)` — handle duplicate names gracefully
-- [ ] **bug** | Basic lands and fetch lands missing visual spacer when sorted — should match behavior of other sort group separators
+- [x] **bug** | Basic lands and fetch lands missing visual spacer when sorted — should match behavior of other sort group separators *(closed v1.2.1)*
 - [ ] **enhancement** | List view rollover highlight and color rendering feels slow/sluggish — audit and optimize implementation
 - [ ] **enhancement** | Grid view getting cluttered with numbers and buttons — refactor for a cleaner, more minimal card display
 - [ ] **enhancement** | Simulator modal has no view mode toggle — consider adding compact list view inside modal for larger decks; would also make pin-from-list interaction more prominent

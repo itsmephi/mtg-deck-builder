@@ -5,6 +5,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.2.1] — Bug Fix: Land Sort Group Spacer
+
+### Fixed
+- Land cards (Basic lands, fetchlands, Triomes, dual lands) now appear in their own sort group when sorting by Color in list view. Previously, all lands fell through to the colorless group because their `mana_cost` is empty — causing them to be indistinguishable from colorless non-lands and missing the visual spacer that should appear between groups. Fixed in both `getGroupKey()` (spacer logic) and `colorSortKey()` (sort order) using the same `type_line?.includes("Land")` check established in v1.1.6.
+
+---
+
 ## [1.2.0] — Opening Hand Simulator Stats Panel
 
 ### Added

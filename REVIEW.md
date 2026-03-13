@@ -35,7 +35,28 @@ Investigated and could not find a root cause in the codebase. `getUniqueDeckName
 
 ---
 
-**Waiting for PROCEED before touching any files.**
+**Build complete. Testing checklist below.**
+
+---
+
+## Testing Checklist — v1.2.1
+
+### Color sort — spacer at land boundary
+- [ ] List view, sort by Color: spacer appears between colorless non-lands and lands (they are now separate groups)
+- [ ] List view, sort by Color: Basic lands (Forest, Island, etc.) appear in lands group — not colorless
+- [ ] List view, sort by Color: Fetchlands (Verdant Catacombs, etc.) appear in lands group — not colorless
+- [ ] List view, sort by Color: Colored spells, multicolor, colorless artifacts all still have their spacers intact (no regression)
+- [ ] List view, sort by Color: Lands sort after colorless non-lands (order: WUBRG mono → multi → colorless artifacts → lands)
+
+### MV sort — no regression
+- [ ] List view, sort by Mana Value: spacers still appear between CMC groups
+- [ ] List view, sort by Mana Value: lands (CMC 0) appear in their own group at top — no change to MV sort behavior
+
+### Other views — no regression
+- [ ] List view, sort by Name: no extra spacing
+- [ ] List view, sort by Original: no extra spacing
+- [ ] Group By Type enabled: no extra spacing (type headers still provide separation)
+- [ ] Grid view: unaffected
 
 ---
 
