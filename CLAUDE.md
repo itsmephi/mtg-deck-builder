@@ -22,6 +22,7 @@ Process documentation lives in `.claude/rules/` — Claude Code loads these on d
 - `release-workflow.md` — full release steps, carry-forward rules
 - `design-checklist.md` — feature design and UI behavior checklists
 - `backlog-and-capture.md` — BACKLOG.md lifecycle and triage process
+- `docs/WORKFLOW.md` — human-readable workflow reference for Phi and Thurgood
 
 ---
 
