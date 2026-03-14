@@ -33,6 +33,7 @@
 - [ ] **enhancement** | Grid view getting cluttered with numbers and buttons — refactor for a cleaner, more minimal card display
 - [ ] **enhancement** | Simulator modal has no view mode toggle — consider adding compact list view inside modal for larger decks; would also make pin-from-list interaction more prominent
 - [ ] **feature** | Collapsible search sidebar — high priority for smaller screens and tablets; precursor to mobile work
+- [ ] **feature** | Decklist library — save decklists to a shared library where others can load, view, or download them
 
 ---
 
