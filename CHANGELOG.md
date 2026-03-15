@@ -5,6 +5,31 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.3.0] — Sidebar Redesign + Grid View Overlay
+
+### Added
+- Collapsible sidebar with Search/Decks tab system. Sidebar collapses to a 48px icon rail via `‹` chevron in the tab bar; click Search or Decks icon on the rail to re-expand to the correct tab. Expanded width 240px, collapsed 48px, smooth 300ms cubic-bezier transition. Collapse state and active tab persist to localStorage (`mtg-sidebar-collapsed`, `mtg-sidebar-active-tab`).
+- Search tab: clear button (×) inside the search input — clears query and instantly restores cached category results with no re-fetch. Inline mana cost symbols on each result row (colored circles: W cream, U blue, B dark, R red, G green, numerics gray). Circular `+` button on hover replaces the old rectangular badge.
+- Decks tab: full deck management panel — deck list rows with active indicator, card count, Layers icon (creates/switches sideboard), hover-only × icon with absolute-positioned delete dropdown ("Delete Deck" always, "Delete Sideboard" conditional). Import/Export buttons and TCGPlayer/Card Kingdom buy links moved here from workspace toolbar.
+- Grid view hover overlay: hovering a card tile reveals a slide-up frosted-glass overlay from the bottom (`bg-black/75 backdrop-blur-sm`) with circular `−` qty `+` controls and an `Owned: X/Y` inline-editable counter. Circular × remove button at top-right, also hover-revealed.
+- Grid view qty badge: always-visible circular badge at top-left of each tile. Color-coded: gray ≤ 3 copies, green at exactly 4 (at limit), red at 5+ (over limit). Replaces the old separate 4-copy warning badge.
+
+### Changed
+- Workspace toolbar slimmed from three rows to a single row. Left side: deck name input + card count + value + to buy. Right side: Simulator button + Main/Side pill + sort/group/view controls. Deck dropdown, import/export buttons, and buy links removed from toolbar.
+- Grid card tiles redesigned: card art fills the entire tile. Always-visible bottom bar with `− qty +` controls, progress bar, owned stepper, and checkbox removed. Default state shows only the circular qty badge.
+- `useDeckImportExport` lifted to `page.tsx` (common parent of sidebar and workspace) so import/export callbacks can be shared across sibling components without duplication.
+- "Test Deck" simulator button renamed to "Simulator".
+
+### Removed
+- `DeckDropdown.tsx` retired — functionality absorbed into `SidebarDecksTab.tsx`.
+- GitHub icon removed from sidebar footer.
+- Expand/collapse chevron removed from sidebar footer (moved to tab bar).
+- Grid view ownership progress bar removed from default tile view (ownership visible in hover overlay).
+- Grid view "mark owned" checkbox and owned stepper removed from default tile view (owned editing in hover overlay).
+- Double-faced card flip animation removed from grid tiles (flip animation conflicted with hover overlay system; flip remains accessible via CardModal).
+
+---
+
 ## [1.2.1] — Bug Fix: Land Sort Group Spacer
 
 ### Fixed

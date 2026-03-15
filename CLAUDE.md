@@ -3,7 +3,7 @@ Authors: Phi & Thurgood Nguyen
 Stack: Next.js + TypeScript + Tailwind CSS
 Deployed: Vercel | Repo: GitHub (itsmephi/mtg-deck-builder)
 IDE: VS Code (Windows, primary) · Zed on Steam Deck (Linux, secondary)
-Current Version: v1.2.1 — see CHANGELOG.md for full history
+Current Version: v1.3.0 — see CHANGELOG.md for full history
 
 ---
 
@@ -42,7 +42,7 @@ For straightforward bug fixes and small enhancements, `/plan` → PROCEED → bu
 ---
 
 ## Active Milestone
-→ TBD — Design session required before building next milestone
+→ v1.3.0 shipped. Next milestone TBD — design session required.
 
 ---
 
@@ -58,8 +58,9 @@ src/
   app/               → layout.tsx, page.tsx, globals.css
   config/            → version.ts ← bump APP_VERSION each release
   components/
-    layout/          → Sidebar.tsx, CardModal.tsx, SampleHandModal.tsx
-    workspace/       → Workspace.tsx, WorkspaceToolbar.tsx, DeckDropdown.tsx, VisualCard.tsx, ListCardTable.tsx, ImportModal.tsx
+    layout/          → Sidebar.tsx (shell), SidebarRail.tsx, SidebarSearchTab.tsx, SidebarDecksTab.tsx, CardModal.tsx, SampleHandModal.tsx
+    workspace/       → Workspace.tsx, WorkspaceToolbar.tsx, VisualCard.tsx, ListCardTable.tsx, ImportModal.tsx
+                       (DeckDropdown.tsx retired v1.3.0 — absorbed into SidebarDecksTab)
   hooks/             → useDeckManager.tsx, useDeckImportExport.tsx, useDeckStats.ts
   lib/               → scryfall.ts
   types/             → index.ts
@@ -81,7 +82,7 @@ src/
 - 4-copy rule exemptions: check type_line for "Basic Land" and oracle_text for "A deck can have any number"
 - Qty 0: card stays in deck, grays out, excluded from total count and to-buy cost
 - 4-copy rule is a soft warning (highlight) not a hard cap
-- UI state persistence keys: mtg-view-mode, mtg-group-by-type, mtg-active-deck, mtg-deck-view-mode, mtg-sort-preference, mtg-show-thumbnail
+- UI state persistence keys: mtg-view-mode, mtg-group-by-type, mtg-active-deck, mtg-deck-view-mode, mtg-sort-preference, mtg-show-thumbnail, mtg-sidebar-collapsed, mtg-sidebar-active-tab
 - Sideboard: enabled per-deck as sideboard?: DeckCard[] — undefined = no sideboard, [] = enabled but empty
 - deckViewMode lives in useDeckManager context
 

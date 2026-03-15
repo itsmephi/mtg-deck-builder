@@ -7,7 +7,7 @@
 ## Active Milestone
 <!-- Items promoted from Pipeline for the current release. Cleared after release ships. -->
 
-(None — next milestone TBD pending design session)
+(None — v1.3.0 shipped. Next milestone TBD pending design session.)
 
 ---
 
@@ -17,11 +17,11 @@
 - [ ] **feature** | New app name — Phi & Thurgood to brainstorm (#15)
 - [ ] **feature** | Custom card sorting by drag and drop (#16)
 - [ ] **feature** | Support Standard and Commander deck modes (#17)
-- [ ] **enhancement** | EDHREC improved search suggestions (#26) ↑ priority
+- [ ] **enhancement** | EDHREC improved search suggestions (#26) ↑ priority — *Partially addressed in v1.3.0: mana symbols in search results. Dynamic categories and NLP search deferred.*
 - [ ] **enhancement** | Version badge popup — revisit behavior (#49)
 - [ ] **enhancement** | Sideboard pricing — show combined total with main deck by default (#58) ↑ priority
 - [ ] **feature** | Move cards between boards or decks (#62) ↑ priority
-- [ ] **enhancement** | Grid view card icons and action buttons appear on hover/rollover — requires design session (#76)
+- [x] **enhancement** | Grid view card icons and action buttons appear on hover/rollover (#76) *(closed v1.3.0)*
 - [ ] **enhancement** | Turn-based draw probability slider — deferred; revisit for pre-game analysis view
 - [ ] **enhancement** | Max % inline label in Draw Odds — deferred to keep UI clean
 - [ ] **enhancement** | Commander threshold calibration — recalibrate when Commander mode ships; constants already named
@@ -30,9 +30,9 @@
 - [ ] **bug** | Deck name conflicts produce malformed names like `[name](#)` — handle duplicate names gracefully
 - [x] **bug** | Basic lands and fetch lands missing visual spacer when sorted — should match behavior of other sort group separators *(closed v1.2.1)*
 - [ ] **enhancement** | List view rollover highlight and color rendering feels slow/sluggish — audit and optimize implementation
-- [ ] **enhancement** | Grid view getting cluttered with numbers and buttons — refactor for a cleaner, more minimal card display
+- [x] **enhancement** | Grid view getting cluttered with numbers and buttons — refactor for a cleaner, more minimal card display *(closed v1.3.0)*
 - [ ] **enhancement** | Simulator modal has no view mode toggle — consider adding compact list view inside modal for larger decks; would also make pin-from-list interaction more prominent
-- [ ] **feature** | Collapsible search sidebar — high priority for smaller screens and tablets; precursor to mobile work
+- [x] **feature** | Collapsible search sidebar — high priority for smaller screens and tablets; precursor to mobile work *(closed v1.3.0)*
 - [ ] **feature** | Decklist library — save decklists to a shared library where others can load, view, or download them
 
 ---
@@ -56,9 +56,9 @@
 - [ ] **enhancement** | TCGPlayer and Card Kingdom buy button layout — revisit row 2 (#51)
 - [ ] **enhancement** | List view ownership progress bar too wide — revisit after UI review (#54)
 - [ ] **enhancement** | Tooltip visual treatment needs polish — revisit during UI polish sweep (#60)
-- [ ] **feature** | Major search sidebar redesign — functionality and UI overhaul (#71)
+- [ ] **feature** | Major search sidebar redesign — functionality and UI overhaul (#71) — *Partially addressed in v1.3.0: sidebar restructured with tab system. Full search refactor (NLP, aggregated data) remains open.*
 - [ ] **feature** | Mobile version — cleaner, tighter, more intuitive for vertical small screens (#74)
-- [ ] **feature** | UI/UX overhaul (#75)
+- [ ] **feature** | UI/UX overhaul (#75) — *Advanced in v1.3.0: collapsible sidebar, single-row toolbar, grid view overlay. Full overhaul continues.*
 - [ ] **v2.0** | UI overhaul — replace always-on buttons with hover-state reveals
 - [ ] **v2.0** | Mobile touch pin interaction — review touch targets at mobile optimization milestone
 
@@ -66,6 +66,11 @@
 
 ## Closed (Recent)
 <!-- Keep last 2 releases, then archive to CHANGELOG.md -->
+
+### v1.3.0
+- [x] **feature** | Collapsible search sidebar *(closed v1.3.0)*
+- [x] **enhancement** | Grid view card icons and action buttons appear on hover/rollover (#76) *(closed v1.3.0)*
+- [x] **enhancement** | Grid view getting cluttered — refactor for cleaner, minimal card display *(closed v1.3.0)*
 
 ### v1.2.0
 - [x] **feature** | Mana Curve Chart (#4)
