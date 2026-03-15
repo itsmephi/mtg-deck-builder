@@ -1,6 +1,8 @@
-export const APP_VERSION = "1.2.1";
+export const APP_VERSION = "1.3.0";
 
 export const CHANGELOG: Record<string, string> = {
+  "1.3.0":
+    "Sidebar redesign: collapsible panel with Search/Decks tabs, 48px icon rail when collapsed, smooth 300ms transition. Deck management moved to sidebar Decks tab with inline sideboard controls and delete dropdown. Import/export and buy links moved to sidebar. Workspace toolbar slimmed to single row. Grid view redesign: card art fills tile with circular qty badge only; hover reveals slide-up overlay with qty controls and owned counter, plus × remove button top-right. Inline mana cost symbols in search results. Search field clear button with instant category snap-back.",
   "1.2.1":
     "Bug fix: land cards now appear in their own sort group when sorting by Color in list view — Basic lands, fetchlands, and all other lands were incorrectly grouped with colorless non-land cards and missing the visual spacer between groups.",
   "1.2.0":

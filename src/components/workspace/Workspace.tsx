@@ -2,7 +2,6 @@
 
 import { useState, useRef, useMemo, useEffect } from "react";
 import { useDeckManager } from "@/hooks/useDeckManager";
-import { useDeckImportExport } from "@/hooks/useDeckImportExport";
 import { useDeckStats } from "@/hooks/useDeckStats";
 
 import CardModal from "../layout/CardModal";
@@ -12,6 +11,12 @@ import ListCardTable from "./ListCardTable";
 import ImportModal from "./ImportModal";
 import WorkspaceToolbar from "./WorkspaceToolbar";
 import { ScryfallCard, DeckCard } from "@/types";
+
+interface WorkspaceProps {
+  pendingImport: { filename: string; lines: string[] } | null;
+  processImport: (mode: "current" | "new") => Promise<void>;
+  cancelImport: () => void;
+}
 
 // Color sort: WUBRG mono → multicolor (by combination) → colorless/missing
 const COLOR_ORDER = ["W", "U", "B", "R", "G"] as const;
@@ -32,7 +37,7 @@ function colorSortKey(card: DeckCard): number {
   return 100 + (31 - bitmask); // multicolor, sorted by WUBRG bitmask desc
 }
 
-export default function Workspace() {
+export default function Workspace({ pendingImport, processImport, cancelImport }: WorkspaceProps) {
   const {
     decks,
     activeDeck,
@@ -40,9 +45,6 @@ export default function Workspace() {
     updateActiveDeck,
     updateOwnedQty,
     createNewDeck,
-    deleteDeck,
-    enableSideboard,
-    deleteSideboard,
     deckViewMode,
     setDeckViewMode,
     isMounted,
@@ -54,15 +56,7 @@ export default function Workspace() {
     sortDir,
     setSortDir,
   } = useDeckManager();
-  const {
-    isImporting,
-    pendingImport,
-    exportDeck,
-    handleImportFile,
-    processImport,
-    cancelImport,
-  } = useDeckImportExport();
-  const { totalCards, totalValue, remainingCost, hasPriceData, buyOnTCGPlayer, buyOnCardKingdom } =
+  const { totalCards, totalValue, remainingCost, hasPriceData } =
     useDeckStats(activeDeck ?? null);
 
   // Fix 1: restore view preferences from localStorage
@@ -296,23 +290,11 @@ export default function Workspace() {
     <div className="w-full h-full flex flex-col relative text-sm">
       <WorkspaceToolbar
         activeDeck={activeDeck}
-        decks={decks}
-        setActiveDeckId={setActiveDeckId}
-        createNewDeck={createNewDeck}
-        onDeleteDeck={() => deleteDeck(activeDeck.id)}
         onUpdateDeckName={(name) => updateActiveDeck((d) => ({ ...d, name }))}
-        onEnableSideboard={enableSideboard}
-        onSwitchToSideboard={() => setDeckViewMode("sideboard")}
-        onDeleteSideboard={() => deleteSideboard(activeDeck.id)}
         totalCards={totalCards}
         totalValue={totalValue}
         remainingCost={remainingCost}
         hasPriceData={hasPriceData}
-        buyOnTCGPlayer={buyOnTCGPlayer}
-        buyOnCardKingdom={buyOnCardKingdom}
-        exportDeck={exportDeck}
-        handleImportFile={handleImportFile}
-        isImporting={isImporting}
         viewMode={viewMode}
         setViewMode={setViewMode}
         sortBy={sortBy}
