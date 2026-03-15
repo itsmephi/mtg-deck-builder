@@ -44,6 +44,7 @@
 - [ ] **enhancement** | Match workspace background color to sidebar background color
 - [ ] **enhancement** | Remove qty badge from persistent grid tile; surface card price on tile instead (price must remain visible somewhere)
 - [ ] **enhancement** | Grid view column size presets — small (6 col), medium (4 col), large (2 col); bonus: auto-set based on screen size
+- [ ] **bug** | Deck count display shows 60 + 15 sideboard separately — total should read 75; card count colorings should reflect combined total
 
 ---
 
