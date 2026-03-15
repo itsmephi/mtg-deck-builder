@@ -1,6 +1,8 @@
-export const APP_VERSION = "1.3.0";
+export const APP_VERSION = "1.3.1";
 
 export const CHANGELOG: Record<string, string> = {
+  "1.3.1":
+    "Hot fix: grid tile qty badge and × button now use solid backgrounds for readability. Overlay qty number reflects green/red copy-limit colors. Deck name in toolbar truncates at 200px to prevent stats overflow. Search results render styled mana cost symbols.",
   "1.3.0":
     "Sidebar redesign: collapsible panel with Search/Decks tabs, 48px icon rail when collapsed, smooth 300ms transition. Deck management moved to sidebar Decks tab with inline sideboard controls and delete dropdown. Import/export and buy links moved to sidebar. Workspace toolbar slimmed to single row. Grid view redesign: card art fills tile with circular qty badge only; hover reveals slide-up overlay with qty controls and owned counter, plus × remove button top-right. Inline mana cost symbols in search results. Search field clear button with instant category snap-back.",
   "1.2.1":

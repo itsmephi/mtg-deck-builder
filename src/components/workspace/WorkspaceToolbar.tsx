@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   LayoutGrid,
   List,
@@ -59,6 +60,8 @@ export default function WorkspaceToolbar({
   sideboardCardCount,
   onOpenSampleHand,
 }: Props) {
+  const [isEditingName, setIsEditingName] = useState(false);
+
   return (
     <div className="flex items-center justify-between gap-4 mb-4 pb-3 border-b border-neutral-800 min-w-0">
       {/* Left: name + stats */}
@@ -67,7 +70,9 @@ export default function WorkspaceToolbar({
           value={activeDeck.name}
           onChange={(e) => onUpdateDeckName(e.target.value)}
           size={Math.max(10, activeDeck.name.length)}
-          className="text-lg font-bold text-white bg-transparent border-b border-transparent hover:border-neutral-700 focus:border-blue-500 focus:outline-none transition-all px-0 outline-none placeholder:text-neutral-500 shrink-0"
+          onFocus={() => setIsEditingName(true)}
+          onBlur={() => setIsEditingName(false)}
+          className={`text-lg font-bold text-white bg-transparent border-b border-transparent hover:border-neutral-700 focus:border-blue-500 focus:outline-none transition-all px-0 outline-none placeholder:text-neutral-500 max-w-[200px] ${isEditingName ? "" : "truncate"}`}
           placeholder="Untitled"
         />
         <div className="flex items-center gap-3 text-xs text-neutral-400 shrink-0">

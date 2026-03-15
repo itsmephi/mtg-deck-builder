@@ -23,33 +23,20 @@ const CATEGORIES = [
   { id: "budget", label: "Budget Staples (<$2)", query: "f:commander usd<2 order:edhrec", icon: Coins },
 ];
 
-const MANA_COLORS: Record<string, string> = {
-  W: "bg-yellow-100 text-yellow-900",
-  U: "bg-blue-500 text-white",
-  B: "bg-neutral-800 text-neutral-200",
-  R: "bg-red-500 text-white",
-  G: "bg-green-600 text-white",
-  C: "bg-neutral-500 text-white",
-};
-
 function ManaSymbols({ manaCost }: { manaCost?: string }) {
   if (!manaCost) return null;
-  const symbols = [...manaCost.matchAll(/\{([^}]+)\}/g)].map((m) => m[1]);
-  if (symbols.length === 0) return null;
+  const symbols = manaCost.match(/\{[^}]+\}/g);
+  if (!symbols || symbols.length === 0) return null;
   return (
     <span className="flex items-center gap-0.5 shrink-0">
-      {symbols.map((sym, i) => {
-        const colorClass = MANA_COLORS[sym] ?? "bg-neutral-600 text-neutral-200";
-        const isColored = sym in MANA_COLORS;
-        return (
-          <span
-            key={i}
-            className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[8px] font-bold ${colorClass}`}
-          >
-            {!isColored ? sym : ""}
-          </span>
-        );
-      })}
+      {symbols.map((s, i) => (
+        <img
+          key={i}
+          src={`https://svgs.scryfall.io/card-symbols/${s.replace(/\{|\}/g, "").replace(/\//g, "")}.svg`}
+          className="w-3.5 h-3.5"
+          alt={s}
+        />
+      ))}
     </span>
   );
 }
@@ -273,7 +260,7 @@ export default function SidebarSearchTab() {
                 >
                   <span className="truncate pr-2">{card.name}</span>
                   <div className="flex items-center gap-1 shrink-0">
-                    <ManaSymbols manaCost={card.mana_cost} />
+                    <ManaSymbols manaCost={card.mana_cost || card.card_faces?.[0]?.mana_cost} />
                     <button
                       onClick={() => handleAddCard(card)}
                       className="w-5 h-5 rounded-full bg-neutral-800 opacity-0 group-hover:opacity-100 flex items-center justify-center text-neutral-400 hover:text-white hover:bg-neutral-700 transition-all text-xs font-bold"

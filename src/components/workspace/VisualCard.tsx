@@ -72,10 +72,16 @@ export default function VisualCard({
     card.card_faces?.[0].image_uris?.normal || card.image_uris?.normal;
 
   const badgeClass = overCopyLimit
-    ? "bg-red-500/80 text-white"
+    ? "bg-red-600 text-white"
     : atCopyLimit
-    ? "bg-green-500/80 text-white"
-    : "bg-black/60 text-neutral-300";
+    ? "bg-green-600 text-white"
+    : "bg-neutral-900 text-neutral-300";
+
+  const overlayQtyClass = overCopyLimit
+    ? "text-red-400"
+    : atCopyLimit
+    ? "text-green-400"
+    : "text-white";
 
   const isFullyOwned = card.ownedQty >= card.quantity;
 
@@ -106,7 +112,7 @@ export default function VisualCard({
           e.stopPropagation();
           onRemove(card.id);
         }}
-        className="absolute top-1.5 right-1.5 w-6 h-6 flex items-center justify-center rounded-full bg-black/60 text-neutral-400 hover:text-red-400 hover:bg-red-500/20 opacity-0 group-hover:opacity-100 transition-all z-30"
+        className="absolute top-1.5 right-1.5 w-6 h-6 flex items-center justify-center rounded-full bg-neutral-900 text-neutral-400 hover:text-red-400 hover:bg-red-900 opacity-0 group-hover:opacity-100 transition-all z-30"
       >
         <X className="w-3 h-3" />
       </button>
@@ -161,7 +167,7 @@ export default function VisualCard({
                 e.stopPropagation();
                 startEdit();
               }}
-              className="text-sm font-bold text-white tabular-nums cursor-text w-6 text-center"
+              className={`text-sm font-bold tabular-nums cursor-text w-6 text-center ${overlayQtyClass}`}
             >
               {card.quantity}
             </span>
