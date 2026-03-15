@@ -2,6 +2,100 @@
 
 ---
 
+## Current Release: v1.3.1
+Status: IN PROGRESS
+
+---
+
+## Plan Review — v1.3.1: Badge Readability, Overlay Color, Toolbar Overflow, Mana Symbols
+
+**Branch:** `v1.3.1` | **Complexity:** 4 files, 0 new components — Phi reviews directly.
+
+### Files Touched
+
+| File | Change |
+|---|---|
+| `src/components/workspace/VisualCard.tsx` | Fix 1: `badgeClass` solid backgrounds (`bg-neutral-900`, `bg-green-600`, `bg-red-600`). × button `bg-black/60` → `bg-neutral-900`, hover keep `hover:bg-red-900`. Fix 2: Overlay qty span gets color logic (`text-white` / `text-green-400` / `text-red-400`) matching badge, with same exempt check. |
+| `src/components/workspace/WorkspaceToolbar.tsx` | Fix 3: Add `isEditingName` state. Input gets `max-w-[200px]` + `truncate` when not editing, removes `truncate` on focus. Remove `shrink-0` from input so it can compress; stats div already has `shrink-0`. |
+| `src/components/layout/SidebarSearchTab.tsx` | Fix 4: Update `MANA_COLORS` map to spec colors (`bg-amber-100 text-amber-900`, `bg-blue-400 text-blue-950`, `bg-neutral-700 text-neutral-100`, `bg-red-500 text-red-100`, `bg-green-600 text-green-100`, generic `bg-neutral-500 text-neutral-100`). Add double-faced fallback at call site: `card.mana_cost \|\| card.card_faces?.[0]?.mana_cost`. |
+| `src/config/version.ts` | Bump `APP_VERSION` to `"1.3.1"`, add changelog entry. |
+| `CHANGELOG.md` | Add v1.3.1 Fixed section. |
+| `CLAUDE.md` | Version bump to v1.3.1. |
+| `BACKLOG.md` | Append 7 new Pipeline items from spec. |
+| `REVIEW.md` | This file — plan review, testing checklist, session summary. |
+
+---
+
+## Testing Checklist — v1.3.1
+
+### Fix 1 — Badge and × Button Opacity
+- [x] Qty badge: gray at ≤ 3 copies — solid dark circle, clearly readable on all card art
+- [x] Qty badge: green at exactly 4 copies — solid green, no opacity suffix
+- [x] Qty badge: red at 5+ copies — solid red, no opacity suffix
+- [x] Exempt cards (Basic Lands, "any number") — badge always gray regardless of qty
+- [x] × remove button: solid dark circle at rest, turns red bg on hover — readable on all art
+- [x] Zero-qty card: badge still visible (gray) on desaturated/dimmed art
+
+### Fix 2 — Overlay Qty Number Color
+- [x] Overlay qty number is white when qty ≤ 3
+- [x] Overlay qty number is green-400 at exactly 4 (at copy limit)
+- [x] Overlay qty number is red-400 at 5+ (over copy limit)
+- [x] Exempt cards (Basic Lands, "any number") — overlay qty always white
+- [x] Color matches the badge — both go green at 4, red at 5+
+
+### Fix 3 — Toolbar Overflow
+- [x] Short deck name (≤ 10 chars): no truncation, stats and controls all visible
+- [x] Long deck name (e.g. "Atraxa Superfriends Combo v3"): truncates at 200px with ellipsis
+- [x] Clicking/focusing the name input: truncation removed, full name visible for editing
+- [x] Blurring the name input: truncation restored
+- [x] Stats (card count, value, to buy) never get compressed — always fully visible at `shrink-0`
+- [x] Controls (Simulator, Main/Side, sort/group/view) always visible on right side
+
+### Fix 4 — Mana Symbols in Search Results
+- [ ] Mana symbols render as Scryfall SVG images (same as list view), not colored CSS circles
+- [ ] {W}, {U}, {B}, {R}, {G}: official mana symbol SVGs — visually match list view
+- [ ] Generic/colorless ({1}, {2}, {X}, etc.): official mana symbol SVGs
+- [ ] Hybrid symbols ({W/U}, etc.): slash stripped in URL, renders correctly
+- [ ] Double-faced cards (no `mana_cost` field): symbols render from first face mana cost
+- [ ] Multi-color card (e.g. {2}{W}{U}): all symbols in a row, correct order
+
+### No Regression
+- [x] Grid view badge/× button behavior unchanged (only visual style changed)
+- [x] Overlay controls (−/+, owned counter) still functional
+- [x] Deck name edit still works — Enter/blur commits, full name editable when focused
+- [x] Search add functionality unchanged
+- [x] All other sidebar and workspace features unchanged
+
+---
+
+## Emerging Issues
+<!-- Phi fills this in during QA -->
+
+---
+
+## Session Summary — v1.3.1
+Status: APPROVED ✅
+
+### Gate Check
+- Plan review written to REVIEW.md before any file changes ✅
+- 4 files, 0 new components — Phi reviewed directly (no Claude Chat round-trip) ✅
+- Testing checklist written before pausing for QA ✅
+- Fix 4 revised mid-QA: CSS circles → Scryfall SVGs to match list view (carry-forward, same version) ✅
+
+### Fix 1 — Badge + × Button Opacity
+`VisualCard.tsx`: `badgeClass` changed from semi-transparent (`bg-black/60`, `bg-green-500/80`, `bg-red-500/80`) to solid (`bg-neutral-900`, `bg-green-600`, `bg-red-600`). × remove button changed from `bg-black/60` to `bg-neutral-900`, hover from `hover:bg-red-500/20` to `hover:bg-red-900`.
+
+### Fix 2 — Overlay Qty Number Color
+`VisualCard.tsx`: Added `overlayQtyClass` computed from existing `overCopyLimit`/`atCopyLimit`/`isExempt` flags (same logic as badge). Overlay qty span uses `overlayQtyClass` instead of hardcoded `text-white`.
+
+### Fix 3 — Toolbar Overflow
+`WorkspaceToolbar.tsx`: Added `isEditingName` state and `useState` import. Input gets `max-w-[200px]` + `truncate` when `!isEditingName`; `onFocus` sets editing true (removes truncate), `onBlur` sets false (restores truncate). Removed `shrink-0` from input so stats container (`shrink-0`) always stays visible.
+
+### Fix 4 — Mana Symbols (revised)
+`SidebarSearchTab.tsx`: Replaced custom `MANA_COLORS` CSS-circle approach with Scryfall SVG images matching `ListCardTable.tsx` exactly. URL pattern: `https://svgs.scryfall.io/card-symbols/{SYMBOL}.svg` (braces + slashes stripped). Size `w-3.5 h-3.5`. Double-faced fallback `card.mana_cost || card.card_faces?.[0]?.mana_cost` at call site.
+
+---
+
 ## Current Release: v1.3.0
 Status: APPROVED ✅
 

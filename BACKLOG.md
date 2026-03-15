@@ -34,6 +34,13 @@
 - [ ] **enhancement** | Simulator modal has no view mode toggle — consider adding compact list view inside modal for larger decks; would also make pin-from-list interaction more prominent
 - [x] **feature** | Collapsible search sidebar — high priority for smaller screens and tablets; precursor to mobile work *(closed v1.3.0)*
 - [ ] **feature** | Decklist library — save decklists to a shared library where others can load, view, or download them
+- [ ] **enhancement** | Collapsed sidebar rail icons should have tooltips
+- [ ] **enhancement** | Clicking empty area of collapsed sidebar should expand it
+- [ ] **enhancement** | Add "+ New Deck" icon to collapsed sidebar rail
+- [ ] **enhancement** | Add open/close toggle icon in collapsed sidebar state
+- [ ] **bug** | Card Kingdom button wraps to 2 lines in sidebar actions strip — width constraint
+- [ ] **enhancement** | Settings panel redesign — 2 clicks to access settings is a UX regression from v1.3.0 sidebar changes
+- [ ] **enhancement** | Card price display missing from persistent grid tile — deferred from v1.3.0 design, needs design decision
 
 ---
 
@@ -66,6 +73,9 @@
 
 ## Closed (Recent)
 <!-- Keep last 2 releases, then archive to CHANGELOG.md -->
+
+### v1.3.1
+*(no backlog items closed — hot fix)*
 
 ### v1.3.0
 - [x] **feature** | Collapsible search sidebar *(closed v1.3.0)*

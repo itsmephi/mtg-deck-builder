@@ -3,7 +3,7 @@ Authors: Phi & Thurgood Nguyen
 Stack: Next.js + TypeScript + Tailwind CSS
 Deployed: Vercel | Repo: GitHub (itsmephi/mtg-deck-builder)
 IDE: VS Code (Windows, primary) · Zed on Steam Deck (Linux, secondary)
-Current Version: v1.3.0 — see CHANGELOG.md for full history
+Current Version: v1.3.1 — see CHANGELOG.md for full history
 
 ---
 
@@ -42,7 +42,7 @@ For straightforward bug fixes and small enhancements, `/plan` → PROCEED → bu
 ---
 
 ## Active Milestone
-→ v1.3.0 shipped. Next milestone TBD — design session required.
+→ v1.3.1 shipped. Next milestone TBD — design session required.
 
 ---
 

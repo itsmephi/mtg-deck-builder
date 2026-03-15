@@ -5,6 +5,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.3.1] — Hot Fix: Badge Readability, Overlay Color, Toolbar Overflow, Mana Symbols
+
+### Fixed
+- Grid view qty badge and × remove button now use solid backgrounds (`bg-neutral-900`, `bg-green-600`, `bg-red-600`) instead of semi-transparent overlays — always readable regardless of card art.
+- Grid view overlay qty number now reflects copy-limit color logic: green at exactly 4 copies, red at 5+, white otherwise. Exempt cards (Basic Lands, "any number" cards) always show white.
+- Deck name input in workspace toolbar now caps at 200px and truncates with ellipsis when not focused, preventing long names from pushing stats and controls off-screen.
+- Search result mana symbols updated to spec color palette: W warm gold, U blue with dark text, B dark neutral, R red with light text, G green with light text, colorless/generic neutral gray. Double-faced cards fall back to first face mana cost.
+
+---
+
 ## [1.3.0] — Sidebar Redesign + Grid View Overlay
 
 ### Added
