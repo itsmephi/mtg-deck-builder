@@ -3,7 +3,7 @@
 ---
 
 ## Current Release: v1.3.1
-Status: IN PROGRESS
+Status: APPROVED ✅
 
 ---
 
