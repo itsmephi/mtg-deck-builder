@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>v1.3.0 Prototype — Sidebar Redesign (v2)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #0a0a0a; }
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #404040; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useRef, useEffect } = React;
+
+    // Mock data
+    const MOCK_DECKS = [
+      { id: "1", name: "Atraxa Superfriends Combo v3", cards: 58, hasSideboard: true, sideboardCount: 12 },
+      { id: "2", name: "Goblin Aggro", cards: 60, hasSideboard: false, sideboardCount: 0 },
+      { id: "3", name: "Mono Blue Control", cards: 47, hasSideboard: true, sideboardCount: 15 },
+      { id: "4", name: "", cards: 12, hasSideboard: false, sideboardCount: 0 },
+    ];
+
+    const MOCK_RESULTS = [
+      { id: "r1", name: "Sol Ring", mana: "{1}" },
+      { id: "r2", name: "Arcane Signet", mana: "{2}" },
+      { id: "r3", name: "Command Tower", mana: "" },
+      { id: "r4", name: "Swords to Plowshares", mana: "{W}" },
+      { id: "r5", name: "Counterspell", mana: "{U}{U}" },
+      { id: "r6", name: "Demonic Tutor", mana: "{1}{B}" },
+      { id: "r7", name: "Lightning Bolt", mana: "{R}" },
+      { id: "r8", name: "Llanowar Elves", mana: "{G}" },
+      { id: "r9", name: "Rhystic Study", mana: "{2}{U}" },
+      { id: "r10", name: "Dockside Extortionist", mana: "{1}{R}" },
+      { id: "r11", name: "Smothering Tithe", mana: "{3}{W}" },
+      { id: "r12", name: "Cyclonic Rift", mana: "{1}{U}" },
+      { id: "r13", name: "Cultivate", mana: "{2}{G}" },
+      { id: "r14", name: "Kodama's Reach", mana: "{2}{G}" },
+      { id: "r15", name: "Beast Within", mana: "{2}{G}" },
+    ];
+
+    const CATEGORIES = [
+      { id: "top", label: "Top 50 Trending", icon: "🔥" },
+      { id: "creatures", label: "Top Creatures", icon: "⚔️" },
+      { id: "lands", label: "Popular Lands", icon: "⛰️" },
+      { id: "artifacts", label: "Top Artifacts", icon: "⬡" },
+      { id: "budget", label: "Budget Staples (<$2)", icon: "🪙" },
+    ];
+
+    // Mana symbol renderer
+    function ManaSymbols({ mana }) {
+      if (!mana) return null;
+      const symbols = mana.match(/\{[^}]+\}/g) || [];
+      const colorMap = {
+        W: "bg-amber-100 text-amber-900",
+        U: "bg-blue-400 text-blue-950",
+        B: "bg-neutral-700 text-neutral-100",
+        R: "bg-red-500 text-red-100",
+        G: "bg-green-600 text-green-100",
+      };
+      return (
+        <span className="flex items-center gap-0.5 shrink-0">
+          {symbols.map((s, i) => {
+            const val = s.replace(/[{}]/g, "");
+            const color = colorMap[val] || "bg-neutral-600 text-neutral-200";
+            return (
+              <span key={i} className={`inline-flex items-center justify-center w-3.5 h-3.5 rounded-full text-[8px] font-bold ${color}`}>
+                {val}
+              </span>
+            );
+          })}
+        </span>
+      );
+    }
+
+    // SVG Icons
+    function SearchIcon({ size = 16 }) {
+      return (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>);
+    }
+    function LayersIcon({ size = 16 }) {
+      return (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z" /><path d="m22.54 12.43-1.42-.65-8.28 3.78a2 2 0 0 1-1.66 0l-8.29-3.78-1.42.65a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z" /></svg>);
+    }
+    function ChevronLeftIcon({ size = 16 }) {
+      return (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>);
+    }
+    function ChevronDownIcon({ size = 16 }) {
+      return (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>);
+    }
+    function XIcon({ size = 16 }) {
+      return (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>);
+    }
+    function PlusIcon({ size = 16 }) {
+      return (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="M12 5v14" /></svg>);
+    }
+    function MinusIcon({ size = 16 }) {
+      return (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /></svg>);
+    }
+    function CoffeeIcon({ size = 14 }) {
+      return (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 2v2" /><path d="M14 2v2" /><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-1" /></svg>);
+    }
+    function SettingsIcon({ size = 14 }) {
+      return (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /><circle cx="12" cy="12" r="3" /></svg>);
+    }
+    function DownloadIcon({ size = 14 }) {
+      return (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>);
+    }
+    function UploadIcon({ size = 14 }) {
+      return (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>);
+    }
+    function ShoppingCartIcon({ size = 14 }) {
+      return (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" /><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" /></svg>);
+    }
+    function DicesIcon({ size = 16 }) {
+      return (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="12" height="12" x="2" y="10" rx="2" ry="2" /><path d="m17.92 14 3.5-3.5a2.24 2.24 0 0 0 0-3l-5-4.92a2.24 2.24 0 0 0-3 0L10 6" /><path d="M6 18h.01" /><path d="M10 14h.01" /><path d="M15 6h.01" /><path d="M18 9h.01" /></svg>);
+    }
+    function ArrowUpDownIcon({ size = 12 }) {
+      return (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21 16-4 4-4-4" /><path d="M17 20V4" /><path d="m3 8 4-4 4 4" /><path d="M7 4v16" /></svg>);
+    }
+    function LayoutGridIcon({ size = 14 }) {
+      return (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="7" height="7" x="3" y="3" rx="1" /><rect width="7" height="7" x="14" y="3" rx="1" /><rect width="7" height="7" x="14" y="14" rx="1" /><rect width="7" height="7" x="3" y="14" rx="1" /></svg>);
+    }
+    function ListIcon({ size = 14 }) {
+      return (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" /></svg>);
+    }
+    function LayoutIcon({ size = 14 }) {
+      return (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2" /><line x1="3" y1="9" x2="21" y2="9" /><line x1="9" y1="21" x2="9" y2="9" /></svg>);
+    }
+    function ArrowUpIcon({ size = 12 }) {
+      return (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 7-7 7 7" /><path d="M12 19V5" /></svg>);
+    }
+
+    // Thin separator line
+    function Divider() {
+      return <div className="w-5 border-t border-neutral-800 my-1" />;
+    }
+
+    // === MAIN APP ===
+    function App() {
+      const [collapsed, setCollapsed] = useState(false);
+      const [activeTab, setActiveTab] = useState("search");
+      const [activeDeckId, setActiveDeckId] = useState("1");
+      const [deckViewMode, setDeckViewMode] = useState("main");
+      const [searchQuery, setSearchQuery] = useState("");
+      const [activeCategory, setActiveCategory] = useState(CATEGORIES[0]);
+      const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+      const [deleteDropdownId, setDeleteDropdownId] = useState(null);
+      const [viewMode, setViewMode] = useState("visual");
+      const [isGrouped, setIsGrouped] = useState(false);
+      const deleteRef = useRef(null);
+
+      const activeDeck = MOCK_DECKS.find(d => d.id === activeDeckId);
+
+      useEffect(() => {
+        function handleClick(e) {
+          if (deleteRef.current && !deleteRef.current.contains(e.target)) {
+            setDeleteDropdownId(null);
+          }
+        }
+        document.addEventListener("mousedown", handleClick);
+        return () => document.removeEventListener("mousedown", handleClick);
+      }, []);
+
+      const handleDeckClick = (deckId) => {
+        setActiveDeckId(deckId);
+        setDeckViewMode("main");
+      };
+
+      const handleLayersClick = (deck) => {
+        if (!deck.hasSideboard) {
+          alert(`Sideboard created for "${deck.name || "Untitled"}"`);
+        }
+        setActiveDeckId(deck.id);
+        setDeckViewMode("sideboard");
+      };
+
+      const expandTo = (tab) => {
+        setCollapsed(false);
+        setActiveTab(tab);
+      };
+
+      const results = searchQuery.trim()
+        ? MOCK_RESULTS.filter(r => r.name.toLowerCase().includes(searchQuery.toLowerCase()))
+        : MOCK_RESULTS;
+
+      return (
+        <div className="h-screen bg-neutral-950 text-neutral-200 flex overflow-hidden" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
+
+          {/* ===== SIDEBAR ===== */}
+          <aside
+            className="h-screen flex flex-col border-r border-neutral-800 bg-neutral-900 shrink-0 overflow-hidden"
+            style={{
+              width: collapsed ? 48 : 240,
+              transition: "width 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+            }}
+          >
+            {collapsed ? (
+              /* --- COLLAPSED RAIL --- */
+              <div className="flex flex-col items-center h-full py-3 gap-1">
+                {/* Primary nav */}
+                <button onClick={() => expandTo("search")} className="w-9 h-9 flex items-center justify-center rounded-full text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors" title="Search">
+                  <SearchIcon size={18} />
+                </button>
+                <button onClick={() => expandTo("decks")} className="w-9 h-9 flex items-center justify-center rounded-full text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors" title="Decks">
+                  <LayersIcon size={18} />
+                </button>
+
+                <div className="flex-1" />
+
+                {/* Footer */}
+                <button className="w-9 h-9 flex items-center justify-center rounded-full text-neutral-500 hover:text-yellow-400 transition-colors" title="Support our Project">
+                  <CoffeeIcon />
+                </button>
+                <button className="w-9 h-9 flex items-center justify-center rounded-full text-neutral-500 hover:text-white transition-colors" title="Settings">
+                  <SettingsIcon />
+                </button>
+              </div>
+            ) : (
+              /* --- EXPANDED SIDEBAR --- */
+              <>
+                {/* Tab Bar */}
+                <div className="flex items-center border-b border-neutral-800 shrink-0">
+                  <button
+                    onClick={() => setActiveTab("search")}
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-medium transition-colors border-b-2 ${
+                      activeTab === "search" ? "text-blue-400 border-blue-500" : "text-neutral-500 border-transparent hover:text-neutral-300"
+                    }`}
+                  >
+                    <SearchIcon size={14} /> Search
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("decks")}
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-medium transition-colors border-b-2 ${
+                      activeTab === "decks" ? "text-blue-400 border-blue-500" : "text-neutral-500 border-transparent hover:text-neutral-300"
+                    }`}
+                  >
+                    <LayersIcon size={14} /> Decks
+                  </button>
+                  <button onClick={() => setCollapsed(true)} className="px-2.5 py-2.5 text-neutral-600 hover:text-neutral-300 transition-colors" title="Collapse sidebar">
+                    <ChevronLeftIcon size={16} />
+                  </button>
+                </div>
+
+                {/* Tab Content */}
+                <div className="flex-1 overflow-y-auto custom-scrollbar">
+                  {activeTab === "search" ? (
+                    /* --- SEARCH TAB --- */
+                    <div className="flex flex-col h-full">
+                      <div className="p-3 border-b border-neutral-800 space-y-2">
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"><SearchIcon size={16} /></span>
+                          <input
+                            type="text"
+                            placeholder="Search cards..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full pl-9 pr-8 py-2 bg-neutral-950 border border-neutral-800 rounded-lg text-sm text-neutral-200 placeholder-neutral-500 focus:outline-none focus:border-neutral-600 transition-colors"
+                          />
+                          {searchQuery && (
+                            <button onClick={() => setSearchQuery("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center rounded-full text-neutral-500 hover:text-neutral-300 hover:bg-neutral-700 transition-colors">
+                              <XIcon size={10} />
+                            </button>
+                          )}
+                        </div>
+                        <div className="relative">
+                          <button
+                            onClick={() => setIsCategoryOpen(!isCategoryOpen)}
+                            className="flex items-center justify-between w-full px-3 py-1.5 bg-neutral-950/50 border border-neutral-800/80 rounded-lg text-xs text-neutral-300 hover:bg-neutral-800 hover:text-white transition-colors"
+                          >
+                            <div className="flex items-center gap-2 truncate">
+                              <span className="text-sm shrink-0">{activeCategory.icon}</span>
+                              <span className="truncate">{searchQuery.trim() !== "" ? "Results" : activeCategory.label}</span>
+                            </div>
+                            <span className={`transition-transform ${isCategoryOpen ? "rotate-180" : ""}`}><ChevronDownIcon size={14} /></span>
+                          </button>
+                          {isCategoryOpen && (
+                            <div className="absolute top-full left-0 right-0 mt-1 bg-neutral-900 border border-neutral-700 rounded-lg shadow-xl overflow-hidden py-1 z-50">
+                              {CATEGORIES.map((cat) => (
+                                <button
+                                  key={cat.id}
+                                  onClick={() => { setActiveCategory(cat); setSearchQuery(""); setIsCategoryOpen(false); }}
+                                  className={`flex items-center w-full text-left gap-2 px-3 py-2 text-xs transition-colors ${
+                                    activeCategory.id === cat.id ? "bg-neutral-800 text-white" : "text-neutral-400 hover:bg-neutral-800/50 hover:text-neutral-200"
+                                  }`}
+                                >
+                                  <span className="text-sm">{cat.icon}</span> {cat.label}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex-1 overflow-y-auto p-3 custom-scrollbar">
+                        <h2 className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-3">
+                          {searchQuery.trim() === "" ? activeCategory.label : "Results"}
+                        </h2>
+                        <ul className="space-y-0">
+                          {results.map((card) => (
+                            <li key={card.id} className="text-xs text-neutral-300 hover:text-white cursor-pointer flex items-center justify-between group p-1.5 -mx-1.5 rounded hover:bg-neutral-800/50 transition-colors">
+                              <span className="truncate pr-2">{card.name}</span>
+                              <span className="flex items-center gap-2 shrink-0">
+                                <ManaSymbols mana={card.mana} />
+                                <span className="w-5 h-5 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 text-neutral-400 bg-neutral-800 text-[10px] font-bold transition-opacity">+</span>
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  ) : (
+                    /* --- DECKS TAB --- */
+                    <div className="flex flex-col h-full">
+                      <div className="flex-1 overflow-y-auto p-3 custom-scrollbar">
+                        <h2 className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-3">Your Decks</h2>
+                        <div className="space-y-0.5">
+                          {MOCK_DECKS.map((deck) => {
+                            const isActive = deck.id === activeDeckId;
+                            const isViewing = isActive && deckViewMode === "sideboard";
+                            return (
+                              <div key={deck.id} className={`group relative flex items-center gap-1.5 px-2 py-2 rounded-lg transition-colors cursor-pointer ${isActive ? "bg-neutral-800/80" : "hover:bg-neutral-800/40"}`}>
+                                <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${isActive ? "bg-blue-500" : "bg-transparent"}`} />
+                                <button onClick={() => handleDeckClick(deck.id)} className="flex-1 text-left truncate text-xs min-w-0">
+                                  <span className={deck.name ? "text-neutral-200" : "text-neutral-500"}>{deck.name || "Untitled"}</span>
+                                </button>
+                                <span className="text-[10px] text-neutral-600 tabular-nums shrink-0">{deck.cards}</span>
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); handleLayersClick(deck); }}
+                                  className={`w-6 h-6 flex items-center justify-center rounded-full transition-colors shrink-0 ${
+                                    deck.hasSideboard
+                                      ? isViewing ? "text-blue-400 bg-blue-500/15" : "text-blue-400 hover:bg-blue-500/10"
+                                      : "text-neutral-700 hover:text-neutral-400"
+                                  }`}
+                                  title={deck.hasSideboard ? "View sideboard" : "Add sideboard"}
+                                >
+                                  <LayersIcon size={12} />
+                                </button>
+                                <div className="relative" ref={deleteDropdownId === deck.id ? deleteRef : null}>
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); setDeleteDropdownId(deleteDropdownId === deck.id ? null : deck.id); }}
+                                    className="w-6 h-6 flex items-center justify-center rounded-full text-neutral-700 opacity-0 group-hover:opacity-100 hover:text-red-400 hover:bg-red-500/10 transition-all shrink-0"
+                                    title="Delete"
+                                  >
+                                    <XIcon size={12} />
+                                  </button>
+                                  {deleteDropdownId === deck.id && (
+                                    <div className="absolute right-0 top-full mt-1 bg-neutral-900 border border-neutral-700 rounded-lg shadow-xl py-1 z-50 w-40">
+                                      <button onClick={() => { alert(`Delete deck "${deck.name || "Untitled"}"?`); setDeleteDropdownId(null); }} className="w-full text-left px-3 py-1.5 text-xs text-red-400 hover:bg-red-500/10 transition-colors">Delete Deck</button>
+                                      {deck.hasSideboard && (
+                                        <button onClick={() => { alert(`Delete sideboard?`); setDeleteDropdownId(null); }} className="w-full text-left px-3 py-1.5 text-xs text-red-400 hover:bg-red-500/10 transition-colors">Delete Sideboard</button>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                      <div className="p-3 pt-0">
+                        <button className="flex items-center gap-2 w-full px-2 py-2 rounded-lg text-xs text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800/40 transition-colors">
+                          <PlusIcon size={14} /> New Deck
+                        </button>
+                      </div>
+                      {/* Actions Strip — Decks tab only */}
+                      <div className="border-t border-neutral-800 px-3 py-2.5 space-y-1.5 shrink-0">
+                        <div className="flex items-center justify-center gap-3">
+                          <button className="flex items-center gap-1.5 text-[10px] text-neutral-500 hover:text-neutral-200 transition-colors"><UploadIcon size={12} /> Import</button>
+                          <span className="text-neutral-800">·</span>
+                          <button className="flex items-center gap-1.5 text-[10px] text-neutral-500 hover:text-neutral-200 transition-colors"><DownloadIcon size={12} /> Export</button>
+                        </div>
+                        <div className="flex items-center justify-center gap-3">
+                          <button className="flex items-center gap-1.5 text-[10px] text-neutral-500 hover:text-neutral-200 transition-colors"><ShoppingCartIcon size={11} /> TCGPlayer</button>
+                          <span className="text-neutral-800">·</span>
+                          <button className="flex items-center gap-1.5 text-[10px] text-neutral-500 hover:text-neutral-200 transition-colors"><ShoppingCartIcon size={11} /> Card Kingdom</button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Footer */}
+                <div className="border-t border-neutral-800 px-3 py-2 flex items-center justify-between shrink-0">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 bg-blue-500/10 border border-blue-500/20 rounded-full text-[9px] font-bold text-blue-400 uppercase tracking-wider">v1.3.0</span>
+                    <button className="p-1 text-neutral-500 hover:text-yellow-400 transition-colors"><CoffeeIcon /></button>
+                  </div>
+                  <button className="p-1 text-neutral-600 hover:text-neutral-300 transition-colors"><SettingsIcon /></button>
+                </div>
+              </>
+            )}
+          </aside>
+
+          {/* ===== WORKSPACE ===== */}
+          <main className="flex-1 h-screen flex flex-col overflow-hidden">
+            {/* Toolbar — Single Row */}
+            <div className="flex items-center justify-between px-6 py-3 border-b border-neutral-800 bg-neutral-950 shrink-0 gap-4">
+              {/* Left: Deck name + stats */}
+              <div className="flex items-center gap-4 min-w-0">
+                <input
+                  value={activeDeck?.name || ""}
+                  placeholder="Untitled"
+                  readOnly
+                  className="text-lg font-bold text-white bg-transparent border-b border-transparent hover:border-neutral-700 focus:border-blue-500 focus:outline-none transition-all px-0 outline-none placeholder:text-neutral-500 min-w-0"
+                  style={{ width: `${Math.max(6, (activeDeck?.name || "Untitled").length) * 10.5}px` }}
+                />
+                <div className="flex items-center gap-3 text-xs text-neutral-400 shrink-0">
+                  <span className={activeDeck?.cards === 60 ? "text-green-400 font-bold" : activeDeck?.cards > 60 ? "text-red-400 font-bold" : ""}>
+                    {activeDeck?.cards || 0} Cards
+                  </span>
+                  <span>Value: <span className="text-neutral-200 font-medium">$127.43</span></span>
+                  <span>To Buy: <span className="text-green-500 font-medium">$43.20</span></span>
+                  {deckViewMode === "sideboard" && activeDeck?.hasSideboard && (
+                    <span className={activeDeck.sideboardCount > 15 ? "text-red-400 font-bold" : activeDeck.sideboardCount === 15 ? "text-green-400 font-bold" : ""}>
+                      Side: {activeDeck.sideboardCount} / 15
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Right: Simulator, Main/Side, Sort/Group/View */}
+              <div className="flex items-center gap-2 shrink-0">
+                <button className="flex items-center gap-1.5 px-3 py-1.5 bg-neutral-900 border border-neutral-800 rounded-lg text-xs text-neutral-300 hover:text-white hover:bg-neutral-800 transition-colors">
+                  <DicesIcon size={14} /> Simulator
+                </button>
+
+                <div className="flex items-center bg-neutral-900 p-0.5 rounded-lg border border-neutral-800">
+                  <button onClick={() => setDeckViewMode("main")} className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all ${deckViewMode === "main" ? "bg-blue-600 text-white border border-blue-500/50" : activeDeck?.hasSideboard ? "text-neutral-500 hover:text-neutral-300 border border-transparent" : "text-neutral-700 cursor-not-allowed border border-transparent"}`}>Main</button>
+                  <button onClick={() => activeDeck?.hasSideboard && setDeckViewMode("sideboard")} className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all ${deckViewMode === "sideboard" ? "bg-blue-600 text-white border border-blue-500/50" : activeDeck?.hasSideboard ? "text-neutral-500 hover:text-neutral-300 border border-transparent" : "text-neutral-700 cursor-not-allowed border border-transparent"}`}>Side</button>
+                </div>
+
+                <div className="flex items-center h-8 bg-neutral-900 p-0.5 rounded-lg border border-neutral-800 gap-0.5">
+                  <div className="flex items-center px-2 border-r border-neutral-800 h-full gap-1">
+                    <ArrowUpDownIcon />
+                    <select className="bg-transparent text-xs text-neutral-300 focus:outline-none cursor-pointer h-full">
+                      <option className="bg-neutral-900">Original</option>
+                      <option className="bg-neutral-900">Name</option>
+                      <option className="bg-neutral-900">Color</option>
+                      <option className="bg-neutral-900">Mana Value</option>
+                    </select>
+                    <button className="flex items-center justify-center w-5 h-5 rounded-full text-neutral-400 hover:text-white transition-colors"><ArrowUpIcon /></button>
+                  </div>
+                  <button onClick={() => setIsGrouped(!isGrouped)} className={`h-full px-2 flex items-center justify-center rounded-md transition-all ${isGrouped ? "bg-neutral-800 text-white border border-neutral-700/50" : "text-neutral-500 hover:text-neutral-300 border border-transparent"}`}><LayoutIcon /></button>
+                  <button onClick={() => setViewMode("visual")} className={`h-full px-2 flex items-center justify-center rounded-md transition-all ${viewMode === "visual" ? "bg-neutral-800 text-white border border-neutral-700/50" : "text-neutral-500 hover:text-neutral-300 border border-transparent"}`}><LayoutGridIcon /></button>
+                  <button onClick={() => setViewMode("list")} className={`h-full px-2 flex items-center justify-center rounded-md transition-all ${viewMode === "list" ? "bg-neutral-800 text-white border border-neutral-700/50" : "text-neutral-500 hover:text-neutral-300 border border-transparent"}`}><ListIcon /></button>
+                </div>
+              </div>
+            </div>
+
+            {/* Workspace content — mock grid */}
+            <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3">
+                {Array.from({ length: 24 }).map((_, i) => {
+                  const qty = [1, 2, 3, 4, 2, 1, 3, 5, 2, 4][i % 10];
+                  const owned = i % 4 === 0 ? qty : i % 3 === 0 ? Math.max(0, qty - 2) : 0;
+                  const isFullyOwned = owned >= qty;
+                  return (
+                    <div key={i} className="aspect-[5/7] bg-neutral-900 rounded-xl border border-neutral-800 flex items-center justify-center relative group overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-b from-neutral-800/50 to-neutral-900/80" />
+                      <span className="text-[10px] text-neutral-700 z-10">Card {i + 1}</span>
+
+                      {/* Qty badge — persistent top-left, circular */}
+                      <span className={`absolute top-1.5 left-1.5 w-6 h-6 flex items-center justify-center rounded-full text-[10px] font-bold z-20 ${
+                        qty >= 5 ? "bg-red-500/80 text-white" : qty === 4 ? "bg-green-500/80 text-white" : "bg-black/60 text-neutral-300"
+                      }`}>
+                        {qty}
+                      </span>
+
+                      {/* × remove — hover, top-right, circular */}
+                      <button className="absolute top-1.5 right-1.5 w-6 h-6 flex items-center justify-center rounded-full bg-black/60 text-neutral-400 hover:text-red-400 hover:bg-red-500/20 opacity-0 group-hover:opacity-100 transition-all z-30">
+                        <XIcon size={11} />
+                      </button>
+
+                      {/* Hover overlay */}
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/75 backdrop-blur-sm px-2 py-3 translate-y-full group-hover:translate-y-0 transition-transform duration-200 ease-out z-20 flex flex-col items-center gap-2.5">
+                        {/* Qty controls — circular buttons */}
+                        <div className="flex items-center gap-3">
+                          <button className="w-7 h-7 flex items-center justify-center rounded-full bg-neutral-700/50 text-neutral-300 hover:bg-neutral-600 hover:text-white transition-colors">
+                            <MinusIcon size={14} />
+                          </button>
+                          <span className="text-sm font-bold text-white tabular-nums min-w-[1ch] text-center">{qty}</span>
+                          <button className="w-7 h-7 flex items-center justify-center rounded-full bg-neutral-700/50 text-neutral-300 hover:bg-neutral-600 hover:text-white transition-colors">
+                            <PlusIcon size={14} />
+                          </button>
+                        </div>
+                        {/* Owned counter — inline editable, no buttons */}
+                        <span className={`text-[10px] tabular-nums cursor-pointer hover:underline ${isFullyOwned ? "text-green-400" : "text-neutral-400"}`}>
+                          Owned: {owned}/{qty}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </main>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>
