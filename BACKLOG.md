@@ -41,6 +41,9 @@
 - [ ] **bug** | Card Kingdom button wraps to 2 lines in sidebar actions strip — width constraint
 - [ ] **enhancement** | Settings panel redesign — 2 clicks to access settings is a UX regression from v1.3.0 sidebar changes
 - [ ] **enhancement** | Card price display missing from persistent grid tile — deferred from v1.3.0 design, needs design decision
+- [ ] **enhancement** | Match workspace background color to sidebar background color
+- [ ] **enhancement** | Remove qty badge from persistent grid tile; surface card price on tile instead (price must remain visible somewhere)
+- [ ] **enhancement** | Grid view column size presets — small (6 col), medium (4 col), large (2 col); bonus: auto-set based on screen size
 
 ---
 
