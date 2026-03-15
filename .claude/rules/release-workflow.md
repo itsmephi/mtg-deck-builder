@@ -36,7 +36,7 @@ globs:
 
 7. Phi types APPROVED in Claude Code.
 
-8. Claude Code writes session summary to REVIEW.md, then commits:
+8. Before writing the session summary, update the REVIEW.md status header from IN PROGRESS to APPROVED ✅. Then Claude Code writes session summary to REVIEW.md and commits:
    - `vX.X.X - description - Closes #N, Closes #N`
    - `git add CLAUDE.md CHANGELOG.md REVIEW.md BACKLOG.md && git commit -m "update CLAUDE.md, CHANGELOG.md, REVIEW.md, and BACKLOG.md post vX.X.X"`
 
