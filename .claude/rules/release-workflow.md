@@ -24,7 +24,7 @@ globs:
 3. `git checkout -b vX.X.X`
    > WIP commits stay on the branch — never merge to main until APPROVED.
 
-4. **Plan Review** — Claude Code outputs every file it plans to touch and a one-line summary of changes per file, writes this to REVIEW.md, and waits for PROCEED before executing.
+4. **Plan Review** — Before writing the new plan review table, clear all content from REVIEW.md except the "How This File Works" section at the bottom. Each release starts with a fresh REVIEW.md — previous session history should already be archived in CHANGELOG.md. Then Claude Code outputs every file it plans to touch and a one-line summary of changes per file, writes this to REVIEW.md, and waits for PROCEED before executing.
 
    **Complexity check:** If the plan review table lists more than 5 files or introduces a new component, sync REVIEW.md to Claude Chat for a cross-check before typing PROCEED. For standard releases (≤5 files, no new components), Phi reviews the plan directly and types PROCEED without the Claude Chat round-trip.
 
