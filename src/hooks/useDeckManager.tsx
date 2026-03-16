@@ -189,9 +189,18 @@ export function DeckProvider({ children }: { children: ReactNode }) {
   };
 
   const createNewDeck = () => {
-    const newDeck = { id: crypto.randomUUID(), name: "", cards: [] };
-    setDecks((prev) => [...prev, newDeck]);
-    setActiveDeckIdState(newDeck.id);
+    const newId = crypto.randomUUID();
+    setDecks((prev) => {
+      const existingNames = prev.map((d) => d.name || "Untitled");
+      let name = "Untitled";
+      let n = 2;
+      while (existingNames.includes(name)) {
+        name = `Untitled (${n})`;
+        n++;
+      }
+      return [...prev, { id: newId, name, cards: [] }];
+    });
+    setActiveDeckIdState(newId);
   };
 
   const deleteDeck = (id: string) => {

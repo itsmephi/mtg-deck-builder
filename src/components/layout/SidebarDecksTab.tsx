@@ -189,14 +189,14 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
         <div className="flex items-center gap-1.5">
           <button
             onClick={buyOnTCGPlayer}
-            className="flex items-center gap-1.5 flex-1 justify-center px-2 py-1.5 bg-orange-600/10 border border-orange-600/30 rounded-lg text-xs font-bold text-orange-400 hover:bg-orange-600/20 transition-colors"
+            className="flex items-center gap-1.5 flex-1 justify-center px-2 py-1.5 bg-orange-600/10 border border-orange-600/30 rounded-lg text-[10px] font-bold text-orange-400 hover:bg-orange-600/20 transition-colors"
           >
             <ShoppingCart className="w-3 h-3" />
             TCGPlayer
           </button>
           <button
             onClick={buyOnCardKingdom}
-            className="flex items-center gap-1.5 flex-1 justify-center px-2 py-1.5 bg-blue-600/10 border border-blue-600/30 rounded-lg text-xs font-bold text-blue-400 hover:bg-blue-600/20 transition-colors"
+            className="flex items-center gap-1.5 flex-1 justify-center px-2 py-1.5 bg-blue-600/10 border border-blue-600/30 rounded-lg text-[10px] font-bold text-blue-400 hover:bg-blue-600/20 transition-colors"
           >
             <ShoppingCart className="w-3 h-3" />
             Card Kingdom

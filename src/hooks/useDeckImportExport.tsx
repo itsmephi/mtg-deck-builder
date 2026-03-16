@@ -75,13 +75,12 @@ export function useDeckImportExport() {
   };
 
   const getUniqueDeckName = (baseName: string) => {
-    let newName = baseName;
-    let counter = 1;
-    while (decks.some((d) => d.name.toLowerCase() === newName.toLowerCase())) {
-      newName = `${baseName} (${counter})`;
-      counter++;
+    if (!decks.some((d) => d.name.toLowerCase() === baseName.toLowerCase())) {
+      return baseName;
     }
-    return newName;
+    let n = 2;
+    while (decks.some((d) => d.name.toLowerCase() === `${baseName} (${n})`.toLowerCase())) n++;
+    return `${baseName} (${n})`;
   };
 
   const processImport = async (mode: "current" | "new") => {

@@ -254,6 +254,7 @@ export default function SidebarSearchTab() {
               {results.map((card) => (
                 <li
                   key={card.id}
+                  onClick={() => handleAddCard(card)}
                   onMouseEnter={() => setHoveredCard(card)}
                   onMouseLeave={() => setHoveredCard(null)}
                   className="text-xs text-neutral-300 hover:text-white cursor-pointer flex items-center justify-between group p-1.5 -mx-1.5 rounded hover:bg-neutral-800/50 transition-colors"
@@ -262,7 +263,7 @@ export default function SidebarSearchTab() {
                   <div className="flex items-center gap-1 shrink-0">
                     <ManaSymbols manaCost={card.mana_cost || card.card_faces?.[0]?.mana_cost} />
                     <button
-                      onClick={() => handleAddCard(card)}
+                      onClick={(e) => { e.stopPropagation(); handleAddCard(card); }}
                       className="w-5 h-5 rounded-full bg-neutral-800 opacity-0 group-hover:opacity-100 flex items-center justify-center text-neutral-400 hover:text-white hover:bg-neutral-700 transition-all text-xs font-bold"
                     >
                       +

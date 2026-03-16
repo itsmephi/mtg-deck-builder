@@ -4,14 +4,27 @@ export function useDeckStats(activeDeck: Deck | null) {
   const totalCards =
     activeDeck?.cards.reduce((sum, card) => sum + card.quantity, 0) ?? 0;
 
-  const totalValue =
+  const hasSideboard = activeDeck?.sideboard !== undefined;
+
+  const mainValue =
     activeDeck?.cards.reduce(
       (sum, card) =>
         sum + parseFloat(card.prices.usd || "0") * card.quantity,
       0,
     ) ?? 0;
 
-  const remainingCost =
+  const sideboardValue =
+    hasSideboard
+      ? (activeDeck?.sideboard ?? []).reduce(
+          (sum, card) =>
+            sum + parseFloat(card.prices.usd || "0") * card.quantity,
+          0,
+        )
+      : 0;
+
+  const totalValue = mainValue + sideboardValue;
+
+  const mainRemainingCost =
     activeDeck?.cards.reduce(
       (sum, card) =>
         sum +
@@ -19,6 +32,19 @@ export function useDeckStats(activeDeck: Deck | null) {
           Math.max(0, card.quantity - card.ownedQty),
       0,
     ) ?? 0;
+
+  const sideboardRemainingCost =
+    hasSideboard
+      ? (activeDeck?.sideboard ?? []).reduce(
+          (sum, card) =>
+            sum +
+            parseFloat(card.prices.usd || "0") *
+              Math.max(0, card.quantity - card.ownedQty),
+          0,
+        )
+      : 0;
+
+  const remainingCost = mainRemainingCost + sideboardRemainingCost;
 
   const hasPriceData =
     activeDeck?.cards.some((card) => card.prices.usd !== null) ?? false;
@@ -57,6 +83,7 @@ export function useDeckStats(activeDeck: Deck | null) {
     totalValue,
     remainingCost,
     hasPriceData,
+    hasSideboard,
     buyOnTCGPlayer,
     buyOnCardKingdom,
   };

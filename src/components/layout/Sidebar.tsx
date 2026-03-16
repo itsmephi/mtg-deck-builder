@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, Layers, ChevronLeft, Coffee, Settings, ArrowUp, ArrowDown } from "lucide-react";
+import { Search, Layers, PanelRightOpen, Coffee, Settings, ArrowUp, ArrowDown } from "lucide-react";
 import { APP_VERSION, CURRENT_CHANGELOG } from "@/config/version";
 import SidebarRail from "./SidebarRail";
 import SidebarSearchTab from "./SidebarSearchTab";
@@ -18,6 +18,7 @@ export default function Sidebar({ onImport, onExport, isImporting }: Props) {
   const [collapsed, setCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState<"search" | "decks">("search");
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isChangelogOpen, setIsChangelogOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
 
   const { showThumbnail, setShowThumbnail, sortBy, setSortBy, sortDir, setSortDir } =
@@ -60,7 +61,7 @@ export default function Sidebar({ onImport, onExport, isImporting }: Props) {
 
   return (
     <aside
-      className="h-[40vh] md:h-screen border-b md:border-b-0 md:border-r border-neutral-800 bg-neutral-900 flex flex-col overflow-hidden"
+      className={`h-[40vh] md:h-screen border-b md:border-b-0 md:border-r border-neutral-800 bg-neutral-900 flex flex-col ${isCollapsed ? "overflow-visible" : "overflow-hidden"}`}
       style={
         isDesktop
           ? {
@@ -71,7 +72,7 @@ export default function Sidebar({ onImport, onExport, isImporting }: Props) {
       }
     >
       {isCollapsed ? (
-        <SidebarRail expandTo={expandTo} />
+        <SidebarRail expandTo={expandTo} activeTab={activeTab} />
       ) : (
         <div className="flex flex-col h-full min-w-0">
           {/* Tab bar */}
@@ -98,13 +99,13 @@ export default function Sidebar({ onImport, onExport, isImporting }: Props) {
               <Layers className="w-3.5 h-3.5" />
               Decks
             </button>
-            {/* Collapse chevron — desktop only */}
+            {/* Collapse icon — desktop only */}
             {isDesktop && (
               <button
                 onClick={handleCollapse}
                 className="px-2.5 py-2.5 text-neutral-500 hover:text-white transition-colors shrink-0"
               >
-                <ChevronLeft className="w-4 h-4" />
+                <PanelRightOpen className="w-4 h-4" />
               </button>
             )}
           </div>
@@ -127,8 +128,12 @@ export default function Sidebar({ onImport, onExport, isImporting }: Props) {
             <div className="flex items-center justify-between px-3 py-2">
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => alert(`v${APP_VERSION}: ${CURRENT_CHANGELOG}`)}
-                  className="flex items-center gap-1.5 px-2 py-0.5 bg-blue-500/10 border border-blue-500/20 rounded-full text-[9px] font-bold text-blue-400 uppercase tracking-wider hover:bg-blue-500/20 transition-colors"
+                  onClick={() => setIsChangelogOpen(!isChangelogOpen)}
+                  className={`flex items-center gap-1.5 px-2 py-0.5 border rounded-full text-[9px] font-bold uppercase tracking-wider transition-colors ${
+                    isChangelogOpen
+                      ? "bg-blue-500/30 border-blue-400 text-blue-100"
+                      : "bg-blue-500/10 border-blue-500/20 text-blue-400 hover:bg-blue-500/20"
+                  }`}
                 >
                   v{APP_VERSION}
                 </button>
@@ -151,6 +156,17 @@ export default function Sidebar({ onImport, onExport, isImporting }: Props) {
                 <Settings className="w-3.5 h-3.5" />
               </button>
             </div>
+
+            {isChangelogOpen && (
+              <div className="px-3 pb-3 pt-1 border-t border-neutral-800/50">
+                <p className="text-[9px] font-bold text-neutral-500 uppercase tracking-widest mb-2">
+                  What&apos;s New in v{APP_VERSION}
+                </p>
+                <p className="text-[10px] text-neutral-400 leading-relaxed max-h-32 overflow-y-auto custom-scrollbar">
+                  {CURRENT_CHANGELOG}
+                </p>
+              </div>
+            )}
 
             {isSettingsOpen && (
               <div className="px-4 pb-3 pt-1 border-t border-neutral-800/50">

@@ -71,12 +71,6 @@ export default function VisualCard({
   const imgSrc =
     card.card_faces?.[0].image_uris?.normal || card.image_uris?.normal;
 
-  const badgeClass = overCopyLimit
-    ? "bg-red-600 text-white"
-    : atCopyLimit
-    ? "bg-green-600 text-white"
-    : "bg-neutral-900 text-neutral-300";
-
   const overlayQtyClass = overCopyLimit
     ? "text-red-400"
     : atCopyLimit
@@ -98,13 +92,6 @@ export default function VisualCard({
         className={`w-full h-full object-cover ${card.quantity === 0 ? "grayscale" : ""}`}
         alt={card.name}
       />
-
-      {/* Qty badge — top-left, always visible */}
-      <div
-        className={`absolute top-1.5 left-1.5 w-6 h-6 flex items-center justify-center rounded-full text-[10px] font-bold z-10 ${badgeClass}`}
-      >
-        {card.quantity}
-      </div>
 
       {/* × remove — top-right, hover-only */}
       <button

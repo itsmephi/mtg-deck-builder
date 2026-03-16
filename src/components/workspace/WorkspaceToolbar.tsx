@@ -106,12 +106,18 @@ export default function WorkspaceToolbar({
             <span className="text-neutral-200 font-medium">
               {hasPriceData ? `$${totalValue.toFixed(2)}` : "N/A"}
             </span>
+            {activeDeckHasSideboard && (
+              <span className="text-neutral-500 ml-1">(M+S)</span>
+            )}
           </span>
           <span>
             To Buy:{" "}
             <span className="text-green-500 font-medium">
               {hasPriceData ? `$${remainingCost.toFixed(2)}` : "N/A"}
             </span>
+            {activeDeckHasSideboard && (
+              <span className="text-neutral-500 ml-1">(M+S)</span>
+            )}
           </span>
           {deckViewMode === "main" && activeDeckHasSideboard && (
             <span className="text-neutral-600">
