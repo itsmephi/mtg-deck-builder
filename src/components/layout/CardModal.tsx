@@ -206,7 +206,7 @@ export default function CardModal({
           <div
             className={`flex flex-col md:flex-row w-full h-full transition-all duration-150 ease-in-out ${isTransitioning ? "opacity-0 blur-sm scale-[0.98]" : "opacity-100 blur-0 scale-100"}`}
           >
-            <div className="w-full md:w-2/5 p-6 bg-neutral-950 flex flex-col items-center justify-between border-b md:border-b-0 md:border-r border-neutral-800 shrink-0">
+            <div className="w-full md:w-2/5 p-6 bg-neutral-900 flex flex-col items-center justify-between border-b md:border-b-0 md:border-r border-neutral-800 shrink-0">
               <div
                 className="relative w-full flex-1 group cursor-pointer overflow-hidden rounded-xl shadow-lg mb-4"
                 style={{ perspective: "1000px" }}
@@ -309,7 +309,7 @@ export default function CardModal({
                     </p>
                   </section>
 
-                  <section className="bg-neutral-950 border border-neutral-800 rounded-xl p-6 space-y-4 shadow-inner">
+                  <section className="bg-neutral-900 border border-neutral-800 rounded-xl p-6 space-y-4 shadow-inner">
                     {isDoubleFaced && (
                       <div className="flex justify-end border-b border-neutral-800 pb-2">
                         <span className="text-[10px] font-bold text-blue-400 uppercase tracking-widest">
@@ -406,7 +406,7 @@ export default function CardModal({
                         {rulings.map((r, i) => (
                           <li
                             key={i}
-                            className="text-xs text-neutral-400 bg-neutral-950/50 p-3 rounded-lg border border-neutral-800"
+                            className="text-xs text-neutral-400 bg-neutral-900/50 p-3 rounded-lg border border-neutral-800"
                           >
                             <span className="text-[10px] text-neutral-600 font-bold block mb-1">
                               {r.published_at}
@@ -424,7 +424,7 @@ export default function CardModal({
                     <div
                       key={v.id}
                       onClick={() => setPreviewCard(v)}
-                      className={`p-2 rounded-xl border cursor-pointer transition-all ${previewCard.id === v.id ? "border-blue-500 bg-blue-500/10" : "border-neutral-800 bg-neutral-950 hover:border-neutral-700"}`}
+                      className={`p-2 rounded-xl border cursor-pointer transition-all ${previewCard.id === v.id ? "border-blue-500 bg-blue-500/10" : "border-neutral-800 bg-neutral-900 hover:border-neutral-700"}`}
                     >
                       <img
                         src={

@@ -179,7 +179,7 @@ export default function SidebarSearchTab() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onClick={(e) => (e.target as HTMLInputElement).select()}
-              className="w-full pl-9 pr-8 py-2 bg-neutral-950 border border-neutral-800 rounded-lg text-sm text-neutral-200 placeholder-neutral-500 focus:outline-none focus:border-neutral-600 transition-colors"
+              className="w-full pl-9 pr-8 py-2 bg-neutral-900 border border-neutral-800 rounded-lg text-sm text-neutral-200 placeholder-neutral-500 focus:outline-none focus:border-neutral-600 transition-colors"
             />
             {query && (
               <button
@@ -194,7 +194,7 @@ export default function SidebarSearchTab() {
           <div className="relative z-10">
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="flex items-center justify-between w-full px-3 py-1.5 bg-neutral-950/50 border border-neutral-800/80 rounded-lg text-xs text-neutral-300 hover:bg-neutral-800 hover:text-white transition-colors"
+              className="flex items-center justify-between w-full px-3 py-1.5 bg-neutral-900/50 border border-neutral-800/80 rounded-lg text-xs text-neutral-300 hover:bg-neutral-800 hover:text-white transition-colors"
             >
               <div className="flex items-center gap-2 truncate">
                 <ActiveIcon className="w-3.5 h-3.5 text-neutral-400 shrink-0" />

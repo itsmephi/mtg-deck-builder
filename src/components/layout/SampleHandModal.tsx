@@ -173,7 +173,7 @@ export default function SampleHandModal({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-neutral-800 p-4 md:p-6 bg-neutral-950 z-10">
+        <div className="flex items-center justify-between border-b border-neutral-800 p-4 md:p-6 bg-neutral-900 z-10">
           <div className="flex items-center gap-4">
             <div className="p-2 bg-blue-500/10 rounded-lg hidden sm:block">
               <BarChart3 className="w-6 h-6 text-blue-400" />
@@ -212,7 +212,7 @@ export default function SampleHandModal({
 
         <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
           {/* Stats Sidebar */}
-          <div className="w-full lg:w-72 border-b lg:border-b-0 lg:border-r border-neutral-800 bg-neutral-950 overflow-y-auto shrink-0 custom-scrollbar">
+          <div className="w-full lg:w-72 border-b lg:border-b-0 lg:border-r border-neutral-800 bg-neutral-900 overflow-y-auto shrink-0 custom-scrollbar">
             <div className="p-4 lg:p-5 flex flex-col gap-7">
 
               {/* Section 1 — Mana Curve */}
@@ -398,7 +398,7 @@ export default function SampleHandModal({
               <div ref={scrollEndRef} className="col-span-full h-1 w-full" />
 
               {library.length === 0 && (
-                <div className="col-span-full mt-10 flex flex-col items-center justify-center p-12 border border-dashed border-neutral-800 rounded-2xl bg-neutral-950/30 w-full max-w-2xl mx-auto">
+                <div className="col-span-full mt-10 flex flex-col items-center justify-center p-12 border border-dashed border-neutral-800 rounded-2xl bg-neutral-900/30 w-full max-w-2xl mx-auto">
                   <AlertCircle className="w-10 h-10 text-neutral-700 mb-3" />
                   <p className="text-neutral-500 font-medium text-sm">
                     Library depleted.

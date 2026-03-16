@@ -163,7 +163,7 @@ export default function ListCardTable({
     >
       <table className="w-full table-fixed text-left text-xs">
         {showHeader && (
-          <thead className="bg-neutral-950 text-[10px] text-neutral-500 border-b border-neutral-800 uppercase tracking-wider">
+          <thead className="bg-neutral-900 text-[10px] text-neutral-500 border-b border-neutral-800 uppercase tracking-wider">
             <tr>
               <th className="px-2 py-1.5 w-16">Qty</th>
               <th className="py-1.5 w-24">Owned</th>

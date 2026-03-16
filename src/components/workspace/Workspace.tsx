@@ -287,7 +287,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
   const groupedCards = groupCardsByType(sortedCards);
 
   return (
-    <div className="w-full h-full flex flex-col relative text-sm">
+    <div className="w-full h-full flex flex-col relative text-sm bg-neutral-900">
       <WorkspaceToolbar
         activeDeck={activeDeck}
         onUpdateDeckName={(name) => updateActiveDeck((d) => ({ ...d, name }))}
