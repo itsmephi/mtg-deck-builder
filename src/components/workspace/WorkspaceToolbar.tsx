@@ -72,6 +72,7 @@ export default function WorkspaceToolbar({
           size={Math.max(10, activeDeck.name.length)}
           onFocus={() => setIsEditingName(true)}
           onBlur={() => setIsEditingName(false)}
+          onKeyDown={(e) => { if (e.key === "Enter") e.currentTarget.blur(); }}
           className={`text-lg font-bold text-white bg-transparent border-b border-transparent hover:border-neutral-700 focus:border-blue-500 focus:outline-none transition-all px-0 outline-none placeholder:text-neutral-500 max-w-[200px] ${isEditingName ? "" : "truncate"}`}
           placeholder="Untitled"
         />
