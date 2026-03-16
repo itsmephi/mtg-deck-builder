@@ -5,6 +5,27 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.3.2] — UI Polish: Sidebar Rail, Pricing, Deck Name Dedup, Grid Tile
+
+### Changed
+- Grid view card tiles no longer show an always-visible qty badge at rest. The tile at rest displays only card art. Qty controls remain fully accessible in the hover overlay.
+- Value and To Buy stats in the workspace toolbar now show a combined main + sideboard total (with a muted `(M+S)` label) when the active deck has a sideboard enabled.
+- Collapsed sidebar rail now has a `PanelLeftOpen` icon at the top as a dedicated expand control. Clicking anywhere on the rail background also expands to the last active tab.
+- Expanded sidebar collapse button changed from `ChevronLeft` (`‹`) to `PanelRightOpen` for visual clarity.
+- Version badge in sidebar footer now toggles an inline changelog section instead of a browser alert popup.
+- Buy link buttons (TCGPlayer, Card Kingdom) in the sidebar actions strip now use `text-[10px]` so "Card Kingdom" fits on one line at 240px sidebar width.
+
+### Fixed
+- Creating a new deck when a deck with the same name exists no longer produces malformed names. Auto-appends `(2)`, `(3)`, etc. starting at 2. Untitled decks follow the same rule: first stays unnamed, subsequent get `Untitled (2)`, `Untitled (3)`, etc.
+- Import "Create New Deck" now uses the same deduplication rule — appends `(2)`, `(3)` if the filename conflicts with an existing deck name.
+- Card Kingdom button text wrapping in sidebar actions strip fixed via reduced font size. Closes #58.
+
+### Added
+- Collapsed sidebar rail: hovering any icon shows a right-positioned tooltip (Expand Sidebar, Search, Decks, New Deck, Buy Me a Coffee, Settings).
+- Collapsed sidebar rail: `Plus` icon between Decks and spacer creates a new deck without expanding the sidebar.
+
+---
+
 ## [1.3.1] — Hot Fix: Badge Readability, Overlay Color, Toolbar Overflow, Mana Symbols
 
 ### Fixed

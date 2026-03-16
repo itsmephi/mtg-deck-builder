@@ -7,7 +7,7 @@
 ## Active Milestone
 <!-- Items promoted from Pipeline for the current release. Cleared after release ships. -->
 
-(None — v1.3.0 shipped. Next milestone TBD pending design session.)
+(None — v1.3.2 shipped. Next milestone TBD pending design session.)
 
 ---
 
@@ -18,31 +18,27 @@
 - [ ] **feature** | Custom card sorting by drag and drop (#16)
 - [ ] **feature** | Support Standard and Commander deck modes (#17)
 - [ ] **enhancement** | EDHREC improved search suggestions (#26) ↑ priority — *Partially addressed in v1.3.0: mana symbols in search results. Dynamic categories and NLP search deferred.*
-- [ ] **enhancement** | Version badge popup — revisit behavior (#49)
-- [ ] **enhancement** | Sideboard pricing — show combined total with main deck by default (#58) ↑ priority
+- [x] **enhancement** | Version badge popup — revisit behavior (#49) *(closed v1.3.2)*
+- [x] **enhancement** | Sideboard pricing — show combined total with main deck by default (#58) *(closed v1.3.2)*
 - [ ] **feature** | Move cards between boards or decks (#62) ↑ priority
-- [x] **enhancement** | Grid view card icons and action buttons appear on hover/rollover (#76) *(closed v1.3.0)*
 - [ ] **enhancement** | Turn-based draw probability slider — deferred; revisit for pre-game analysis view
 - [ ] **enhancement** | Max % inline label in Draw Odds — deferred to keep UI clean
 - [ ] **enhancement** | Commander threshold calibration — recalibrate when Commander mode ships; constants already named
 - [ ] **enhancement** | Category-level draw odds — requires card tagging system; stretch goal
 - [ ] **enhancement** | Mulligan strategy hints — contextual guidance based on hand stats; out of scope this version
-- [ ] **bug** | Deck name conflicts produce malformed names like `[name](#)` — handle duplicate names gracefully
-- [x] **bug** | Basic lands and fetch lands missing visual spacer when sorted — should match behavior of other sort group separators *(closed v1.2.1)*
+- [x] **bug** | Deck name conflicts produce malformed names like `[name](#)` — handle duplicate names gracefully *(closed v1.3.2)*
 - [ ] **enhancement** | List view rollover highlight and color rendering feels slow/sluggish — audit and optimize implementation
-- [x] **enhancement** | Grid view getting cluttered with numbers and buttons — refactor for a cleaner, more minimal card display *(closed v1.3.0)*
 - [ ] **enhancement** | Simulator modal has no view mode toggle — consider adding compact list view inside modal for larger decks; would also make pin-from-list interaction more prominent
-- [x] **feature** | Collapsible search sidebar — high priority for smaller screens and tablets; precursor to mobile work *(closed v1.3.0)*
 - [ ] **feature** | Decklist library — save decklists to a shared library where others can load, view, or download them
-- [ ] **enhancement** | Collapsed sidebar rail icons should have tooltips
-- [ ] **enhancement** | Clicking empty area of collapsed sidebar should expand it
-- [ ] **enhancement** | Add "+ New Deck" icon to collapsed sidebar rail
-- [ ] **enhancement** | Add open/close toggle icon in collapsed sidebar state
-- [ ] **bug** | Card Kingdom button wraps to 2 lines in sidebar actions strip — width constraint
+- [x] **enhancement** | Collapsed sidebar rail icons should have tooltips *(closed v1.3.2)*
+- [x] **enhancement** | Clicking empty area of collapsed sidebar should expand it *(closed v1.3.2)*
+- [x] **enhancement** | Add "+ New Deck" icon to collapsed sidebar rail *(closed v1.3.2)*
+- [x] **enhancement** | Add open/close toggle icon in collapsed sidebar state *(closed v1.3.2)*
+- [x] **bug** | Card Kingdom button wraps to 2 lines in sidebar actions strip — width constraint *(closed v1.3.2)*
 - [ ] **enhancement** | Settings panel redesign — 2 clicks to access settings is a UX regression from v1.3.0 sidebar changes
 - [ ] **enhancement** | Card price display missing from persistent grid tile — deferred from v1.3.0 design, needs design decision
 - [ ] **enhancement** | Match workspace background color to sidebar background color
-- [ ] **enhancement** | Remove qty badge from persistent grid tile; surface card price on tile instead (price must remain visible somewhere)
+- [x] **enhancement** | Remove qty badge from persistent grid tile *(closed v1.3.2)*
 - [ ] **enhancement** | Grid view column size presets — small (6 col), medium (4 col), large (2 col); bonus: auto-set based on screen size
 - [ ] **bug** | Deck count display shows 60 + 15 sideboard separately — total should read 75; card count colorings should reflect combined total
 
@@ -77,6 +73,17 @@
 
 ## Closed (Recent)
 <!-- Keep last 2 releases, then archive to CHANGELOG.md -->
+
+### v1.3.2
+- [x] **enhancement** | Sideboard pricing — combined main+side total with (M+S) label (#58) *(closed v1.3.2)*
+- [x] **bug** | Deck name conflicts produce malformed names — deduplication on create and import *(closed v1.3.2)*
+- [x] **enhancement** | Version badge popup — inline changelog expand (#49) *(closed v1.3.2)*
+- [x] **enhancement** | Collapsed sidebar rail icons should have tooltips *(closed v1.3.2)*
+- [x] **enhancement** | Clicking empty area of collapsed sidebar should expand it *(closed v1.3.2)*
+- [x] **enhancement** | Add "+ New Deck" icon to collapsed sidebar rail *(closed v1.3.2)*
+- [x] **enhancement** | Add open/close toggle icon in collapsed sidebar state *(closed v1.3.2)*
+- [x] **bug** | Card Kingdom button wraps to 2 lines in sidebar actions strip *(closed v1.3.2)*
+- [x] **enhancement** | Remove qty badge from persistent grid tile *(closed v1.3.2)*
 
 ### v1.3.1
 *(no backlog items closed — hot fix)*
