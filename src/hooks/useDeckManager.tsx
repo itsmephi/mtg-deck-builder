@@ -8,6 +8,7 @@ import {
   ReactNode,
 } from "react";
 import { Deck, DeckCard } from "@/types";
+import { DeckFormat } from "@/lib/formatRules";
 
 const STORAGE_KEY = "mtg_builder_decks";
 const SORT_PREF_KEY = "mtg-sort-preference";
@@ -24,10 +25,14 @@ interface DeckContextType {
   setActiveDeckId: (id: string) => void;
   updateActiveDeck: (updater: (deck: Deck) => Deck) => void;
   updateOwnedQty: (cardId: string, qty: number) => void;
-  createNewDeck: () => void;
+  createNewDeck: (format?: DeckFormat) => void;
   deleteDeck: (id: string) => void;
   enableSideboard: (deckId: string) => void;
   deleteSideboard: (deckId: string) => void;
+  setDeckFormat: (deckId: string, format: DeckFormat) => void;
+  setCommanderId: (cardId: string | undefined) => void;
+  mergeSideboardIntoDeck: (deckId: string) => void;
+  deleteSideboardForFormat: (deckId: string) => void;
   activeSideboardCards: DeckCard[];
   deckViewMode: "main" | "sideboard";
   setDeckViewMode: (v: "main" | "sideboard") => void;
@@ -67,6 +72,8 @@ export function DeckProvider({ children }: { children: ReactNode }) {
         if (Array.isArray(parsedDecks) && parsedDecks.length > 0) {
           const migratedDecks = parsedDecks.map((deck: any) => ({
             ...deck,
+            format: deck.format ?? "freeform",
+            commanderId: deck.commanderId ?? undefined,
             cards: deck.cards.map((card: any) => {
               if (card.ownedQty !== undefined) return card;
               return { ...card, ownedQty: card.isOwned ? card.quantity : 0 };
@@ -90,6 +97,7 @@ export function DeckProvider({ children }: { children: ReactNode }) {
             id: crypto.randomUUID(),
             name: "",
             cards: [],
+            format: "freeform" as DeckFormat,
           };
           setDecks([defaultDeck]);
           setActiveDeckIdState(defaultDeck.id);
@@ -102,6 +110,7 @@ export function DeckProvider({ children }: { children: ReactNode }) {
         id: crypto.randomUUID(),
         name: "",
         cards: [],
+        format: "freeform" as DeckFormat,
       };
       setDecks([defaultDeck]);
       setActiveDeckIdState(defaultDeck.id);
@@ -188,7 +197,7 @@ export function DeckProvider({ children }: { children: ReactNode }) {
     );
   };
 
-  const createNewDeck = () => {
+  const createNewDeck = (format: DeckFormat = "freeform") => {
     const newId = crypto.randomUUID();
     setDecks((prev) => {
       const existingNames = prev.map((d) => d.name || "Untitled");
@@ -198,7 +207,7 @@ export function DeckProvider({ children }: { children: ReactNode }) {
         name = `Untitled (${n})`;
         n++;
       }
-      return [...prev, { id: newId, name, cards: [] }];
+      return [...prev, { id: newId, name, cards: [], format }];
     });
     setActiveDeckIdState(newId);
   };
@@ -208,10 +217,11 @@ export function DeckProvider({ children }: { children: ReactNode }) {
       const filtered = prev.filter((d) => d.id !== id);
 
       if (filtered.length === 0) {
-        const freshDeck = {
+        const freshDeck: Deck = {
           id: crypto.randomUUID(),
           name: "",
           cards: [],
+          format: "freeform",
         };
         setActiveDeckIdState(freshDeck.id);
         return [freshDeck];
@@ -247,6 +257,63 @@ export function DeckProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const setDeckFormat = (deckId: string, format: DeckFormat) => {
+    setDecks((currentDecks) =>
+      currentDecks.map((deck) => {
+        if (deck.id !== deckId) return deck;
+        const update: Partial<Deck> = { format };
+        // Switching away from commander clears the commanderId
+        if (deck.format === "commander" && format !== "commander") {
+          update.commanderId = undefined;
+        }
+        return { ...deck, ...update };
+      }),
+    );
+  };
+
+  const setCommanderId = (cardId: string | undefined) => {
+    setDecks((currentDecks) =>
+      currentDecks.map((deck) =>
+        deck.id === activeDeckId ? { ...deck, commanderId: cardId } : deck,
+      ),
+    );
+  };
+
+  const mergeSideboardIntoDeck = (deckId: string) => {
+    setDecks((currentDecks) =>
+      currentDecks.map((deck) => {
+        if (deck.id !== deckId || !deck.sideboard) return deck;
+        const newCards = [...deck.cards];
+        for (const sbCard of deck.sideboard) {
+          const existingIndex = newCards.findIndex((c) => c.name === sbCard.name);
+          if (existingIndex >= 0) {
+            newCards[existingIndex] = {
+              ...newCards[existingIndex],
+              quantity: newCards[existingIndex].quantity + sbCard.quantity,
+            };
+          } else {
+            newCards.push(sbCard);
+          }
+        }
+        return { ...deck, cards: newCards, sideboard: undefined };
+      }),
+    );
+    if (deckId === activeDeckId && deckViewMode === "sideboard") {
+      setDeckViewMode("main");
+    }
+  };
+
+  const deleteSideboardForFormat = (deckId: string) => {
+    setDecks((currentDecks) =>
+      currentDecks.map((deck) =>
+        deck.id === deckId ? { ...deck, sideboard: undefined } : deck,
+      ),
+    );
+    if (deckId === activeDeckId && deckViewMode === "sideboard") {
+      setDeckViewMode("main");
+    }
+  };
+
   return (
     <DeckContext.Provider
       value={{
@@ -259,6 +326,10 @@ export function DeckProvider({ children }: { children: ReactNode }) {
         deleteDeck,
         enableSideboard,
         deleteSideboard,
+        setDeckFormat,
+        setCommanderId,
+        mergeSideboardIntoDeck,
+        deleteSideboardForFormat,
         activeSideboardCards,
         deckViewMode,
         setDeckViewMode,

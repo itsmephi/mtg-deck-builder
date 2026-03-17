@@ -1,4 +1,4 @@
-import { ScryfallCard } from "@/types";
+import { ScryfallCard, DeckCard } from "@/types";
 
 const SCRYFALL_BASE = "https://api.scryfall.com";
 const HEADERS = {
@@ -54,6 +54,41 @@ export async function getCardPrintings(
     console.error("getCardPrintings failed:", e);
     return [];
   }
+}
+
+export async function backfillColorIdentity(cards: DeckCard[]): Promise<DeckCard[]> {
+  const missing = cards.filter((c) => c.color_identity === undefined);
+  if (missing.length === 0) return cards;
+
+  const chunkSize = 75;
+  const fetched = new Map<string, string[]>();
+
+  for (let i = 0; i < missing.length; i += chunkSize) {
+    const chunk = missing.slice(i, i + chunkSize);
+    const identifiers = chunk.map((c) => ({ id: c.id }));
+    try {
+      const res = await fetch("https://api.scryfall.com/cards/collection", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ identifiers }),
+      });
+      if (!res.ok) continue;
+      const data = await res.json();
+      if (data.data) {
+        for (const card of data.data) {
+          fetched.set(card.id, card.color_identity ?? []);
+        }
+      }
+    } catch (e) {
+      console.error("backfillColorIdentity failed:", e);
+    }
+  }
+
+  return cards.map((c) =>
+    c.color_identity === undefined && fetched.has(c.id)
+      ? { ...c, color_identity: fetched.get(c.id)! }
+      : c,
+  );
 }
 
 export async function getCardRulings(

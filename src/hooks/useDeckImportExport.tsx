@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useDeckManager } from "@/hooks/useDeckManager";
 import { ScryfallCard, DeckCard } from "@/types";
 import { searchCards } from "@/lib/scryfall";
+import { DeckFormat } from "@/lib/formatRules";
 
 export function useDeckImportExport() {
   const { decks, activeDeck, updateActiveDeck, createNewDeck } =
@@ -15,6 +16,8 @@ export function useDeckImportExport() {
     name: string;
     cards: DeckCard[];
     sideboard?: DeckCard[];
+    format: DeckFormat;
+    commanderId?: string;
   } | null>(null);
 
   useEffect(() => {
@@ -24,6 +27,8 @@ export function useDeckImportExport() {
         name: pendingNewDeckData.name,
         cards: pendingNewDeckData.cards,
         sideboard: pendingNewDeckData.sideboard,
+        format: pendingNewDeckData.format,
+        commanderId: pendingNewDeckData.commanderId,
       }));
       setPendingNewDeckData(null);
       setIsImporting(false);
@@ -45,6 +50,23 @@ export function useDeckImportExport() {
 
     if (activeDeck.sideboard && activeDeck.sideboard.length > 0) {
       content += "\nSideboard\n" + activeDeck.sideboard.map(formatCard).join("\n");
+    }
+
+    if (activeDeck.format !== "freeform") {
+      content =
+        `// Format: ${activeDeck.format === "standard" ? "Standard" : "Commander"}\n` +
+        content;
+    }
+    if (activeDeck.format === "commander" && activeDeck.commanderId) {
+      const commander = activeDeck.cards.find(
+        (c) => c.id === activeDeck.commanderId,
+      );
+      if (commander) {
+        content = content.replace(
+          /^(\/\/ Format:.*)$/m,
+          `$1\n// Commander: ${commander.name}`,
+        );
+      }
     }
 
     const blob = new Blob([content], { type: "text/plain" });
@@ -88,6 +110,17 @@ export function useDeckImportExport() {
     const { filename, lines } = pendingImport;
     setPendingImport(null);
     setIsImporting(true);
+
+    // Parse format headers from comment lines
+    let importFormat: DeckFormat = "freeform";
+    let commanderName: string | undefined;
+
+    for (const line of lines) {
+      if (line.startsWith("// Format: Standard")) importFormat = "standard";
+      else if (line.startsWith("// Format: Commander")) importFormat = "commander";
+      else if (line.startsWith("// Commander: "))
+        commanderName = line.replace("// Commander: ", "").trim();
+    }
 
     // Split lines into main deck and sideboard sections
     let inSideboard = false;
@@ -214,12 +247,17 @@ export function useDeckImportExport() {
 
     if (mode === "new") {
       const uniqueName = getUniqueDeckName(filename);
+      const commanderId = commanderName
+        ? fetchedDeckCards.find((c) => c.name === commanderName)?.id
+        : undefined;
       setPendingNewDeckData({
         name: uniqueName,
         cards: fetchedDeckCards,
         sideboard: fetchedSideboardCards.length > 0 ? fetchedSideboardCards : undefined,
+        format: importFormat,
+        commanderId,
       });
-      createNewDeck();
+      createNewDeck(importFormat);
     } else {
       updateActiveDeck((deck) => {
         const newCards = [...deck.cards];

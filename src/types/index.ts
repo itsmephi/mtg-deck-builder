@@ -32,6 +32,7 @@ export interface ScryfallCard {
   artist?: string;
   mana_cost?: string;
   cmc?: number;
+  color_identity?: string[];
 }
 
 export interface DeckCard extends ScryfallCard {
@@ -44,4 +45,6 @@ export interface Deck {
   name: string;
   cards: DeckCard[];
   sideboard?: DeckCard[];
+  format: "freeform" | "standard" | "commander";
+  commanderId?: string;
 }

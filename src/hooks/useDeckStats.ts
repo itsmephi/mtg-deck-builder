@@ -1,8 +1,15 @@
 import { Deck } from "@/types";
+import { DeckFormat, getFormatRules } from "@/lib/formatRules";
 
-export function useDeckStats(activeDeck: Deck | null) {
+export function useDeckStats(activeDeck: Deck | null, format?: DeckFormat) {
   const totalCards =
     activeDeck?.cards.reduce((sum, card) => sum + card.quantity, 0) ?? 0;
+
+  const resolvedFormat = format ?? activeDeck?.format ?? "freeform";
+  const rules = getFormatRules(resolvedFormat);
+  const targetDeckSize = rules.targetDeckSize;
+  const isAtTarget = targetDeckSize !== null && totalCards === targetDeckSize;
+  const isOverTarget = targetDeckSize !== null && totalCards > targetDeckSize;
 
   const hasSideboard = activeDeck?.sideboard !== undefined;
 
@@ -84,6 +91,9 @@ export function useDeckStats(activeDeck: Deck | null) {
     remainingCost,
     hasPriceData,
     hasSideboard,
+    targetDeckSize,
+    isAtTarget,
+    isOverTarget,
     buyOnTCGPlayer,
     buyOnCardKingdom,
   };
