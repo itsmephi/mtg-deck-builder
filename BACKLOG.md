@@ -42,6 +42,7 @@
 - [ ] **enhancement** | Grid view column size presets — small (6 col), medium (4 col), large (2 col); bonus: auto-set based on screen size
 - [ ] **bug** | Deck count display shows 60 + 15 sideboard separately — total should read 75; card count colorings should reflect combined total
 - [ ] **enhancement** | Unify project styling via CSS custom properties or design tokens — changing a background color or theme value should touch one place, not multiple files
+- [ ] **feature** | Touch screen / tablet UX support — hover and rollover states don't trigger on touch; need tap-based alternatives for card actions and interactive controls
 
 ---
 
