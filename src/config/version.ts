@@ -1,6 +1,8 @@
-export const APP_VERSION = "1.3.2";
+export const APP_VERSION = "1.4.0";
 
 export const CHANGELOG: Record<string, string> = {
+  "1.4.0":
+    "Standard & Commander format support: per-deck format field (freeform/standard/commander), format rules engine, color identity tracking, FormatPicker component, commander slot and color identity checks, format-aware deck stats, import/export format metadata.",
   "1.3.2":
     "UI polish: sideboard pricing now shows combined main+side total with (M+S) label. Deck name conflict deduplication — auto-appends (2), (3), etc. on create and import. Version badge expands inline changelog instead of popup. Collapsed rail gets tooltips, click-to-expand, New Deck icon, and PanelLeftOpen/PanelRightOpen toggle icons. Card Kingdom button font size fixed. Qty badge removed from grid tile rest state — qty visible in hover overlay only.",
   "1.3.1":
