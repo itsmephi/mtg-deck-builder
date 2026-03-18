@@ -67,6 +67,7 @@ export default function WorkspaceToolbar({
 }: Props) {
   const [isEditingName, setIsEditingName] = useState(false);
   const [formatPickerOpen, setFormatPickerOpen] = useState(false);
+  const [formatPickerDir, setFormatPickerDir] = useState<"up" | "down">("down");
   const formatPickerRef = useRef<HTMLDivElement>(null);
 
   const { setDeckFormat, mergeSideboardIntoDeck, deleteSideboardForFormat } = useDeckManager();
@@ -140,7 +141,11 @@ export default function WorkspaceToolbar({
         <div className="relative">
           {format === "standard" && (
             <span
-              onClick={() => setFormatPickerOpen(!formatPickerOpen)}
+              onClick={(e) => {
+                const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                setFormatPickerDir((window.innerHeight - rect.bottom) > rect.top ? "down" : "up");
+                setFormatPickerOpen(!formatPickerOpen);
+              }}
               className="text-[10px] font-medium text-blue-400 bg-blue-400/10 border border-blue-400/20 px-1.5 py-0.5 rounded-full cursor-pointer hover:bg-blue-400/20 transition-colors select-none"
             >
               Standard
@@ -148,7 +153,11 @@ export default function WorkspaceToolbar({
           )}
           {format === "commander" && (
             <span
-              onClick={() => setFormatPickerOpen(!formatPickerOpen)}
+              onClick={(e) => {
+                const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                setFormatPickerDir((window.innerHeight - rect.bottom) > rect.top ? "down" : "up");
+                setFormatPickerOpen(!formatPickerOpen);
+              }}
               className="text-[10px] font-medium text-yellow-400 bg-yellow-400/10 border border-yellow-400/20 px-1.5 py-0.5 rounded-full cursor-pointer hover:bg-yellow-400/20 transition-colors select-none"
             >
               Commander
@@ -156,7 +165,11 @@ export default function WorkspaceToolbar({
           )}
           {format === "freeform" && (
             <span
-              onClick={() => setFormatPickerOpen(!formatPickerOpen)}
+              onClick={(e) => {
+                const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                setFormatPickerDir((window.innerHeight - rect.bottom) > rect.top ? "down" : "up");
+                setFormatPickerOpen(!formatPickerOpen);
+              }}
               className="text-[10px] font-medium text-neutral-500 bg-neutral-500/10 border border-neutral-500/20 px-1.5 py-0.5 rounded-full cursor-pointer hover:bg-neutral-500/20 transition-colors select-none"
             >
               Freeform
@@ -165,7 +178,7 @@ export default function WorkspaceToolbar({
           {formatPickerOpen && (
             <div
               ref={formatPickerRef}
-              className="absolute top-full left-0 mt-1 w-52 bg-neutral-900 border border-neutral-700 rounded-lg shadow-xl z-50"
+              className={`absolute left-0 w-52 bg-neutral-900 border border-neutral-700 rounded-lg shadow-xl z-50 ${formatPickerDir === "down" ? "top-full mt-1" : "bottom-full mb-1"}`}
             >
               <FormatPicker
                 currentFormat={format}

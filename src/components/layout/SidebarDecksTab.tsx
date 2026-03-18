@@ -41,10 +41,12 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
 
   // Format picker open for which deck (badge-anchored)
   const [formatPickerDeckId, setFormatPickerDeckId] = useState<string | null>(null);
+  const [formatPickerDir, setFormatPickerDir] = useState<"up" | "down">("down");
   const formatPickerRef = useRef<HTMLDivElement>(null);
 
   // Format picker for + New Deck
   const [newDeckPickerOpen, setNewDeckPickerOpen] = useState(false);
+  const [newDeckPickerDir, setNewDeckPickerDir] = useState<"up" | "down">("up");
   const newDeckPickerRef = useRef<HTMLDivElement>(null);
 
   // Confirmation dialog for sideboard → commander
@@ -164,9 +166,12 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
               {/* Format badge — clickable, opens format picker */}
               <div className="shrink-0">
                 <button
-                  onClick={() =>
-                    setFormatPickerDeckId(formatPickerDeckId === deck.id ? null : deck.id)
-                  }
+                  onClick={(e) => {
+                    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                    const dir = (window.innerHeight - rect.bottom) > rect.top ? "down" : "up";
+                    setFormatPickerDir(dir);
+                    setFormatPickerDeckId(formatPickerDeckId === deck.id ? null : deck.id);
+                  }}
                   className="flex items-center"
                 >
                   {deck.format === "standard" && (
@@ -188,7 +193,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
                 {formatPickerDeckId === deck.id && (
                   <div
                     ref={formatPickerRef}
-                    className="absolute left-2 right-2 top-full mt-1 bg-neutral-900 border border-neutral-700 rounded-lg shadow-xl z-50"
+                    className={`absolute left-2 right-2 bg-neutral-900 border border-neutral-700 rounded-lg shadow-xl z-50 ${formatPickerDir === "down" ? "top-full mt-1" : "bottom-full mb-1"}`}
                   >
                     <FormatPicker
                       currentFormat={deck.format}
@@ -281,7 +286,12 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
         {/* + New Deck — opens FormatPicker */}
         <div className="relative">
           <button
-            onClick={() => setNewDeckPickerOpen(!newDeckPickerOpen)}
+            onClick={(e) => {
+              const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+              const dir = (window.innerHeight - rect.bottom) > rect.top ? "down" : "up";
+              setNewDeckPickerDir(dir);
+              setNewDeckPickerOpen(!newDeckPickerOpen);
+            }}
             className="flex items-center gap-2 w-full px-2 py-1.5 mt-1 text-xs text-neutral-500 hover:text-white hover:bg-neutral-800/50 rounded-lg transition-colors"
           >
             <Plus className="w-3.5 h-3.5" />
@@ -290,7 +300,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
           {newDeckPickerOpen && (
             <div
               ref={newDeckPickerRef}
-              className="absolute bottom-full left-0 mb-1 w-52 bg-neutral-900 border border-neutral-700 rounded-lg shadow-xl z-50"
+              className={`absolute left-0 w-52 bg-neutral-900 border border-neutral-700 rounded-lg shadow-xl z-50 ${newDeckPickerDir === "down" ? "top-full mt-1" : "bottom-full mb-1"}`}
             >
               <FormatPicker
                 onSelect={(format) => {

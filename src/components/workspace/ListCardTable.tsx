@@ -386,15 +386,15 @@ export default function ListCardTable({
                   </button>
                 ) : (
                   <button
-                    onClick={() => onSetCommander(card.id)}
+                    onClick={() => eligibleCommander && onSetCommander(card.id)}
                     title={
                       !eligibleCommander
-                        ? "Set as Commander (not typically eligible)"
+                        ? "Must be Legendary to set as Commander"
                         : "Set as Commander"
                     }
-                    className="opacity-0 group-hover:opacity-100 shrink-0 transition-opacity cursor-pointer"
+                    className={`opacity-0 group-hover:opacity-100 shrink-0 transition-opacity ${eligibleCommander ? "cursor-pointer" : "cursor-not-allowed"}`}
                   >
-                    <CrownOutline className="text-neutral-600 hover:text-yellow-400 w-3.5 h-3.5" />
+                    <CrownOutline className={`w-3.5 h-3.5 ${eligibleCommander ? "text-neutral-600 hover:text-yellow-400" : "text-neutral-600"}`} />
                   </button>
                 )
               )}

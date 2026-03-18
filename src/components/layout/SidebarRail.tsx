@@ -1,7 +1,10 @@
 "use client";
 
+import { useRef, useState, useEffect } from "react";
 import { Search, Layers, Coffee, Settings, Plus, PanelLeftOpen } from "lucide-react";
 import { useDeckManager } from "@/hooks/useDeckManager";
+import { FormatPicker } from "@/components/layout/FormatPicker";
+import { DeckFormat } from "@/lib/formatRules";
 
 interface Props {
   expandTo: (tab: "search" | "decks") => void;
@@ -18,11 +21,36 @@ function RailTooltip({ label }: { label: string }) {
 
 export default function SidebarRail({ expandTo, activeTab }: Props) {
   const { createNewDeck, setDeckViewMode } = useDeckManager();
+  const [railPickerOpen, setRailPickerOpen] = useState(false);
+  const railPickerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!railPickerOpen) return;
+    function handleClickOutside(e: MouseEvent) {
+      if (railPickerRef.current && !railPickerRef.current.contains(e.target as Node)) {
+        setRailPickerOpen(false);
+      }
+    }
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setRailPickerOpen(false);
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [railPickerOpen]);
 
   const handleNewDeck = (e: React.MouseEvent) => {
     e.stopPropagation();
-    createNewDeck();
+    setRailPickerOpen(true);
+  };
+
+  const handleRailFormatSelect = (format: DeckFormat) => {
+    createNewDeck(format);
     setDeckViewMode("main");
+    setRailPickerOpen(false);
   };
 
   const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -77,7 +105,15 @@ export default function SidebarRail({ expandTo, activeTab }: Props) {
         >
           <Plus className="w-4 h-4" />
         </button>
-        <RailTooltip label="New Deck" />
+        {!railPickerOpen && <RailTooltip label="New Deck" />}
+        {railPickerOpen && (
+          <div
+            ref={railPickerRef}
+            className="absolute left-full ml-2 top-0 w-52 bg-neutral-900 border border-neutral-700 rounded-lg shadow-xl z-50"
+          >
+            <FormatPicker onSelect={handleRailFormatSelect} />
+          </div>
+        )}
       </div>
 
       <div className="flex-1" />
