@@ -30,7 +30,6 @@
 - [ ] **enhancement** | Re-add −/+ increment buttons to qty/owned fields — removed and missed
 - [ ] **enhancement** | Import/export format compatibility — support MTGGoldfish format (e.g. `1 Ashling, the Limitless <borderless> [ECC] (F)`) and confirm cross-compatibility with TCGPlayer and Card Kingdom import
 - [ ] **enhancement** | Import modal — add "Paste from clipboard" button as an alternative to typing/pasting manually ⚠️ needs design
-- [ ] **enhancement** | Redesign grid view warning triangle placement and tooltips — spec in /docs ⚠️ needs design
 
 ---
 
@@ -48,6 +47,9 @@
 
 ## Closed (Recent)
 <!-- Keep last 2 releases, then archive to CHANGELOG.md -->
+
+### v1.5.1
+- [x] **enhancement** | Redesign grid view warning triangle placement and tooltips *(closed v1.5.1)*
 
 ### v1.5.0
 - [x] **bug** | "+ New Deck" format picker gets cut off at the top when decklist is short — dynamic positioning *(closed v1.5.0)*

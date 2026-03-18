@@ -5,6 +5,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.5.1] — Grid Warning Redesign
+
+### Changed
+- Grid view warning indicator replaced: corner triangle badge (top-right, straddling card edge) removed; amber warning bar now appears at the top of the slide-up hover overlay with ⚠ icon and warning text — clearly scoped to the card and always readable
+- Color identity warning text simplified: "Outside commander's color identity (has {G})" → "Outside commander's color identity" — removes abstract mana symbol notation from the warning message
+
+---
+
 ## [1.5.0] — Grid Polish + Bug Fixes
 
 ### Fixed
