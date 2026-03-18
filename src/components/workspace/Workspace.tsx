@@ -591,6 +591,8 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm"
           onClick={() => setConfirmDialog(null)}
+          onKeyDown={(e) => { if (e.key === "Escape") setConfirmDialog(null); }}
+          tabIndex={-1}
         >
           <div
             className="bg-neutral-900 border border-neutral-700 rounded-xl shadow-2xl p-6 w-80 flex flex-col gap-4"

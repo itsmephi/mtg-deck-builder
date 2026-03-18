@@ -215,12 +215,10 @@ export default function ListCardTable({
     const warnings = getCardWarnings(card, format, commanderIdentity);
     const eligibleCommander = isEligibleCommander(card);
 
-    // Row background
+    // Row background — commander row uses normal card color tint (no special yellow)
     let rowBg: string;
     if (highlightedId === card.id) {
       rowBg = ""; // handled by className
-    } else if (isThisCommander) {
-      rowBg = "rgba(250, 204, 21, 0.08)";
     } else if (hoveredRowId === card.id) {
       rowBg = getRowHoverTint(card);
     } else {
@@ -379,7 +377,13 @@ export default function ListCardTable({
               {/* Crown icon — commander format only */}
               {isCommanderFormat && onSetCommander && (
                 isThisCommander ? (
-                  <CrownFilled className="text-yellow-400 shrink-0" />
+                  <button
+                    onClick={() => onSetCommander(undefined)}
+                    title="Remove commander designation"
+                    className="shrink-0 cursor-pointer"
+                  >
+                    <CrownFilled className="text-yellow-400 w-3.5 h-3.5" />
+                  </button>
                 ) : (
                   <button
                     onClick={() => onSetCommander(card.id)}
@@ -388,7 +392,7 @@ export default function ListCardTable({
                         ? "Set as Commander (not typically eligible)"
                         : "Set as Commander"
                     }
-                    className="opacity-0 group-hover:opacity-100 shrink-0 transition-opacity hover:text-yellow-400 cursor-pointer"
+                    className="opacity-0 group-hover:opacity-100 shrink-0 transition-opacity cursor-pointer"
                   >
                     <CrownOutline className="text-neutral-600 hover:text-yellow-400 w-3.5 h-3.5" />
                   </button>
@@ -480,8 +484,8 @@ export default function ListCardTable({
             <>
               {renderRow(pinnedCommander, 0, true)}
               <tr aria-hidden>
-                <td colSpan={COLUMN_COUNT} className="p-0">
-                  <div className="border-b border-neutral-700/30" />
+                <td colSpan={COLUMN_COUNT} className="p-0 px-2">
+                  <div className="h-px bg-neutral-700/40" />
                 </td>
               </tr>
             </>

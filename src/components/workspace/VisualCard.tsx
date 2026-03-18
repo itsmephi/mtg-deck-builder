@@ -108,11 +108,6 @@ export default function VisualCard({
         alt={card.name}
       />
 
-      {/* Yellow tint overlay for designated commander */}
-      {isCommander && (
-        <div className="absolute inset-0 bg-yellow-300/[0.12] rounded-xl z-10 pointer-events-none" />
-      )}
-
       {/* Top-left badges: crown + warning */}
       <div className="absolute top-1.5 left-1.5 flex items-center gap-1 z-20">
         {/* Crown badge — only when this card is the designated commander */}
@@ -123,13 +118,15 @@ export default function VisualCard({
             </svg>
           </div>
         )}
-        {/* Warning badge */}
+        {/* Warning badge — triangle to match list view */}
         {warnings.length > 0 && (
           <div
-            className="w-6 h-6 rounded-full bg-amber-500 flex items-center justify-center shadow-md"
+            className="w-6 h-6 flex items-center justify-center drop-shadow-md"
             title={warnings.join("\n")}
           >
-            <span className="text-white text-[11px] font-black leading-none">!</span>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" className="text-amber-500">
+              <path d="M12 2L1 21h22L12 2zm0 3.5L20.5 19h-17L12 5.5zM11 10v4h2v-4h-2zm0 6v2h2v-2h-2z" />
+            </svg>
           </div>
         )}
       </div>

@@ -39,12 +39,13 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
   const [openDeleteDropdownId, setOpenDeleteDropdownId] = useState<string | null>(null);
   const deleteDropdownRef = useRef<HTMLDivElement>(null);
 
-  // FormatPicker popovers
+  // Format picker open for which deck (badge-anchored)
+  const [formatPickerDeckId, setFormatPickerDeckId] = useState<string | null>(null);
+  const formatPickerRef = useRef<HTMLDivElement>(null);
+
+  // Format picker for + New Deck
   const [newDeckPickerOpen, setNewDeckPickerOpen] = useState(false);
   const newDeckPickerRef = useRef<HTMLDivElement>(null);
-
-  const [changeFormatDeckId, setChangeFormatDeckId] = useState<string | null>(null);
-  const changeFormatPickerRef = useRef<HTMLDivElement>(null);
 
   // Confirmation dialog for sideboard → commander
   const [confirmDialog, setConfirmDialog] = useState<ConfirmDialogState | null>(null);
@@ -61,6 +62,18 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openDeleteDropdownId]);
 
+  // Close format picker on outside click
+  useEffect(() => {
+    if (!formatPickerDeckId) return;
+    function handleClickOutside(e: MouseEvent) {
+      if (formatPickerRef.current && !formatPickerRef.current.contains(e.target as Node)) {
+        setFormatPickerDeckId(null);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [formatPickerDeckId]);
+
   // Close new-deck picker on outside click
   useEffect(() => {
     if (!newDeckPickerOpen) return;
@@ -72,18 +85,6 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [newDeckPickerOpen]);
-
-  // Close change-format picker on outside click
-  useEffect(() => {
-    if (!changeFormatDeckId) return;
-    function handleClickOutside(e: MouseEvent) {
-      if (changeFormatPickerRef.current && !changeFormatPickerRef.current.contains(e.target as Node)) {
-        setChangeFormatDeckId(null);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [changeFormatDeckId]);
 
   // Escape key closes confirmation dialog
   useEffect(() => {
@@ -102,20 +103,16 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
     if (format === "commander") {
       const sideboardCount = deck.sideboard?.reduce((s, c) => s + c.quantity, 0) ?? 0;
       if (sideboardCount > 0) {
-        // Non-empty sideboard — show confirmation dialog
         setConfirmDialog({ deckId, sideboardCount, targetFormat: format });
-        setChangeFormatDeckId(null);
-        setOpenDeleteDropdownId(null);
+        setFormatPickerDeckId(null);
         return;
       } else if (deck.sideboard !== undefined) {
-        // Sideboard exists but empty — silently delete and proceed
         deleteSideboardForFormat(deckId);
       }
     }
 
     setDeckFormat(deckId, format);
-    setChangeFormatDeckId(null);
-    setOpenDeleteDropdownId(null);
+    setFormatPickerDeckId(null);
   };
 
   return (
@@ -164,25 +161,44 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
               {/* Card count */}
               <span className="text-[10px] text-neutral-600 shrink-0">{cardCount}</span>
 
-              {/* Format badge */}
-              {deck.format === "standard" && (
-                <span
-                  className="shrink-0 text-[9px] font-bold text-blue-400 bg-blue-400/10 px-1 rounded"
-                  title="Standard (60 cards)"
+              {/* Format badge — clickable, opens format picker */}
+              <div className="relative shrink-0">
+                <button
+                  onClick={() =>
+                    setFormatPickerDeckId(formatPickerDeckId === deck.id ? null : deck.id)
+                  }
+                  className="flex items-center"
                 >
-                  60
-                </span>
-              )}
-              {deck.format === "commander" && (
-                <span
-                  className="shrink-0 text-[9px] font-bold text-yellow-400 bg-yellow-400/10 px-1 rounded"
-                  title="Commander (100 cards)"
-                >
-                  100
-                </span>
-              )}
+                  {deck.format === "standard" && (
+                    <span className="text-[9px] font-bold text-blue-400 bg-blue-400/10 px-1 rounded hover:bg-blue-400/20 transition-colors cursor-pointer">
+                      STD
+                    </span>
+                  )}
+                  {deck.format === "commander" && (
+                    <span className="text-[9px] font-bold text-yellow-400 bg-yellow-400/10 px-1 rounded hover:bg-yellow-400/20 transition-colors cursor-pointer">
+                      CMD
+                    </span>
+                  )}
+                  {(!deck.format || deck.format === "freeform") && (
+                    <span className="text-[9px] font-bold text-neutral-500 bg-neutral-500/10 px-1 rounded hover:bg-neutral-500/20 transition-colors cursor-pointer">
+                      FF
+                    </span>
+                  )}
+                </button>
+                {formatPickerDeckId === deck.id && (
+                  <div
+                    ref={formatPickerRef}
+                    className="absolute right-0 top-full mt-1 w-52 bg-neutral-900 border border-neutral-700 rounded-lg shadow-xl z-50"
+                  >
+                    <FormatPicker
+                      currentFormat={deck.format}
+                      onSelect={(format) => handleChangeFormat(deck.id, format)}
+                    />
+                  </div>
+                )}
+              </div>
 
-              {/* Layers icon — disabled for Commander */}
+              {/* Layers icon — always rendered, disabled/grayed for Commander */}
               <button
                 onClick={() => {
                   if (isCommander) return;
@@ -200,7 +216,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
                 }
                 className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-colors ${
                   isCommander
-                    ? "text-neutral-800 cursor-not-allowed"
+                    ? "text-neutral-600 cursor-not-allowed opacity-40"
                     : hasSideboard
                     ? "text-blue-400 hover:bg-blue-500/10"
                     : "text-neutral-700 hover:text-neutral-400"
@@ -225,7 +241,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
                 {openDeleteDropdownId === deck.id && (
                   <div
                     ref={deleteDropdownRef}
-                    className="absolute right-0 top-full mt-1 w-44 bg-neutral-900 border border-neutral-700 rounded-lg shadow-xl py-1 z-50"
+                    className="absolute right-0 top-full mt-1 w-40 bg-neutral-900 border border-neutral-700 rounded-lg shadow-xl py-1 z-50"
                   >
                     <button
                       onClick={() => {
@@ -255,31 +271,6 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
                         Delete Sideboard
                       </button>
                     )}
-
-                    {/* Change Format — always present */}
-                    <div className="relative">
-                      <button
-                        onClick={() =>
-                          setChangeFormatDeckId(
-                            changeFormatDeckId === deck.id ? null : deck.id
-                          )
-                        }
-                        className="flex items-center gap-2 w-full text-left px-3 py-2 text-xs text-neutral-300 hover:bg-neutral-800 transition-colors"
-                      >
-                        Change Format
-                      </button>
-                      {changeFormatDeckId === deck.id && (
-                        <div
-                          ref={changeFormatPickerRef}
-                          className="absolute right-full top-0 mr-1 w-52 bg-neutral-900 border border-neutral-700 rounded-lg shadow-xl z-50"
-                        >
-                          <FormatPicker
-                            currentFormat={deck.format}
-                            onSelect={(format) => handleChangeFormat(deck.id, format)}
-                          />
-                        </div>
-                      )}
-                    </div>
                   </div>
                 )}
               </div>

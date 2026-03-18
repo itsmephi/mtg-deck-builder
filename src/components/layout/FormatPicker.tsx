@@ -16,27 +16,19 @@ export function FormatPicker({ onSelect, currentFormat }: FormatPickerProps) {
   }[] = [
     {
       value: "freeform",
-      icon: <span className="text-neutral-400 text-sm font-bold leading-none">—</span>,
+      icon: <span className="text-[9px] font-bold text-neutral-500 bg-neutral-500/10 px-0.5 rounded leading-none">FF</span>,
       label: "Freeform",
       description: "No rules. Build anything.",
     },
     {
       value: "standard",
-      icon: (
-        <span className="text-[10px] font-bold text-blue-400 bg-blue-400/10 px-0.5 rounded leading-none">
-          60
-        </span>
-      ),
+      icon: <span className="text-[9px] font-bold text-blue-400 bg-blue-400/10 px-0.5 rounded leading-none">STD</span>,
       label: "Standard",
       description: "60 cards · 4-copy limit · 15-card sideboard",
     },
     {
       value: "commander",
-      icon: (
-        <span className="text-[9px] font-bold text-yellow-400 bg-yellow-400/10 px-0.5 rounded leading-none">
-          100
-        </span>
-      ),
+      icon: <span className="text-[9px] font-bold text-yellow-400 bg-yellow-400/10 px-0.5 rounded leading-none">CMD</span>,
       label: "Commander",
       description: "100 cards · Singleton · Commander + color identity",
     },
