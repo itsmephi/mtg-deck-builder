@@ -54,6 +54,7 @@
 - [ ] **enhancement** | Re-add −/+ increment buttons to qty/owned fields — removed and missed
 - [ ] **enhancement** | Commander eligibility check should enforce legendary legality — non-legendary cards should not be markable as commander
 - [ ] **enhancement** | Import/export format compatibility — support MTGGoldfish format (e.g. `1 Ashling, the Limitless <borderless> [ECC] (F)`) and confirm cross-compatibility with TCGPlayer and Card Kingdom import
+- [ ] **enhancement** | Import modal — add "Paste from clipboard" button as an alternative to typing/pasting manually
 
 ---
 
