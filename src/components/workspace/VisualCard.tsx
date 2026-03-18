@@ -96,53 +96,23 @@ export default function VisualCard({
 
   return (
     <div
-      className="relative group overflow-hidden rounded-xl cursor-pointer aspect-[2.5/3.5]"
+      className="relative group rounded-xl cursor-pointer aspect-[2.5/3.5]"
       onClick={() => onSelect(card)}
     >
-      {/* Card art */}
-      <img
-        src={imgSrc}
-        className={`w-full h-full object-cover ${card.quantity === 0 ? "grayscale opacity-40" : isFullyOwned ? "opacity-40" : ""}`}
-        alt={card.name}
-      />
+      {/* Art + slide-up overlay — clipped to rounded corners */}
+      <div className="absolute inset-0 rounded-xl overflow-hidden">
+        {/* Card art */}
+        <img
+          src={imgSrc}
+          className={`w-full h-full object-cover ${card.quantity === 0 ? "grayscale opacity-40" : isFullyOwned ? "opacity-40" : ""}`}
+          alt={card.name}
+        />
 
-      {/* Top-left badges: crown + warning */}
-      <div className="absolute top-1.5 left-1.5 flex items-center gap-1 z-20">
-        {/* Crown badge — only when this card is the designated commander */}
-        {isCommander && (
-          <div className="w-7 h-7 rounded-full bg-yellow-500 text-white shadow-md flex items-center justify-center">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M3 18h18v2H3v-2zm0-2l3-8 4 3 2-6 2 6 4-3 3 8H3z" />
-            </svg>
-          </div>
-        )}
-        {/* Warning badge — filled amber circle with white ! */}
-        {warnings.length > 0 && (
-          <div
-            className="w-6 h-6 rounded-full bg-amber-500 flex items-center justify-center drop-shadow-md"
-            title={warnings.join("\n")}
-          >
-            <span className="text-white text-[13px] font-black leading-none">!</span>
-          </div>
-        )}
-      </div>
-
-      {/* × remove — top-right, hover-only */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onRemove(card.id);
-        }}
-        className="absolute top-1.5 right-1.5 w-6 h-6 flex items-center justify-center rounded-full bg-neutral-900 text-neutral-400 hover:text-red-400 hover:bg-red-900 opacity-0 group-hover:opacity-100 transition-all z-30"
-      >
-        <X className="w-3 h-3" />
-      </button>
-
-      {/* Slide-up bottom overlay */}
-      <div
-        className="absolute bottom-0 left-0 right-0 bg-black/75 backdrop-blur-sm px-2 py-3 translate-y-full group-hover:translate-y-0 transition-transform duration-200 ease-out z-20 flex flex-col items-center gap-2.5"
-        onClick={(e) => e.stopPropagation()}
-      >
+        {/* Slide-up bottom overlay */}
+        <div
+          className="absolute bottom-0 left-0 right-0 bg-black/75 backdrop-blur-sm px-2 py-3 translate-y-full group-hover:translate-y-0 transition-transform duration-200 ease-out z-20 flex flex-col items-center gap-2.5"
+          onClick={(e) => e.stopPropagation()}
+        >
         {/* Commander designation button — only in commander format */}
         {format === "commander" && onSetCommander && (
           <button
@@ -295,6 +265,38 @@ export default function VisualCard({
           </span>
         </div>
       </div>
+      {/* End art + overlay inner wrapper */}
+      </div>
+
+      {/* Top-left badges: crown + warning — straddle the corner edge */}
+      <div className="absolute -top-3.5 -left-3.5 flex flex-col gap-1 z-20">
+        {isCommander && (
+          <div className="w-7 h-7 rounded-full bg-yellow-500 text-white shadow-md flex items-center justify-center">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3 18h18v2H3v-2zm0-2l3-8 4 3 2-6 2 6 4-3 3 8H3z" />
+            </svg>
+          </div>
+        )}
+        {warnings.length > 0 && (
+          <div
+            className="w-6 h-6 rounded-full bg-amber-500 flex items-center justify-center drop-shadow-md"
+            title={warnings.join("\n")}
+          >
+            <span className="text-white text-[13px] font-black leading-none">!</span>
+          </div>
+        )}
+      </div>
+
+      {/* × remove — top-right corner straddle, hover-only */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onRemove(card.id);
+        }}
+        className="absolute -top-3 -right-3 w-6 h-6 flex items-center justify-center rounded-full bg-neutral-900 text-neutral-400 hover:text-red-400 hover:bg-red-900 opacity-0 group-hover:opacity-100 transition-all z-30"
+      >
+        <X className="w-3 h-3" />
+      </button>
     </div>
   );
 }

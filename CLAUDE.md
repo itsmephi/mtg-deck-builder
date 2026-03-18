@@ -78,7 +78,7 @@ src/
 - TCGPlayer format: "1 Memnite [BRO]" — Card Kingdom: name only
 - contentEditable abandoned for deck name input — use size={Math.max(10, name.length)}
 - table-fixed on ListCardTable prevents horizontal overflow
-- Workspace scroll container uses p-1 pb-20 (not overflow-x-hidden) for tooltips and ring-offset
+- Workspace scroll container uses p-4 pb-20 (not overflow-x-hidden) for tooltips, ring-offset, and badge overhang clearance
 - 4-copy rule exemptions: check type_line for "Basic Land" and oracle_text for "A deck can have any number"
 - Qty 0: card stays in deck, grays out, excluded from total count and to-buy cost
 - 4-copy rule is a soft warning (highlight) not a hard cap

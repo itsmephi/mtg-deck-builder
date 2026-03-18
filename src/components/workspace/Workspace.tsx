@@ -406,7 +406,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
 
       <div
         ref={scrollContainerRef}
-        className="flex-1 overflow-y-auto p-1 pb-20"
+        className="flex-1 overflow-y-auto p-4 pb-20"
       >
         {isGrouped ? (
           <div className="space-y-10">
