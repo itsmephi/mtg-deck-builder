@@ -48,6 +48,8 @@
 - [ ] **enhancement** | Unify project styling via CSS custom properties or design tokens — changing a background color or theme value should touch one place, not multiple files
 - [ ] **feature** | Touch screen / tablet UX support — hover and rollover states don't trigger on touch; need tap-based alternatives for card actions and interactive controls
 - [ ] **enhancement** | Combine qty and owned fields into a single elegant input — two separate fields is redundant UX; design a unified interaction
+- [ ] **bug** | "+ New Deck" format picker gets cut off at the top when decklist is short (1–3 decks in sidebar) — popover opens upward and clips
+- [ ] **bug** | + icon in collapsed sidebar rail does not trigger the format picker — new deck created without format selection
 
 ---
 
