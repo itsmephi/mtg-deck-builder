@@ -291,7 +291,7 @@ export default function VisualCard({
       {/* Warning badge — top-right */}
       {warnings.length > 0 && (
         <div className="absolute -top-3.5 -right-3.5 z-20" title={warnings.join("\n")}>
-          <TriangleAlert className="w-[22px] h-[22px] fill-amber-500 text-white drop-shadow-md" />
+          <TriangleAlert className="w-[22px] h-[22px] fill-amber-500 text-amber-500 drop-shadow-md" />
         </div>
       )}
     </div>
