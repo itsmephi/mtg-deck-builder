@@ -418,7 +418,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
                       {cat} ({cards.reduce((s, c) => s + c.quantity, 0)})
                     </h3>
                     {viewMode === "visual" ? (
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-5 gap-y-7">
                         {cards.map((card) => (
                           <div
                             key={card.id}
@@ -454,7 +454,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
             )}
           </div>
         ) : viewMode === "visual" ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-5 gap-y-7">
             {sortedCards.map((card, index) => (
               <React.Fragment key={card.id}>
                 <div

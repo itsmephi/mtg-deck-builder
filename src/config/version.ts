@@ -1,8 +1,14 @@
-export const APP_VERSION = "1.5.1";
+export const APP_VERSION = "1.5.2";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.5.2": [
+    "Workspace toolbar split into two rows: deck name + format badge on row 1, stats and controls on row 2 — eliminates name truncation and button crowding on long deck names",
+    "Deck name input grows and shrinks to exact text width using a hidden measurer span — format badge sits immediately after the last character with no visible gap",
+    "Deck name size increased to text-3xl for visual emphasis",
+    "Grid view gap increased from gap-3 to gap-x-5 gap-y-7 — prevents qty pill and crown badge from overhanging into adjacent cards",
+  ],
   "1.5.1": [
     "Grid view warning redesigned: corner triangle badge removed; amber warning bar now appears inside the hover overlay above qty controls — clearly scoped to the card",
     "Color identity warning text simplified: removes abstract mana symbol notation (e.g. 'has {G}') from the warning message",

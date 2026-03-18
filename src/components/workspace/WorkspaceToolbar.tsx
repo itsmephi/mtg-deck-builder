@@ -69,6 +69,14 @@ export default function WorkspaceToolbar({
   const [formatPickerOpen, setFormatPickerOpen] = useState(false);
   const [formatPickerDir, setFormatPickerDir] = useState<"up" | "down">("down");
   const formatPickerRef = useRef<HTMLDivElement>(null);
+  const nameMeasureRef = useRef<HTMLSpanElement>(null);
+  const [nameInputWidth, setNameInputWidth] = useState(80);
+
+  useEffect(() => {
+    if (nameMeasureRef.current) {
+      setNameInputWidth(Math.max(80, nameMeasureRef.current.scrollWidth + 2));
+    }
+  }, [activeDeck.name]);
 
   const { setDeckFormat, mergeSideboardIntoDeck, deleteSideboardForFormat } = useDeckManager();
 
@@ -123,17 +131,25 @@ export default function WorkspaceToolbar({
   };
 
   return (
-    <div className="flex items-center justify-between gap-4 mb-4 pb-3 border-b border-neutral-800 min-w-0">
-      {/* Left: name + format badge + stats */}
-      <div className="flex items-center gap-3 min-w-0">
+    <div className="flex flex-col gap-2 mb-4 pb-3 border-b border-neutral-800">
+      {/* Row 1: deck name + format badge */}
+      <div className="flex items-center gap-1.5">
+        {/* Hidden span to measure exact rendered text width */}
+        <span
+          ref={nameMeasureRef}
+          className="invisible absolute whitespace-pre pointer-events-none text-3xl"
+          aria-hidden="true"
+        >
+          {activeDeck.name || "Untitled"}
+        </span>
         <input
           value={activeDeck.name}
           onChange={(e) => onUpdateDeckName(e.target.value)}
-          size={Math.max(10, activeDeck.name.length)}
+          style={{ width: nameInputWidth }}
           onFocus={() => setIsEditingName(true)}
           onBlur={() => setIsEditingName(false)}
           onKeyDown={(e) => { if (e.key === "Enter") e.currentTarget.blur(); }}
-          className={`text-lg font-bold text-white bg-transparent border-b border-transparent hover:border-neutral-700 focus:border-blue-500 focus:outline-none transition-all px-0 outline-none placeholder:text-neutral-500 max-w-[200px] ${isEditingName ? "" : "truncate"}`}
+          className={`text-3xl text-white bg-transparent border-b border-transparent hover:border-neutral-700 focus:border-blue-500 focus:outline-none transition-all px-0 outline-none placeholder:text-neutral-500 ${isEditingName ? "" : "truncate"}`}
           placeholder="Untitled"
         />
 
@@ -187,7 +203,10 @@ export default function WorkspaceToolbar({
             </div>
           )}
         </div>
+      </div>
 
+      {/* Row 2: stats (left) + controls (right) */}
+      <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3 text-xs text-neutral-400 shrink-0">
           {deckViewMode === "sideboard" ? (
             <span className={sideboardClass}>
@@ -224,7 +243,6 @@ export default function WorkspaceToolbar({
             </span>
           )}
         </div>
-      </div>
 
       {/* Right: simulator + main/side + sort/group/view */}
       <div className="flex items-center gap-2 h-8 shrink-0">
@@ -348,6 +366,7 @@ export default function WorkspaceToolbar({
             </span>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );
