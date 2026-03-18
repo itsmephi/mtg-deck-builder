@@ -410,7 +410,7 @@ export default function ListCardTable({
               {/* Warning icon — triangle */}
               {warnings.length > 0 && (
                 <span title={warnings.join("\n")}>
-                  <TriangleAlert className="w-4 h-4 shrink-0 ml-0.5 fill-amber-500 text-amber-500" />
+                  <TriangleAlert className="w-4 h-4 shrink-0 ml-0.5 text-white fill-amber-500" />
                 </span>
               )}
             </div>
