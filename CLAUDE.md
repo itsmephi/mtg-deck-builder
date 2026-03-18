@@ -45,7 +45,7 @@ For straightforward bug fixes and small enhancements, `/plan` → PROCEED → bu
 ---
 
 ## Active Milestone
-→ v1.4.0 shipped. Next milestone TBD — design session required.
+→ 5 items selected — 2 bugs (format picker), commander eligibility, crown badge toggle ⚠️, pill badge overlay fix ⚠️. Design session required for ⚠️ items.
 
 ---
 

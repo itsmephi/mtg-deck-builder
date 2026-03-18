@@ -33,9 +33,11 @@ Steps:
    - `Discard` items → remove from BACKLOG.md (and note the issue number to close)
    - `Keep` and `Discuss` items → stay in Pipeline (Discuss items get a `⚠️ needs design` note)
 
-7. Commit: `git add BACKLOG.md && git commit -m "triage: promote N items to active milestone, defer N, discard N"`
+7. Update CLAUDE.md `## Active Milestone` line to summarize what's now in the active milestone (e.g. `→ N items selected — next milestone TBD` or a short description if a theme is clear)
 
-8. Print a summary:
+8. Commit: `git add BACKLOG.md CLAUDE.md && git commit -m "triage: promote N items to active milestone, defer N, discard N"`
+
+9. Print a summary:
    - What was promoted to Active Milestone
    - What was deferred or discarded
    - Any items flagged for discussion
