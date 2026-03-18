@@ -5,6 +5,40 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.4.0] — Standard & Commander Format Support
+
+### Added
+- Deck format system: per-deck format field (`"freeform"` | `"standard"` | `"commander"`) with centralized `formatRules.ts` rules engine (`getFormatRules`, `getCardWarnings`, `isEligibleCommander`)
+- Commander support: designate a commander card per deck; color identity validation, singleton enforcement (soft warning), copy limit threshold set to 2 for Commander
+- Format picker popover: accessible from "+ New Deck", toolbar format badge click, and deck row × dropdown "Change Format" option
+- Format badges in sidebar deck rows: "60" (blue) for Standard, "100" (yellow) for Commander; nothing for Freeform
+- Format badge pill in workspace toolbar (clickable to change format mid-session)
+- Commander visual treatment — grid view: yellow crown badge (w-7 h-7, bg-yellow-500) and yellow card tint (bg-yellow-300/12) on designated commander card
+- Commander visual treatment — list view: persistent filled crown icon before name on commander row, hover-only outline crown on all other rows, yellow row tint (rgba 250,204,21,0.08)
+- Warning badge system: amber `!` badge on cards with format violations (legality, color identity, copy limit) — rendered in grid (top-left) and list view (after name); combined tooltip shows all warnings
+- Commander card pinning: always first in grid and list regardless of sort, with a thin neutral divider below (no label)
+- Sideboard-to-Commander confirmation dialog: when switching to Commander with sideboard cards, prompts "Merge into Main Deck" or "Delete Sideboard"
+- Format-aware Opening Hand Simulator: probability thresholds recalibrated per format — 8%/4% (Freeform/Standard), 5%/2% (Commander); commander card excluded from library and Draw Odds list when `commanderId` is set
+- `color_identity` field on `ScryfallCard`; lazy backfill via Scryfall `/cards/collection` triggered when active deck switches to Commander format
+- Import/export format metadata: `// Format:` and `// Commander:` comment headers on Standard/Commander exports; parsed on import for full round-trip fidelity
+- Format-aware deck stats: `targetDeckSize`, `isAtTarget`, `isOverTarget` returned from `useDeckStats`
+
+### Changed
+- Sidebar expanded width: 240px → 256px
+- Sidebar layers icon grayed out (always rendered, not hidden) and disabled for Commander decks
+- Main/Side pill toggle hidden entirely for Commander decks (Commander has no sideboard)
+- Card count colors in toolbar now format-aware: green at target (60 for Freeform/Standard, 100 for Commander), red above target
+- Sideboard count shows "Side: X / 15" with red-above-15 indicator for Standard; Freeform retains existing plain display
+- List view column order reordered: `[−qty+] [Owned] [Name] [Type] [Mana] [Price] [×]`
+- List view Owned column simplified to `X/Y` inline-editable text only (checkbox, minus/plus stepper, and progress bar removed)
+- Qty column `−/+` buttons in list view use new `w-5 h-5 rounded-full` style, hover-only visibility (always visible for commander row)
+- Copy limit soft-warning threshold is now format-aware: 5 (Freeform/Standard) or 2 (Commander singleton)
+- New deck creation now always prompts for format selection via FormatPicker popover
+
+**Closes #17**
+
+---
+
 ## [1.3.2] — UI Polish: Sidebar Rail, Pricing, Deck Name Dedup, Grid Tile
 
 ### Changed

@@ -12,6 +12,7 @@ import ImportModal from "./ImportModal";
 import WorkspaceToolbar from "./WorkspaceToolbar";
 import { ScryfallCard, DeckCard } from "@/types";
 import { DeckFormat, getFormatRules } from "@/lib/formatRules";
+import { backfillColorIdentity } from "@/lib/scryfall";
 
 interface WorkspaceProps {
   pendingImport: { filename: string; lines: string[] } | null;
@@ -125,6 +126,18 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
       setDeckViewMode("main");
     }
   }, [activeDeck?.sideboard, deckViewMode, setDeckViewMode]);
+
+  // Lazy backfill color_identity when active deck switches to Commander
+  useEffect(() => {
+    if (activeDeck?.format !== "commander") return;
+    if (!activeDeck.cards.some((c) => c.color_identity === undefined)) return;
+    backfillColorIdentity(activeDeck.cards).then((updated) => {
+      if (updated !== activeDeck.cards) {
+        updateActiveDeck((d) => ({ ...d, cards: updated }));
+      }
+    }).catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeDeck?.id, activeDeck?.format]);
 
   useEffect(() => {
     if (!lastAddedId) return;
@@ -568,6 +581,8 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
         <SampleHandModal
           deck={activeDeck.cards}
           onClose={() => setIsSampleHandOpen(false)}
+          format={format}
+          commanderId={activeDeck.commanderId}
         />
       )}
 

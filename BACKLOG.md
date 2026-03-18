@@ -8,7 +8,7 @@
 <!-- Items promoted from Pipeline for the current release. Cleared after release ships. -->
 
 ### v1.4.0 — Standard & Commander Format Support
-- [ ] **feature** | Support Standard and Commander deck modes (#17)
+- [x] **feature** | Support Standard and Commander deck modes (#17) *(closed v1.4.0)*
 
 ---
 
@@ -27,7 +27,7 @@
 - [ ] **feature** | Move cards between boards or decks (#62) ↑ priority
 - [ ] **enhancement** | Turn-based draw probability slider — deferred; revisit for pre-game analysis view
 - [ ] **enhancement** | Max % inline label in Draw Odds — deferred to keep UI clean
-- [ ] **enhancement** | Commander threshold calibration — recalibrate when Commander mode ships; constants already named
+- [x] **enhancement** | Commander threshold calibration — recalibrate when Commander mode ships; constants already named *(closed v1.4.0)*
 - [ ] **enhancement** | Category-level draw odds — requires card tagging system; stretch goal
 - [ ] **enhancement** | Mulligan strategy hints — contextual guidance based on hand stats; out of scope this version
 - [x] **bug** | Deck name conflicts produce malformed names like `[name](#)` — handle duplicate names gracefully *(closed v1.3.2)*
@@ -80,6 +80,10 @@
 
 ## Closed (Recent)
 <!-- Keep last 2 releases, then archive to CHANGELOG.md -->
+
+### v1.4.0
+- [x] **feature** | Support Standard and Commander deck modes (#17) *(closed v1.4.0)*
+- [x] **enhancement** | Commander threshold calibration *(closed v1.4.0)*
 
 ### v1.3.2
 - [x] **enhancement** | Sideboard pricing — combined main+side total with (M+S) label (#58) *(closed v1.3.2)*

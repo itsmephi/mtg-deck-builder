@@ -2,7 +2,7 @@ export const APP_VERSION = "1.4.0";
 
 export const CHANGELOG: Record<string, string> = {
   "1.4.0":
-    "Standard & Commander format support: per-deck format field (freeform/standard/commander), format rules engine, color identity tracking, FormatPicker component, commander slot and color identity checks, format-aware deck stats, import/export format metadata.",
+    "Standard & Commander format support: per-deck format (freeform/standard/commander), format rules engine, color identity tracking, commander designation with crown badge and yellow tint (grid) and crown icon/row tint (list), warning badges for format violations, commander pinning in grid and list, format picker on new deck/toolbar/dropdown, sideboard-to-Commander confirmation dialog, format-aware card count colors, list view column reorder with simplified Owned column (X/Y), format-aware simulator thresholds (5%/2% for Commander), commander excluded from library in simulator.",
   "1.3.2":
     "UI polish: sideboard pricing now shows combined main+side total with (M+S) label. Deck name conflict deduplication — auto-appends (2), (3), etc. on create and import. Version badge expands inline changelog instead of popup. Collapsed rail gets tooltips, click-to-expand, New Deck icon, and PanelLeftOpen/PanelRightOpen toggle icons. Card Kingdom button font size fixed. Qty badge removed from grid tile rest state — qty visible in hover overlay only.",
   "1.3.1":

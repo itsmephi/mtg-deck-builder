@@ -10,20 +10,20 @@ import {
   Star,
 } from "lucide-react";
 import { DeckCard } from "@/types";
-
-// Color thresholds for draw probability (calibrated for 60-card decks)
-const PROB_GREEN = 0.08; // ≥ 8% — strong access
-const PROB_YELLOW = 0.04; // ≥ 4% — partial access
-// < 4% — red (nearly exhausted)
+import { DeckFormat, getFormatRules } from "@/lib/formatRules";
 
 interface SampleHandModalProps {
   deck: DeckCard[];
   onClose: () => void;
+  format?: DeckFormat;
+  commanderId?: string;
 }
 
 export default function SampleHandModal({
   deck,
   onClose,
+  format = "freeform",
+  commanderId,
 }: SampleHandModalProps) {
   const [hand, setHand] = useState<DeckCard[]>([]);
   const [library, setLibrary] = useState<DeckCard[]>([]);
@@ -32,13 +32,23 @@ export default function SampleHandModal({
   const [mulliganCount, setMulliganCount] = useState(0);
   const scrollEndRef = useRef<HTMLDivElement>(null);
 
+  // Format-aware probability thresholds
+  const rules = getFormatRules(format);
+  const PROB_GREEN = rules.probGreen;
+  const PROB_YELLOW = rules.probYellow;
+
   const isLand = (c: DeckCard) => c.type_line.toLowerCase().includes("land");
 
   const totalCards = deck.reduce((s, c) => s + c.quantity, 0);
 
+  // Commander is excluded from library — sits in command zone
+  const libraryCards = deck.filter(
+    (c) => !(format === "commander" && c.id === commanderId)
+  );
+
   const shuffleAndDraw = () => {
     const pool: DeckCard[] = [];
-    deck.forEach((card) => {
+    libraryCards.forEach((card) => {
       for (let i = 0; i < card.quantity; i++) {
         pool.push(card);
       }
@@ -99,7 +109,7 @@ export default function SampleHandModal({
   }, [library]);
 
   const drawOdds = useMemo(() => {
-    const rows = deck
+    const rows = libraryCards
       .filter((c) => showLands || !c.type_line.toLowerCase().includes("land"))
       .map((c) => {
         const copiesInLibrary = libraryCounts[c.id] || 0;
@@ -150,7 +160,7 @@ export default function SampleHandModal({
   // Initial draw on mount — does not increment mulliganCount (starts at 0)
   useEffect(() => {
     const pool: DeckCard[] = [];
-    deck.forEach((card) => {
+    libraryCards.forEach((card) => {
       for (let i = 0; i < card.quantity; i++) {
         pool.push(card);
       }

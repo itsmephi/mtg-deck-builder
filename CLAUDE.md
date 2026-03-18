@@ -42,7 +42,7 @@ For straightforward bug fixes and small enhancements, `/plan` → PROCEED → bu
 ---
 
 ## Active Milestone
-→ v1.4.0 in progress (prompt 1 of 3 complete — foundation: data model, format rules, migration, FormatPicker).
+→ v1.4.0 shipped. Next milestone TBD — design session required.
 
 ---
 
@@ -90,6 +90,10 @@ src/
 - Color identity check: `cardIdentity.every(c => commanderIdentity.includes(c))`
 - Copy limit exemptions unchanged: Basic Land + "any number" oracle text
 - Commander eligibility: `type_line` contains "Legendary" OR `oracle_text` contains "can be your commander" — soft check only
+- Format rules: `getFormatRules(format)` is the single source of truth for all format-specific behavior
+- Lazy backfill: `backfillColorIdentity(cards)` triggered in Workspace useEffect when activeDeck switches to Commander; uses Scryfall `/cards/collection`; silent failure
+- Simulator thresholds: 8%/4% (Freeform/Standard 60-card), 5%/2% (Commander 100-card) — set in `formatRules.ts` as `probGreen`/`probYellow`
+- List view column order: Qty, Owned, Name, Type, Mana, Price, ×
 
 ---
 
