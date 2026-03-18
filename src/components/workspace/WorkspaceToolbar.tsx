@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import {
   LayoutGrid,
   List,
@@ -11,7 +11,9 @@ import {
   Dices,
 } from "lucide-react";
 import { Deck } from "@/types";
-import { SortBy, SortDir } from "@/hooks/useDeckManager";
+import { SortBy, SortDir, useDeckManager } from "@/hooks/useDeckManager";
+import { getFormatRules, DeckFormat } from "@/lib/formatRules";
+import { FormatPicker } from "@/components/layout/FormatPicker";
 
 interface Props {
   activeDeck: Deck;
@@ -37,6 +39,8 @@ interface Props {
   sideboardCardCount: number;
   // Modals
   onOpenSampleHand: () => void;
+  // Commander dialog trigger (from parent for sideboard-to-commander case)
+  onRequestFormatChange?: (format: DeckFormat) => void;
 }
 
 export default function WorkspaceToolbar({
@@ -59,13 +63,68 @@ export default function WorkspaceToolbar({
   activeDeckHasSideboard,
   sideboardCardCount,
   onOpenSampleHand,
+  onRequestFormatChange,
 }: Props) {
   const [isEditingName, setIsEditingName] = useState(false);
+  const [formatPickerOpen, setFormatPickerOpen] = useState(false);
+  const formatPickerRef = useRef<HTMLDivElement>(null);
+
+  const { setDeckFormat, mergeSideboardIntoDeck, deleteSideboardForFormat } = useDeckManager();
+
+  // Close format picker on outside click
+  useEffect(() => {
+    if (!formatPickerOpen) return;
+    function handleClickOutside(e: MouseEvent) {
+      if (formatPickerRef.current && !formatPickerRef.current.contains(e.target as Node)) {
+        setFormatPickerOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [formatPickerOpen]);
+
+  const format = activeDeck.format ?? "freeform";
+  const rules = getFormatRules(format);
+
+  // Card count color
+  const cardCountClass =
+    rules.cardCountGreen !== null && totalCards === rules.cardCountGreen
+      ? "text-green-400 font-bold"
+      : rules.cardCountRed(totalCards)
+      ? "text-red-400 font-bold"
+      : "";
+
+  // Sideboard count color (Standard: max 15)
+  const sideboardClass =
+    format === "standard" && sideboardCardCount > 15
+      ? "text-red-400 font-bold"
+      : format === "standard" && sideboardCardCount === 15
+      ? "text-green-400 font-bold"
+      : "";
+
+  const handleFormatSelect = (newFormat: DeckFormat) => {
+    setFormatPickerOpen(false);
+    if (onRequestFormatChange) {
+      onRequestFormatChange(newFormat);
+    } else {
+      // Fallback: direct change (no confirmation dialog available here)
+      if (newFormat === "commander") {
+        const sideboardCount = activeDeck.sideboard?.reduce((s, c) => s + c.quantity, 0) ?? 0;
+        if (sideboardCount > 0) {
+          // No dialog available — skip (parent should handle via onRequestFormatChange)
+          return;
+        } else if (activeDeck.sideboard !== undefined) {
+          deleteSideboardForFormat(activeDeck.id);
+        }
+      }
+      setDeckFormat(activeDeck.id, newFormat);
+    }
+  };
 
   return (
     <div className="flex items-center justify-between gap-4 mb-4 pb-3 border-b border-neutral-800 min-w-0">
-      {/* Left: name + stats */}
-      <div className="flex items-center gap-4 min-w-0">
+      {/* Left: name + format badge + stats */}
+      <div className="flex items-center gap-3 min-w-0">
         <input
           value={activeDeck.name}
           onChange={(e) => onUpdateDeckName(e.target.value)}
@@ -76,29 +135,47 @@ export default function WorkspaceToolbar({
           className={`text-lg font-bold text-white bg-transparent border-b border-transparent hover:border-neutral-700 focus:border-blue-500 focus:outline-none transition-all px-0 outline-none placeholder:text-neutral-500 max-w-[200px] ${isEditingName ? "" : "truncate"}`}
           placeholder="Untitled"
         />
+
+        {/* Format badge pill */}
+        <div className="relative">
+          {format === "standard" && (
+            <span
+              onClick={() => setFormatPickerOpen(!formatPickerOpen)}
+              className="text-[10px] font-medium text-blue-400 bg-blue-400/10 border border-blue-400/20 px-1.5 py-0.5 rounded-full cursor-pointer hover:bg-blue-400/20 transition-colors select-none"
+            >
+              Standard
+            </span>
+          )}
+          {format === "commander" && (
+            <span
+              onClick={() => setFormatPickerOpen(!formatPickerOpen)}
+              className="text-[10px] font-medium text-yellow-400 bg-yellow-400/10 border border-yellow-400/20 px-1.5 py-0.5 rounded-full cursor-pointer hover:bg-yellow-400/20 transition-colors select-none"
+            >
+              Commander
+            </span>
+          )}
+          {formatPickerOpen && (
+            <div
+              ref={formatPickerRef}
+              className="absolute top-full left-0 mt-1 w-52 bg-neutral-900 border border-neutral-700 rounded-lg shadow-xl z-50"
+            >
+              <FormatPicker
+                currentFormat={format}
+                onSelect={handleFormatSelect}
+              />
+            </div>
+          )}
+        </div>
+
         <div className="flex items-center gap-3 text-xs text-neutral-400 shrink-0">
           {deckViewMode === "sideboard" ? (
-            <span
-              className={
-                sideboardCardCount > 15
-                  ? "text-red-400 font-bold"
-                  : sideboardCardCount === 15
-                  ? "text-green-400 font-bold"
-                  : ""
-              }
-            >
-              {sideboardCardCount} / 15
+            <span className={sideboardClass}>
+              {format === "standard"
+                ? `Side: ${sideboardCardCount} / 15`
+                : `${sideboardCardCount} / 15`}
             </span>
           ) : (
-            <span
-              className={
-                totalCards > 60
-                  ? "text-red-400 font-bold"
-                  : totalCards === 60
-                  ? "text-green-400 font-bold"
-                  : ""
-              }
-            >
+            <span className={cardCountClass}>
               {totalCards} Cards
             </span>
           )}
@@ -138,31 +215,33 @@ export default function WorkspaceToolbar({
           <span className="whitespace-nowrap">Simulator</span>
         </button>
 
-        {/* Main / Side pill */}
-        <div className="flex items-center h-full bg-neutral-900 p-0.5 rounded-lg border border-neutral-800 shadow-sm">
-          <button
-            onClick={() => setDeckViewMode("main")}
-            className={`h-full px-2.5 text-xs rounded-md transition-all ${
-              deckViewMode === "main"
-                ? "bg-blue-600 text-white border border-blue-500/50"
-                : "text-neutral-500 hover:text-neutral-300 border border-transparent"
-            }`}
-          >
-            Main
-          </button>
-          <button
-            onClick={() => activeDeckHasSideboard && setDeckViewMode("sideboard")}
-            className={`h-full px-2.5 text-xs rounded-md transition-all ${
-              deckViewMode === "sideboard"
-                ? "bg-blue-600 text-white border border-blue-500/50"
-                : activeDeckHasSideboard
-                ? "text-neutral-500 hover:text-neutral-300 border border-transparent"
-                : "text-neutral-700 cursor-not-allowed border border-transparent"
-            }`}
-          >
-            Side
-          </button>
-        </div>
+        {/* Main / Side pill — hidden for Commander */}
+        {format !== "commander" && (
+          <div className="flex items-center h-full bg-neutral-900 p-0.5 rounded-lg border border-neutral-800 shadow-sm">
+            <button
+              onClick={() => setDeckViewMode("main")}
+              className={`h-full px-2.5 text-xs rounded-md transition-all ${
+                deckViewMode === "main"
+                  ? "bg-blue-600 text-white border border-blue-500/50"
+                  : "text-neutral-500 hover:text-neutral-300 border border-transparent"
+              }`}
+            >
+              Main
+            </button>
+            <button
+              onClick={() => activeDeckHasSideboard && setDeckViewMode("sideboard")}
+              className={`h-full px-2.5 text-xs rounded-md transition-all ${
+                deckViewMode === "sideboard"
+                  ? "bg-blue-600 text-white border border-blue-500/50"
+                  : activeDeckHasSideboard
+                  ? "text-neutral-500 hover:text-neutral-300 border border-transparent"
+                  : "text-neutral-700 cursor-not-allowed border border-transparent"
+              }`}
+            >
+              Side
+            </button>
+          </div>
+        )}
 
         {/* Sort / Group / View */}
         <div className="flex items-center h-full bg-neutral-900 p-0.5 rounded-lg border border-neutral-800 space-x-0.5 shadow-sm">

@@ -1,6 +1,7 @@
 import { Minus, Plus, X } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { DeckCard, ScryfallCard } from '@/types';
+import { DeckFormat, getCardWarnings, isEligibleCommander } from '@/lib/formatRules';
 
 interface VisualCardProps {
   card: DeckCard;
@@ -10,6 +11,11 @@ interface VisualCardProps {
   onRemove: (id: string) => void;
   onSelect: (card: ScryfallCard) => void;
   extraQty?: number;
+  // Commander/format props
+  format?: DeckFormat;
+  commanderId?: string;
+  commanderIdentity?: string[];
+  onSetCommander?: (id: string | undefined) => void;
 }
 
 export default function VisualCard({
@@ -20,6 +26,10 @@ export default function VisualCard({
   onRemove,
   onSelect,
   extraQty = 0,
+  format = "freeform",
+  commanderId,
+  commanderIdentity,
+  onSetCommander,
 }: VisualCardProps) {
   const isExempt =
     card.type_line?.toLowerCase().includes("basic land") ||
@@ -27,6 +37,9 @@ export default function VisualCard({
   const combinedQty = card.quantity + extraQty;
   const atCopyLimit = combinedQty === 4 && !isExempt;
   const overCopyLimit = combinedQty >= 5 && !isExempt;
+
+  const isCommander = format === "commander" && card.id === commanderId;
+  const warnings = getCardWarnings(card, format, commanderIdentity);
 
   // Inline qty editing
   const [isEditing, setIsEditing] = useState(false);
@@ -79,6 +92,8 @@ export default function VisualCard({
 
   const isFullyOwned = card.ownedQty >= card.quantity;
 
+  const eligible = isEligibleCommander(card);
+
   return (
     <div
       className={`relative group overflow-hidden rounded-xl cursor-pointer aspect-[2.5/3.5] ${
@@ -92,6 +107,32 @@ export default function VisualCard({
         className={`w-full h-full object-cover ${card.quantity === 0 ? "grayscale" : ""}`}
         alt={card.name}
       />
+
+      {/* Yellow tint overlay for designated commander */}
+      {isCommander && (
+        <div className="absolute inset-0 bg-yellow-300/[0.12] rounded-xl z-10 pointer-events-none" />
+      )}
+
+      {/* Top-left badges: crown + warning */}
+      <div className="absolute top-1.5 left-1.5 flex items-center gap-1 z-20">
+        {/* Crown badge — only when this card is the designated commander */}
+        {isCommander && (
+          <div className="w-7 h-7 rounded-full bg-yellow-500 text-white shadow-md flex items-center justify-center">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3 18h18v2H3v-2zm0-2l3-8 4 3 2-6 2 6 4-3 3 8H3z" />
+            </svg>
+          </div>
+        )}
+        {/* Warning badge */}
+        {warnings.length > 0 && (
+          <div
+            className="w-6 h-6 rounded-full bg-amber-500 flex items-center justify-center shadow-md"
+            title={warnings.join("\n")}
+          >
+            <span className="text-white text-[11px] font-black leading-none">!</span>
+          </div>
+        )}
+      </div>
 
       {/* × remove — top-right, hover-only */}
       <button
@@ -109,6 +150,38 @@ export default function VisualCard({
         className="absolute bottom-0 left-0 right-0 bg-black/75 backdrop-blur-sm px-2 py-3 translate-y-full group-hover:translate-y-0 transition-transform duration-200 ease-out z-20 flex flex-col items-center gap-2.5"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Commander designation button — only in commander format */}
+        {format === "commander" && onSetCommander && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onSetCommander(isCommander ? undefined : card.id);
+            }}
+            title={
+              !eligible
+                ? `${isCommander ? "Commander ✓" : "Set as Commander"} (not typically eligible)`
+                : undefined
+            }
+            className="flex items-center gap-1.5 px-2 py-1 rounded-md text-[10px] font-medium transition-colors hover:bg-white/10"
+          >
+            {isCommander ? (
+              <>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" className="text-yellow-400 shrink-0">
+                  <path d="M3 18h18v2H3v-2zm0-2l3-8 4 3 2-6 2 6 4-3 3 8H3z" />
+                </svg>
+                <span className="text-yellow-400">Commander ✓</span>
+              </>
+            ) : (
+              <>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-neutral-400 shrink-0">
+                  <path d="M3 18h18v2H3v-2zm0-2l3-8 4 3 2-6 2 6 4-3 3 8H3z" />
+                </svg>
+                <span className="text-neutral-300">Set as Commander</span>
+              </>
+            )}
+          </button>
+        )}
+
         {/* − qty + controls */}
         <div className="flex items-center gap-2">
           <button

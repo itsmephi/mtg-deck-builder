@@ -1,4 +1,7 @@
 import React, { useRef, useState } from "react";
+import { X } from "lucide-react";
+import { DeckCard, ScryfallCard } from "@/types";
+import { DeckFormat, getFormatRules, getCardWarnings, isEligibleCommander } from "@/lib/formatRules";
 
 const COLOR_ORDER_L = ["W", "U", "B", "R", "G"];
 
@@ -50,8 +53,19 @@ function getGroupKey(card: DeckCard, sortBy: string): string {
   }
   return "";
 }
-import { Plus, Minus, Check, X } from "lucide-react";
-import { DeckCard, ScryfallCard } from "@/types";
+
+// Crown SVG paths
+const CrownFilled = ({ className }: { className?: string }) => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path d="M3 18h18v2H3v-2zm0-2l3-8 4 3 2-6 2 6 4-3 3 8H3z" />
+  </svg>
+);
+
+const CrownOutline = ({ className }: { className?: string }) => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={className}>
+    <path d="M3 18h18v2H3v-2zm0-2l3-8 4 3 2-6 2 6 4-3 3 8H3z" />
+  </svg>
+);
 
 interface ListCardTableProps {
   cards: DeckCard[];
@@ -66,10 +80,14 @@ interface ListCardTableProps {
   onMouseMove: (e: React.MouseEvent) => void;
   highlightedId?: string | null;
   cardRefs?: React.MutableRefObject<Map<string, HTMLElement>>;
-  // Combined 4-copy check: qty of same card (by name) in the other pool
   sideboardQtyMap?: Map<string, number>;
   sortBy?: string;
   isGrouped?: boolean;
+  // Commander/format props
+  format?: DeckFormat;
+  commanderId?: string;
+  commanderIdentity?: string[];
+  onSetCommander?: (id: string | undefined) => void;
 }
 
 export default function ListCardTable({
@@ -88,9 +106,12 @@ export default function ListCardTable({
   sideboardQtyMap,
   sortBy,
   isGrouped,
+  format = "freeform",
+  commanderId,
+  commanderIdentity,
+  onSetCommander,
 }: ListCardTableProps) {
-  // Remembers last non-zero ownedQty per card so checkbox can restore it on re-check
-  const lastOwnedQtyRef = useRef<Map<string, number>>(new Map());
+  const rules = getFormatRules(format);
 
   // Row hover state for tint brightening
   const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
@@ -116,7 +137,6 @@ export default function ListCardTable({
     if (trimmed !== "" && !isNaN(parsed) && parsed >= 0) {
       onUpdateOwnedQty(card.id, parsed);
     }
-    // empty or non-numeric: silently revert
     setEditingOwnedId(null);
   };
 
@@ -129,13 +149,10 @@ export default function ListCardTable({
     const trimmed = editValue.trim();
     const parsed = parseInt(trimmed, 10);
     if (trimmed === "" || parsed === 0) {
-      // 0 or empty: qty → 0, card grays out and stays in deck (matches − button behavior)
       onSetQuantity(card.id, 0);
     } else if (!isNaN(parsed) && parsed > 0) {
-      // Allow any positive value — over-4 shows warning badge (soft warning, not a cap)
       onSetQuantity(card.id, parsed);
     }
-    // non-numeric or negative: silently revert (do nothing, card keeps current qty)
     setEditingId(null);
   };
 
@@ -156,6 +173,288 @@ export default function ListCardTable({
     );
   };
 
+  const isCommanderFormat = format === "commander";
+  const COLUMN_COUNT = 7;
+
+  // Separate out pinned commander (first card if it's the commander)
+  const pinnedCommander =
+    isCommanderFormat && commanderId && cards.length > 0 && cards[0].id === commanderId
+      ? cards[0]
+      : null;
+  const bodyCards = pinnedCommander ? cards.slice(1) : cards;
+
+  const renderRow = (card: DeckCard, index: number, fromPinned = false) => {
+    const showGroupSpacer =
+      !fromPinned &&
+      !isGrouped &&
+      !!sortBy &&
+      (sortBy === "color" || sortBy === "mv") &&
+      index > 0 &&
+      getGroupKey(bodyCards[index - 1], sortBy) !== getGroupKey(card, sortBy);
+
+    const isFullyOwned = card.quantity > 0 && card.ownedQty >= card.quantity;
+    const ownershipRatio = card.quantity > 0 ? Math.min(card.ownedQty / card.quantity, 1) : 0;
+    const cellOpacity = card.quantity === 0 ? 0.3 : 1 - ownershipRatio * 0.6;
+    const cellGrayscale = card.quantity === 0 ? "grayscale" : "";
+    const nameColor = card.quantity === 0
+      ? "text-neutral-500"
+      : isFullyOwned
+      ? "text-green-400"
+      : "text-neutral-100";
+
+    const extraQty = sideboardQtyMap?.get(card.name.toLowerCase()) ?? 0;
+    const isExempt =
+      card.type_line?.toLowerCase().includes("basic land") ||
+      card.oracle_text?.includes("A deck can have any number");
+    const combinedQty = card.quantity + extraQty;
+    const atCopyLimit = combinedQty === rules.copyLimit && !isExempt;
+    const overCopyLimit = combinedQty >= rules.softWarnThreshold && !isExempt;
+    const showCopyBadge = atCopyLimit || overCopyLimit;
+
+    const isThisCommander = isCommanderFormat && card.id === commanderId;
+    const warnings = getCardWarnings(card, format, commanderIdentity);
+    const eligibleCommander = isEligibleCommander(card);
+
+    // Row background
+    let rowBg: string;
+    if (highlightedId === card.id) {
+      rowBg = ""; // handled by className
+    } else if (isThisCommander) {
+      rowBg = "rgba(250, 204, 21, 0.08)";
+    } else if (hoveredRowId === card.id) {
+      rowBg = getRowHoverTint(card);
+    } else {
+      rowBg = getRowTint(card);
+    }
+
+    const qtyButtonBase = "w-5 h-5 rounded-full bg-neutral-800 text-neutral-400 hover:bg-neutral-700 hover:text-white flex items-center justify-center transition-colors";
+    const qtyButtonClass = isThisCommander
+      ? qtyButtonBase
+      : `${qtyButtonBase} opacity-0 group-hover:opacity-100`;
+
+    return (
+      <React.Fragment key={card.id}>
+        {showGroupSpacer && (
+          <tr aria-hidden>
+            <td colSpan={COLUMN_COUNT} className="p-0 bg-transparent">
+              <div className="h-3" />
+            </td>
+          </tr>
+        )}
+        <tr
+          ref={(el) => {
+            if (el && cardRefs) {
+              cardRefs.current.set(card.id, el);
+            }
+          }}
+          onMouseEnter={() => { onHoverStart(card); setHoveredRowId(card.id); }}
+          onMouseLeave={() => { onHoverEnd(); setHoveredRowId(null); }}
+          className={`border-b border-neutral-800/40 transition-colors group ${highlightedId === card.id ? "bg-yellow-400/10 outline outline-1 outline-yellow-400/50" : ""}`}
+          style={highlightedId !== card.id ? { backgroundColor: rowBg } : undefined}
+        >
+          {/* Qty — [− qty +] */}
+          <td className={`px-2 py-1 w-24 ${cellGrayscale}`} style={{ opacity: cellOpacity }}>
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={() => onUpdateQuantity(card.id, -1)}
+                className={qtyButtonClass}
+              >
+                <svg width="8" height="8" viewBox="0 0 8 2" fill="currentColor">
+                  <rect x="0" y="0" width="8" height="2" />
+                </svg>
+              </button>
+
+              {editingId === card.id ? (
+                <input
+                  type="text"
+                  value={editValue}
+                  onChange={(e) => setEditValue(e.target.value)}
+                  onFocus={(e) => e.target.select()}
+                  onBlur={() => {
+                    if (isEscaping.current) {
+                      isEscaping.current = false;
+                      return;
+                    }
+                    commitEdit(card);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      commitEdit(card);
+                    }
+                    if (e.key === "Escape") {
+                      isEscaping.current = true;
+                      setEditingId(null);
+                    }
+                  }}
+                  className="w-6 text-center text-xs font-medium bg-neutral-800 border border-blue-500 rounded text-neutral-200 focus:outline-none"
+                  autoFocus
+                />
+              ) : showCopyBadge ? (
+                <div className="group/badge relative flex items-center justify-center">
+                  <span
+                    onClick={() => startEdit(card)}
+                    className={`w-6 text-center font-medium cursor-text hover:bg-neutral-800 rounded ${atCopyLimit ? "text-green-400" : "text-red-400"}`}
+                  >
+                    {card.quantity}
+                  </span>
+                  {overCopyLimit && (
+                    <span className="absolute top-full mt-1.5 left-1/2 -translate-x-1/2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover/badge:opacity-100 transition-opacity pointer-events-none whitespace-normal max-w-xs z-50">
+                      {format === "commander" ? "Exceeds singleton limit" : `Exceeds ${rules.copyLimit}-copy limit`}
+                    </span>
+                  )}
+                </div>
+              ) : (
+                <span
+                  onClick={() => startEdit(card)}
+                  className="w-6 text-center font-medium text-neutral-300 cursor-text hover:bg-neutral-800 rounded"
+                >
+                  {card.quantity}
+                </span>
+              )}
+
+              <button
+                onClick={() => onUpdateQuantity(card.id, 1)}
+                className={qtyButtonClass}
+              >
+                <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor">
+                  <rect x="3" y="0" width="2" height="8" />
+                  <rect x="0" y="3" width="8" height="2" />
+                </svg>
+              </button>
+            </div>
+          </td>
+
+          {/* Owned — X/Y inline-editable */}
+          <td className="py-1 w-16">
+            <div className="px-2 flex items-center">
+              {editingOwnedId === card.id ? (
+                <div className="flex items-center gap-0.5">
+                  <input
+                    type="text"
+                    value={ownedEditValue}
+                    onChange={(e) => setOwnedEditValue(e.target.value)}
+                    onFocus={(e) => e.target.select()}
+                    onBlur={() => {
+                      if (isOwnedEscaping.current) {
+                        isOwnedEscaping.current = false;
+                        return;
+                      }
+                      commitOwnedEdit(card);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        commitOwnedEdit(card);
+                      }
+                      if (e.key === "Escape") {
+                        isOwnedEscaping.current = true;
+                        setEditingOwnedId(null);
+                      }
+                    }}
+                    className="w-5 text-center text-[10px] font-medium bg-neutral-800 border border-blue-500 rounded text-green-400 focus:outline-none"
+                    autoFocus
+                  />
+                  <span className={`text-[10px] tabular-nums ${isFullyOwned ? "text-green-400" : "text-neutral-400"}`}>
+                    /{card.quantity}
+                  </span>
+                </div>
+              ) : (
+                <span
+                  onClick={() => startOwnedEdit(card)}
+                  className={`text-[10px] tabular-nums cursor-pointer hover:underline ${isFullyOwned ? "text-green-400" : "text-neutral-400"}`}
+                >
+                  {card.ownedQty}/{card.quantity}
+                </span>
+              )}
+            </div>
+          </td>
+
+          {/* Name — crown icon before, warning icon after */}
+          <td
+            className={`px-2 py-1 min-w-0 ${cellGrayscale}`}
+            style={{ opacity: cellOpacity }}
+          >
+            <div className="flex items-center gap-1 min-w-0">
+              {/* Crown icon — commander format only */}
+              {isCommanderFormat && onSetCommander && (
+                isThisCommander ? (
+                  <CrownFilled className="text-yellow-400 shrink-0" />
+                ) : (
+                  <button
+                    onClick={() => onSetCommander(card.id)}
+                    title={
+                      !eligibleCommander
+                        ? "Set as Commander (not typically eligible)"
+                        : "Set as Commander"
+                    }
+                    className="opacity-0 group-hover:opacity-100 shrink-0 transition-opacity hover:text-yellow-400 cursor-pointer"
+                  >
+                    <CrownOutline className="text-neutral-600 hover:text-yellow-400 w-3.5 h-3.5" />
+                  </button>
+                )
+              )}
+
+              {/* Card name */}
+              <span
+                onClick={() => onSelect(card)}
+                className={`font-medium cursor-pointer hover:underline truncate ${nameColor}`}
+              >
+                {card.name}
+              </span>
+
+              {/* Warning icon */}
+              {warnings.length > 0 && (
+                <span
+                  title={warnings.join("\n")}
+                  className="shrink-0 ml-0.5"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="text-amber-500">
+                    <path d="M12 2L1 21h22L12 2zm0 3.5L20.5 19h-17L12 5.5zM11 10v4h2v-4h-2zm0 6v2h2v-2h-2z" />
+                  </svg>
+                </span>
+              )}
+            </div>
+          </td>
+
+          {/* Type */}
+          <td className={`px-2 py-1 text-[10px] text-neutral-500 truncate w-48 ${cellGrayscale}`} style={{ opacity: cellOpacity }}>
+            {card.type_line || "—"}
+          </td>
+
+          {/* Mana */}
+          <td className={`px-2 py-1 w-24 ${cellGrayscale}`} style={{ opacity: cellOpacity }}>
+            {card.card_faces ? (
+              <div className="flex items-center gap-1">
+                {renderManaSymbols(card.card_faces[0].mana_cost)}
+                <span className="text-[10px] text-neutral-600 font-bold">//</span>
+                {renderManaSymbols(card.card_faces[1].mana_cost)}
+              </div>
+            ) : (
+              renderManaSymbols((card as any).mana_cost)
+            )}
+          </td>
+
+          {/* Price */}
+          <td
+            className={`px-2 py-1 text-right text-[10px] tabular-nums w-20 ${isFullyOwned ? "text-green-500/50" : "text-neutral-400"} ${cellGrayscale}`}
+            style={{ opacity: cellOpacity }}
+          >
+            {card.prices.usd ? `$${card.prices.usd}` : "N/A"}
+          </td>
+
+          {/* Remove */}
+          <td className="pr-3 py-1 text-center w-8">
+            <X
+              onClick={() => onRemove(card.id)}
+              className="w-3 h-3 inline cursor-pointer text-neutral-700 hover:text-red-500"
+            />
+          </td>
+        </tr>
+      </React.Fragment>
+    );
+  };
+
   return (
     <div
       className="bg-neutral-900 border border-neutral-800 rounded-lg shadow-sm"
@@ -165,8 +464,8 @@ export default function ListCardTable({
         {showHeader && (
           <thead className="bg-neutral-900 text-[10px] text-neutral-500 border-b border-neutral-800 uppercase tracking-wider">
             <tr>
-              <th className="px-2 py-1.5 w-16">Qty</th>
-              <th className="py-1.5 w-24">Owned</th>
+              <th className="px-2 py-1.5 w-24">Qty</th>
+              <th className="py-1.5 w-16">Owned</th>
               <th className="px-2 py-1.5 min-w-0">Name</th>
               <th className="px-2 py-1.5 w-48">Type</th>
               <th className="px-2 py-1.5 w-24">Mana</th>
@@ -176,236 +475,19 @@ export default function ListCardTable({
           </thead>
         )}
         <tbody>
-          {cards.map((card, index) => {
-            const showGroupSpacer =
-              !isGrouped &&
-              !!sortBy &&
-              (sortBy === "color" || sortBy === "mv") &&
-              index > 0 &&
-              getGroupKey(cards[index - 1], sortBy) !== getGroupKey(card, sortBy);
-            const isFullyOwned = card.quantity > 0 && card.ownedQty >= card.quantity;
-            const isChecked = card.ownedQty > 0;
-            // Visual-only cap at 100% — underlying ownedQty is never clamped
-            const ownershipRatio = card.quantity > 0 ? Math.min(card.ownedQty / card.quantity, 1) : 0;
-            // Opacity applied per-cell (not row-level) so Owned column stays full brightness
-            const cellOpacity = card.quantity === 0 ? 0.3 : 1 - ownershipRatio * 0.6;
-            const cellGrayscale = card.quantity === 0 ? "grayscale" : "";
-            const nameColor = card.quantity === 0
-              ? "text-neutral-500"
-              : isFullyOwned
-              ? "text-green-400"
-              : "text-neutral-100";
-
-            const extraQty = sideboardQtyMap?.get(card.name.toLowerCase()) ?? 0;
-            const isExempt =
-              card.type_line?.toLowerCase().includes("basic land") ||
-              card.oracle_text?.includes("A deck can have any number");
-            const combinedQty = card.quantity + extraQty;
-            const atCopyLimit = combinedQty === 4 && !isExempt;
-            const overCopyLimit = combinedQty >= 5 && !isExempt;
-            const showCopyBadge = atCopyLimit || overCopyLimit;
-
-            // Keep ref up to date whenever ownedQty is non-zero
-            if (card.ownedQty > 0) lastOwnedQtyRef.current.set(card.id, card.ownedQty);
-
-            return (
-              <React.Fragment key={card.id}>
-              {showGroupSpacer && (
-                <tr aria-hidden>
-                  <td colSpan={7} className="p-0 bg-transparent">
-                    <div className="h-3" />
-                  </td>
-                </tr>
-              )}
-              <tr
-                ref={(el) => {
-                  if (el && cardRefs) {
-                    if (el) cardRefs.current.set(card.id, el);
-                    else cardRefs.current.delete(card.id);
-                  }
-                }}
-                onMouseEnter={() => { onHoverStart(card); setHoveredRowId(card.id); }}
-                onMouseLeave={() => { onHoverEnd(); setHoveredRowId(null); }}
-                className={`border-b border-neutral-800/40 transition-colors ${highlightedId === card.id ? "bg-yellow-400/10 outline outline-1 outline-yellow-400/50" : ""}`}
-                style={highlightedId !== card.id ? { backgroundColor: hoveredRowId === card.id ? getRowHoverTint(card) : getRowTint(card) } : undefined}
-              >
-                {/* Qty */}
-                <td className={`px-2 py-1 ${cellGrayscale}`} style={{ opacity: cellOpacity }}>
-                  <div className="flex items-center gap-2">
-                    <Minus
-                      onClick={() => onUpdateQuantity(card.id, -1)}
-                      className="w-3 h-3 cursor-pointer text-neutral-500"
-                    />
-                    {editingId === card.id ? (
-                      <input
-                        type="text"
-                        value={editValue}
-                        onChange={(e) => setEditValue(e.target.value)}
-                        onFocus={(e) => e.target.select()}
-                        onBlur={() => {
-                          if (isEscaping.current) {
-                            isEscaping.current = false;
-                            return;
-                          }
-                          commitEdit(card);
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            commitEdit(card);
-                          }
-                          if (e.key === "Escape") {
-                            isEscaping.current = true;
-                            setEditingId(null);
-                          }
-                        }}
-                        className="w-6 text-center text-xs font-medium bg-neutral-800 border border-blue-500 rounded text-neutral-200 focus:outline-none"
-                        autoFocus
-                      />
-                    ) : showCopyBadge ? (
-                      <div className="group relative flex items-center justify-center">
-                        <span
-                          onClick={() => startEdit(card)}
-                          className={`w-6 text-center font-medium cursor-text hover:bg-neutral-800 rounded ${atCopyLimit ? "text-green-400" : "text-red-400"}`}
-                        >
-                          {card.quantity}
-                        </span>
-                        {overCopyLimit && (
-                          <span className="absolute top-full mt-1.5 left-1/2 -translate-x-1/2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-normal max-w-xs z-50">
-                            Exceeds 4-copy limit
-                          </span>
-                        )}
-                      </div>
-                    ) : (
-                      <span
-                        onClick={() => startEdit(card)}
-                        className="w-6 text-center font-medium text-neutral-300 cursor-text hover:bg-neutral-800 rounded"
-                      >
-                        {card.quantity}
-                      </span>
-                    )}
-                    <Plus
-                      onClick={() => onUpdateQuantity(card.id, 1)}
-                      className="w-3 h-3 cursor-pointer text-neutral-500"
-                    />
-                  </div>
-                </td>
-
-                {/* Owned — always full brightness, progress bar spans full cell width */}
-                <td className="py-1 w-24">
-                  <div className="px-2">
-                    <div className="flex items-center gap-1">
-                      <Check
-                        onClick={() => onUpdateOwnedQty(card.id, isChecked ? 0 : (lastOwnedQtyRef.current.get(card.id) ?? Math.max(card.quantity, 1)))}
-                        className={`w-3.5 h-3.5 flex-shrink-0 cursor-pointer ${isChecked ? "text-green-500 hover:text-green-400" : "text-neutral-700 hover:text-green-400"}`}
-                      />
-                      {card.ownedQty > 0 && (
-                        <div className="flex items-center gap-0.5">
-                          <Minus
-                            onClick={() => onUpdateOwnedQty(card.id, card.ownedQty - 1)}
-                            className="w-3 h-3 cursor-pointer text-neutral-500 hover:text-white transition-colors"
-                          />
-                          {editingOwnedId === card.id ? (
-                            <input
-                              type="text"
-                              value={ownedEditValue}
-                              onChange={(e) => setOwnedEditValue(e.target.value)}
-                              onFocus={(e) => e.target.select()}
-                              onBlur={() => {
-                                if (isOwnedEscaping.current) {
-                                  isOwnedEscaping.current = false;
-                                  return;
-                                }
-                                commitOwnedEdit(card);
-                              }}
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                  e.preventDefault();
-                                  commitOwnedEdit(card);
-                                }
-                                if (e.key === "Escape") {
-                                  isOwnedEscaping.current = true;
-                                  setEditingOwnedId(null);
-                                }
-                              }}
-                              className="w-5 text-center text-[9px] font-medium bg-neutral-800 border border-blue-500 rounded text-green-400/80 focus:outline-none"
-                              autoFocus
-                            />
-                          ) : (
-                            <span
-                              onClick={() => startOwnedEdit(card)}
-                              className="text-[9px] text-green-400/80 font-medium w-3 text-center tabular-nums cursor-text hover:bg-neutral-800 rounded transition-colors"
-                            >
-                              {card.ownedQty}
-                            </span>
-                          )}
-                          <Plus
-                            onClick={() => onUpdateOwnedQty(card.id, card.ownedQty + 1)}
-                            className="w-3 h-3 cursor-pointer text-neutral-500 hover:text-white transition-colors"
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  {/* Progress bar — no px padding so it spans the full cell width */}
-                  <div className="h-0.5 bg-neutral-700 overflow-hidden mt-0.5">
-                    <div
-                      className="h-full bg-green-500/60 transition-all duration-200"
-                      style={{ width: `${ownershipRatio * 100}%` }}
-                    />
-                  </div>
-                </td>
-
-                {/* Name */}
-                <td
-                  onClick={() => onSelect(card)}
-                  className={`px-2 py-1 cursor-pointer hover:underline truncate min-w-0 ${cellGrayscale}`}
-                  style={{ opacity: cellOpacity }}
-                >
-                  <span className={`font-medium ${nameColor}`}>
-                    {card.name}
-                  </span>
-                </td>
-
-                {/* Type */}
-                <td className={`px-2 py-1 text-[10px] text-neutral-500 truncate ${cellGrayscale}`} style={{ opacity: cellOpacity }}>
-                  {card.type_line || "—"}
-                </td>
-
-                {/* Mana */}
-                <td className={`px-2 py-1 ${cellGrayscale}`} style={{ opacity: cellOpacity }}>
-                  {card.card_faces ? (
-                    <div className="flex items-center gap-1">
-                      {renderManaSymbols(card.card_faces[0].mana_cost)}
-                      <span className="text-[10px] text-neutral-600 font-bold">
-                        //
-                      </span>
-                      {renderManaSymbols(card.card_faces[1].mana_cost)}
-                    </div>
-                  ) : (
-                    renderManaSymbols((card as any).mana_cost)
-                  )}
-                </td>
-
-                {/* Price */}
-                <td
-                  className={`px-2 py-1 text-right text-[10px] tabular-nums ${isFullyOwned ? "text-green-500/50" : "text-neutral-400"} ${cellGrayscale}`}
-                  style={{ opacity: cellOpacity }}
-                >
-                  {card.prices.usd ? `$${card.prices.usd}` : "N/A"}
-                </td>
-
-                {/* Remove */}
-                <td className="pr-3 py-1 text-center">
-                  <X
-                    onClick={() => onRemove(card.id)}
-                    className="w-3 h-3 inline cursor-pointer text-neutral-700 hover:text-red-500"
-                  />
+          {/* Pinned commander row */}
+          {pinnedCommander && (
+            <>
+              {renderRow(pinnedCommander, 0, true)}
+              <tr aria-hidden>
+                <td colSpan={COLUMN_COUNT} className="p-0">
+                  <div className="border-b border-neutral-700/30" />
                 </td>
               </tr>
-              </React.Fragment>
-            );
-          })}
+            </>
+          )}
+          {/* Remaining cards */}
+          {bodyCards.map((card, index) => renderRow(card, index))}
         </tbody>
       </table>
     </div>

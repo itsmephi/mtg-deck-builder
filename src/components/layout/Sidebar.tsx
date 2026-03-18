@@ -65,7 +65,7 @@ export default function Sidebar({ onImport, onExport, isImporting }: Props) {
       style={
         isDesktop
           ? {
-              width: isCollapsed ? 48 : 240,
+              width: isCollapsed ? 48 : 256,
               transition: "width 300ms cubic-bezier(0.4, 0, 0.2, 1)",
             }
           : { width: "100%" }

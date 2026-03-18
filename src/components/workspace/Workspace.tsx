@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useMemo, useEffect } from "react";
+import React, { useState, useRef, useMemo, useEffect } from "react";
 import { useDeckManager } from "@/hooks/useDeckManager";
 import { useDeckStats } from "@/hooks/useDeckStats";
 
@@ -11,6 +11,7 @@ import ListCardTable from "./ListCardTable";
 import ImportModal from "./ImportModal";
 import WorkspaceToolbar from "./WorkspaceToolbar";
 import { ScryfallCard, DeckCard } from "@/types";
+import { DeckFormat, getFormatRules } from "@/lib/formatRules";
 
 interface WorkspaceProps {
   pendingImport: { filename: string; lines: string[] } | null;
@@ -28,13 +29,19 @@ function colorSortKey(card: DeckCard): number {
     (card.card_faces?.map((f) => f.mana_cost).join("") ?? "");
   if (!mc) return card.type_line?.includes("Land") ? 2000 : 1000;
   const colors = COLOR_ORDER.filter((c) => mc.includes(`{${c}}`));
-  if (colors.length === 0) return card.type_line?.includes("Land") ? 2000 : 1000; // colorless or land
-  if (colors.length === 1) return COLOR_ORDER.indexOf(colors[0]); // 0–4
+  if (colors.length === 0) return card.type_line?.includes("Land") ? 2000 : 1000;
+  if (colors.length === 1) return COLOR_ORDER.indexOf(colors[0]);
   const bitmask = colors.reduce(
     (acc, c) => acc | COLOR_BITS[c],
     0,
   );
-  return 100 + (31 - bitmask); // multicolor, sorted by WUBRG bitmask desc
+  return 100 + (31 - bitmask);
+}
+
+interface ConfirmDialogState {
+  deckId: string;
+  sideboardCount: number;
+  targetFormat: DeckFormat;
 }
 
 export default function Workspace({ pendingImport, processImport, cancelImport }: WorkspaceProps) {
@@ -55,11 +62,14 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
     setSortBy,
     sortDir,
     setSortDir,
+    setCommanderId,
+    setDeckFormat,
+    mergeSideboardIntoDeck,
+    deleteSideboardForFormat,
   } = useDeckManager();
   const { totalCards, totalValue, remainingCost, hasPriceData } =
     useDeckStats(activeDeck ?? null);
 
-  // Fix 1: restore view preferences from localStorage
   const [viewMode, setViewModeState] = useState<"visual" | "list">("visual");
   const [isGrouped, setIsGroupedState] = useState(false);
 
@@ -80,6 +90,19 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
   const [hoveredCardList, setHoveredCardList] = useState<ScryfallCard | null>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  // Confirmation dialog for sideboard → commander format switch (triggered from toolbar)
+  const [confirmDialog, setConfirmDialog] = useState<ConfirmDialogState | null>(null);
+
+  // Escape closes confirm dialog
+  useEffect(() => {
+    if (!confirmDialog) return;
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setConfirmDialog(null);
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [confirmDialog]);
 
   // Restore view preferences on mount
   useEffect(() => {
@@ -120,26 +143,55 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
     ? (activeDeck?.sideboard ?? [])
     : (activeDeck?.cards ?? []);
 
+  const format = activeDeck?.format ?? "freeform";
+  const rules = getFormatRules(format);
+
+  // Commander identity computed from designated commander card
+  const commanderCard = useMemo(() => {
+    if (!activeDeck?.commanderId) return null;
+    return activeDeck.cards.find((c) => c.id === activeDeck.commanderId) ?? null;
+  }, [activeDeck]);
+
+  const commanderIdentity = commanderCard?.color_identity;
+
   const sortedCards = useMemo(() => {
     if (!activeDeck) return [];
-    if (sortBy === "original") return [...activeCards];
-    const cards = [...activeCards];
-    cards.sort((a, b) => {
-      let cmp = 0;
-      if (sortBy === "name") {
-        cmp = a.name.localeCompare(b.name);
-      } else if (sortBy === "color") {
-        cmp = colorSortKey(a) - colorSortKey(b);
-      } else if (sortBy === "mv") {
-        cmp = (a.cmc ?? Infinity) - (b.cmc ?? Infinity);
+    let cards: DeckCard[];
+    if (sortBy === "original") {
+      cards = [...activeCards];
+    } else {
+      cards = [...activeCards];
+      cards.sort((a, b) => {
+        let cmp = 0;
+        if (sortBy === "name") {
+          cmp = a.name.localeCompare(b.name);
+        } else if (sortBy === "color") {
+          cmp = colorSortKey(a) - colorSortKey(b);
+        } else if (sortBy === "mv") {
+          cmp = (a.cmc ?? Infinity) - (b.cmc ?? Infinity);
+        }
+        return sortDir === "asc" ? cmp : -cmp;
+      });
+    }
+
+    // Commander pinning — always first in main view
+    if (
+      format === "commander" &&
+      activeDeck.commanderId &&
+      deckViewMode === "main"
+    ) {
+      const cmdIdx = cards.findIndex((c) => c.id === activeDeck.commanderId);
+      if (cmdIdx > 0) {
+        const [cmd] = cards.splice(cmdIdx, 1);
+        cards.unshift(cmd);
       }
-      return sortDir === "asc" ? cmp : -cmp;
-    });
+    }
+
     return cards;
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeDeck, sortBy, sortDir, deckViewMode]);
 
-  // Build qty maps for combined 4-copy rule check
+  // Build qty maps for combined copy-rule check (format-aware threshold)
   const otherPoolQtyMap = useMemo(() => {
     const map = new Map<string, number>();
     if (!activeDeck) return map;
@@ -259,6 +311,20 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
     });
   };
 
+  // Toolbar format change handler (includes sideboard confirmation)
+  const handleRequestFormatChange = (newFormat: DeckFormat) => {
+    if (newFormat === "commander") {
+      const sideboardCount = activeDeck.sideboard?.reduce((s, c) => s + c.quantity, 0) ?? 0;
+      if (sideboardCount > 0) {
+        setConfirmDialog({ deckId: activeDeck.id, sideboardCount, targetFormat: newFormat });
+        return;
+      } else if (activeDeck.sideboard !== undefined) {
+        deleteSideboardForFormat(activeDeck.id);
+      }
+    }
+    setDeckFormat(activeDeck.id, newFormat);
+  };
+
   const isSideboard = deckViewMode === "sideboard";
 
   const cardActionProps = isSideboard
@@ -284,7 +350,21 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
     onMouseMove: handleMouseMove,
   };
 
+  const commanderProps = {
+    format,
+    commanderId: activeDeck.commanderId,
+    commanderIdentity,
+    onSetCommander: setCommanderId,
+  };
+
   const groupedCards = groupCardsByType(sortedCards);
+
+  const isPinnedCommander = (card: DeckCard, index: number) =>
+    format === "commander" &&
+    activeDeck.commanderId &&
+    card.id === activeDeck.commanderId &&
+    index === 0 &&
+    deckViewMode === "main";
 
   return (
     <div className="w-full h-full flex flex-col relative text-sm bg-neutral-900">
@@ -308,6 +388,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
         activeDeckHasSideboard={activeDeck.sideboard !== undefined}
         sideboardCardCount={sideboardCardCount}
         onOpenSampleHand={() => setIsSampleHandOpen(true)}
+        onRequestFormatChange={handleRequestFormatChange}
       />
 
       <div
@@ -337,6 +418,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
                             <VisualCard
                               card={card}
                               {...cardActionProps}
+                              {...commanderProps}
                               extraQty={otherPoolQtyMap.get(card.name.toLowerCase()) ?? 0}
                             />
                           </div>
@@ -351,6 +433,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
                         sortBy={sortBy}
                         isGrouped={isGrouped}
                         {...listActionProps}
+                        {...commanderProps}
                       />
                     )}
                   </div>
@@ -359,22 +442,27 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
           </div>
         ) : viewMode === "visual" ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-            {sortedCards.map((card) => (
-              <div
-                key={card.id}
-                ref={(el) => {
-                  if (el) cardRefs.current.set(card.id, el);
-                  else cardRefs.current.delete(card.id);
-                }}
-                className={`rounded-xl transition-all duration-300 ${highlightedId === card.id ? "ring-2 ring-yellow-400 ring-offset-2 ring-offset-neutral-950" : ""}`}
-              >
-                <VisualCard
-                  key={card.id}
-                  card={card}
-                  {...cardActionProps}
-                  extraQty={otherPoolQtyMap.get(card.name.toLowerCase()) ?? 0}
-                />
-              </div>
+            {sortedCards.map((card, index) => (
+              <React.Fragment key={card.id}>
+                <div
+                  ref={(el) => {
+                    if (el) cardRefs.current.set(card.id, el);
+                    else cardRefs.current.delete(card.id);
+                  }}
+                  className={`rounded-xl transition-all duration-300 ${highlightedId === card.id ? "ring-2 ring-yellow-400 ring-offset-2 ring-offset-neutral-950" : ""}`}
+                >
+                  <VisualCard
+                    card={card}
+                    {...cardActionProps}
+                    {...commanderProps}
+                    extraQty={otherPoolQtyMap.get(card.name.toLowerCase()) ?? 0}
+                  />
+                </div>
+                {/* Divider after pinned commander */}
+                {isPinnedCommander(card, index) && (
+                  <div className="col-span-full border-b border-neutral-700/30 my-1" />
+                )}
+              </React.Fragment>
             ))}
           </div>
         ) : (
@@ -386,6 +474,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
             sortBy={sortBy}
             isGrouped={isGrouped}
             {...listActionProps}
+            {...commanderProps}
           />
         )}
       </div>
@@ -481,6 +570,53 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
           onClose={() => setIsSampleHandOpen(false)}
         />
       )}
+
+      {/* Sideboard → Commander confirmation dialog (triggered from toolbar) */}
+      {confirmDialog && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm"
+          onClick={() => setConfirmDialog(null)}
+        >
+          <div
+            className="bg-neutral-900 border border-neutral-700 rounded-xl shadow-2xl p-6 w-80 flex flex-col gap-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div>
+              <h3 className="text-sm font-bold text-white mb-1">
+                Commander decks don&apos;t use sideboards
+              </h3>
+              <p className="text-xs text-neutral-400">
+                Your sideboard has {confirmDialog.sideboardCount}{" "}
+                {confirmDialog.sideboardCount === 1 ? "card" : "cards"}. What would you
+                like to do?
+              </p>
+            </div>
+            <div className="flex flex-col gap-2">
+              <button
+                onClick={() => {
+                  mergeSideboardIntoDeck(confirmDialog.deckId);
+                  setDeckFormat(confirmDialog.deckId, "commander");
+                  setConfirmDialog(null);
+                }}
+                className="w-full px-3 py-2 rounded-lg text-xs font-medium bg-yellow-600 hover:bg-yellow-500 text-white transition-colors"
+              >
+                Merge into Main Deck
+              </button>
+              <button
+                onClick={() => {
+                  deleteSideboardForFormat(confirmDialog.deckId);
+                  setDeckFormat(confirmDialog.deckId, "commander");
+                  setConfirmDialog(null);
+                }}
+                className="w-full px-3 py-2 rounded-lg text-xs font-medium bg-red-600/20 text-red-400 border border-red-600/30 hover:bg-red-600/30 transition-colors"
+              >
+                Delete Sideboard
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+

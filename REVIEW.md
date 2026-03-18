@@ -27,6 +27,23 @@ Status: IN PROGRESS
 
 ---
 
+## Plan Review — v1.4.0 Prompt 2: Sidebar, Toolbar, Grid View, List View UI
+
+**Branch:** `v1.4.0` | **Complexity:** 6 source files — prompt originated from Claude Chat design session. Phi may PROCEED directly.
+
+### Files Touched
+
+| File | Change |
+|---|---|
+| `src/components/layout/Sidebar.tsx` | Bump expanded width inline style from 240 → 256 |
+| `src/components/layout/SidebarDecksTab.tsx` | Format badge on deck rows; Layers icon grayed/disabled for Commander; "Change Format" in × dropdown with FormatPicker popover; "+ New Deck" opens FormatPicker; sideboard-to-Commander confirmation dialog |
+| `src/components/workspace/WorkspaceToolbar.tsx` | Format badge pill (clickable, opens FormatPicker); format-aware card count colors; Standard sideboard max indicator; hide Main/Side toggle for Commander |
+| `src/components/workspace/VisualCard.tsx` | Crown badge (top-left, commander only); warning badge (amber !); yellow tint overlay for commander; crown button in hover overlay for commander format |
+| `src/components/workspace/Workspace.tsx` | Commander pinning in sortedCards memo; grid divider after pinned commander; format-aware softWarnThreshold; pass commanderId/format/commanderIdentity/onSetCommander down to card components |
+| `src/components/workspace/ListCardTable.tsx` | Column reorder [−qty+][Owned][Name][Type][Mana][Price][×]; qty button styling + hover-only visibility; owned column simplified to X/Y inline-edit; crown/warning icons in Name cell; commander row tint + pinning + divider; format-aware copy limit |
+
+---
+
 ## How This File Works
 This file is the live session journal shared between Phi, Claude Chat, and Claude Code.
 - **Claude Code writes:** Plan review table, testing checklist, session summary — committed only at session end
