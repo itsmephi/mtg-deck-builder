@@ -105,5 +105,6 @@ src/
 - Plan Review: Claude Code outputs plan table to REVIEW.md before touching files, waits for PROCEED.
 - One active machine per Claude Code session — git commit is the handoff. Always git pull before starting, git push after.
 - Claude Code allowedTools whitelist: Bash(git *) and Bash(npm *). Intentional.
+- Never prepend cd to git or npm commands — already in the project root.
 - Design before build, always. No prompt generation until design is fully signed off.
 - Root cause before fix. Diagnose intended behavior before writing any fix spec.
