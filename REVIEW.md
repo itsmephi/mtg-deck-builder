@@ -2,26 +2,80 @@
 
 ---
 
-## Current Release: v1.4.1
+## Current Task: v1.5.0 — Grid Polish + Bug Fixes
 Status: APPROVED ✅
 
 ---
 
-## Session Summary — v1.4.1
+## Session Summary
 
-**Shipped.** Grid and list view warning/crown badge polish patch.
+All 5 items shipped in two prompts. No carry-forwards.
 
-### What Was Built
+**Prompt 1 (Items 1–3):** FormatPicker dynamic positioning across all three trigger points; collapsed rail `+` icon now opens FormatPicker to the right with full cancel support; commander eligibility hardened to a full block in list view (no-op click, `cursor-not-allowed`, updated tooltip).
 
-- Warning badge redesigned: filled amber triangle (raw SVG) replaces filled amber circle — amber body with `stroke="none"`, white `!` line and dot as separate SVG paths for full rendering control. Iterated through Lucide `TriangleAlert` approaches before landing on raw SVG.
-- Warning badge repositioned to top-right corner in grid view (was top-left, stacked below crown in flex-col)
-- Crown badge in grid view now renders as a standalone positioned `div` at top-left — flex-col wrapper removed
-- Crown SVG inside badge bumped from 16×16 to 18×18 for better fill inside the `w-7 h-7` circle
-- × remove button moved from corner-straddle (`-top-3 -right-3`, outside `overflow-hidden` wrapper) to inset inside card art (`top-1.5 right-1.5`, clipped by `rounded-xl`)
-- List view warning icon updated to matching raw SVG triangle (16×16)
+**Prompt 2 (Items 4–5):** Grid view crown badge fully replaces the overlay "Set as Commander" button — interactive toggle with three states (active/eligible/ineligible), format-gated to Commander only. Persistent qty pill added at bottom-center of every grid tile with three color states and overlay fade-out behavior.
 
-### Files Modified
-`src/components/workspace/VisualCard.tsx` · `src/components/workspace/ListCardTable.tsx` · `src/config/version.ts` · `CHANGELOG.md` · `CLAUDE.md` · `REVIEW.md`
+**Files changed:** `VisualCard.tsx`, `SidebarDecksTab.tsx`, `WorkspaceToolbar.tsx`, `SidebarRail.tsx`, `ListCardTable.tsx`, `version.ts`
+
+---
+
+## Testing Checklist
+
+### Item 1 — FormatPicker Dynamic Positioning
+- [ ] 1–2 decks in sidebar: click `+ New Deck` → picker opens **downward**
+- [ ] 5+ decks in sidebar (trigger near bottom): click `+ New Deck` → picker opens **upward**
+- [ ] Click a deck's format badge with room below → opens **downward**
+- [ ] Click a deck's format badge near bottom of list → opens **upward**
+- [ ] Click toolbar format pill (near top of page) → opens **downward**
+- [ ] All pickers close on click-outside
+
+### Item 2 — Collapsed Rail + Icon
+- [ ] Collapse sidebar → click `+` → FormatPicker opens to the **right** of icon
+- [ ] Select a format → deck created with that format, picker closes
+- [ ] Press Escape → picker closes, no deck created
+- [ ] Click outside picker → picker closes, no deck created
+- [ ] "New Deck" tooltip hidden while picker is open
+
+### Item 3 — Commander Eligibility Hard Check (List View)
+- [ ] Commander format, list view: hover a non-Legendary card → crown appears, cursor is `not-allowed`
+- [ ] Click crown on non-Legendary card → no-op, commander unchanged
+- [ ] Tooltip on non-Legendary: "Must be Legendary to set as Commander"
+- [ ] Hover a Legendary card → crown appears, cursor is `pointer`
+- [ ] Click crown on Legendary → sets as commander correctly
+- [ ] Card with "can be your commander" oracle text: crown is clickable and sets commander
+
+### Item 4 — Crown Badge Toggle (Grid View)
+- [ ] Commander format: hover any non-commander card → dim gray crown appears top-left
+- [ ] Hover a Legendary card's crown → badge lights up gold, cursor pointer, scales slightly
+- [ ] Click crown on Legendary → designates as commander, badge turns solid yellow
+- [ ] Click active commander crown → deselects, card returns to hover-hint state
+- [ ] Active commander crown: always visible (no hover needed), solid yellow circle
+- [ ] Active commander crown: scales on hover as affordance
+- [ ] Hover a non-Legendary card's crown → stays gray, cursor not-allowed, no color change
+- [ ] Click non-Legendary crown → no-op
+- [ ] Tooltip: "Set as Commander" on eligible, "Must be Legendary" on ineligible, "Remove as Commander" on active
+- [ ] Freeform format: NO crown appears on hover for any card
+- [ ] Standard format: NO crown appears on hover for any card
+- [ ] "Set as Commander" / "Commander ✓" button is GONE from the hover overlay
+
+### Item 5 — Persistent Qty Pill Badge
+- [ ] Every grid tile has a circular pill at bottom center straddling the edge
+- [ ] Pill shows the card's quantity number
+- [ ] Fully owned card (ownedQty ≥ qty, qty > 0): green pill (`bg-green-800 / text-green-400`)
+- [ ] Card with copy-limit warning: amber pill (`bg-orange-900 / text-orange-400`) — priority over green
+- [ ] All other cards: neutral pill (`bg-neutral-900 / text-neutral-400`)
+- [ ] Qty 0 card: shows `0` in neutral style (not green)
+- [ ] Pill fades out when hover overlay slides up
+- [ ] Pill returns when hover ends
+- [ ] Crown badge (top-left), warning badge (top-right), and qty pill (bottom center) coexist without overlap
+
+### General Regression
+- [ ] Overlay qty controls (−/+, inline edit) still work correctly
+- [ ] Owned counter inline edit still works
+- [ ] × remove button still works
+- [ ] Clicking card art still opens CardModal
+- [ ] List view commander crown toggle still works (unchanged)
+- [ ] All existing format switching flows work
 
 ---
 

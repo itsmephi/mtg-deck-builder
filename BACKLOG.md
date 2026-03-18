@@ -7,12 +7,6 @@
 ## Active Milestone
 <!-- Items promoted from Pipeline for the current release. Cleared after release ships. -->
 
-- [ ] **bug** | "+ New Deck" format picker gets cut off at the top when decklist is short (1–3 decks in sidebar) — popover opens upward and clips
-- [ ] **bug** | + icon in collapsed sidebar rail does not trigger the format picker — new deck created without format selection
-- [ ] **enhancement** | Commander eligibility check should enforce legendary legality — non-legendary cards should not be markable as commander
-- [ ] **enhancement** | Crown badge in grid view should toggle commander (like list view) — remove "Set as Commander" from card overlay ⚠️ needs design
-- [ ] **enhancement** | Pill badge on grid card tile (bottom center) showing owned/qty — covered by rollover overlay when editing ⚠️ needs design
-
 ---
 
 ## Pipeline
@@ -53,6 +47,13 @@
 
 ## Closed (Recent)
 <!-- Keep last 2 releases, then archive to CHANGELOG.md -->
+
+### v1.5.0
+- [x] **bug** | "+ New Deck" format picker gets cut off at the top when decklist is short — dynamic positioning *(closed v1.5.0)*
+- [x] **bug** | + icon in collapsed sidebar rail does not trigger the format picker *(closed v1.5.0)*
+- [x] **enhancement** | Commander eligibility check now enforces legendary legality — hard block *(closed v1.5.0)*
+- [x] **enhancement** | Crown badge in grid view toggles commander — "Set as Commander" overlay button removed *(closed v1.5.0)*
+- [x] **enhancement** | Persistent qty pill badge on grid tile bottom center *(closed v1.5.0)*
 
 ### v1.4.1
 - [x] **bug** | Owned field no longer dims when owned count reaches deck quantity — regression *(closed v1.4.1)*

@@ -5,6 +5,21 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.5.0] — Grid Polish + Bug Fixes
+
+### Fixed
+- FormatPicker popover now opens downward when more room exists below the trigger, and upward when near the bottom of the viewport — applies to all three trigger points: `+ New Deck` button, sidebar deck row format badge, and toolbar format badge pill
+- Collapsed sidebar rail `+` icon now opens a FormatPicker popover positioned to the right of the icon instead of immediately creating a deck — deck is only created after format selection; Escape or click-outside cancels without creating a deck
+- Commander eligibility check hardened from soft warning to full block — cards without `"Legendary"` in `type_line` and without `"can be your commander"` in `oracle_text` cannot be designated as commander; click is a no-op in both list view and grid view; tooltip now reads "Must be Legendary to set as Commander"
+
+### Added
+- Grid view crown badge is now an interactive commander toggle — replaces the `"Set as Commander"` / `"Commander ✓"` text button that previously lived inside the hover overlay
+- Commander format: all non-commander cards show a dim gray crown badge on card hover; eligible (Legendary) cards light up gold on crown hover with `pointer` cursor and a scale affordance; ineligible cards stay dim gray with `not-allowed` cursor and no color change
+- Active commander crown badge: always visible, solid yellow circle (`bg-yellow-500`), scales on hover; clicking deselects the commander designation
+- Persistent qty pill badge on every grid tile: circular `w-6 h-6` badge at bottom center straddling the card edge (`-bottom-2`); green (`bg-green-800 / text-green-400`) when fully owned, amber (`bg-orange-900 / text-orange-400`) when at copy-limit warning, neutral (`bg-neutral-900 / text-neutral-400`) otherwise; fades out (`opacity-0`) when the hover overlay slides up
+
+---
+
 ## [1.4.1] — Grid Badge Polish
 
 ### Fixed
