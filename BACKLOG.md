@@ -30,6 +30,7 @@
 - [ ] **enhancement** | Re-add −/+ increment buttons to qty/owned fields — removed and missed
 - [ ] **enhancement** | Import/export format compatibility — support MTGGoldfish format (e.g. `1 Ashling, the Limitless <borderless> [ECC] (F)`) and confirm cross-compatibility with TCGPlayer and Card Kingdom import
 - [ ] **enhancement** | Import modal — add "Paste from clipboard" button as an alternative to typing/pasting manually ⚠️ needs design
+- [ ] **enhancement** | Redesign grid view warning triangle placement and tooltips — spec in /docs ⚠️ needs design
 
 ---
 
