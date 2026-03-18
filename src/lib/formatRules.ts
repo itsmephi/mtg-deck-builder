@@ -115,11 +115,7 @@ export function getCardWarnings(
   if (rules.hasColorIdentityCheck && commanderIdentity) {
     const cardIdentity = card.color_identity ?? [];
     if (!cardIdentity.every((c) => commanderIdentity.includes(c))) {
-      const extras = cardIdentity
-        .filter((c) => !commanderIdentity.includes(c))
-        .map((c) => `{${c}}`)
-        .join(", ");
-      warnings.push(`Outside commander's color identity (has ${extras})`);
+      warnings.push(`Outside commander's color identity`);
     }
   }
 

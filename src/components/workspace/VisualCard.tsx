@@ -132,6 +132,32 @@ export default function VisualCard({
           className="absolute bottom-0 left-0 right-0 bg-black/75 backdrop-blur-sm px-2 py-3 translate-y-full group-hover:translate-y-0 transition-transform duration-200 ease-out z-20 flex flex-col items-center gap-2.5"
           onClick={(e) => e.stopPropagation()}
         >
+        {/* Warning bar — top of overlay, grid view only */}
+        {warnings.length > 0 && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '5px',
+              padding: '4px 8px',
+              background: 'rgba(245, 158, 11, 0.15)',
+              border: '1px solid rgba(245, 158, 11, 0.3)',
+              borderRadius: '6px',
+              width: '100%',
+            }}
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24">
+              <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" fill="#fbbf24" />
+              <path d="M12 9v4" stroke="#171717" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+              <circle cx="12" cy="17" r="1" fill="#171717" />
+            </svg>
+            <span style={{ fontSize: '10px', fontWeight: 600, color: '#fbbf24', whiteSpace: 'nowrap' }}>
+              {warnings[0]}
+            </span>
+          </div>
+        )}
+
         {/* − qty + controls */}
         <div className="flex items-center gap-2">
           <button
@@ -288,16 +314,6 @@ export default function VisualCard({
         {card.quantity}
       </div>
 
-      {/* Warning badge — top-right */}
-      {warnings.length > 0 && (
-        <div className="absolute -top-3.5 -right-3.5 z-20" title={warnings.join("\n")}>
-          <svg width="22" height="22" viewBox="0 0 24 24" className="drop-shadow-md">
-            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" fill="#f59e0b" stroke="none" />
-            <path d="M12 9v4" stroke="white" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-            <circle cx="12" cy="17" r="1" fill="white" />
-          </svg>
-        </div>
-      )}
     </div>
   );
 }
