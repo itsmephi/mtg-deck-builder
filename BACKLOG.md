@@ -7,7 +7,8 @@
 ## Active Milestone
 <!-- Items promoted from Pipeline for the current release. Cleared after release ships. -->
 
-(None — v1.3.2 shipped. Next milestone TBD pending design session.)
+### v1.4.0 — Standard & Commander Format Support
+- [ ] **feature** | Support Standard and Commander deck modes (#17)
 
 ---
 
@@ -16,7 +17,10 @@
 
 - [ ] **feature** | New app name — Phi & Thurgood to brainstorm (#15)
 - [ ] **feature** | Custom card sorting by drag and drop (#16)
-- [ ] **feature** | Support Standard and Commander deck modes (#17)
+- [ ] **feature** | Partner commander support — deferred from v1.4.0
+- [ ] **feature** | Companion support — future format enhancement
+- [ ] **feature** | Brawl / Oathbreaker format support — future format additions
+- [ ] **enhancement** | Search filtering by format legality / color identity — future search enhancement
 - [ ] **enhancement** | EDHREC improved search suggestions (#26) ↑ priority — *Partially addressed in v1.3.0: mana symbols in search results. Dynamic categories and NLP search deferred.*
 - [x] **enhancement** | Version badge popup — revisit behavior (#49) *(closed v1.3.2)*
 - [x] **enhancement** | Sideboard pricing — show combined total with main deck by default (#58) *(closed v1.3.2)*

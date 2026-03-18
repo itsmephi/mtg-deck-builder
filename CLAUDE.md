@@ -3,7 +3,7 @@ Authors: Phi & Thurgood Nguyen
 Stack: Next.js + TypeScript + Tailwind CSS
 Deployed: Vercel | Repo: GitHub (itsmephi/mtg-deck-builder)
 IDE: VS Code (Windows, primary) · Zed on Steam Deck (Linux, secondary)
-Current Version: v1.3.2 — see CHANGELOG.md for full history
+Current Version: v1.4.0 — see CHANGELOG.md for full history
 
 ---
 
@@ -42,7 +42,7 @@ For straightforward bug fixes and small enhancements, `/plan` → PROCEED → bu
 ---
 
 ## Active Milestone
-→ v1.3.2 shipped. Next milestone TBD — design session required.
+→ v1.4.0 in progress (prompt 1 of 3 complete — foundation: data model, format rules, migration, FormatPicker).
 
 ---
 
@@ -58,11 +58,11 @@ src/
   app/               → layout.tsx, page.tsx, globals.css
   config/            → version.ts ← bump APP_VERSION each release
   components/
-    layout/          → Sidebar.tsx (shell), SidebarRail.tsx, SidebarSearchTab.tsx, SidebarDecksTab.tsx, CardModal.tsx, SampleHandModal.tsx
+    layout/          → Sidebar.tsx (shell), SidebarRail.tsx, SidebarSearchTab.tsx, SidebarDecksTab.tsx, CardModal.tsx, SampleHandModal.tsx, FormatPicker.tsx
     workspace/       → Workspace.tsx, WorkspaceToolbar.tsx, VisualCard.tsx, ListCardTable.tsx, ImportModal.tsx
                        (DeckDropdown.tsx retired v1.3.0 — absorbed into SidebarDecksTab)
   hooks/             → useDeckManager.tsx, useDeckImportExport.tsx, useDeckStats.ts
-  lib/               → scryfall.ts
+  lib/               → scryfall.ts, formatRules.ts
   types/             → index.ts
 ```
 
@@ -85,6 +85,11 @@ src/
 - UI state persistence keys: mtg-view-mode, mtg-group-by-type, mtg-active-deck, mtg-deck-view-mode, mtg-sort-preference, mtg-show-thumbnail, mtg-sidebar-collapsed, mtg-sidebar-active-tab
 - Sideboard: enabled per-deck as sideboard?: DeckCard[] — undefined = no sideboard, [] = enabled but empty
 - deckViewMode lives in useDeckManager context
+- `format` and `commanderId` persisted as part of deck data in `mtg_builder_decks` localStorage
+- `commanderId` references `DeckCard.id` — dangling refs (card removed) treated as "no commander"
+- Color identity check: `cardIdentity.every(c => commanderIdentity.includes(c))`
+- Copy limit exemptions unchanged: Basic Land + "any number" oracle text
+- Commander eligibility: `type_line` contains "Legendary" OR `oracle_text` contains "can be your commander" — soft check only
 
 ---
 
