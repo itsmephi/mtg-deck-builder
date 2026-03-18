@@ -1,8 +1,17 @@
-export const APP_VERSION = "1.4.1";
+export const APP_VERSION = "1.5.0";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.5.0": [
+    "FormatPicker popover now opens downward when there's more room below the trigger, and upward when near the bottom — applies to all three trigger points (+ New Deck, sidebar badge, toolbar badge)",
+    "Collapsed sidebar rail + icon now opens FormatPicker popover to the right instead of immediately creating a deck — deck only created after format selection; Escape or click-outside cancels",
+    "Commander eligibility check hardened to a full block — non-legendary cards (no 'Legendary' in type_line and no 'can be your commander' in oracle_text) cannot be designated as commander; click is a no-op in both list and grid view",
+    "Grid view crown badge is now the sole commander toggle — replaces the 'Set as Commander' / 'Commander ✓' button that lived in the hover overlay",
+    "Commander format: all non-commander cards show a dim gray crown on card hover; eligible (legendary) cards light up gold on crown hover with pointer cursor; ineligible cards stay dim with not-allowed cursor",
+    "Active commander crown is always visible, solid yellow circle, scales on hover; clicking deselects commander",
+    "Persistent qty pill badge added to every grid tile — circular badge at bottom center straddling the card edge; green when fully owned, amber when at copy-limit warning, neutral otherwise; fades out when hover overlay slides up",
+  ],
   "1.4.1": [
     "Warning badge redesigned: filled amber triangle (raw SVG) replaces amber circle — no stroke outline, white ! line and dot as separate paths",
     "Warning badge repositioned to top-right corner in grid view (was top-left, stacked below crown)",

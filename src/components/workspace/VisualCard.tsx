@@ -94,6 +94,14 @@ export default function VisualCard({
 
   const eligible = isEligibleCommander(card);
 
+  // Qty pill color (priority: warning > fully owned > neutral)
+  const isFullyOwnedForPill = card.quantity > 0 && card.ownedQty >= card.quantity;
+  const pillColorClass = warnings.length > 0
+    ? "bg-orange-900 text-orange-400"
+    : isFullyOwnedForPill
+    ? "bg-green-800 text-green-400"
+    : "bg-neutral-900 text-neutral-400";
+
   return (
     <div
       className="relative group rounded-xl cursor-pointer aspect-[2.5/3.5]"
@@ -124,38 +132,6 @@ export default function VisualCard({
           className="absolute bottom-0 left-0 right-0 bg-black/75 backdrop-blur-sm px-2 py-3 translate-y-full group-hover:translate-y-0 transition-transform duration-200 ease-out z-20 flex flex-col items-center gap-2.5"
           onClick={(e) => e.stopPropagation()}
         >
-        {/* Commander designation button — only in commander format */}
-        {format === "commander" && onSetCommander && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onSetCommander(isCommander ? undefined : card.id);
-            }}
-            title={
-              !eligible
-                ? `${isCommander ? "Commander ✓" : "Set as Commander"} (not typically eligible)`
-                : undefined
-            }
-            className="flex items-center gap-1.5 px-2 py-1 rounded-md text-[10px] font-medium transition-colors hover:bg-white/10"
-          >
-            {isCommander ? (
-              <>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" className="text-yellow-400 shrink-0">
-                  <path d="M3 18h18v2H3v-2zm0-2l3-8 4 3 2-6 2 6 4-3 3 8H3z" />
-                </svg>
-                <span className="text-yellow-400">Commander ✓</span>
-              </>
-            ) : (
-              <>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-neutral-400 shrink-0">
-                  <path d="M3 18h18v2H3v-2zm0-2l3-8 4 3 2-6 2 6 4-3 3 8H3z" />
-                </svg>
-                <span className="text-neutral-300">Set as Commander</span>
-              </>
-            )}
-          </button>
-        )}
-
         {/* − qty + controls */}
         <div className="flex items-center gap-2">
           <button
@@ -279,14 +255,38 @@ export default function VisualCard({
       {/* End art + overlay inner wrapper */}
       </div>
 
-      {/* Crown badge — top-left */}
-      {isCommander && (
-        <div className="absolute -top-3.5 -left-3.5 z-20 w-7 h-7 rounded-full bg-yellow-500 text-white shadow-md flex items-center justify-center">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M3 18h18v2H3v-2zm0-2l3-8 4 3 2-6 2 6 4-3 3 8H3z" />
-          </svg>
-        </div>
+      {/* Crown badge — top-left, commander format only */}
+      {format === "commander" && onSetCommander && (
+        isCommander ? (
+          <button
+            onClick={(e) => { e.stopPropagation(); onSetCommander(undefined); }}
+            title="Remove as Commander"
+            className="absolute -top-3.5 -left-3.5 z-20 w-7 h-7 rounded-full bg-yellow-500 shadow-md flex items-center justify-center hover:scale-110 transition-transform"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+              <path d="M3 18h18v2H3v-2zm0-2l3-8 4 3 2-6 2 6 4-3 3 8H3z" />
+            </svg>
+          </button>
+        ) : (
+          <button
+            onClick={(e) => { e.stopPropagation(); if (eligible) onSetCommander(card.id); }}
+            title={eligible ? "Set as Commander" : "Must be Legendary"}
+            className={`absolute -top-3.5 -left-3.5 z-20 w-7 h-7 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 border border-neutral-600 bg-neutral-900/70 shadow-md transition-all duration-150 ${eligible ? "hover:bg-yellow-500/20 hover:border-yellow-400 hover:scale-110 cursor-pointer group/crown" : "cursor-not-allowed"}`}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24">
+              <path
+                d="M3 18h18v2H3v-2zm0-2l3-8 4 3 2-6 2 6 4-3 3 8H3z"
+                className={eligible ? "fill-[#737373] group-hover/crown:fill-[#eab308] transition-colors" : "fill-[#737373]"}
+              />
+            </svg>
+          </button>
+        )
       )}
+
+      {/* Qty pill — bottom center, straddling edge */}
+      <div className={`absolute -bottom-2 left-1/2 -translate-x-1/2 z-20 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold tabular-nums shadow-md group-hover:opacity-0 group-hover:pointer-events-none transition-opacity duration-150 ${pillColorClass}`}>
+        {card.quantity}
+      </div>
 
       {/* Warning badge — top-right */}
       {warnings.length > 0 && (
