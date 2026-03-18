@@ -10,6 +10,8 @@
 - [ ] **bug** | "+ New Deck" format picker gets cut off at the top when decklist is short (1–3 decks in sidebar) — popover opens upward and clips
 - [ ] **bug** | + icon in collapsed sidebar rail does not trigger the format picker — new deck created without format selection
 - [ ] **enhancement** | Commander eligibility check should enforce legendary legality — non-legendary cards should not be markable as commander
+- [ ] **enhancement** | Crown badge in grid view should toggle commander (like list view) — remove "Set as Commander" from card overlay ⚠️ needs design
+- [ ] **enhancement** | Pill badge on grid card tile (bottom center) showing owned/qty — covered by rollover overlay when editing ⚠️ needs design
 
 ---
 
@@ -34,8 +36,6 @@
 - [ ] **enhancement** | Re-add −/+ increment buttons to qty/owned fields — removed and missed
 - [ ] **enhancement** | Import/export format compatibility — support MTGGoldfish format (e.g. `1 Ashling, the Limitless <borderless> [ECC] (F)`) and confirm cross-compatibility with TCGPlayer and Card Kingdom import
 - [ ] **enhancement** | Import modal — add "Paste from clipboard" button as an alternative to typing/pasting manually ⚠️ needs design
-- [ ] **enhancement** | Crown badge in grid view should toggle commander (like list view) — remove "Set as Commander" from card overlay ⚠️ needs design
-- [ ] **enhancement** | Pill badge on grid card tile (bottom center) showing owned/qty — covered by rollover overlay when editing ⚠️ needs design
 
 ---
 
