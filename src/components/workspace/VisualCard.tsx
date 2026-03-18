@@ -1,4 +1,4 @@
-import { Minus, Plus, TriangleAlert, X } from 'lucide-react';
+import { Minus, Plus, X } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { DeckCard, ScryfallCard } from '@/types';
 import { DeckFormat, getCardWarnings, isEligibleCommander } from '@/lib/formatRules';
@@ -291,7 +291,11 @@ export default function VisualCard({
       {/* Warning badge — top-right */}
       {warnings.length > 0 && (
         <div className="absolute -top-3.5 -right-3.5 z-20" title={warnings.join("\n")}>
-          <TriangleAlert className="w-[22px] h-[22px] text-white fill-amber-500 drop-shadow-md" />
+          <svg width="22" height="22" viewBox="0 0 24 24" className="drop-shadow-md">
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" fill="#f59e0b" stroke="none" />
+            <path d="M12 9v4" stroke="white" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+            <circle cx="12" cy="17" r="1" fill="white" />
+          </svg>
         </div>
       )}
     </div>
