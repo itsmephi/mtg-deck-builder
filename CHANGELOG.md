@@ -5,6 +5,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.5.2] — Toolbar Layout & Grid Spacing Polish
+
+### Changed
+- Workspace toolbar split into two rows: row 1 is deck name + format badge pill only; row 2 is stats and all controls — eliminates name truncation and button crowding on long deck names
+- Deck name input now auto-sizes to exact rendered text width using a hidden measurer span — format badge sits immediately after the last character with no visible gap regardless of font rendering
+- Deck name size increased to `text-3xl` for visual emphasis as a heading
+- Grid view gap increased from `gap-3` to `gap-x-5 gap-y-7` — provides clearance so qty pill badge (`-bottom-2`, 8px overhang) and crown badge (`-top-3.5 -left-3.5`, 14px overhang) no longer encroach on adjacent cards
+
+---
+
 ## [1.5.1] — Grid Warning Redesign
 
 ### Changed
