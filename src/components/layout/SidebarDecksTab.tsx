@@ -162,7 +162,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
               <span className="text-[10px] text-neutral-600 shrink-0">{cardCount}</span>
 
               {/* Format badge — clickable, opens format picker */}
-              <div className="relative shrink-0">
+              <div className="shrink-0">
                 <button
                   onClick={() =>
                     setFormatPickerDeckId(formatPickerDeckId === deck.id ? null : deck.id)
@@ -188,7 +188,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
                 {formatPickerDeckId === deck.id && (
                   <div
                     ref={formatPickerRef}
-                    className="absolute right-0 top-full mt-1 w-52 bg-neutral-900 border border-neutral-700 rounded-lg shadow-xl z-50"
+                    className="absolute left-2 right-2 top-full mt-1 bg-neutral-900 border border-neutral-700 rounded-lg shadow-xl z-50"
                   >
                     <FormatPicker
                       currentFormat={deck.format}

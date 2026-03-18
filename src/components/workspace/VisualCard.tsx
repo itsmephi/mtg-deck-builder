@@ -118,15 +118,13 @@ export default function VisualCard({
             </svg>
           </div>
         )}
-        {/* Warning badge — triangle to match list view */}
+        {/* Warning badge — filled amber circle with white ! */}
         {warnings.length > 0 && (
           <div
-            className="w-6 h-6 flex items-center justify-center drop-shadow-md"
+            className="w-6 h-6 rounded-full bg-amber-500 flex items-center justify-center drop-shadow-md"
             title={warnings.join("\n")}
           >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" className="text-amber-500">
-              <path d="M12 2L1 21h22L12 2zm0 3.5L20.5 19h-17L12 5.5zM11 10v4h2v-4h-2zm0 6v2h2v-2h-2z" />
-            </svg>
+            <span className="text-white text-[13px] font-black leading-none">!</span>
           </div>
         )}
       </div>

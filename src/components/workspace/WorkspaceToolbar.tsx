@@ -154,6 +154,14 @@ export default function WorkspaceToolbar({
               Commander
             </span>
           )}
+          {format === "freeform" && (
+            <span
+              onClick={() => setFormatPickerOpen(!formatPickerOpen)}
+              className="text-[10px] font-medium text-neutral-500 bg-neutral-500/10 border border-neutral-500/20 px-1.5 py-0.5 rounded-full cursor-pointer hover:bg-neutral-500/20 transition-colors select-none"
+            >
+              Freeform
+            </span>
+          )}
           {formatPickerOpen && (
             <div
               ref={formatPickerRef}

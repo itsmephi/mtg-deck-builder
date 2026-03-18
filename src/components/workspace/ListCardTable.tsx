@@ -407,15 +407,13 @@ export default function ListCardTable({
                 {card.name}
               </span>
 
-              {/* Warning icon */}
+              {/* Warning icon — filled amber circle with white ! */}
               {warnings.length > 0 && (
                 <span
                   title={warnings.join("\n")}
-                  className="shrink-0 ml-0.5"
+                  className="shrink-0 ml-0.5 w-4 h-4 rounded-full bg-amber-500 flex items-center justify-center"
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="text-amber-500">
-                    <path d="M12 2L1 21h22L12 2zm0 3.5L20.5 19h-17L12 5.5zM11 10v4h2v-4h-2zm0 6v2h2v-2h-2z" />
-                  </svg>
+                  <span className="text-white text-[9px] font-black leading-none">!</span>
                 </span>
               )}
             </div>
@@ -484,8 +482,8 @@ export default function ListCardTable({
             <>
               {renderRow(pinnedCommander, 0, true)}
               <tr aria-hidden>
-                <td colSpan={COLUMN_COUNT} className="p-0 px-2">
-                  <div className="h-px bg-neutral-700/40" />
+                <td colSpan={COLUMN_COUNT} className="p-0 bg-transparent">
+                  <div className="h-3" />
                 </td>
               </tr>
             </>
