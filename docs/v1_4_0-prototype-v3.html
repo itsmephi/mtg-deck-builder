@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>v1.4.0 Prototype v3 — Format Support Visual Density Check</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #0a0a0a; }
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #404040; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+    // Commander = yellow/gold — warm but distinct from amber warnings
+    const CMD_BG = "bg-yellow-500";
+    const CMD_BG_TINT = "bg-yellow-300/12";
+    const CMD_TEXT = "text-yellow-400";
+
+    // ─── SVG Icons ───
+    function CrownIcon({ size = 14, filled = false, className = "" }) {
+      if (filled) {
+        return (
+          <svg width={size} height={size} viewBox="0 0 24 24" className={className} fill="currentColor" stroke="none">
+            <path d="M3 18h18v2H3v-2zm0-2l3-8 4 3 2-6 2 6 4-3 3 8H3z" />
+          </svg>
+        );
+      }
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M3 18h18v2H3v-2zm0-2l3-8 4 3 2-6 2 6 4-3 3 8H3z" />
+        </svg>
+      );
+    }
+
+    function WarningIcon({ size = 14, className = "" }) {
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
+          <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.9" />
+          <path d="M12 8v4" stroke="white" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+          <circle cx="12" cy="16" r="1" fill="white" />
+        </svg>
+      );
+    }
+
+    function LayersIcon({ size = 16 }) {
+      return (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z" /><path d="m22.54 12.43-1.42-.65-8.28 3.78a2 2 0 0 1-1.66 0l-8.29-3.78-1.42.65a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z" /></svg>);
+    }
+
+    function XIcon({ size = 16 }) {
+      return (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>);
+    }
+
+    function MinusIcon({ size = 14 }) {
+      return (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /></svg>);
+    }
+
+    function PlusIcon({ size = 14 }) {
+      return (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="M12 5v14" /></svg>);
+    }
+
+    // ─── Card images ───
+    const CARD_IMAGES = [
+      "https://cards.scryfall.io/normal/front/0/c/0c3e7517-2a41-458e-b3b2-2db87a78a04a.jpg",
+      "https://cards.scryfall.io/normal/front/e/9/e9fec999-00a6-4f5c-8355-aa515100af87.jpg",
+      "https://cards.scryfall.io/normal/front/a/b/ab7aba4c-4054-4760-b4d5-07241340dec4.jpg",
+      "https://cards.scryfall.io/normal/front/3/5/35cf2d72-d44f-4a18-9859-a55d40b7f398.jpg",
+      "https://cards.scryfall.io/normal/front/b/e/be2b1a1a-1d42-4fb4-b0e0-480d9a68a937.jpg",
+      "https://cards.scryfall.io/normal/front/f/f/ff3e7745-bc28-46f9-a9a3-ef9e508e3930.jpg",
+      "https://cards.scryfall.io/normal/front/f/3/f3736ba2-211a-4505-837a-1e3bdc2e89db.jpg",
+      "https://cards.scryfall.io/normal/front/e/3/e34c1db4-f470-4376-bf60-eaaab1234f53.jpg",
+    ];
+
+    // ─── MOCK DATA ───
+    const CARD_DATA = [
+      { name: "Atraxa, Praetors' Voice", isCommander: true, hasWarning: false, qty: 1, type: "Legendary Creature", mana: "{W}{U}{B}{G}", price: 42.50, owned: 1 },
+      { name: "Sol Ring", isCommander: false, hasWarning: false, qty: 1, type: "Artifact", mana: "{1}", price: 3.20, owned: 1 },
+      { name: "Arcane Signet", isCommander: false, hasWarning: false, qty: 1, type: "Artifact", mana: "{2}", price: 1.50, owned: 0 },
+      { name: "Rhystic Study", isCommander: false, hasWarning: false, qty: 1, type: "Enchantment", mana: "{2}{U}", price: 8.75, owned: 1 },
+      { name: "Smothering Tithe", isCommander: false, hasWarning: false, qty: 1, type: "Enchantment", mana: "{3}{W}", price: 22.00, owned: 0 },
+      { name: "Cyclonic Rift", isCommander: false, hasWarning: false, qty: 1, type: "Instant", mana: "{1}{U}", price: 28.50, owned: 1 },
+      { name: "Blood Moon", isCommander: false, hasWarning: true, warningText: "Outside commander's color identity\n(has {R}, commander is {W}{U}{B}{G})", qty: 1, type: "Enchantment", mana: "{2}{R}", price: 7.00, owned: 0 },
+      { name: "Lightning Bolt", isCommander: false, hasWarning: true, warningText: "Outside commander's color identity (has {R})\nExceeds singleton limit (2 copies)", qty: 2, type: "Instant", mana: "{R}", price: 1.25, owned: 1 },
+    ];
+
+    const MOCK_DECKS = [
+      { id: "1", name: "Atraxa Superfriends", cards: 98, format: "commander", hasSideboard: false },
+      { id: "2", name: "Goblin Aggro", cards: 60, format: "standard", hasSideboard: true },
+      { id: "3", name: "Mono Blue Control", cards: 47, format: "standard", hasSideboard: true },
+      { id: "4", name: "Jank Brew", cards: 42, format: "freeform", hasSideboard: false },
+      { id: "5", name: "", cards: 12, format: "freeform", hasSideboard: false },
+    ];
+
+    // ─── Helpers ───
+    function SectionLabel({ children }) {
+      return (
+        <div className="mb-3 pb-2 border-b border-yellow-500/30">
+          <h2 className="text-xs font-bold text-yellow-400 uppercase tracking-widest">{children}</h2>
+        </div>
+      );
+    }
+
+    function Note({ children }) {
+      return <p className="text-[10px] text-neutral-500 italic mt-2 leading-relaxed">{children}</p>;
+    }
+
+    // Sidebar format badge: number inside a styled badge
+    function FormatBadge({ format }) {
+      if (format === "standard") {
+        return (
+          <span className="shrink-0 text-[9px] font-bold text-blue-400 bg-blue-400/10 px-1 rounded" title="Standard (60 cards)">
+            60
+          </span>
+        );
+      }
+      if (format === "commander") {
+        return (
+          <span className="shrink-0 text-[9px] font-bold text-yellow-400 bg-yellow-400/10 px-1 rounded" title="Commander (100 cards)">
+            100
+          </span>
+        );
+      }
+      return null;
+    }
+
+    // Format picker icon — matches sidebar badges (number badges for std/cmd)
+    function FormatPickerIcon({ format }) {
+      if (format === "standard") {
+        return <span className="w-6 text-center text-[10px] font-bold text-blue-400 bg-blue-400/10 px-0.5 rounded">60</span>;
+      }
+      if (format === "commander") {
+        return <span className="w-6 text-center text-[9px] font-bold text-yellow-400 bg-yellow-400/10 px-0.5 rounded">100</span>;
+      }
+      return <span className="w-6 text-center text-neutral-600 text-xs">—</span>;
+    }
+
+    // ─── SECTION 1: Grid View Badge Stacking ───
+    function GridBadgeSection() {
+      const [hoveredCard, setHoveredCard] = useState(null);
+
+      const cards = [
+        { label: "Commander\n(no warnings)", isCommander: true, hasWarning: false, img: 0 },
+        { label: "Commander\n+ warning", isCommander: true, hasWarning: true, img: 0 },
+        { label: "Normal card\n(no badges)", isCommander: false, hasWarning: false, img: 1 },
+        { label: "Card with\nwarning only", isCommander: false, hasWarning: true, img: 6 },
+        { label: "Normal card\n(hover me)", isCommander: false, hasWarning: false, img: 2, showHover: true },
+        { label: "Commander\n(hover me)", isCommander: true, hasWarning: false, img: 0, showHover: true },
+      ];
+
+      return (
+        <div>
+          <SectionLabel>1. Grid View — Badge Stacking + Commander Tint + Hover Overlay</SectionLabel>
+          <div className="grid grid-cols-6 gap-3">
+            {cards.map((card, i) => (
+              <div key={i} className="flex flex-col items-center gap-2">
+                <div
+                  className="aspect-[5/7] w-full bg-neutral-900 rounded-xl border border-neutral-800 relative group overflow-hidden cursor-pointer"
+                  onMouseEnter={() => card.showHover && setHoveredCard(i)}
+                  onMouseLeave={() => setHoveredCard(null)}
+                >
+                  <img
+                    src={CARD_IMAGES[card.img]}
+                    className="absolute inset-0 w-full h-full object-cover rounded-xl"
+                    alt=""
+                    onError={(e) => { e.target.style.display = 'none'; }}
+                  />
+
+                  {/* Commander yellow tint */}
+                  {card.isCommander && (
+                    <div className={`absolute inset-0 ${CMD_BG_TINT} rounded-xl z-10 pointer-events-none`} />
+                  )}
+
+                  {/* Top-left badges: [crown] [warning] */}
+                  <div className="absolute top-1.5 left-1.5 flex items-center gap-1 z-20">
+                    {card.isCommander && (
+                      <span className={`w-7 h-7 flex items-center justify-center rounded-full ${CMD_BG} text-white shadow-md`}>
+                        <CrownIcon size={16} filled />
+                      </span>
+                    )}
+                    {card.hasWarning && (
+                      <span className="w-6 h-6 flex items-center justify-center rounded-full text-amber-500 shadow-md">
+                        <WarningIcon size={22} />
+                      </span>
+                    )}
+                  </div>
+
+                  {/* × remove — hover, top-right */}
+                  <button className="absolute top-1.5 right-1.5 w-6 h-6 flex items-center justify-center rounded-full bg-neutral-900 text-neutral-400 hover:text-red-400 hover:bg-red-900 opacity-0 group-hover:opacity-100 transition-all z-30">
+                    <XIcon size={11} />
+                  </button>
+
+                  {/* Hover overlay */}
+                  <div className={`absolute bottom-0 left-0 right-0 bg-black/80 backdrop-blur-sm px-2 py-3 transition-transform duration-200 ease-out z-20 flex flex-col items-center gap-2 ${hoveredCard === i ? 'translate-y-0' : 'translate-y-full'}`}>
+                    {card.showHover && (
+                      <div className="flex items-center gap-2 w-full justify-center">
+                        <button className={`w-6 h-6 flex items-center justify-center rounded-full transition-colors ${
+                          card.isCommander
+                            ? `${CMD_TEXT} bg-yellow-500/20`
+                            : "text-neutral-400 bg-neutral-800/50 hover:text-yellow-400"
+                        }`} title={card.isCommander ? "Remove as Commander" : "Set as Commander"}>
+                          <CrownIcon size={13} filled={card.isCommander} />
+                        </button>
+                        <span className="text-[9px] text-neutral-500">
+                          {card.isCommander ? "Commander ✓" : "Set as Commander"}
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-3">
+                      <button className="w-7 h-7 flex items-center justify-center rounded-full bg-neutral-700/50 text-neutral-300 hover:bg-neutral-600 hover:text-white transition-colors">
+                        <MinusIcon size={14} />
+                      </button>
+                      <span className="text-sm font-bold text-white tabular-nums min-w-[1ch] text-center">1</span>
+                      <button className="w-7 h-7 flex items-center justify-center rounded-full bg-neutral-700/50 text-neutral-300 hover:bg-neutral-600 hover:text-white transition-colors">
+                        <PlusIcon size={14} />
+                      </button>
+                    </div>
+                    <span className="text-[10px] tabular-nums cursor-pointer hover:underline text-green-400">Owned: 1/1</span>
+                  </div>
+                </div>
+                <span className="text-[9px] text-neutral-500 text-center whitespace-pre-line leading-tight">{card.label}</span>
+              </div>
+            ))}
+          </div>
+          <Note>
+            Commander = yellow/gold tint (bg-yellow-300/12) + yellow crown badge (bg-yellow-500). Warnings = amber (unchanged).
+            Yellow crown reads as "special/royal" while amber ! reads as "caution" — distinct meanings. Crown badge w-7 h-7, bold filled icon at size 16.
+          </Note>
+        </div>
+      );
+    }
+
+    // ─── SECTION 2: Sidebar Deck Rows ───
+    function SidebarSection() {
+      const [showPicker, setShowPicker] = useState(false);
+      const [activeDeckId, setActiveDeckId] = useState("1");
+
+      return (
+        <div>
+          <SectionLabel>2. Sidebar Decks Tab — Number Badges + Format Picker</SectionLabel>
+          <div className="flex gap-6">
+            <div className="w-64 bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden">
+              <div className="px-3 pt-3 pb-2">
+                <h3 className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Your Decks</h3>
+              </div>
+              <div className="px-2 pb-1 space-y-0.5">
+                {MOCK_DECKS.map((deck) => {
+                  const isActive = deck.id === activeDeckId;
+                  return (
+                    <div
+                      key={deck.id}
+                      onClick={() => setActiveDeckId(deck.id)}
+                      className={`group relative flex items-center gap-1.5 px-2 py-2 rounded-lg transition-colors cursor-pointer ${isActive ? "bg-neutral-800/80" : "hover:bg-neutral-800/40"}`}
+                    >
+                      <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${isActive ? "bg-blue-500" : "bg-transparent"}`} />
+                      <span className={`flex-1 text-xs truncate ${deck.name ? "text-neutral-200" : "text-neutral-500"}`}>
+                        {deck.name || "Untitled"}
+                      </span>
+                      <span className="text-[10px] text-neutral-600 tabular-nums shrink-0">{deck.cards}</span>
+                      <FormatBadge format={deck.format} />
+                      {/* Layers icon — always present, grayed for Commander */}
+                      <button
+                        className={`w-6 h-6 flex items-center justify-center rounded-full transition-colors shrink-0 ${
+                          deck.format === "commander"
+                            ? "text-neutral-800 cursor-not-allowed"
+                            : deck.hasSideboard
+                              ? "text-blue-400 hover:bg-blue-500/10"
+                              : "text-neutral-700 hover:text-neutral-400"
+                        }`}
+                        title={deck.format === "commander" ? "Commander decks don't use sideboards" : deck.hasSideboard ? "View sideboard" : "Add sideboard"}
+                        disabled={deck.format === "commander"}
+                      >
+                        <LayersIcon size={12} />
+                      </button>
+                      <button className="w-6 h-6 flex items-center justify-center rounded-full text-neutral-700 opacity-0 group-hover:opacity-100 hover:text-red-400 hover:bg-red-500/10 transition-all shrink-0">
+                        <XIcon size={12} />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* + New Deck with format picker */}
+              <div className="p-2 relative">
+                <button
+                  onClick={() => setShowPicker(!showPicker)}
+                  className="flex items-center gap-2 w-full px-2 py-2 rounded-lg text-xs text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800/40 transition-colors"
+                >
+                  <PlusIcon size={14} /> New Deck
+                </button>
+
+                {showPicker && (
+                  <div className="absolute bottom-full left-2 right-2 mb-1 bg-neutral-900 border border-neutral-700 rounded-lg shadow-2xl overflow-hidden z-50">
+                    <div className="px-3 pt-2.5 pb-1.5">
+                      <span className="text-[9px] font-bold text-neutral-500 uppercase tracking-widest">Choose Format</span>
+                    </div>
+                    <button onClick={() => setShowPicker(false)} className="flex items-center gap-3 w-full px-3 py-2.5 text-left hover:bg-neutral-800 transition-colors">
+                      <FormatPickerIcon format="freeform" />
+                      <div>
+                        <div className="text-sm font-medium text-white">Freeform</div>
+                        <div className="text-[10px] text-neutral-500">No rules. Build anything.</div>
+                      </div>
+                    </button>
+                    <button onClick={() => setShowPicker(false)} className="flex items-center gap-3 w-full px-3 py-2.5 text-left hover:bg-neutral-800 transition-colors">
+                      <FormatPickerIcon format="standard" />
+                      <div>
+                        <div className="text-sm font-medium text-white">Standard</div>
+                        <div className="text-[10px] text-neutral-500">60 cards · 4-copy limit · 15-card sideboard</div>
+                      </div>
+                    </button>
+                    <button onClick={() => setShowPicker(false)} className="flex items-center gap-3 w-full px-3 py-2.5 text-left hover:bg-neutral-800 transition-colors rounded-b-lg">
+                      <FormatPickerIcon format="commander" />
+                      <div>
+                        <div className="text-sm font-medium text-white">Commander</div>
+                        <div className="text-[10px] text-neutral-500">100 cards · Singleton · Commander + color identity</div>
+                      </div>
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Annotations */}
+            <div className="flex-1 text-[10px] text-neutral-500 space-y-3 pt-1">
+              <div className="flex items-center gap-2">
+                <span className="text-[9px] font-bold text-yellow-400 bg-yellow-400/10 px-1 rounded">100</span>
+                <span>Yellow "100" badge = Commander</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[9px] font-bold text-blue-400 bg-blue-400/10 px-1 rounded">60</span>
+                <span>Blue "60" badge = Standard</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-neutral-600">—</span>
+                <span>Freeform = no badge</span>
+              </div>
+              <div className="border-t border-neutral-800 pt-3 space-y-1.5">
+                <p>Format picker uses matching number badges (not crown icon).</p>
+                <p>Layers icon always present — grayed + disabled for Commander.</p>
+                <p>Row order: [dot] [name] [count] [format badge] [layers] [×]</p>
+                <p className="text-yellow-400/70">Click "+ New Deck" to see the format picker.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ─── SECTION 3: Toolbar Format Badge ───
+    function ToolbarSection() {
+      return (
+        <div>
+          <SectionLabel>3. Workspace Toolbar — Format Badge Variants</SectionLabel>
+          <div className="space-y-3">
+            {/* Commander */}
+            <div className="flex items-center justify-between bg-neutral-900 border border-neutral-800 rounded-xl px-4 py-2.5">
+              <div className="flex items-center gap-3">
+                <span className="text-lg font-bold text-white">Atraxa Superfriends</span>
+                <span className="text-[10px] font-medium text-yellow-400 bg-yellow-400/10 border border-yellow-400/20 px-1.5 py-0.5 rounded-full cursor-pointer hover:bg-yellow-400/20 transition-colors">Commander</span>
+                <span className="text-xs text-green-400 font-bold">100 Cards</span>
+                <span className="text-xs text-neutral-400">Value: <span className="text-neutral-200 font-medium">$427.83</span></span>
+                <span className="text-xs text-neutral-400">To Buy: <span className="text-green-500 font-medium">$143.20</span></span>
+              </div>
+              <div className="flex items-center gap-2 text-[10px] text-neutral-500">
+                <span className="px-2 py-1 border border-neutral-700 rounded-lg">Simulator</span>
+                <span className="px-2 py-1 border border-neutral-700 rounded-lg">Sort · Group · View</span>
+              </div>
+            </div>
+
+            {/* Standard */}
+            <div className="flex items-center justify-between bg-neutral-900 border border-neutral-800 rounded-xl px-4 py-2.5">
+              <div className="flex items-center gap-3">
+                <span className="text-lg font-bold text-white">Goblin Aggro</span>
+                <span className="text-[10px] font-medium text-blue-400 bg-blue-400/10 border border-blue-400/20 px-1.5 py-0.5 rounded-full cursor-pointer hover:bg-blue-400/20 transition-colors">Standard</span>
+                <span className="text-xs text-green-400 font-bold">60 Cards</span>
+                <span className="text-xs text-neutral-400">Value: <span className="text-neutral-200 font-medium">$87.43</span></span>
+                <span className="text-xs text-neutral-400">To Buy: <span className="text-green-500 font-medium">$23.20</span></span>
+                <span className="text-xs text-red-400 font-bold">Side: 16 / 15</span>
+              </div>
+              <div className="flex items-center gap-2 text-[10px] text-neutral-500">
+                <span className="px-2 py-1 border border-neutral-700 rounded-lg">Simulator</span>
+                <span className="px-2 py-1 border border-neutral-700 rounded-lg">Main | Side</span>
+                <span className="px-2 py-1 border border-neutral-700 rounded-lg">Sort · Group · View</span>
+              </div>
+            </div>
+
+            {/* Freeform */}
+            <div className="flex items-center justify-between bg-neutral-900 border border-neutral-800 rounded-xl px-4 py-2.5">
+              <div className="flex items-center gap-3">
+                <span className="text-lg font-bold text-white">Jank Brew</span>
+                <span className="text-xs text-neutral-400">42 Cards</span>
+                <span className="text-xs text-neutral-400">Value: <span className="text-neutral-200 font-medium">$12.50</span></span>
+                <span className="text-xs text-neutral-400">To Buy: <span className="text-green-500 font-medium">$8.30</span></span>
+              </div>
+              <div className="flex items-center gap-2 text-[10px] text-neutral-500">
+                <span className="px-2 py-1 border border-neutral-700 rounded-lg">Simulator</span>
+                <span className="px-2 py-1 border border-neutral-700 rounded-lg">Main | Side</span>
+                <span className="px-2 py-1 border border-neutral-700 rounded-lg">Sort · Group · View</span>
+              </div>
+            </div>
+          </div>
+          <Note>
+            Commander: yellow pill. Standard: blue pill. Freeform: no badge. No Main/Side toggle for Commander.
+          </Note>
+        </div>
+      );
+    }
+
+    // ─── SECTION 4: List View ───
+    function ListViewSection() {
+      const [hoveredRow, setHoveredRow] = useState(null);
+
+      return (
+        <div>
+          <SectionLabel>4. List View — Column Order: [−qty+] [Owned] [Name] [Type] [Mana] [Price]</SectionLabel>
+          <div className="bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b border-neutral-800 text-neutral-500 text-[10px] uppercase tracking-wider">
+                  <th className="text-left py-2 px-3 font-medium w-24">Qty</th>
+                  <th className="text-left py-2 px-3 font-medium w-16">Owned</th>
+                  <th className="text-left py-2 px-3 font-medium">Name</th>
+                  <th className="text-left py-2 px-3 font-medium">Type</th>
+                  <th className="text-left py-2 px-3 font-medium">Mana</th>
+                  <th className="text-right py-2 px-3 font-medium">Price</th>
+                  <th className="w-8"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {/* Commander row — pinned to top, yellow tint, no section title */}
+                {CARD_DATA.filter(c => c.isCommander).map((card, i) => (
+                  <tr
+                    key={`cmd-${i}`}
+                    className="border-b border-neutral-700/50 transition-colors hover:bg-neutral-800/30"
+                    style={{ backgroundColor: "rgba(250,204,21,0.08)" }}
+                    onMouseEnter={() => setHoveredRow('cmd')}
+                    onMouseLeave={() => setHoveredRow(null)}
+                  >
+                    <td className="py-2 px-3">
+                      <div className="flex items-center gap-1">
+                        <button className="w-5 h-5 flex items-center justify-center rounded-full bg-neutral-800 text-neutral-400 hover:bg-neutral-700 hover:text-white transition-colors">
+                          <MinusIcon size={10} />
+                        </button>
+                        <span className="text-neutral-300 tabular-nums min-w-[1.5ch] text-center font-medium">{card.qty}</span>
+                        <button className="w-5 h-5 flex items-center justify-center rounded-full bg-neutral-800 text-neutral-400 hover:bg-neutral-700 hover:text-white transition-colors">
+                          <PlusIcon size={10} />
+                        </button>
+                      </div>
+                    </td>
+                    <td className="py-2 px-3">
+                      <span className="text-green-400 tabular-nums cursor-pointer hover:underline">{card.owned}/{card.qty}</span>
+                    </td>
+                    <td className="py-2 px-3">
+                      <span className="flex items-center gap-1.5">
+                        <span className={`${CMD_TEXT} shrink-0`}><CrownIcon size={14} filled /></span>
+                        <span className="text-neutral-200 font-medium">{card.name}</span>
+                      </span>
+                    </td>
+                    <td className="py-2 px-3 text-neutral-500">{card.type}</td>
+                    <td className="py-2 px-3 text-neutral-400">{card.mana}</td>
+                    <td className="py-2 px-3 text-right text-neutral-300">${card.price.toFixed(2)}</td>
+                    <td className="py-2 px-3">
+                      <button className="text-neutral-700 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"><XIcon size={12} /></button>
+                    </td>
+                  </tr>
+                ))}
+                {/* Divider */}
+                <tr><td colSpan="7" className="py-0"><div className="border-b border-neutral-700/30" /></td></tr>
+                {/* Normal cards */}
+                {CARD_DATA.filter(c => !c.isCommander).map((card, i) => (
+                  <tr
+                    key={`card-${i}`}
+                    className="group border-b border-neutral-800/50 transition-colors hover:bg-neutral-800/30"
+                    onMouseEnter={() => setHoveredRow(i)}
+                    onMouseLeave={() => setHoveredRow(null)}
+                  >
+                    <td className="py-2 px-3">
+                      <div className="flex items-center gap-1">
+                        <button className="w-5 h-5 flex items-center justify-center rounded-full bg-neutral-800 text-neutral-400 hover:bg-neutral-700 hover:text-white transition-colors opacity-0 group-hover:opacity-100">
+                          <MinusIcon size={10} />
+                        </button>
+                        <span className="text-neutral-300 tabular-nums min-w-[1.5ch] text-center font-medium">{card.qty}</span>
+                        <button className="w-5 h-5 flex items-center justify-center rounded-full bg-neutral-800 text-neutral-400 hover:bg-neutral-700 hover:text-white transition-colors opacity-0 group-hover:opacity-100">
+                          <PlusIcon size={10} />
+                        </button>
+                      </div>
+                    </td>
+                    <td className="py-2 px-3">
+                      <span className={`tabular-nums cursor-pointer hover:underline ${card.owned >= card.qty ? 'text-green-400' : 'text-neutral-400'}`}>{card.owned}/{card.qty}</span>
+                    </td>
+                    <td className="py-2 px-3">
+                      <span className="flex items-center gap-1.5">
+                        {/* Crown: outline, hover-only */}
+                        <span className={`shrink-0 transition-opacity cursor-pointer ${hoveredRow === i ? 'opacity-100' : 'opacity-0'} text-neutral-600 hover:text-yellow-400`}>
+                          <CrownIcon size={14} />
+                        </span>
+                        <span className="text-neutral-200">{card.name}</span>
+                        {/* Warning: after name, single icon, combined tooltip */}
+                        {card.hasWarning && (
+                          <span className="shrink-0 text-amber-500 ml-0.5" title={card.warningText}>
+                            <WarningIcon size={15} />
+                          </span>
+                        )}
+                      </span>
+                    </td>
+                    <td className="py-2 px-3 text-neutral-500">{card.type}</td>
+                    <td className="py-2 px-3 text-neutral-400">{card.mana}</td>
+                    <td className="py-2 px-3 text-right text-neutral-300">${card.price.toFixed(2)}</td>
+                    <td className="py-2 px-3">
+                      <button className="text-neutral-700 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"><XIcon size={12} /></button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <Note>
+            Column order: [−qty+] [Owned] [Name] [Type] [Mana] [Price] [×].
+            Qty has inline −/+ (hover to reveal). Owned is inline-editable text only (click to type).
+            Crown: filled yellow on commander (persistent), outline on others (hover-only). Warning ! after card name.
+            Commander row pinned to top with yellow tint, no section title label.
+          </Note>
+        </div>
+      );
+    }
+
+    // ─── SECTION 5: Confirmation Dialog ───
+    function DialogSection() {
+      return (
+        <div>
+          <SectionLabel>5. Sideboard → Commander Confirmation Dialog</SectionLabel>
+          <div className="flex justify-center">
+            <div className="w-96 bg-neutral-900 border border-neutral-700 rounded-xl shadow-2xl overflow-hidden">
+              <div className="px-5 pt-5 pb-3">
+                <h3 className="text-sm font-bold text-white mb-1">Commander decks don't use sideboards</h3>
+                <p className="text-xs text-neutral-400">Your sideboard has <span className="text-white font-medium">12 cards</span>. What would you like to do?</p>
+              </div>
+              <div className="px-5 pb-5 flex gap-2">
+                <button className="flex-1 px-3 py-2 bg-yellow-600 hover:bg-yellow-500 text-white text-xs font-medium rounded-lg transition-colors">
+                  Merge into Main Deck
+                </button>
+                <button className="flex-1 px-3 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 text-xs font-medium rounded-lg border border-red-600/30 transition-colors">
+                  Delete Sideboard
+                </button>
+              </div>
+            </div>
+          </div>
+          <Note>Merge button uses yellow accent (Commander color). Cancel by clicking outside or Escape.</Note>
+        </div>
+      );
+    }
+
+    // ─── MAIN APP ───
+    function App() {
+      return (
+        <div className="min-h-screen bg-neutral-950 text-neutral-200 p-8" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
+          <div className="max-w-6xl mx-auto space-y-10">
+            <div className="mb-8">
+              <h1 className="text-xl font-bold text-white mb-1">v1.4.0 Visual Density Prototype <span className="text-yellow-400">v3</span></h1>
+              <p className="text-xs text-neutral-500">Commander = yellow/gold · Warnings = amber · Standard = blue · Freeform = invisible</p>
+              <p className="text-[10px] text-neutral-600 mt-1">Hover cards and list rows for interactive states. Click "+ New Deck" in Section 2 for the format picker.</p>
+            </div>
+
+            <GridBadgeSection />
+            <SidebarSection />
+            <ToolbarSection />
+            <ListViewSection />
+            <DialogSection />
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>
