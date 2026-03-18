@@ -56,7 +56,7 @@ Labels: bug · feature · enhancement · chore · high · med · low
 ```
 src/
   app/               → layout.tsx, page.tsx, globals.css
-  config/            → version.ts ← bump APP_VERSION each release
+  config/            → version.ts ← bump APP_VERSION each release; CHANGELOG entries are string[] (one string per bullet point, not a single paragraph)
   components/
     layout/          → Sidebar.tsx (shell), SidebarRail.tsx, SidebarSearchTab.tsx, SidebarDecksTab.tsx, CardModal.tsx, SampleHandModal.tsx, FormatPicker.tsx
     workspace/       → Workspace.tsx, WorkspaceToolbar.tsx, VisualCard.tsx, ListCardTable.tsx, ImportModal.tsx

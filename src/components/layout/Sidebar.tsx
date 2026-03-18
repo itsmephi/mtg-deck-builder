@@ -162,9 +162,14 @@ export default function Sidebar({ onImport, onExport, isImporting }: Props) {
                 <p className="text-[9px] font-bold text-neutral-500 uppercase tracking-widest mb-2">
                   What&apos;s New in v{APP_VERSION}
                 </p>
-                <p className="text-[10px] text-neutral-400 leading-relaxed max-h-32 overflow-y-auto custom-scrollbar">
-                  {CURRENT_CHANGELOG}
-                </p>
+                <ul className="text-[10px] text-neutral-400 leading-relaxed max-h-32 overflow-y-auto custom-scrollbar space-y-1">
+                  {CURRENT_CHANGELOG.map((item, i) => (
+                    <li key={i} className="flex gap-1.5">
+                      <span className="shrink-0 mt-px">–</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
 
