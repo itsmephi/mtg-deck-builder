@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>v1.5.0 Grid Tile Prototype — Crown Toggle + Owned/Qty Pill</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #141418;
+    color: #e5e5e5;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    padding: 32px;
+  }
+
+  h1 { font-size: 18px; font-weight: 600; color: #a3a3a3; margin-bottom: 6px; }
+  .subtitle { font-size: 13px; color: #737373; margin-bottom: 28px; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 20px;
+    max-width: 900px;
+  }
+
+  /* === CARD TILE === */
+  .card-tile {
+    position: relative;
+    border-radius: 12px;
+    cursor: pointer;
+    aspect-ratio: 2.5 / 3.5;
+  }
+
+  /* Art + overlay clip wrapper */
+  .card-inner {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .card-art {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .card-art.dimmed { opacity: 0.4; }
+
+  /* === × REMOVE — top-right inset, hover only === */
+  .remove-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #171717;
+    color: #a3a3a3;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.15s, background 0.15s, color 0.15s;
+    z-index: 30;
+  }
+  .card-tile:hover .remove-btn { opacity: 1; }
+  .remove-btn:hover { background: #7f1d1d; color: #fca5a5; }
+
+  /* === CROWN BADGE — top-left, offset straddling === */
+  .crown-badge {
+    position: absolute;
+    top: -7px;
+    left: -7px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    cursor: pointer;
+    transition: opacity 0.15s, background 0.15s, transform 0.1s;
+  }
+
+  /* Active commander — always visible */
+  .crown-badge.active {
+    background: #eab308;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    opacity: 1;
+  }
+  .crown-badge.active:hover {
+    transform: scale(1.1);
+  }
+  .crown-badge.active svg { fill: white; }
+
+  /* Hover crown — dim outline, all cards */
+  .crown-badge.hover-hint {
+    background: rgba(23, 23, 23, 0.7);
+    border: 1.5px solid #525252;
+    opacity: 0;
+  }
+  .card-tile:hover .crown-badge.hover-hint { opacity: 1; }
+  .crown-badge.hover-hint svg { fill: #737373; }
+
+  /* Eligible hover — brighter on hover */
+  .crown-badge.hover-hint.eligible:hover {
+    background: rgba(234, 179, 8, 0.2);
+    border-color: #eab308;
+    transform: scale(1.1);
+  }
+  .crown-badge.hover-hint.eligible:hover svg { fill: #eab308; }
+
+  /* Not eligible hover — stays dim, cursor changes */
+  .crown-badge.hover-hint.not-eligible {
+    cursor: not-allowed;
+  }
+  .crown-badge.hover-hint.not-eligible:hover {
+    background: rgba(23, 23, 23, 0.8);
+    border-color: #525252;
+  }
+
+  /* === WARNING BADGE — top-right, offset straddling === */
+  .warning-badge {
+    position: absolute;
+    top: -7px;
+    right: -7px;
+    z-index: 20;
+  }
+
+  /* === OWNED/QTY PILL — bottom center, straddling edge === */
+  .owned-pill {
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    white-space: nowrap;
+    transition: opacity 0.15s;
+  }
+
+  /* Color states */
+  .owned-pill.fully-owned {
+    background: #166534;
+    color: #4ade80;
+  }
+  .owned-pill.partial {
+    background: #171717;
+    color: #a3a3a3;
+  }
+  .owned-pill.warning {
+    background: #7c2d12;
+    color: #fb923c;
+  }
+  /* Hide pill when overlay is up */
+  .card-tile:hover .owned-pill {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* === SLIDE-UP OVERLAY === */
+  .overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.78);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 10px 8px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    transform: translateY(100%);
+    transition: transform 0.2s ease-out;
+    z-index: 20;
+  }
+  .card-tile:hover .overlay { transform: translateY(0); }
+
+  /* Qty controls in overlay */
+  .qty-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .qty-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(64, 64, 64, 0.5);
+    color: #d4d4d4;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+  }
+  .qty-btn:hover { background: rgba(82, 82, 82, 0.7); color: white; }
+  .qty-num {
+    font-size: 14px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    min-width: 20px;
+    text-align: center;
+  }
+  .qty-num.green { color: #4ade80; }
+  .qty-num.red { color: #f87171; }
+
+  /* Owned in overlay */
+  .overlay-owned {
+    font-size: 10px;
+    font-variant-numeric: tabular-nums;
+  }
+  .overlay-owned .label { color: #a3a3a3; }
+  .overlay-owned .value { color: #a3a3a3; cursor: pointer; }
+  .overlay-owned .value:hover { text-decoration: underline; }
+  .overlay-owned .value.green { color: #4ade80; }
+
+  /* Yellow tint for commander */
+  .commander-tint {
+    position: absolute;
+    inset: 0;
+    background: rgba(253, 224, 71, 0.08);
+    border-radius: 12px;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* === LEGEND / LABELS === */
+  .section-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #737373;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 32px;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #262626;
+  }
+  .section-label:first-of-type { margin-top: 0; }
+
+  .card-label {
+    font-size: 10px;
+    color: #525252;
+    text-align: center;
+    margin-top: 14px;
+    line-height: 1.4;
+  }
+
+  /* Tooltip simulation */
+  [data-tooltip] { position: relative; }
+  [data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #262626;
+    color: #e5e5e5;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    white-space: nowrap;
+    z-index: 50;
+    pointer-events: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  }
+</style>
+</head>
+<body>
+
+<h1>v1.5.0 — Grid Tile Design Prototype</h1>
+<p class="subtitle">Crown toggle (all cards on hover) + Persistent owned/qty pill badge. Hover cards to interact.</p>
+
+<!-- Row 1: Commander format scenarios -->
+<div class="section-label">Commander Format — Crown Toggle Behavior</div>
+<div class="grid">
+
+  <!-- Card 1: Active Commander (Legendary) -->
+  <div>
+    <div class="card-tile">
+      <div class="card-inner">
+        <img class="card-art" src="https://cards.scryfall.io/normal/front/c/e/ce4c6535-afea-4704-b35c-badeb04c4f4c.jpg?1562441654" alt="Omnath">
+        <button class="remove-btn">×</button>
+        <div class="overlay">
+          <div class="qty-controls">
+            <button class="qty-btn">−</button>
+            <span class="qty-num">1</span>
+            <button class="qty-btn">+</button>
+          </div>
+          <div class="overlay-owned">
+            <span class="label">Owned: </span>
+            <span class="value green">1</span><span class="label">/1</span>
+          </div>
+        </div>
+      </div>
+      <div class="commander-tint"></div>
+      <!-- Active crown — always visible -->
+      <div class="crown-badge active" data-tooltip="Remove as Commander">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M3 18h18v2H3v-2zm0-2l3-8 4 3 2-6 2 6 4-3 3 8H3z"/></svg>
+      </div>
+      <!-- Pill: fully owned -->
+      <div class="owned-pill fully-owned">1</div>
+    </div>
+    <div class="card-label">Active Commander<br>(Legendary — click crown to remove)</div>
+  </div>
+
+  <!-- Card 2: Legendary creature, not commander -->
+  <div>
+    <div class="card-tile">
+      <div class="card-inner">
+        <img class="card-art" src="https://cards.scryfall.io/normal/front/5/1/51779dd2-a2a7-47c0-8f4f-fcd3b028981f.jpg?1689998279" alt="Atraxa">
+        <button class="remove-btn">×</button>
+        <div class="overlay">
+          <div class="qty-controls">
+            <button class="qty-btn">−</button>
+            <span class="qty-num">1</span>
+            <button class="qty-btn">+</button>
+          </div>
+          <div class="overlay-owned">
+            <span class="label">Owned: </span>
+            <span class="value">0</span><span class="label">/1</span>
+          </div>
+        </div>
+      </div>
+      <!-- Hover crown — eligible legendary -->
+      <div class="crown-badge hover-hint eligible" data-tooltip="Set as Commander">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#737373"><path d="M3 18h18v2H3v-2zm0-2l3-8 4 3 2-6 2 6 4-3 3 8H3z"/></svg>
+      </div>
+      <!-- Pill: partial owned -->
+      <div class="owned-pill partial">1</div>
+    </div>
+    <div class="card-label">Legendary — Eligible<br>(hover for crown, click to set)</div>
+  </div>
+
+  <!-- Card 3: Non-legendary creature -->
+  <div>
+    <div class="card-tile">
+      <div class="card-inner">
+        <img class="card-art" src="https://cards.scryfall.io/normal/front/4/2/42e01162-3ca5-4924-86e3-e12e8b5c1281.jpg?1562910267" alt="Sol Ring">
+        <button class="remove-btn">×</button>
+        <div class="overlay">
+          <div class="qty-controls">
+            <button class="qty-btn">−</button>
+            <span class="qty-num">1</span>
+            <button class="qty-btn">+</button>
+          </div>
+          <div class="overlay-owned">
+            <span class="label">Owned: </span>
+            <span class="value green">1</span><span class="label">/1</span>
+          </div>
+        </div>
+      </div>
+      <!-- Hover crown — NOT eligible -->
+      <div class="crown-badge hover-hint not-eligible" data-tooltip="Must be Legendary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#737373"><path d="M3 18h18v2H3v-2zm0-2l3-8 4 3 2-6 2 6 4-3 3 8H3z"/></svg>
+      </div>
+      <!-- Pill: fully owned -->
+      <div class="owned-pill fully-owned">1</div>
+    </div>
+    <div class="card-label">Non-Legendary — Not Eligible<br>(crown grayed out, cursor: not-allowed)</div>
+  </div>
+
+  <!-- Card 4: Legendary with warning -->
+  <div>
+    <div class="card-tile">
+      <div class="card-inner">
+        <img class="card-art" src="https://cards.scryfall.io/normal/front/d/0/d0d33d52-3d28-4f2d-b7f6-92571f2f0e10.jpg?1674764796" alt="Sheoldred">
+        <button class="remove-btn">×</button>
+        <div class="overlay">
+          <div class="qty-controls">
+            <button class="qty-btn">−</button>
+            <span class="qty-num red">2</span>
+            <button class="qty-btn">+</button>
+          </div>
+          <div class="overlay-owned">
+            <span class="label">Owned: </span>
+            <span class="value">1</span><span class="label">/2</span>
+          </div>
+        </div>
+      </div>
+      <!-- Hover crown — eligible -->
+      <div class="crown-badge hover-hint eligible" data-tooltip="Set as Commander">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#737373"><path d="M3 18h18v2H3v-2zm0-2l3-8 4 3 2-6 2 6 4-3 3 8H3z"/></svg>
+      </div>
+      <!-- Warning badge — top-right -->
+      <div class="warning-badge" title="Exceeds singleton limit (2 copies)">
+        <svg width="22" height="22" viewBox="0 0 24 24" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));">
+          <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" fill="#f59e0b" stroke="none"/>
+          <path d="M12 9v4" stroke="white" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+          <circle cx="12" cy="17" r="1" fill="white"/>
+        </svg>
+      </div>
+      <!-- Pill: warning state (copy violation) -->
+      <div class="owned-pill warning">2</div>
+    </div>
+    <div class="card-label">Legendary + Warning<br>(crown + warning badge coexist)</div>
+  </div>
+</div>
+
+<!-- Row 2: Pill badge color states -->
+<div class="section-label">Owned/Qty Pill — Color States (any format)</div>
+<div class="grid">
+
+  <!-- Fully owned -->
+  <div>
+    <div class="card-tile">
+      <div class="card-inner">
+        <img class="card-art" src="https://cards.scryfall.io/normal/front/0/c/0c817fe2-f87d-4b60-8a3f-72de4db0e704.jpg?1696451690" alt="Lightning Bolt">
+        <button class="remove-btn">×</button>
+        <div class="overlay">
+          <div class="qty-controls">
+            <button class="qty-btn">−</button>
+            <span class="qty-num green">4</span>
+            <button class="qty-btn">+</button>
+          </div>
+          <div class="overlay-owned">
+            <span class="label">Owned: </span>
+            <span class="value green">4</span><span class="label">/4</span>
+          </div>
+        </div>
+      </div>
+      <div class="owned-pill fully-owned">4</div>
+    </div>
+    <div class="card-label">Fully Owned (green pill)<br>qty: 4</div>
+  </div>
+
+  <!-- Partially owned -->
+  <div>
+    <div class="card-tile">
+      <div class="card-inner">
+        <img class="card-art" src="https://cards.scryfall.io/normal/front/b/e/be2b4177-e47c-4dde-9ead-31b7602065ec.jpg?1674764066" alt="Counterspell">
+        <button class="remove-btn">×</button>
+        <div class="overlay">
+          <div class="qty-controls">
+            <button class="qty-btn">−</button>
+            <span class="qty-num">4</span>
+            <button class="qty-btn">+</button>
+          </div>
+          <div class="overlay-owned">
+            <span class="label">Owned: </span>
+            <span class="value">2</span><span class="label">/4</span>
+          </div>
+        </div>
+      </div>
+      <div class="owned-pill partial">4</div>
+    </div>
+    <div class="card-label">Partially Owned (neutral pill)<br>qty: 4</div>
+  </div>
+
+  <!-- Over copy limit -->
+  <div>
+    <div class="card-tile">
+      <div class="card-inner">
+        <img class="card-art" src="https://cards.scryfall.io/normal/front/a/c/acee9a1a-352d-4571-a3b2-be3a266403c9.jpg?1673305670" alt="Swords">
+        <button class="remove-btn">×</button>
+        <div class="overlay">
+          <div class="qty-controls">
+            <button class="qty-btn">−</button>
+            <span class="qty-num red">5</span>
+            <button class="qty-btn">+</button>
+          </div>
+          <div class="overlay-owned">
+            <span class="label">Owned: </span>
+            <span class="value">3</span><span class="label">/5</span>
+          </div>
+        </div>
+      </div>
+      <!-- Warning badge -->
+      <div class="warning-badge" title="Exceeds 4-copy limit">
+        <svg width="22" height="22" viewBox="0 0 24 24" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));">
+          <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" fill="#f59e0b" stroke="none"/>
+          <path d="M12 9v4" stroke="white" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+          <circle cx="12" cy="17" r="1" fill="white"/>
+        </svg>
+      </div>
+      <div class="owned-pill warning">5</div>
+    </div>
+    <div class="card-label">Copy Limit Warning (amber pill)<br>qty: 5</div>
+  </div>
+
+  <!-- Zero owned -->
+  <div>
+    <div class="card-tile">
+      <div class="card-inner">
+        <img class="card-art" src="https://cards.scryfall.io/normal/front/4/3/432ecd5f-966f-4571-aa18-819d3aef169b.jpg?1673482694" alt="Path to Exile">
+        <button class="remove-btn">×</button>
+        <div class="overlay">
+          <div class="qty-controls">
+            <button class="qty-btn">−</button>
+            <span class="qty-num">3</span>
+            <button class="qty-btn">+</button>
+          </div>
+          <div class="overlay-owned">
+            <span class="label">Owned: </span>
+            <span class="value">0</span><span class="label">/3</span>
+          </div>
+        </div>
+      </div>
+      <div class="owned-pill partial">3</div>
+    </div>
+    <div class="card-label">Zero Owned (neutral pill)<br>qty: 3</div>
+  </div>
+
+</div>
+
+<!-- Row 3: Freeform / Standard (no crown behavior) -->
+<div class="section-label">Freeform / Standard — Crown Hidden, Pill Only</div>
+<div class="grid">
+  <div>
+    <div class="card-tile">
+      <div class="card-inner">
+        <img class="card-art" src="https://cards.scryfall.io/normal/front/0/c/0c817fe2-f87d-4b60-8a3f-72de4db0e704.jpg?1696451690" alt="Lightning Bolt">
+        <button class="remove-btn">×</button>
+        <div class="overlay">
+          <div class="qty-controls">
+            <button class="qty-btn">−</button>
+            <span class="qty-num green">4</span>
+            <button class="qty-btn">+</button>
+          </div>
+          <div class="overlay-owned">
+            <span class="label">Owned: </span>
+            <span class="value green">4</span><span class="label">/4</span>
+          </div>
+        </div>
+      </div>
+      <!-- No crown in non-commander formats -->
+      <div class="owned-pill fully-owned">4</div>
+    </div>
+    <div class="card-label">Freeform/Standard<br>No crown — pill only</div>
+  </div>
+</div>
+
+</body>
+</html>
