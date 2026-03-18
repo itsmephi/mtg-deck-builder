@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { X } from "lucide-react";
+import { TriangleAlert, X } from "lucide-react";
 import { DeckCard, ScryfallCard } from "@/types";
 import { DeckFormat, getFormatRules, getCardWarnings, isEligibleCommander } from "@/lib/formatRules";
 
@@ -407,13 +407,10 @@ export default function ListCardTable({
                 {card.name}
               </span>
 
-              {/* Warning icon — filled amber circle with white ! */}
+              {/* Warning icon — triangle */}
               {warnings.length > 0 && (
-                <span
-                  title={warnings.join("\n")}
-                  className="shrink-0 ml-0.5 w-4 h-4 rounded-full bg-amber-500 flex items-center justify-center"
-                >
-                  <span className="text-white text-[9px] font-black leading-none">!</span>
+                <span title={warnings.join("\n")}>
+                  <TriangleAlert className="w-4 h-4 shrink-0 ml-0.5 fill-amber-500 text-white" />
                 </span>
               )}
             </div>

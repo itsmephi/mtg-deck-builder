@@ -1,4 +1,4 @@
-import { Minus, Plus, X } from 'lucide-react';
+import { Minus, Plus, TriangleAlert, X } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { DeckCard, ScryfallCard } from '@/types';
 import { DeckFormat, getCardWarnings, isEligibleCommander } from '@/lib/formatRules';
@@ -107,6 +107,17 @@ export default function VisualCard({
           className={`w-full h-full object-cover ${card.quantity === 0 ? "grayscale opacity-40" : isFullyOwned ? "opacity-40" : ""}`}
           alt={card.name}
         />
+
+        {/* × remove — inset top-right, hover-only */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onRemove(card.id);
+          }}
+          className="absolute top-1.5 right-1.5 w-6 h-6 flex items-center justify-center rounded-full bg-neutral-900 text-neutral-400 hover:text-red-400 hover:bg-red-900 opacity-0 group-hover:opacity-100 transition-all z-30"
+        >
+          <X className="w-3 h-3" />
+        </button>
 
         {/* Slide-up bottom overlay */}
         <div
@@ -268,35 +279,21 @@ export default function VisualCard({
       {/* End art + overlay inner wrapper */}
       </div>
 
-      {/* Top-left badges: crown + warning — straddle the corner edge */}
-      <div className="absolute -top-3.5 -left-3.5 flex flex-col gap-1 z-20">
-        {isCommander && (
-          <div className="w-7 h-7 rounded-full bg-yellow-500 text-white shadow-md flex items-center justify-center">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M3 18h18v2H3v-2zm0-2l3-8 4 3 2-6 2 6 4-3 3 8H3z" />
-            </svg>
-          </div>
-        )}
-        {warnings.length > 0 && (
-          <div
-            className="w-6 h-6 rounded-full bg-amber-500 flex items-center justify-center drop-shadow-md"
-            title={warnings.join("\n")}
-          >
-            <span className="text-white text-[13px] font-black leading-none">!</span>
-          </div>
-        )}
-      </div>
+      {/* Crown badge — top-left */}
+      {isCommander && (
+        <div className="absolute -top-3.5 -left-3.5 z-20 w-7 h-7 rounded-full bg-yellow-500 text-white shadow-md flex items-center justify-center">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3 18h18v2H3v-2zm0-2l3-8 4 3 2-6 2 6 4-3 3 8H3z" />
+          </svg>
+        </div>
+      )}
 
-      {/* × remove — top-right corner straddle, hover-only */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onRemove(card.id);
-        }}
-        className="absolute -top-3 -right-3 w-6 h-6 flex items-center justify-center rounded-full bg-neutral-900 text-neutral-400 hover:text-red-400 hover:bg-red-900 opacity-0 group-hover:opacity-100 transition-all z-30"
-      >
-        <X className="w-3 h-3" />
-      </button>
+      {/* Warning badge — top-right */}
+      {warnings.length > 0 && (
+        <div className="absolute -top-3.5 -right-3.5 z-20" title={warnings.join("\n")}>
+          <TriangleAlert className="w-[22px] h-[22px] fill-amber-500 text-white drop-shadow-md" />
+        </div>
+      )}
     </div>
   );
 }
