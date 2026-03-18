@@ -28,14 +28,17 @@ Process documentation lives in `.claude/rules/` — Claude Code loads these on d
 
 ## Workflow Shortcuts
 - `/capture` — add bugs, features, and ideas directly to BACKLOG.md Pipeline
+- `/triage` — review and categorize all Pipeline items (promote, keep, defer, discard)
 - `/plan` — plan an implementation before building (flags complex changes for Claude Chat review)
 - `/commit-release vX.X.X` — post-APPROVED commit, merge, and push
 
 ## When to Involve Claude Chat
 - Feature design sessions (requirements, UX decisions, spec sign-off)
+- Complex features — ask for a **prototype first**, then spec
 - Any `/plan` output that flags ⚠️ (5+ files or new components)
-- Triage and milestone planning
 - Workflow process changes
+
+Triage and milestone planning now run in Claude Code via `/triage`. After triage, take promoted items to Claude Chat for design if they need it.
 
 For straightforward bug fixes and small enhancements, `/plan` → PROCEED → build → QA → APPROVED → `/commit-release` can run entirely in Claude Code.
 

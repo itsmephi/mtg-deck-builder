@@ -39,6 +39,18 @@ Adds bugs, features, and ideas directly to BACKLOG.md.
 
 Use this whenever something comes to mind — while testing, while using the app, while reviewing. The goal is zero friction between noticing something and recording it.
 
+### `/triage`
+Reviews every item in the Pipeline and helps you decide what to do with each one.
+
+```
+/triage
+```
+
+- Presents a table of all Pipeline items with a suggested action for each
+- You confirm or override the suggestions
+- Promoted items move to Active Milestone, deferrals move to v2.0, discards get removed
+- After triage, take complex items to Claude Chat for design. Simple ones go straight to `/plan`.
+
 ### `/plan`
 Plans an implementation without executing anything.
 
@@ -91,7 +103,7 @@ Everything lives in `BACKLOG.md`. It's the single source of truth for planned wo
 
 ### Item lifecycle
 1. You notice something → `/capture` it
-2. Next planning session → Claude Chat triages the full Pipeline
+2. Next planning session → run `/triage` in Claude Code to review the full Pipeline
 3. Items get tagged: keep, discard, defer to v2.0, or promote to active milestone
 4. Active milestone items get built in a release
 5. After release ships, items move to Closed
@@ -110,7 +122,6 @@ Everything lives in `BACKLOG.md`. It's the single source of truth for planned wo
 - Designing a new feature (requirements, UX, interaction design)
 - The feature is visually complex — ask for a **prototype first**, then spec
 - `/plan` flagged ⚠️ (5+ files or new component)
-- Triage and milestone planning
 - Workflow or process changes
 
 ### Design approach by complexity:
@@ -124,7 +135,7 @@ Everything lives in `BACKLOG.md`. It's the single source of truth for planned wo
 
 The full sequence for a planned release:
 
-1. **Triage** — Open Claude Chat. Review the Pipeline. Tag items for the milestone.
+1. **Triage** — Run `/triage` in Claude Code. Review the Pipeline, promote items to the active milestone, defer or discard the rest.
 2. **Design** — For each feature, walk through design in Claude Chat. For complex features, prototype first. Sign off on each before moving to the next.
 3. **Prompt** — Claude Chat generates the Claude Code prompt as a `.md` file.
 4. **Branch** — `git checkout -b vX.X.X`
