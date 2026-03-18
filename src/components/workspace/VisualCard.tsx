@@ -96,15 +96,13 @@ export default function VisualCard({
 
   return (
     <div
-      className={`relative group overflow-hidden rounded-xl cursor-pointer aspect-[2.5/3.5] ${
-        card.quantity === 0 ? "opacity-40" : ""
-      }`}
+      className="relative group overflow-hidden rounded-xl cursor-pointer aspect-[2.5/3.5]"
       onClick={() => onSelect(card)}
     >
       {/* Card art */}
       <img
         src={imgSrc}
-        className={`w-full h-full object-cover ${card.quantity === 0 ? "grayscale" : ""}`}
+        className={`w-full h-full object-cover ${card.quantity === 0 ? "grayscale opacity-40" : isFullyOwned ? "opacity-40" : ""}`}
         alt={card.name}
       />
 
