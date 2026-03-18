@@ -1,8 +1,12 @@
-export const APP_VERSION = "1.5.0";
+export const APP_VERSION = "1.5.1";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.5.1": [
+    "Grid view warning redesigned: corner triangle badge removed; amber warning bar now appears inside the hover overlay above qty controls — clearly scoped to the card",
+    "Color identity warning text simplified: removes abstract mana symbol notation (e.g. 'has {G}') from the warning message",
+  ],
   "1.5.0": [
     "FormatPicker popover now opens downward when there's more room below the trigger, and upward when near the bottom — applies to all three trigger points (+ New Deck, sidebar badge, toolbar badge)",
     "Collapsed sidebar rail + icon now opens FormatPicker popover to the right instead of immediately creating a deck — deck only created after format selection; Escape or click-outside cancels",
