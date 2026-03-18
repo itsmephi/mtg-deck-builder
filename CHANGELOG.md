@@ -5,6 +5,18 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.4.1] — Grid Badge Polish
+
+### Fixed
+- Warning badge in grid view redesigned: filled amber triangle (raw SVG) replaces filled amber circle — amber body with no stroke outline, white `!` line and dot rendered as separate SVG paths for full control
+- Warning badge repositioned from top-left to top-right corner in grid view (was stacked below crown in the same flex-col)
+- Crown badge in grid view now renders as a simple positioned `div` at top-left — flex-col wrapper removed since warning no longer shares that corner
+- Crown SVG inside the badge bumped from 16×16 to 18×18 (better fill inside the `w-7 h-7` circle)
+- × remove button moved from straddling the corner edge (`-top-3 -right-3`, outside the overflow-hidden wrapper) to inset inside the card art (`top-1.5 right-1.5`, clipped by `rounded-xl`)
+- List view warning icon updated to matching raw SVG triangle (16×16) for consistency with grid view
+
+---
+
 ## [1.4.0] — Standard & Commander Format Support
 
 ### Added

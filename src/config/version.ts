@@ -1,8 +1,16 @@
-export const APP_VERSION = "1.4.0";
+export const APP_VERSION = "1.4.1";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.4.1": [
+    "Warning badge redesigned: filled amber triangle (raw SVG) replaces amber circle — no stroke outline, white ! line and dot as separate paths",
+    "Warning badge repositioned to top-right corner in grid view (was top-left, stacked below crown)",
+    "Crown badge stays alone at top-left in grid view — no more flex-col wrapper",
+    "Crown SVG bumped from 16×16 to 18×18 inside the w-7 h-7 badge circle",
+    "× remove button moved inset to top-right of card art (top-1.5 right-1.5, clipped by rounded-xl) — was straddling the corner edge",
+    "List view warning icon updated to matching raw SVG triangle (16×16)",
+  ],
   "1.4.0": [
     "Per-deck format: Freeform, Standard, Commander — centralized rules engine (formatRules.ts)",
     "Commander designation: crown badge in grid, crown icon in list, pinned to top in both views",
