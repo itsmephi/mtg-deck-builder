@@ -288,24 +288,22 @@ export default function ListCardTable({
                   className="w-6 text-center text-xs font-medium bg-neutral-800 border border-blue-500 rounded text-neutral-200 focus:outline-none"
                   autoFocus
                 />
-              ) : showCopyBadge ? (
+              ) : overCopyLimit ? (
                 <div className="group/badge relative flex items-center justify-center">
                   <span
                     onClick={() => startEdit(card)}
-                    className={`w-6 text-center font-medium cursor-text hover:bg-neutral-800 rounded ${atCopyLimit ? "text-green-400" : "text-red-400"}`}
+                    className="w-6 text-center font-medium cursor-text hover:bg-neutral-800 rounded text-red-400"
                   >
                     {card.quantity}
                   </span>
-                  {overCopyLimit && (
-                    <span className="absolute top-full mt-1.5 left-1/2 -translate-x-1/2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover/badge:opacity-100 transition-opacity pointer-events-none whitespace-normal max-w-xs z-50">
-                      {format === "commander" ? "Exceeds singleton limit" : `Exceeds ${rules.copyLimit}-copy limit`}
-                    </span>
-                  )}
+                  <span className="absolute top-full mt-1.5 left-1/2 -translate-x-1/2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover/badge:opacity-100 transition-opacity pointer-events-none whitespace-normal max-w-xs z-50">
+                    {format === "commander" ? "Exceeds singleton limit" : `Exceeds ${rules.copyLimit}-copy limit`}
+                  </span>
                 </div>
               ) : (
                 <span
                   onClick={() => startEdit(card)}
-                  className="w-6 text-center font-medium text-neutral-300 cursor-text hover:bg-neutral-800 rounded"
+                  className={`w-6 text-center font-medium cursor-text hover:bg-neutral-800 rounded ${isFullyOwned ? "text-green-400" : "text-neutral-300"}`}
                 >
                   {card.quantity}
                 </span>
@@ -411,7 +409,7 @@ export default function ListCardTable({
               {warnings.length > 0 && (
                 <span title={warnings.join("\n")}>
                   <svg width="16" height="16" viewBox="0 0 24 24" className="shrink-0 ml-0.5">
-                    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" fill="#f59e0b" stroke="none" />
+                    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" fill="#f87171" stroke="none" />
                     <path d="M12 9v4" stroke="white" strokeWidth="2.2" strokeLinecap="round" fill="none" />
                     <circle cx="12" cy="17" r="1" fill="white" />
                   </svg>

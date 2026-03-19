@@ -1,8 +1,12 @@
-export const APP_VERSION = "1.5.2";
+export const APP_VERSION = "1.5.3";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.5.3": [
+    "Warning colors unified across grid and list view: format violation warning bar and qty pill badge are now red; list view warning triangle icon is red to match",
+    "Qty number color logic simplified: green when fully owned, red when over copy limit, gray otherwise — at-copy-limit no longer changes qty color",
+  ],
   "1.5.2": [
     "Workspace toolbar split into two rows: deck name + format badge on row 1, stats and controls on row 2 — eliminates name truncation and button crowding on long deck names",
     "Deck name input grows and shrinks to exact text width using a hidden measurer span — format badge sits immediately after the last character with no visible gap",

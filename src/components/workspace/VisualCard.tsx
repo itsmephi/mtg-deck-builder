@@ -84,20 +84,20 @@ export default function VisualCard({
   const imgSrc =
     card.card_faces?.[0].image_uris?.normal || card.image_uris?.normal;
 
+  const isFullyOwned = card.ownedQty >= card.quantity;
+
   const overlayQtyClass = overCopyLimit
     ? "text-red-400"
-    : atCopyLimit
+    : isFullyOwned
     ? "text-green-400"
     : "text-white";
-
-  const isFullyOwned = card.ownedQty >= card.quantity;
 
   const eligible = isEligibleCommander(card);
 
   // Qty pill color (priority: warning > fully owned > neutral)
   const isFullyOwnedForPill = card.quantity > 0 && card.ownedQty >= card.quantity;
   const pillColorClass = warnings.length > 0
-    ? "bg-orange-900 text-orange-400"
+    ? "bg-red-900 text-red-400"
     : isFullyOwnedForPill
     ? "bg-green-800 text-green-400"
     : "bg-neutral-900 text-neutral-400";
@@ -141,18 +141,18 @@ export default function VisualCard({
               justifyContent: 'center',
               gap: '5px',
               padding: '4px 8px',
-              background: 'rgba(245, 158, 11, 0.15)',
-              border: '1px solid rgba(245, 158, 11, 0.3)',
+              background: 'rgba(239, 68, 68, 0.15)',
+              border: '1px solid rgba(239, 68, 68, 0.3)',
               borderRadius: '6px',
               width: '100%',
             }}
           >
             <svg width="12" height="12" viewBox="0 0 24 24">
-              <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" fill="#fbbf24" />
+              <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" fill="#f87171" />
               <path d="M12 9v4" stroke="#171717" strokeWidth="2.2" strokeLinecap="round" fill="none" />
               <circle cx="12" cy="17" r="1" fill="#171717" />
             </svg>
-            <span style={{ fontSize: '10px', fontWeight: 600, color: '#fbbf24', whiteSpace: 'nowrap' }}>
+            <span style={{ fontSize: '10px', fontWeight: 600, color: '#f87171', whiteSpace: 'nowrap' }}>
               {warnings[0]}
             </span>
           </div>
