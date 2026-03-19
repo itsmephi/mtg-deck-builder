@@ -2,20 +2,26 @@
 
 ---
 
-## Current Task: v1.5.3 — Warning Color Consistency
+## Current Task: v1.5.4 — UX Polish & List Performance
 Status: APPROVED ✅
 
 ---
 
 ## Session Summary
 
-Warning indicator colors unified across grid and list view. Committed directly to main.
+Three focused UX improvements bundled into v1.5.4: delete confirmation removal, owned −/+ increment buttons across both views, and list view hover performance fix.
 
-**Color changes (`VisualCard.tsx`):** Warning bar in grid hover overlay changed from amber to red (`rgba(239,68,68,…)` / `#f87171`). Qty pill badge warning state changed from `bg-orange-900 text-orange-400` to `bg-red-900 text-red-400`. Overlay qty number: removed `atCopyLimit → text-yellow-400` case; simplified to red (over limit) / green (fully owned) / white (default).
+**Delete confirmation removed (`SidebarDecksTab.tsx`):** "Delete Deck" and "Delete Sideboard" in the sidebar dropdown now act immediately on click — `window.confirm()` wrappers removed from both handlers. One click on the × button opens the menu; one click on the action executes it. No second confirmation needed.
 
-**Color changes (`ListCardTable.tsx`):** Warning triangle SVG fill changed from `#f59e0b` (amber) to `#f87171` (red). Qty number logic restructured: `atCopyLimit` branch removed entirely; now only `overCopyLimit` shows red with tooltip, `isFullyOwned` shows green, everything else neutral gray.
+**Owned −/+ buttons — list view (`ListCardTable.tsx`):** Added hover-visible −/+ buttons flanking the owned `X/Y` display, matching the existing qty button pattern. Column width bumped from `w-16` to `w-20`. Header width updated to match. Buttons call `onUpdateOwnedQty` directly: `−` floors at 0.
 
-**Files changed:** `src/components/workspace/VisualCard.tsx`, `src/components/workspace/ListCardTable.tsx`, `src/config/version.ts`
+**Owned −/+ buttons — grid view (`VisualCard.tsx`):** Added the same −/+ buttons to the owned row in the slide-up hover overlay, matching the `− qty +` row above it. `e.stopPropagation()` applied to both. `−` floors at 0.
+
+**List view hover performance (`Workspace.tsx`):** `mousePos` converted from `useState` to `useRef`; tooltip div given a `tooltipRef`. `handleMouseMove` now writes directly to `tooltipRef.current.style` (left/top) instead of calling `setMousePos`. Eliminates full Workspace re-renders on every pixel of mouse movement — row color tints no longer recalculate on every frame.
+
+**Workflow rule added (`.claude/rules/`):** All promoted backlog items must have a GitHub issue before building. Rule added to both `backlog-and-capture.md` (step 6) and `release-workflow.md` (step 5). Issues #70 and #71 created for this release's promoted items.
+
+**Files changed:** `src/components/layout/SidebarDecksTab.tsx`, `src/components/workspace/ListCardTable.tsx`, `src/components/workspace/VisualCard.tsx`, `src/components/workspace/Workspace.tsx`, `src/config/version.ts`
 
 ---
 

@@ -5,6 +5,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.5.4] — UX Polish & List Performance
+
+### Changed
+- Delete Deck and Delete Sideboard in the sidebar dropdown no longer show a second confirmation dialog — clicking the action executes immediately
+- Owned −/+ increment buttons added to list view alongside the X/Y owned display — hover-visible, matching the qty button pattern; owned column widened to fit
+- Owned −/+ increment buttons added to grid view hover overlay — flanking the owned counter in the slide-up panel, matching the qty row above
+- List view hover performance improved: mouse movement no longer triggers full Workspace re-renders — tooltip repositions via direct DOM update instead of setState, eliminating per-frame row color recalculations
+
+---
+
 ## [1.5.3] — Warning Color Consistency
 
 ### Changed

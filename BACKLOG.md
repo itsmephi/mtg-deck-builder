@@ -20,14 +20,12 @@
 - [ ] **enhancement** | Search filtering by format legality / color identity — future search enhancement
 - [ ] **enhancement** | EDHREC improved search suggestions (#26) ↑ priority — *Partially addressed in v1.3.0: mana symbols in search results. Dynamic categories and NLP search deferred.*
 - [ ] **feature** | Move cards between boards or decks (#62) ↑ priority
-- [ ] **enhancement** | List view rollover highlight and color rendering feels slow/sluggish — audit and optimize implementation
 - [ ] **enhancement** | Simulator modal has no view mode toggle — consider adding compact list view inside modal for larger decks; would also make pin-from-list interaction more prominent
 - [ ] **enhancement** | Settings panel redesign — 2 clicks to access settings is a UX regression from v1.3.0 sidebar changes
 - [ ] **enhancement** | Card price display missing from persistent grid tile — deferred from v1.3.0 design, needs design decision ⚠️ needs design
 - [ ] **enhancement** | Grid view column size presets — small (6 col), medium (4 col), large (2 col); bonus: auto-set based on screen size
 - [ ] **enhancement** | Unify project styling via CSS custom properties or design tokens — changing a background color or theme value should touch one place, not multiple files
 - [ ] **enhancement** | Combine qty and owned fields into a single elegant input — two separate fields is redundant UX; design a unified interaction ⚠️ needs design
-- [ ] **enhancement** | Re-add −/+ increment buttons to qty/owned fields — removed and missed
 - [ ] **enhancement** | Import/export format compatibility — support MTGGoldfish format (e.g. `1 Ashling, the Limitless <borderless> [ECC] (F)`) and confirm cross-compatibility with TCGPlayer and Card Kingdom import
 - [ ] **enhancement** | Import modal — add "Paste from clipboard" button as an alternative to typing/pasting manually ⚠️ needs design
 
@@ -47,6 +45,10 @@
 
 ## Closed (Recent)
 <!-- Keep last 2 releases, then archive to CHANGELOG.md -->
+
+### v1.5.4
+- [x] **enhancement** | Re-add −/+ increment buttons to owned fields — list and grid view (#70) *(closed v1.5.4)*
+- [x] **enhancement** | List view rollover highlight and color rendering sluggish — mouse move no longer triggers re-renders (#71) *(closed v1.5.4)*
 
 ### v1.5.1
 - [x] **enhancement** | Redesign grid view warning triangle placement and tooltips *(closed v1.5.1)*
