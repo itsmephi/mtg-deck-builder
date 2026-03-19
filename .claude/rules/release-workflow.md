@@ -28,23 +28,25 @@ globs:
 
    **Complexity check:** If the plan review table lists more than 5 files or introduces a new component, sync REVIEW.md to Claude Chat for a cross-check before typing PROCEED. For standard releases (≤5 files, no new components), Phi reviews the plan directly and types PROCEED without the Claude Chat round-trip.
 
-5. Claude Code executes:
+5. **GitHub issues** — before building, confirm every Active Milestone item has a GitHub issue number. If any are missing, create the issue(s) and update BACKLOG.md with the number(s) first.
+
+6. Claude Code executes:
    - **Small releases (quick wins)** — build everything in one pass, then pause
    - **Large releases** — pause and output testing checklist after each feature before proceeding
 
-6. Claude Code writes testing checklist to REVIEW.md and pauses. Phi tests, checks off items, adds emerging issues.
+7. Claude Code writes testing checklist to REVIEW.md and pauses. Phi tests, checks off items, adds emerging issues.
 
-7. Phi types APPROVED in Claude Code.
+8. Phi types APPROVED in Claude Code.
 
-8. Before writing the session summary, update the REVIEW.md status header from IN PROGRESS to APPROVED ✅. Then Claude Code writes session summary to REVIEW.md and commits:
+9. Before writing the session summary, update the REVIEW.md status header from IN PROGRESS to APPROVED ✅. Then Claude Code writes session summary to REVIEW.md and commits:
    - `vX.X.X - description - Closes #N, Closes #N`
    - `git add CLAUDE.md CHANGELOG.md REVIEW.md BACKLOG.md && git commit -m "update CLAUDE.md, CHANGELOG.md, REVIEW.md, and BACKLOG.md post vX.X.X"`
 
-9. `git checkout main && git merge vX.X.X && git push` — Claude Code handles this after APPROVED.
+10. `git checkout main && git merge vX.X.X && git push` — Claude Code handles this after APPROVED.
 
-10. Vercel auto-deploys.
+11. Vercel auto-deploys.
 
-11. **Sync project files** — Phi hits sync so the next planning session starts with current context.
+12. **Sync project files** — Phi hits sync so the next planning session starts with current context.
 
 ## Carry-Forward vs Hot-Fix Rule
 - Carry-forwards are fine for one-liners or direct fixes to what was just built.

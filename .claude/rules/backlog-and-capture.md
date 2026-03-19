@@ -32,7 +32,8 @@ Valid labels: bug · feature · enhancement · chore · workflow · v2.0
 3. Pre-fill every item based on: type, age, complexity, active milestone relevance
 4. Phi reviews and calls out overrides only — everything else locks as suggested
 5. Promoted items move to Active Milestone section
-6. Discarded items: close GitHub issue, remove from BACKLOG.md
-7. v2.0 deferrals: move to v2.0 Deferred section
-8. Workflow items get folded into CLAUDE.md or `.claude/rules/` directly — no GitHub issue
-9. After triage, take promoted items to Claude Chat for design sessions if needed
+6. **GitHub issues required** — any promoted item without an issue number gets one created before building; update BACKLOG.md with the issue number immediately after
+7. Discarded items: close GitHub issue, remove from BACKLOG.md
+8. v2.0 deferrals: move to v2.0 Deferred section
+9. Workflow items get folded into CLAUDE.md or `.claude/rules/` directly — no GitHub issue
+10. After triage, take promoted items to Claude Chat for design sessions if needed
