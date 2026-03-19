@@ -2,20 +2,20 @@
 
 ---
 
-## Current Task: v1.5.2 — Toolbar Layout & Grid Spacing Polish
+## Current Task: v1.5.3 — Warning Color Consistency
 Status: APPROVED ✅
 
 ---
 
 ## Session Summary
 
-Two UI polish fixes committed directly to main.
+Warning indicator colors unified across grid and list view. Committed directly to main.
 
-**Grid card spacing (`Workspace.tsx`):** Increased grid gap from `gap-3` (12px) to `gap-x-5 gap-y-7` (20px / 28px). Root cause: qty pill badge overhangs 8px below and crown badge overhangs 14px above/left — combined 22px of vertical intrusion into a 12px gap. Asymmetric gap gives horizontal and vertical clearance independently.
+**Color changes (`VisualCard.tsx`):** Warning bar in grid hover overlay changed from amber to red (`rgba(239,68,68,…)` / `#f87171`). Qty pill badge warning state changed from `bg-orange-900 text-orange-400` to `bg-red-900 text-red-400`. Overlay qty number: removed `atCopyLimit → text-yellow-400` case; simplified to red (over limit) / green (fully owned) / white (default).
 
-**Toolbar 2-row layout (`WorkspaceToolbar.tsx`):** Split single-row toolbar into two rows. Row 1: deck name + format badge. Row 2: stats + all controls. Removed `max-w-[200px]` constraint from name input. Deck name sized to `text-3xl` (no bold) for visual emphasis. Input width driven by a hidden measurer `<span>` that mirrors exact font rendering — `scrollWidth + 2px` — replacing the `size` attribute which over-widened based on average glyph advance. Format badge now sits immediately after the last character.
+**Color changes (`ListCardTable.tsx`):** Warning triangle SVG fill changed from `#f59e0b` (amber) to `#f87171` (red). Qty number logic restructured: `atCopyLimit` branch removed entirely; now only `overCopyLimit` shows red with tooltip, `isFullyOwned` shows green, everything else neutral gray.
 
-**Files changed:** `src/components/workspace/Workspace.tsx`, `src/components/workspace/WorkspaceToolbar.tsx`, `src/config/version.ts`
+**Files changed:** `src/components/workspace/VisualCard.tsx`, `src/components/workspace/ListCardTable.tsx`, `src/config/version.ts`
 
 ---
 

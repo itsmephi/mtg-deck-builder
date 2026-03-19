@@ -5,6 +5,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.5.3] — Warning Color Consistency
+
+### Changed
+- Format violation warning bar (grid hover overlay) color updated from amber to red — background `rgba(239,68,68,0.15)`, border `rgba(239,68,68,0.3)`, text and icon `#f87171`
+- Grid qty pill badge warning state updated from amber (`bg-orange-900 text-orange-400`) to red (`bg-red-900 text-red-400`)
+- List view warning triangle icon updated from amber (`#f59e0b`) to red (`#f87171`) to match grid
+- Qty number color logic simplified across both views: green when fully owned, red when over copy limit, gray otherwise — at-copy-limit no longer applies a special color to the qty number
+
+---
+
 ## [1.5.2] — Toolbar Layout & Grid Spacing Polish
 
 ### Changed
