@@ -90,7 +90,8 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
   const cardRefs = useRef<Map<string, HTMLElement>>(new Map());
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
   const [hoveredCardList, setHoveredCardList] = useState<ScryfallCard | null>(null);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const mousePosRef = useRef({ x: 0, y: 0 });
+  const tooltipRef = useRef<HTMLDivElement>(null);
 
   // Confirmation dialog for sideboard → commander format switch (triggered from toolbar)
   const [confirmDialog, setConfirmDialog] = useState<ConfirmDialogState | null>(null);
@@ -318,10 +319,13 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    setMousePos({
-      x: e.clientX + 20,
-      y: Math.min(e.clientY + 20, window.innerHeight - 370),
-    });
+    const x = e.clientX + 20;
+    const y = Math.min(e.clientY + 20, window.innerHeight - 370);
+    mousePosRef.current = { x, y };
+    if (tooltipRef.current) {
+      tooltipRef.current.style.left = `${x}px`;
+      tooltipRef.current.style.top = `${y}px`;
+    }
   };
 
   // Toolbar format change handler (includes sideboard confirmation)
@@ -501,8 +505,9 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
 
       {viewMode === "list" && hoveredCardList && showThumbnail && (
         <div
+          ref={tooltipRef}
           className="fixed z-50 pointer-events-none w-56 rounded-xl overflow-hidden shadow-2xl border border-neutral-700"
-          style={{ left: `${mousePos.x}px`, top: `${mousePos.y}px` }}
+          style={{ left: `${mousePosRef.current.x}px`, top: `${mousePosRef.current.y}px` }}
         >
           <img
             src={

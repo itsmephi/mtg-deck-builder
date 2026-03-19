@@ -1,8 +1,14 @@
-export const APP_VERSION = "1.5.3";
+export const APP_VERSION = "1.5.4";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.5.4": [
+    "Delete Deck and Delete Sideboard in the sidebar dropdown no longer show a second confirmation dialog — clicking the action executes immediately",
+    "Owned −/+ increment buttons added to list view alongside the X/Y owned display — hover-visible, matching the qty button pattern",
+    "Owned −/+ increment buttons added to grid view hover overlay — flanking the owned counter in the slide-up panel",
+    "List view hover performance improved: mouse movement no longer triggers full Workspace re-renders — tooltip repositions via direct DOM update instead of setState",
+  ],
   "1.5.3": [
     "Warning colors unified across grid and list view: format violation warning bar and qty pill badge are now red; list view warning triangle icon is red to match",
     "Qty number color logic simplified: green when fully owned, red when over copy limit, gray otherwise — at-copy-limit no longer changes qty color",

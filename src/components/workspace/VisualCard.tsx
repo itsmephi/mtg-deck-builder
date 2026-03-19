@@ -220,62 +220,77 @@ export default function VisualCard({
           </button>
         </div>
 
-        {/* Owned counter — inline editable */}
-        <div className="flex items-center gap-0.5">
-          <span
-            className={`text-[10px] tabular-nums ${
-              isFullyOwned ? "text-green-400" : "text-neutral-400"
-            }`}
+        {/* Owned counter — [− X/Y +] inline editable */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onUpdateOwnedQty(card.id, Math.max(0, card.ownedQty - 1));
+            }}
+            className="w-7 h-7 rounded-full bg-neutral-700/50 text-neutral-300 hover:bg-neutral-600 hover:text-white flex items-center justify-center transition-colors"
           >
-            Owned:&nbsp;
-          </span>
-          {isOwnedEditing ? (
-            <input
-              type="text"
-              value={ownedEditValue}
-              onChange={(e) => setOwnedEditValue(e.target.value)}
-              onFocus={(e) => e.target.select()}
-              onBlur={() => {
-                if (isOwnedEscaping.current) {
-                  isOwnedEscaping.current = false;
-                  return;
-                }
-                commitOwnedEdit();
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
+            <Minus className="w-3.5 h-3.5" />
+          </button>
+
+          <div className="flex items-center gap-0.5">
+            {isOwnedEditing ? (
+              <input
+                type="text"
+                value={ownedEditValue}
+                onChange={(e) => setOwnedEditValue(e.target.value)}
+                onFocus={(e) => e.target.select()}
+                onBlur={() => {
+                  if (isOwnedEscaping.current) {
+                    isOwnedEscaping.current = false;
+                    return;
+                  }
                   commitOwnedEdit();
-                }
-                if (e.key === "Escape") {
-                  isOwnedEscaping.current = true;
-                  setIsOwnedEditing(false);
-                }
-              }}
-              onClick={(e) => e.stopPropagation()}
-              className="w-6 text-center text-[10px] font-medium bg-neutral-800 border border-blue-500 rounded text-green-400 focus:outline-none"
-              autoFocus
-            />
-          ) : (
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    commitOwnedEdit();
+                  }
+                  if (e.key === "Escape") {
+                    isOwnedEscaping.current = true;
+                    setIsOwnedEditing(false);
+                  }
+                }}
+                onClick={(e) => e.stopPropagation()}
+                className="w-6 text-center text-[10px] font-medium bg-neutral-800 border border-blue-500 rounded text-green-400 focus:outline-none"
+                autoFocus
+              />
+            ) : (
+              <span
+                onClick={(e) => {
+                  e.stopPropagation();
+                  startOwnedEdit();
+                }}
+                className={`text-[10px] tabular-nums cursor-pointer hover:underline ${
+                  isFullyOwned ? "text-green-400" : "text-neutral-400"
+                }`}
+              >
+                {card.ownedQty}
+              </span>
+            )}
             <span
-              onClick={(e) => {
-                e.stopPropagation();
-                startOwnedEdit();
-              }}
-              className={`text-[10px] tabular-nums cursor-pointer hover:underline ${
+              className={`text-[10px] tabular-nums ${
                 isFullyOwned ? "text-green-400" : "text-neutral-400"
               }`}
             >
-              {card.ownedQty}
+              /{card.quantity}
             </span>
-          )}
-          <span
-            className={`text-[10px] tabular-nums ${
-              isFullyOwned ? "text-green-400" : "text-neutral-400"
-            }`}
+          </div>
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onUpdateOwnedQty(card.id, card.ownedQty + 1);
+            }}
+            className="w-7 h-7 rounded-full bg-neutral-700/50 text-neutral-300 hover:bg-neutral-600 hover:text-white flex items-center justify-center transition-colors"
           >
-            /{card.quantity}
-          </span>
+            <Plus className="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
       {/* End art + overlay inner wrapper */}

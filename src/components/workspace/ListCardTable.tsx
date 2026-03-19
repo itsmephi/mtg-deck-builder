@@ -321,9 +321,18 @@ export default function ListCardTable({
             </div>
           </td>
 
-          {/* Owned — X/Y inline-editable */}
-          <td className="py-1 w-16">
-            <div className="px-2 flex items-center">
+          {/* Owned — [− X/Y +] inline-editable */}
+          <td className="py-1 w-20">
+            <div className="px-2 flex items-center gap-1.5">
+              <button
+                onClick={() => onUpdateOwnedQty(card.id, Math.max(0, card.ownedQty - 1))}
+                className={`w-5 h-5 rounded-full bg-neutral-800 text-neutral-400 hover:bg-neutral-700 hover:text-white flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100`}
+              >
+                <svg width="8" height="8" viewBox="0 0 8 2" fill="currentColor">
+                  <rect x="0" y="0" width="8" height="2" />
+                </svg>
+              </button>
+
               {editingOwnedId === card.id ? (
                 <div className="flex items-center gap-0.5">
                   <input
@@ -363,6 +372,16 @@ export default function ListCardTable({
                   {card.ownedQty}/{card.quantity}
                 </span>
               )}
+
+              <button
+                onClick={() => onUpdateOwnedQty(card.id, card.ownedQty + 1)}
+                className={`w-5 h-5 rounded-full bg-neutral-800 text-neutral-400 hover:bg-neutral-700 hover:text-white flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100`}
+              >
+                <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor">
+                  <rect x="3" y="0" width="2" height="8" />
+                  <rect x="0" y="3" width="8" height="2" />
+                </svg>
+              </button>
             </div>
           </td>
 
@@ -466,7 +485,7 @@ export default function ListCardTable({
           <thead className="bg-neutral-900 text-[10px] text-neutral-500 border-b border-neutral-800 uppercase tracking-wider">
             <tr>
               <th className="px-2 py-1.5 w-24">Qty</th>
-              <th className="py-1.5 w-16">Owned</th>
+              <th className="py-1.5 w-20">Owned</th>
               <th className="px-2 py-1.5 min-w-0">Name</th>
               <th className="px-2 py-1.5 w-48">Type</th>
               <th className="px-2 py-1.5 w-24">Mana</th>
