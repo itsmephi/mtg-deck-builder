@@ -7,6 +7,9 @@
 ## Active Milestone
 <!-- Items promoted from Pipeline for the current release. Cleared after release ships. -->
 
+- [ ] **enhancement** | Search filtering by format legality / color identity (#72)
+- [ ] **enhancement** | EDHREC improved search suggestions (#26) — *Partially addressed in v1.3.0: mana symbols in search results. Dynamic categories and NLP search deferred.*
+
 ---
 
 ## Pipeline
@@ -17,8 +20,6 @@
 - [ ] **feature** | Partner commander support — deferred from v1.4.0
 - [ ] **feature** | Companion support — future format enhancement
 - [ ] **feature** | Brawl / Oathbreaker format support — future format additions
-- [ ] **enhancement** | Search filtering by format legality / color identity — future search enhancement
-- [ ] **enhancement** | EDHREC improved search suggestions (#26) ↑ priority — *Partially addressed in v1.3.0: mana symbols in search results. Dynamic categories and NLP search deferred.*
 - [ ] **feature** | Move cards between boards or decks (#62) ↑ priority
 - [ ] **enhancement** | Simulator modal has no view mode toggle — consider adding compact list view inside modal for larger decks; would also make pin-from-list interaction more prominent
 - [ ] **enhancement** | Settings panel redesign — 2 clicks to access settings is a UX regression from v1.3.0 sidebar changes

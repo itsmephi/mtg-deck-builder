@@ -45,7 +45,7 @@ For straightforward bug fixes and small enhancements, `/plan` → PROCEED → bu
 ---
 
 ## Active Milestone
-→ v1.5.4 shipped. Active milestone cleared. See BACKLOG.md Pipeline for next items.
+→ 2 items promoted — search improvements (#72 format/color filtering, #26 EDHREC suggestions). Pending design with Claude Chat.
 
 ---
 
