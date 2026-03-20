@@ -3,7 +3,7 @@ Authors: Phi & Thurgood Nguyen
 Stack: Next.js + TypeScript + Tailwind CSS
 Deployed: Vercel | Repo: GitHub (itsmephi/mtg-deck-builder)
 IDE: VS Code (Windows, primary) · Zed on Steam Deck (Linux, secondary)
-Current Version: v1.6.0 — see CHANGELOG.md for full history
+Current Version: v1.7.0 — see CHANGELOG.md for full history
 
 ---
 
@@ -45,7 +45,7 @@ For straightforward bug fixes and small enhancements, `/plan` → PROCEED → bu
 ---
 
 ## Active Milestone
-→ Next patch (10 items) — CardModal open-after-add, planeswalker commander bug, group-by commander, in-deck pill tooltip, Swap Art loading spinner, filter Deselect All, color chip tints, price "Any" toggle, set/Secret Lair NLP token, Discard NLP token
+→ No active milestone. v1.7.0 shipped — search polish + commander fixes. Next milestone pending triage.
 
 ---
 
@@ -101,7 +101,12 @@ src/
 - Sidebar filter state: `FilterState` + `DEFAULT_FILTERS` + `buildSidebarFilterSyntax()` exported from `FilterPanel.tsx`; only appends syntax when some toggles are OFF (default all-on = no syntax)
 - Autocomplete: `autocompleteCards(query)` in `scryfall.ts` calls Scryfall `/cards/autocomplete?q=...`, returns `string[]` of card names
 - SearchWorkspace query assembly order: format filter + chip-or-NLP + sidebar filter syntax — all three joined by space
-- CardModal `context` prop: `'search'` shows "+ Add to Deck" button (calls `onAddToDeck(previewCard)`); `'deck'` (default) shows "Confirm Art Swap" — backwards compatible, Workspace.tsx passes no context
+- CardModal `context` prop: `'search'` shows "+ Add to Deck" button (calls `onAddToDeck(previewCard)` then `setView("details")`); `'deck'` (default) shows "Confirm Art Swap" — backwards compatible, Workspace.tsx passes no context
+- `lookupSetCode(name)` in `scryfall.ts`: fetches `/sets` once, caches module-level; normalizes to words; returns best all-words-match scored by `queryWords.length / setWords.length` (higher = more specific)
+- `setMatch` state in SearchWorkspace: debounced 500ms lookup fires when `parsed.remainder` has 2+ words; injects `e:CODE` into scryfallQuery; guarded by `setMatch.query === parsed.remainder`
+- `anyPrice: boolean` in FilterState: when true, `buildSidebarFilterSyntax` skips all price clauses; slider/inputs dim via `opacity-30 pointer-events-none`
+- `isEligibleCommander`: requires `type_line` contains both "Legendary" AND "Creature", OR `oracle_text` contains "can be your commander"
+- `groupCardsByType` in Workspace: prepends `Commander` group when `format === "commander" && commanderId && deckViewMode === "main"`; commander card is routed there instead of its type bucket
 
 ---
 

@@ -5,6 +5,25 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.7.0] — Search Polish + Commander Fixes
+
+### Fixed
+- Planeswalker commander eligibility: `isEligibleCommander` now requires `Legendary` AND `Creature` in `type_line` — Legendary Planeswalkers no longer qualify unless oracle text contains "can be your commander"
+
+### Added
+- Natural language set name search: type "jaws secret lair" or "The Brothers War" — the app fuzzy-matches against all Scryfall sets (cached after first fetch) and injects `e:CODE` into the search query; a "Set: [name] ×" chip appears in the results toolbar
+- `set:CODE` NLP passthrough token: users who know set codes can type `set:BRO` directly as an alternative to the natural language lookup
+- Discard archetype NLP token: typing "discard" maps to `o:"discard"` Scryfall syntax
+- CardModal Swap Art tab: loading spinner shown while printings are fetching
+- CardModal (search context): modal stays open after clicking "+ Add to Deck" and returns to Details tab — matches deck view Confirm Art Swap behavior
+- Group by type — Commander floats to top: when Group by Type is on in Commander format, the designated commander card appears in its own "Commander" group above the type buckets
+- Search view in-deck green dot: tooltip "Already in deck" on hover
+- Filter panel All/None toggle: each filter group (Rarity, Card Type, Colors) gets an inline All/None button that selects or clears the whole group in one click
+- Color filter chip tints: active color chips use per-color styling — W stone, U blue, B dark-neutral, R red, G green, C gray
+- Price filter "Any" toggle: enabling "Any" removes price ceiling entirely and dims the slider; disabling restores the slider-based filter
+
+---
+
 ## [1.6.0] — Search Overhaul
 
 ### Added

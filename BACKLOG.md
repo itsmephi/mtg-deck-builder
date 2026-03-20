@@ -7,18 +7,7 @@
 ## Active Milestone
 <!-- Items promoted from Pipeline for the current release. Cleared after release ships. -->
 
-- [x] **enhancement** | Search filtering by format legality / color identity (#72) *(closed v1.6.0)*
-- [x] **enhancement** | EDHREC improved search suggestions (#26) *(closed v1.6.0)*
-- [ ] **enhancement** | Search CardModal: keep modal open after adding card — return to Details tab instead of closing, matching deck view Confirm Art Swap behavior
-- [ ] **bug** | Planeswalker commander eligibility — Legendary alone should not qualify; require "can be your commander" in oracle text unless Legendary Creature
-- [ ] **enhancement** | Group by type: separate commander into its own group
-- [ ] **enhancement** | Search view: add tooltip for green in-deck pill icon on card tiles
-- [ ] **enhancement** | CardModal Swap Art tab: show loading spinner while fetching printings
-- [ ] **enhancement** | Search: filter section "Deselect All" button — quick way to clear all toggles in a filter group then select one
-- [ ] **enhancement** | Search: color filter chips match mana colors — W chip white-tinted, R chip red-tinted, etc.
-- [ ] **enhancement** | Search: price filter "Any" toggle — remove price ceiling for searching expensive cards
-- [ ] **enhancement** | Search by set / Secret Lair — add `set:` as NLP token in parser to filter by set name or Secret Lair product
-- [ ] **enhancement** | Search: add Discard as NLP token / parser keyword
+*(empty — v1.7.0 shipped, next milestone pending triage)*
 
 ---
 
@@ -73,25 +62,20 @@
 ## Closed (Recent)
 <!-- Keep last 2 releases, then archive to CHANGELOG.md -->
 
-### v1.5.4
-- [x] **enhancement** | Re-add −/+ increment buttons to owned fields — list and grid view (#70) *(closed v1.5.4)*
-- [x] **enhancement** | List view rollover highlight and color rendering sluggish — mouse move no longer triggers re-renders (#71) *(closed v1.5.4)*
+### v1.7.0
+- [x] **enhancement** | Search CardModal: keep modal open after adding card — return to Details tab instead of closing, matching deck view Confirm Art Swap behavior *(closed v1.7.0)*
+- [x] **bug** | Planeswalker commander eligibility — Legendary alone should not qualify; require "can be your commander" in oracle text unless Legendary Creature *(closed v1.7.0)*
+- [x] **enhancement** | Group by type: separate commander into its own group *(closed v1.7.0)*
+- [x] **enhancement** | Search view: add tooltip for green in-deck pill icon on card tiles *(closed v1.7.0)*
+- [x] **enhancement** | CardModal Swap Art tab: show loading spinner while fetching printings *(closed v1.7.0)*
+- [x] **enhancement** | Search: filter section "Deselect All" button — quick way to clear all toggles in a filter group then select one *(closed v1.7.0)*
+- [x] **enhancement** | Search: color filter chips match mana colors — W chip white-tinted, R chip red-tinted, etc. *(closed v1.7.0)*
+- [x] **enhancement** | Search: price filter "Any" toggle — remove price ceiling for searching expensive cards *(closed v1.7.0)*
+- [x] **enhancement** | Search by set / Secret Lair — natural language set name lookup maps to `e:CODE` via Scryfall sets API *(closed v1.7.0)*
+- [x] **enhancement** | Search: add Discard as NLP token / parser keyword *(closed v1.7.0)*
 
-### v1.5.1
-- [x] **enhancement** | Redesign grid view warning triangle placement and tooltips *(closed v1.5.1)*
-
-### v1.5.0
-- [x] **bug** | "+ New Deck" format picker gets cut off at the top when decklist is short — dynamic positioning *(closed v1.5.0)*
-- [x] **bug** | + icon in collapsed sidebar rail does not trigger the format picker *(closed v1.5.0)*
-- [x] **enhancement** | Commander eligibility check now enforces legendary legality — hard block *(closed v1.5.0)*
-- [x] **enhancement** | Crown badge in grid view toggles commander — "Set as Commander" overlay button removed *(closed v1.5.0)*
-- [x] **enhancement** | Persistent qty pill badge on grid tile bottom center *(closed v1.5.0)*
-
-### v1.4.1
-- [x] **bug** | Owned field no longer dims when owned count reaches deck quantity — regression *(closed v1.4.1)*
-
-### v1.4.0
-- [x] **feature** | Support Standard and Commander deck modes (#17) *(closed v1.4.0)*
-- [x] **enhancement** | Commander threshold calibration *(closed v1.4.0)*
+### v1.6.0
+- [x] **enhancement** | Search filtering by format legality / color identity (#72) *(closed v1.6.0)*
+- [x] **enhancement** | EDHREC improved search suggestions (#26) *(closed v1.6.0)*
 
 ---
