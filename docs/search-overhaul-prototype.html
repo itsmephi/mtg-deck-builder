@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MTG Deck Builder — Search Overhaul v3b</title>
+<style>
+:root{--bg:#0a0a0a;--bgs:#111;--bgsf:#171717;--bgh:#1f1f1f;--bgi:#0a0a0a;--bd:#262626;--bdl:#333;--t1:#e5e5e5;--t2:#a3a3a3;--t3:#737373;--t4:#525252;--blue:#3b82f6;--blued:#1e3a5f;--amber:#f59e0b;--green:#22c55e;--red:#ef4444;--sw:260px;--rw:48px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--t1);height:100vh;overflow:hidden;font-size:13px}
+button{font-family:inherit;cursor:pointer}input{font-family:inherit}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
+.app{display:flex;height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:var(--sw);min-width:var(--sw);background:var(--bgs);border-right:1px solid var(--bd);display:flex;flex-direction:column;overflow:hidden;z-index:20;transition:width .3s cubic-bezier(.4,0,.2,1),min-width .3s cubic-bezier(.4,0,.2,1)}
+.sidebar.collapsed{width:var(--rw);min-width:var(--rw)}
+.sidebar.collapsed .sb-body{display:none}
+.sidebar.collapsed .tab-bar{flex-direction:column;height:auto;border-bottom:none}
+.sidebar.collapsed .tab-btn{height:44px;border-bottom:none;border-right:2px solid transparent;padding:0}
+.sidebar.collapsed .tab-btn.active{border-right-color:var(--blue);border-bottom-color:transparent}
+.sidebar.collapsed .tab-btn .tl{display:none}
+.sidebar.collapsed .col-btn{height:44px;border-bottom:none}
+.sidebar.collapsed .col-btn svg{transform:rotate(180deg)}
+.tab-bar{display:flex;border-bottom:1px solid var(--bd);height:38px;min-height:38px;flex-shrink:0}
+.tab-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;font-size:11px;font-weight:500;color:var(--t3);background:none;border:none;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}
+.tab-btn:hover{color:var(--t2)}.tab-btn.active{color:var(--blue);border-bottom-color:var(--blue)}
+.tab-btn svg{width:14px;height:14px;flex-shrink:0}
+.col-btn{width:32px;min-width:32px;display:flex;align-items:center;justify-content:center;color:var(--t4);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:color .15s}
+.col-btn:hover{color:var(--t2)}.col-btn svg{width:14px;height:14px;transition:transform .3s}
+.sb-body{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+/* SIDEBAR SEARCH */
+.sb-search{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.sb-sec{padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.sb-lbl{font-size:10px;color:var(--t4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{display:flex;align-items:center;gap:4px;padding:4px 8px;background:var(--bgsf);border:1px solid var(--bd);border-radius:6px;font-size:10px;color:var(--t2);cursor:pointer;transition:all .15s;white-space:nowrap}
+.chip:hover{border-color:var(--t4);color:var(--t1)}.chip.active{background:var(--blued);border-color:#2563eb55;color:var(--blue)}
+.filters{flex:1;overflow-y:auto;padding:0 12px 12px}
+.fg{margin-bottom:12px}.fg-lbl{font-size:10px;color:var(--t4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.fg-row{display:flex;align-items:center;gap:6px}
+.fg-range{flex:1;height:4px;background:var(--bd);border-radius:2px;position:relative;cursor:pointer}
+.fg-fill{position:absolute;left:0;height:100%;background:var(--blue);border-radius:2px;transition:width .15s}
+.fg-in{width:52px;padding:4px 6px;background:var(--bgi);border:1px solid var(--bd);border-radius:5px;color:var(--t2);font-size:11px;text-align:center;outline:none;transition:border-color .15s}
+.fg-in:focus{border-color:var(--t4)}
+.fc{display:flex;gap:4px;flex-wrap:wrap}
+.fc-btn{font-size:10px;padding:3px 7px;background:var(--bgsf);border:1px solid var(--bd);border-radius:4px;color:var(--t2);cursor:pointer;transition:all .15s}
+.fc-btn:hover{border-color:var(--t4);color:var(--t1)}.fc-btn.on{background:var(--blued);border-color:#2563eb55;color:var(--blue)}
+
+/* SIDEBAR DECKS */
+.sb-decks{flex:1;overflow-y:auto;padding:8px}
+.dr{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:6px;cursor:pointer;transition:background .1s}
+.dr:hover{background:var(--bgh)}.dr.act{background:var(--bgsf)}
+.dr .di{flex:1;min-width:0}.dr .dn{font-size:12px;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dr .dm{font-size:10px;color:var(--t3)}.dr .dc{font-size:10px;color:var(--t4);background:var(--bg);padding:2px 6px;border-radius:4px}
+
+/* WORKSPACE */
+.ws{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.tb{background:var(--bgs);border-bottom:1px solid var(--bd);flex-shrink:0}
+.tb-row{display:flex;align-items:center;padding:0 14px;gap:8px}
+.tb-r1{min-height:38px;padding-top:4px}.tb-r2{min-height:34px;padding-bottom:4px}
+.tright{margin-left:auto;display:flex;align-items:center;gap:6px}
+.tb-sel{padding:3px 6px;background:var(--bgi);border:1px solid var(--bd);border-radius:5px;color:var(--t2);font-size:11px;outline:none}
+.tb-div{width:1px;height:18px;background:var(--bd)}
+.tb-btn{display:flex;align-items:center;justify-content:center;gap:4px;padding:4px 7px;background:none;border:1px solid var(--bd);border-radius:5px;color:var(--t3);font-size:11px;transition:all .15s}
+.tb-btn:hover{color:var(--t1);border-color:var(--t4)}.tb-btn.active{color:var(--blue);border-color:var(--blued);background:var(--blued)}
+.tb-btn svg{width:14px;height:14px}
+.tb-stat{font-size:11px;color:var(--t3)}.tb-stat b{color:var(--t2);font-weight:500}
+
+/* SEARCH BAR */
+.search-bar{flex:1;display:flex;align-items:center;flex-wrap:wrap;min-width:0;background:var(--bgi);border:1px solid var(--bd);border-radius:8px;padding:3px 8px;gap:4px;min-height:32px;transition:border-color .15s;position:relative}
+.search-bar:focus-within{border-color:var(--t4)}
+.search-bar .sbi{color:var(--t4);display:flex;flex-shrink:0}
+.search-bar .sbi svg{width:14px;height:14px}
+.fb{display:inline-flex;align-items:center;gap:3px;padding:2px 6px;background:var(--blued);border:1px solid #2563eb44;border-radius:4px;font-size:10px;color:var(--blue);white-space:nowrap;flex-shrink:0;cursor:default;transition:all .15s}
+.fb .fbx{background:none;border:none;color:var(--blue);font-size:10px;opacity:.6;padding:0 0 0 2px;cursor:pointer;display:flex;align-items:center}
+.fb .fbx:hover{opacity:1}.fb.off{background:var(--bgsf);border-color:var(--bd);color:var(--t4)}.fb.off .fbx{color:var(--t4)}
+.mana{display:inline-flex;width:15px;height:15px;border-radius:50%;font-size:8px;font-weight:700;align-items:center;justify-content:center;border:1px solid #0002;flex-shrink:0}
+.mana.sm{width:13px;height:13px;font-size:7px}
+.st{display:inline-flex;align-items:center;gap:3px;padding:2px 6px;background:var(--bgsf);border:1px solid var(--bd);border-radius:4px;font-size:10px;color:var(--t2);white-space:nowrap;flex-shrink:0;cursor:pointer;transition:all .15s}
+.st:hover{border-color:var(--red);color:var(--red)}
+.st .stl{color:var(--t4);font-size:9px;text-transform:uppercase;letter-spacing:.3px}
+.st .stx{font-size:9px;opacity:0;transition:opacity .15s;margin-left:1px}
+.st:hover .stx{opacity:1}
+.search-bar input{flex:1;min-width:80px;background:none;border:none;color:var(--t1);font-size:12px;outline:none;padding:2px 0}
+.search-bar input::placeholder{color:var(--t4)}
+.search-bar .sbc{background:none;border:none;color:var(--t4);display:none;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;transition:all .15s;flex-shrink:0;padding:0}
+.search-bar .sbc:hover{color:var(--t2);background:var(--bgh)}.search-bar .sbc.vis{display:flex}
+
+/* AUTOCOMPLETE */
+.ac-drop{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#1a1a1a;border:1px solid var(--bdl);border-radius:8px;box-shadow:0 8px 32px #0008;overflow:hidden;z-index:50;display:none}
+.ac-drop.show{display:block}
+.ac-lbl{padding:5px 10px 3px;font-size:9px;color:var(--t4);text-transform:uppercase;letter-spacing:.5px}
+.ac-item{padding:6px 10px;font-size:12px;color:var(--t2);cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .1s}
+.ac-item:hover{background:var(--bgh);color:var(--t1)}
+.ac-item .acm{margin-left:auto;display:flex;gap:2px}
+.ac-parsed{padding:7px 10px;border-top:1px solid var(--bd);display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.ac-pl{font-size:9px;color:var(--t4);margin-right:4px}
+
+/* CARD GRID */
+.cgrid{flex:1;overflow-y:auto;padding:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:12px;align-content:start}
+.ct{position:relative;border-radius:11px;overflow:hidden;aspect-ratio:488/680;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.ct:hover{transform:translateY(-3px);box-shadow:0 8px 24px #0006}
+.ct svg.cart{width:100%;height:100%;display:block}
+.ct .idb{position:absolute;top:6px;left:6px;width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 2px var(--bg);z-index:5}
+.ct .qb{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:#000b;backdrop-filter:blur(4px);padding:2px 10px;border-radius:10px;font-size:11px;font-weight:600;color:#fff;z-index:5;pointer-events:none}
+.ct .cov{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,#000b 25%,#000d);padding:28px 10px 10px;transform:translateY(100%);transition:transform .25s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;gap:5px;z-index:4}
+.ct:hover .cov{transform:translateY(0)}
+.ov-n{font-size:11px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ov-m{font-size:10px;color:#aaa;display:flex;align-items:center;gap:6px}
+.ov-a{display:flex;align-items:center;gap:6px;margin-top:2px}
+.ov-add{flex:1;padding:6px;border-radius:6px;background:var(--blue);color:#fff;border:none;font-size:11px;font-weight:600;transition:background .15s}
+.ov-add:hover{background:#2563eb}
+.qty-c{display:flex;align-items:center;background:#333;border-radius:6px;overflow:hidden}
+.qty-c button{width:26px;height:26px;display:flex;align-items:center;justify-content:center;background:none;border:none;color:#fff;font-size:14px;transition:background .1s}
+.qty-c button:hover{background:#555}
+.qty-c .qn{width:22px;text-align:center;font-size:11px;font-weight:600;color:#fff}
+
+/* MODAL */
+.mbg{position:fixed;inset:0;background:#000a;z-index:100;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.mbg.show{display:flex}
+.modal{background:var(--bgs);border:1px solid var(--bd);border-radius:12px;width:680px;max-width:94vw;max-height:90vh;overflow:hidden;display:flex;position:relative}
+.m-left{width:280px;min-width:280px;background:#0a0a0a;display:flex;flex-direction:column;align-items:center;padding:20px;gap:12px}
+.m-left svg.cart{width:100%;max-width:240px;height:auto;border-radius:8px}
+.m-tabs{display:flex;width:100%;border-radius:6px;overflow:hidden;border:1px solid var(--bd)}
+.m-tab{flex:1;padding:7px;font-size:11px;font-weight:500;text-align:center;background:var(--bgsf);color:var(--t3);border:none;transition:all .15s}
+.m-tab:hover{color:var(--t1)}.m-tab.active{background:var(--blued);color:var(--blue)}
+.m-ctx{width:100%;padding:9px;border-radius:6px;border:none;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
+.m-ctx.add{background:var(--blue);color:#fff}.m-ctx.add:hover{background:#2563eb}
+.m-ctx.swap{background:var(--bgsf);color:var(--t3);border:1px solid var(--bd)}.m-ctx.swap:hover{color:var(--t1);border-color:var(--t4)}
+.m-ctx.disabled{background:var(--bgsf);color:var(--t4);border:1px solid var(--bd);cursor:default;opacity:.5}
+.m-ctx.disabled:hover{color:var(--t4);border-color:var(--bd)}
+.m-right{flex:1;padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
+.m-x{position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--bgsf);border:1px solid var(--bd);color:var(--t3);cursor:pointer;font-size:14px;transition:all .15s;z-index:2}
+.m-x:hover{color:var(--t1);border-color:var(--t4)}
+.m-name{font-size:18px;font-weight:600}.m-set{font-size:11px;color:var(--t3)}
+.m-sec{padding:12px;background:var(--bgsf);border-radius:8px;display:flex;flex-direction:column;gap:6px}
+.m-type{font-size:12px;color:var(--t2);display:flex;align-items:center;justify-content:space-between}
+.m-oracle{font-size:12px;color:var(--t2);line-height:1.6}
+.m-flavor{font-size:11px;color:var(--t4);font-style:italic;line-height:1.5;border-top:1px solid var(--bd);padding-top:6px;margin-top:2px}
+.m-dets{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:11px}
+.m-dets dt{color:var(--t3);font-weight:500}.m-dets dd{color:var(--t2)}
+.m-leg{display:flex;flex-wrap:wrap;gap:4px}
+.ml{font-size:9px;padding:2px 6px;border-radius:3px;font-weight:600;letter-spacing:.3px}
+.ml.y{background:#052e16;color:var(--green);border:1px solid #14532d}
+.ml.n{background:#1c1917;color:var(--t4);border:1px solid var(--bd)}
+
+/* MODE VISIBILITY */
+.mode-search .ws-deck{display:none}.mode-search .ws-search{display:flex;flex-direction:column;flex:1;overflow:hidden}
+.mode-search .sb-search{display:flex}.mode-search .sb-decks{display:none}
+.mode-decks .ws-search{display:none}.mode-decks .ws-deck{display:flex;flex-direction:column;flex:1;overflow:hidden}
+.mode-decks .sb-search{display:none}.mode-decks .sb-decks{display:flex}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);padding:8px 18px;background:var(--green);color:#000;font-size:12px;font-weight:600;border-radius:8px;z-index:999;transition:transform .3s cubic-bezier(.4,0,.2,1);pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="app mode-decks" id="app">
+<aside class="sidebar" id="sidebar">
+  <div class="tab-bar">
+    <button class="tab-btn" data-tab="search" onclick="setMode('search')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="tl">Search</span></button>
+    <button class="tab-btn active" data-tab="decks" onclick="setMode('decks')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg><span class="tl">Decks</span></button>
+    <button class="col-btn" onclick="toggleSidebar()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg></button>
+  </div>
+  <div class="sb-body">
+    <!-- SEARCH SIDEBAR: categories + filters only -->
+    <div class="sb-search">
+      <div class="sb-sec" style="border-bottom:1px solid var(--bd)">
+        <div class="sb-lbl">Categories</div>
+        <div class="chips" id="cats"></div>
+      </div>
+      <div class="filters" style="padding-top:12px">
+        <div class="fg"><div class="fg-lbl">Price Range</div>
+          <div class="fg-row">
+            <input class="fg-in" id="priceMin" value="$0" onfocus="this.select()" onchange="updateRange()">
+            <div class="fg-range" onclick="clickRange(event,this)"><div class="fg-fill" id="rf" style="width:100%"></div></div>
+            <input class="fg-in" id="priceMax" value="$100" onfocus="this.select()" onchange="updateRange()">
+          </div>
+        </div>
+        <div class="fg"><div class="fg-lbl">Rarity</div><div class="fc">
+          <button class="fc-btn on" onclick="this.classList.toggle('on')">Common</button>
+          <button class="fc-btn on" onclick="this.classList.toggle('on')">Uncommon</button>
+          <button class="fc-btn on" onclick="this.classList.toggle('on')">Rare</button>
+          <button class="fc-btn" onclick="this.classList.toggle('on')">Mythic</button>
+        </div></div>
+        <div class="fg"><div class="fg-lbl">Card Type</div><div class="fc">
+          <button class="fc-btn on" onclick="this.classList.toggle('on')">Creature</button>
+          <button class="fc-btn on" onclick="this.classList.toggle('on')">Instant</button>
+          <button class="fc-btn on" onclick="this.classList.toggle('on')">Sorcery</button>
+          <button class="fc-btn on" onclick="this.classList.toggle('on')">Enchantment</button>
+          <button class="fc-btn" onclick="this.classList.toggle('on')">Artifact</button>
+          <button class="fc-btn" onclick="this.classList.toggle('on')">Land</button>
+          <button class="fc-btn" onclick="this.classList.toggle('on')">Planeswalker</button>
+        </div></div>
+        <div class="fg"><div class="fg-lbl">Colors</div><div class="fc">
+          <button class="fc-btn on" onclick="this.classList.toggle('on')" style="display:flex;align-items:center;gap:3px"><span class="mana sm" style="background:#f9faf4;color:#000">W</span>White</button>
+          <button class="fc-btn on" onclick="this.classList.toggle('on')" style="display:flex;align-items:center;gap:3px"><span class="mana sm" style="background:#0e68ab;color:#fff">U</span>Blue</button>
+          <button class="fc-btn on" onclick="this.classList.toggle('on')" style="display:flex;align-items:center;gap:3px"><span class="mana sm" style="background:#150b00;color:#fff">B</span>Black</button>
+          <button class="fc-btn on" onclick="this.classList.toggle('on')" style="display:flex;align-items:center;gap:3px"><span class="mana sm" style="background:#d3202a;color:#fff">R</span>Red</button>
+          <button class="fc-btn on" onclick="this.classList.toggle('on')" style="display:flex;align-items:center;gap:3px"><span class="mana sm" style="background:#00733e;color:#fff">G</span>Green</button>
+          <button class="fc-btn on" onclick="this.classList.toggle('on')" style="display:flex;align-items:center;gap:3px"><span class="mana sm" style="background:#ccc2c0;color:#000">C</span>Colorless</button>
+        </div></div>
+      </div>
+    </div>
+    <!-- DECKS SIDEBAR: unchanged from current app -->
+    <div class="sb-decks">
+      <div class="dr act"><div class="di"><div class="dn">Rats Deck</div><div class="dm">Freeform · 62 cards</div></div><span class="dc">62</span></div>
+      <div class="dr"><div class="di"><div class="dn">Gruul Smash</div><div class="dm">Commander · R/G</div></div><span class="dc">72/100</span></div>
+      <div class="dr"><div class="di"><div class="dn">Azorius Control</div><div class="dm">Standard · W/U</div></div><span class="dc">58/60</span></div>
+      <div class="dr" style="margin-top:8px;border-top:1px solid var(--bd);padding-top:12px"><div class="di"><div class="dn" style="color:var(--blue)">+ New Deck</div></div></div>
+    </div>
+  </div>
+</aside>
+
+<div class="ws">
+  <!-- SEARCH WORKSPACE -->
+  <div class="ws-search">
+    <div class="tb">
+      <div class="tb-row tb-r1">
+        <div class="search-bar" id="sbar">
+          <span class="sbi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
+          <span class="fb" id="fb" onclick="toggleFilter()"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Freeform <button class="fbx" onclick="event.stopPropagation();toggleFilter()">×</button></span>
+          <span id="tc"></span>
+          <input type="text" id="si" placeholder="Search for cards, types, keywords..." oninput="onS(this.value)" onfocus="showAC()"/>
+          <button class="sbc" id="cb" onclick="clearS()"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+          <div class="ac-drop" id="acd"></div>
+        </div>
+      </div>
+      <div class="tb-row tb-r2">
+        <span class="tb-stat" id="rc"><b>16</b> results</span>
+        <div class="tright">
+          <select class="tb-sel"><option>Sort: Relevance</option><option>Name</option><option>Price ↑</option><option>Price ↓</option><option>Mana Value</option><option>Color</option></select>
+          <div class="tb-div"></div>
+          <button class="tb-btn active" title="Grid view"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></button>
+          <button class="tb-btn" title="List view"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg></button>
+        </div>
+      </div>
+    </div>
+    <div class="cgrid" id="sg"></div>
+  </div>
+  <!-- DECK WORKSPACE -->
+  <div class="ws-deck">
+    <div class="tb">
+      <div class="tb-row tb-r1">
+        <span style="font-size:15px;font-weight:600">Rats Deck</span>
+        <span style="font-size:10px;padding:2px 6px;border-radius:4px;background:var(--bgsf);color:var(--t3);border:1px solid var(--bd)">Freeform</span>
+        <div class="tright">
+          <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg> Simulator</button>
+          <span style="font-size:11px;color:var(--t2)">Main</span><span style="font-size:11px;color:var(--t4)">Side</span>
+        </div>
+      </div>
+      <div class="tb-row tb-r2">
+        <span class="tb-stat"><b>62 Cards</b></span>
+        <span class="tb-stat">Value: <b>$57.17</b></span>
+        <span class="tb-stat">To Buy: <b style="color:var(--amber)">$22.35</b></span>
+        <div class="tright">
+          <select class="tb-sel"><option>Color</option><option>Name</option><option>Original</option><option>Mana Value</option><option>Price</option></select>
+          <div class="tb-div"></div>
+          <button class="tb-btn active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></button>
+          <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg></button>
+        </div>
+      </div>
+    </div>
+    <div class="cgrid" id="dg"></div>
+  </div>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+<div class="mbg" id="mbg" onclick="if(event.target===this)closeModal()">
+<div class="modal">
+  <button class="m-x" onclick="closeModal()">×</button>
+  <div class="m-left">
+    <div id="mA" style="width:100%"></div>
+    <div class="m-tabs"><button class="m-tab active" onclick="setMT('details',this)">Details</button><button class="m-tab" onclick="setMT('swap',this)">Swap Art</button></div>
+    <button class="m-ctx add" id="mCB" onclick="ctxA()">+ Add to Deck</button>
+  </div>
+  <div class="m-right">
+    <div><div class="m-name" id="mN"></div><div class="m-set" id="mS"></div></div>
+    <div class="m-sec"><div class="m-type" id="mT"></div><div class="m-oracle" id="mO"></div><div class="m-flavor" id="mF" style="display:none"></div></div>
+    <div class="m-sec" id="mD"></div>
+    <div><div style="font-size:10px;color:var(--t4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Legalities</div><div class="m-leg" id="mL"></div></div>
+  </div>
+</div>
+</div>
+<script>
+const MC={W:'#f9faf4',U:'#0e68ab',B:'#150b00',R:'#d3202a',G:'#00733e',C:'#ccc2c0'};
+const FC={W:['#f5f0d0','#e8dfa5'],U:['#0a6faa','#084b78'],B:['#2d2230','#150b1e'],R:['#d1341e','#8b1a10'],G:['#1a7a3a','#0f5425'],M:['#cfb53b','#a08b2d'],C:['#9ea0a3','#6d6f72']};
+function mP(v,sm){const n=/^\d+$/.test(v),bg=n?'#888':(MC[v]||'#888'),fg=(v==='W'||v==='C'||n)?'#000':'#fff';return'<span class="mana'+(sm?' sm':'')+'" style="background:'+bg+';color:'+fg+'">'+v+'</span>'}
+function mCH(cost,sm){if(!cost)return'';return(cost.match(/\{([^}]+)\}/g)||[]).map(function(s){return mP(s.replace(/[{}]/g,''),sm)}).join('')}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function cSVG(c,sz){
+var f=c.colors&&c.colors.length>1?FC.M:(!c.colors||!c.colors.length?FC.C:(FC[c.colors[0]]||FC.C));
+var f1=f[0],f2=f[1];
+var W=sz==='lg'?280:170,H=sz==='lg'?390:237,aH=sz==='lg'?175:105,p=sz==='lg'?12:8,ip=sz==='lg'?8:5;
+var nf=sz==='lg'?13:10,tf=sz==='lg'?10:8,of=sz==='lg'?10:7;
+var h=0;for(var i=0;i<c.name.length;i++)h=((h<<5)-h)+c.name.charCodeAt(i);h=Math.abs(h);
+var sd=function(n){return((h*(n+1)*9301+49297)%233280)/233280};
+var ac=c.colors&&c.colors.length?c.colors.map(function(x){return MC[x]}):['#6b7280','#374151'];
+var sh='';for(var i=0;i<5;i++){var x1=sd(i*3)*(W-p*2),x2=x1+20+sd(i*3+2)*50,pk=sd(i*4)*aH*.4;sh+='<polygon points="'+x1+','+aH+' '+(x1+x2)/2+','+pk+' '+x2+','+aH+'" fill="'+ac[i%ac.length]+'" opacity="'+(0.2+sd(i*5)*.35)+'"/>';}
+sh+='<circle cx="'+(p+10+sd(20)*(W-p*2-20))+'" cy="'+(6+sd(21)*aH*.3)+'" r="'+(6+sd(22)*12)+'" fill="'+ac[0]+'" opacity=".4"/>';
+for(var i=0;i<3;i++)sh+='<ellipse cx="'+(sd(30+i)*(W-p*2))+'" cy="'+(aH*.4+sd(33+i)*aH*.5)+'" rx="'+(8+sd(36+i)*25)+'" ry="'+(4+sd(39+i)*12)+'" fill="'+ac[(i+1)%ac.length]+'" opacity="'+(0.1+sd(42+i)*.18)+'"/>';
+var mana=(c.cost||'').match(/\{([^}]+)\}/g)||[];
+var ms=mana.map(function(s,i){var v=s.replace(/[{}]/g,''),n=/^\d+$/.test(v),bg=n?'#888':(MC[v]||'#888'),fg=(v==='W'||v==='C'||n)?'#000':'#fff',mx=W-p-ip-8-(mana.length-1-i)*13,my=p+ip+nf/2;return'<circle cx="'+mx+'" cy="'+my+'" r="5.5" fill="'+bg+'" stroke="#0003" stroke-width=".5"/><text x="'+mx+'" y="'+(my+3)+'" font-size="7" font-weight="bold" fill="'+fg+'" text-anchor="middle">'+v+'</text>'}).join('');
+var mc=sz==='lg'?38:28,ol=[];if(c.oracle){var ln='';c.oracle.split(' ').forEach(function(w){if((ln+' '+w).trim().length>mc){ol.push(ln.trim());ln=w}else ln=(ln+' '+w).trim()});if(ln)ol.push(ln.trim())}
+var vl=ol.slice(0,sz==='lg'?7:4),tY=p+aH+4+tf+12;
+var pt='';if(c.pt){var pw=sz==='lg'?36:28,ph=sz==='lg'?18:14;pt='<rect x="'+(W-p-pw+2)+'" y="'+(H-p-ph+2)+'" width="'+pw+'" height="'+ph+'" rx="3" fill="'+f1+'" stroke="'+f2+'" stroke-width="1"/><text x="'+(W-p-pw/2+2)+'" y="'+(H-p-ph/2+(sz==='lg'?6:5))+'" font-size="'+(sz==='lg'?11:9)+'" font-weight="bold" fill="#000" text-anchor="middle" opacity=".8">'+c.pt+'</text>'}
+var nameDisp=c.name.length>(sz==='lg'?30:20)?c.name.slice(0,sz==='lg'?28:18)+'…':c.name;
+return'<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" class="cart"><rect width="'+W+'" height="'+H+'" rx="10" fill="#111"/><rect x="3" y="3" width="'+(W-6)+'" height="'+(H-6)+'" rx="8" fill="'+f1+'"/><clipPath id="a'+h+'"><rect x="'+p+'" y="'+p+'" width="'+(W-p*2)+'" height="'+aH+'" rx="4"/></clipPath><g clip-path="url(#a'+h+')"><defs><linearGradient id="s'+h+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="'+ac[0]+'40"/><stop offset="100%" stop-color="'+(ac[1]||ac[0])+'80"/></linearGradient></defs><rect x="'+p+'" y="'+p+'" width="'+(W-p*2)+'" height="'+aH+'" fill="url(#s'+h+')"/><g transform="translate('+p+','+p+')">'+sh+'</g></g><rect x="'+p+'" y="'+p+'" width="'+(W-p*2)+'" height="'+aH+'" rx="4" fill="none" stroke="'+f2+'" stroke-width="1" opacity=".3"/><rect x="'+p+'" y="'+(p+aH+3)+'" width="'+(W-p*2)+'" height="'+(tf+ip*2)+'" rx="3" fill="#0001"/><text x="'+(p+ip)+'" y="'+(p+aH+3+ip+nf-1)+'" font-size="'+nf+'" font-weight="600" fill="#111" opacity=".85" font-family="serif">'+esc(nameDisp)+'</text>'+ms+'<text x="'+(p+ip)+'" y="'+(tY-4)+'" font-size="'+tf+'" fill="#222" opacity=".6" font-family="sans-serif">'+esc(c.type)+'</text><rect x="'+p+'" y="'+(tY-8)+'" width="'+(W-p*2)+'" height="'+(H-p-tY+4)+'" rx="3" fill="#f8f4e8" opacity=".15"/>'+vl.map(function(l,i){return'<text x="'+(p+ip)+'" y="'+(tY+2+i*(of+3))+'" font-size="'+of+'" fill="#ddd" opacity=".7" font-family="sans-serif">'+esc(l)+'</text>'}).join('')+pt+(c.price?'<text x="'+(W-p-2)+'" y="'+(H-p+1)+'" font-size="'+(sz==='lg'?9:8)+'" fill="#aaa" text-anchor="end" opacity=".6">$'+c.price+'</text>':'')+'</svg>';
+}
+
+var DECK=[
+{id:'d1',name:'Pack Rat',type:'Creature — Rat',cost:'{1}{B}{B}',colors:['B'],oracle:"Pack Rat's power and toughness are each equal to the number of Rats you control. {2}{B}, Discard a card: Create a token that's a copy of Pack Rat.",pt:'*/*',price:'0.85',qty:4,flavor:'"More than a nuisance — a plague."'},
+{id:'d2',name:'Locust Miser',type:'Creature — Rat Shaman',cost:'{2}{B}{B}',colors:['B'],oracle:"Each opponent's maximum hand size is reduced by two.",pt:'2/2',price:'2.21',qty:2,set:'Saviors of Kamigawa'},
+{id:'d3',name:'Gnat Miser',type:'Creature — Rat Shaman',cost:'{B}',colors:['B'],oracle:"Each opponent's maximum hand size is reduced by one.",pt:'1/1',price:'1.50',qty:2},
+{id:'d4',name:'Tainted Strike',type:'Instant',cost:'{B}',colors:['B'],oracle:'Target creature gets +1/+0 and gains infect until end of turn.',price:'3.25',qty:3},
+{id:'d5',name:'Ogre Slumlord',type:'Creature — Ogre Rogue',cost:'{3}{B}{B}',colors:['B'],oracle:'Whenever another nontoken creature dies, you may create a 1/1 black Rat creature token. Rats you control have deathtouch.',pt:'3/3',price:'1.00',qty:3},
+{id:'d6',name:'Village Rites',type:'Instant',cost:'{B}',colors:['B'],oracle:'As an additional cost, sacrifice a creature. Draw two cards.',price:'0.10',qty:4},
+{id:'d7',name:'Mirkwood Bats',type:'Creature — Bat',cost:'{3}{B}',colors:['B'],oracle:'Flying. Whenever you create or sacrifice a token, each opponent loses 1 life.',pt:'2/3',price:'0.15',qty:2},
+{id:'d8',name:'Dark Ritual',type:'Instant',cost:'{B}',colors:['B'],oracle:'Add {B}{B}{B}.',price:'1.20',qty:4},
+{id:'d9',name:'Piper of the Swarm',type:'Creature — Human Warlock',cost:'{1}{B}',colors:['B'],oracle:'Rats you control have menace. {1}{B}, {T}: Create a 1/1 black Rat token.',pt:'1/3',price:'0.75',qty:3},
+{id:'d10',name:'Karumonix, the Rat King',type:'Legendary Creature — Phyrexian Rat',cost:'{1}{B}{B}',colors:['B'],oracle:'Toxic 1. Other Rats you control have toxic 1. When Karumonix enters, look at the top five cards of your library.',pt:'3/3',price:'1.50',qty:1},
+{id:'d11',name:'Shared Animosity',type:'Enchantment',cost:'{2}{R}',colors:['R'],oracle:'Whenever a creature you control attacks, it gets +1/+0 for each other attacking creature that shares a type.',price:'8.00',qty:3},
+{id:'d12',name:'Song of Totentanz',type:'Sorcery',cost:'{X}{R}',colors:['R'],oracle:'Create X 1/1 black Rat tokens. Creatures you control gain haste until end of turn.',price:'0.50',qty:4}
+];
+
+var SEARCH=[
+{id:'s1',name:'Rat Colony',type:'Creature — Rat',cost:'{1}{B}',colors:['B'],oracle:'Rat Colony gets +1/+0 for each other Rat you control. A deck can have any number of cards named Rat Colony.',pt:'2/1',price:'0.35'},
+{id:'s2',name:'Typhoid Rats',type:'Creature — Rat',cost:'{B}',colors:['B'],oracle:'Deathtouch',pt:'1/1',price:'0.10'},
+{id:'s3',name:'Chittering Witch',type:'Creature — Human Warlock',cost:'{3}{B}',colors:['B'],oracle:'When Chittering Witch enters, create Rat tokens equal to your number of opponents.',pt:'2/2',price:'0.25'},
+{id:'s4',name:'Marrow-Gnawer',type:'Legendary Creature — Rat Rogue',cost:'{3}{B}{B}',colors:['B'],oracle:'All Rats have fear. {T}, Sacrifice a Rat: Create X 1/1 black Rat tokens.',pt:'2/3',price:'14.00'},
+{id:'s5',name:'Crypt Ghast',type:'Creature — Spirit',cost:'{3}{B}',colors:['B'],oracle:'Extort. Whenever you tap a Swamp for mana, add an additional {B}.',pt:'2/2',price:'5.50'},
+{id:'s6',name:'Swarmyard',type:'Land',cost:'',colors:[],oracle:'{T}: Add {C}. {T}: Regenerate target Rat, Spider, Squirrel, or Insect.',price:'3.75'},
+{id:'s7',name:'Relentless Rats',type:'Creature — Rat',cost:'{1}{B}{B}',colors:['B'],oracle:'Relentless Rats gets +1/+1 for each other Relentless Rats on the battlefield.',pt:'2/2',price:'0.50'},
+{id:'s8',name:'Ink-Eyes, Servant of Oni',type:'Legendary Creature — Rat Ninja',cost:'{4}{B}{B}',colors:['B'],oracle:'Ninjutsu {3}{B}{B}. Whenever Ink-Eyes deals combat damage, put a creature from that graveyard onto the battlefield.',pt:'5/4',price:'8.00'},
+{id:'s9',name:'Grave Pact',type:'Enchantment',cost:'{1}{B}{B}{B}',colors:['B'],oracle:'Whenever a creature you control dies, each other player sacrifices a creature.',price:'7.00'},
+{id:'s10',name:'Thrumming Stone',type:'Legendary Artifact',cost:'{5}',colors:[],oracle:'Spells you cast have ripple 4.',price:'22.00'},
+{id:'s11',name:'Pestilence',type:'Enchantment',cost:'{2}{B}{B}',colors:['B'],oracle:'{B}: Pestilence deals 1 damage to each creature and each player.',price:'0.50',inDeck:true},
+{id:'s12',name:"Bontu's Monument",type:'Legendary Artifact',cost:'{3}',colors:[],oracle:'Black creature spells cost {1} less. Whenever you cast a creature spell, opponents lose 1 life.',price:'2.50'},
+{id:'s13',name:'Coat of Arms',type:'Artifact',cost:'{5}',colors:[],oracle:'Each creature gets +1/+1 for each other creature that shares a creature type.',price:'6.00'},
+{id:'s14',name:'Skullclamp',type:'Artifact — Equipment',cost:'{1}',colors:[],oracle:'Equipped creature gets +1/-1. When equipped creature dies, draw two cards. Equip {1}.',price:'4.50',inDeck:true},
+{id:'s15',name:'Nezumi Shortfang',type:'Creature — Rat Rogue',cost:'{1}{B}',colors:['B'],oracle:'{1}{B}, {T}: Target opponent discards a card.',pt:'1/1',price:'1.75'},
+{id:'s16',name:'Ratcatcher',type:'Creature — Ogre Rogue',cost:'{4}{B}{B}',colors:['B'],oracle:'Fear. At the beginning of your upkeep, search your library for a Rat card, reveal it, put it in your hand, then shuffle.',pt:'4/3',price:'2.00'}
+];
+
+var CATS=[{id:'rats',l:'Top Rats',i:'🐀'},{id:'tribal',l:'Tribal',i:'⚔'},{id:'removal',l:'Removal',i:'💀'},{id:'draw',l:'Card Draw',i:'📜'},{id:'trending',l:'Trending',i:'📈'},{id:'new',l:'New Releases',i:'✦'}];
+
+var NLP=[
+{r:/\b(black)\b/i,t:{l:'color',v:'Black'}},{r:/\b(red)\b/i,t:{l:'color',v:'Red'}},{r:/\b(green)\b/i,t:{l:'color',v:'Green'}},{r:/\b(blue)\b/i,t:{l:'color',v:'Blue'}},{r:/\b(white)\b/i,t:{l:'color',v:'White'}},
+{r:/\b(creature)s?\b/i,t:{l:'type',v:'Creature'}},{r:/\b(instant)s?\b/i,t:{l:'type',v:'Instant'}},{r:/\b(sorcery|sorceries)\b/i,t:{l:'type',v:'Sorcery'}},{r:/\b(enchantment)s?\b/i,t:{l:'type',v:'Enchantment'}},{r:/\b(artifact)s?\b/i,t:{l:'type',v:'Artifact'}},{r:/\b(land)s?\b/i,t:{l:'type',v:'Land'}},
+{r:/\bflying\b/i,t:{l:'kw',v:'Flying'}},{r:/\bdeathtouch\b/i,t:{l:'kw',v:'Deathtouch'}},{r:/\bmenace\b/i,t:{l:'kw',v:'Menace'}},{r:/\bhaste\b/i,t:{l:'kw',v:'Haste'}},{r:/\bfear\b/i,t:{l:'kw',v:'Fear'}},{r:/\btrample\b/i,t:{l:'kw',v:'Trample'}},
+{r:/under\s*\$?(\d+)/i,t:null,d:function(m){return{l:'price',v:'< $'+m[1]}}},{r:/under\s*(\d+)\s*mana/i,t:null,d:function(m){return{l:'cmc',v:'≤ '+m[1]}}},{r:/(\d+)\s*drop/i,t:null,d:function(m){return{l:'cmc',v:'= '+m[1]}}},
+{r:/\bremoval\b/i,t:{l:'arch',v:'Removal'}},{r:/\bcard\s*draw\b/i,t:{l:'arch',v:'Card Draw'}},{r:/\btutor\b/i,t:{l:'arch',v:'Tutor'}},{r:/\btribal\b/i,t:{l:'arch',v:'Tribal'}},{r:/\btoken\b/i,t:{l:'arch',v:'Token'}},{r:/\bbudget\b/i,t:{l:'price',v:'< $2'}}
+];
+
+var toks=[];
+function parseNLP(t){var r=[],rem=t;NLP.forEach(function(p){var m=rem.match(p.r);if(m){r.push(p.d?p.d(m):JSON.parse(JSON.stringify(p.t)));rem=rem.replace(m[0],'').trim()}});return{toks:r,rem:rem}}
+function rToks(){document.getElementById('tc').innerHTML=toks.map(function(t,i){return'<span class="st" onclick="rmT('+i+')" title="Click to remove"><span class="stl">'+t.l+':</span> '+t.v+' <span class="stx">×</span></span>'}).join('')}
+function rmT(i){toks.splice(i,1);rToks();doF();updateAC(document.getElementById('si').value)}
+
+/* AUTOCOMPLETE */
+function updateAC(val){
+  var acd=document.getElementById('acd');
+  if(val.length<2){acd.classList.remove('show');return}
+  var parsed=parseNLP(val);
+  var all=DECK.concat(SEARCH);
+  var seen={};
+  var matches=all.filter(function(c){
+    if(seen[c.name])return false;
+    if(c.name.toLowerCase().indexOf(val.toLowerCase())>=0){seen[c.name]=true;return true}
+    return false;
+  }).slice(0,5);
+
+  var html='';
+  if(matches.length){
+    html+='<div class="ac-lbl">Cards</div>';
+    matches.forEach(function(c){
+      var inD=c.inDeck||DECK.some(function(d){return d.name===c.name});
+      html+='<div class="ac-item" onclick="pickAC(\''+esc(c.name)+'\')">'
+        +(inD?'<span style="width:6px;height:6px;border-radius:50%;background:var(--green)"></span>':'')
+        +'<span>'+esc(c.name)+'</span><span class="acm">'+mCH(c.cost,true)+'</span></div>';
+    });
+  }
+  if(parsed.toks.length){
+    html+='<div class="ac-parsed"><span class="ac-pl">Parsed:</span>';
+    parsed.toks.forEach(function(t,i){
+      html+='<span class="st" onclick="rmT('+i+')" title="Click to remove"><span class="stl">'+t.l+':</span> '+t.v+' <span class="stx">×</span></span>';
+    });
+    html+='</div>';
+  }
+  acd.innerHTML=html;
+  acd.classList.toggle('show',html.length>0);
+}
+function pickAC(name){
+  document.getElementById('si').value=name;
+  document.getElementById('acd').classList.remove('show');
+  document.getElementById('cb').classList.add('vis');
+  doF();
+}
+function showAC(){var v=document.getElementById('si').value;if(v.length>=2)updateAC(v)}
+
+function onS(v){
+  document.getElementById('cb').classList.toggle('vis',!!v);
+  var parsed=parseNLP(v);toks=parsed.toks;rToks();doF();updateAC(v);
+}
+function clearS(){document.getElementById('si').value='';document.getElementById('cb').classList.remove('vis');document.getElementById('acd').classList.remove('show');toks=[];rToks();doF()}
+function doF(){
+  var v=(document.getElementById('si').value||'').toLowerCase();
+  var cards=SEARCH;
+  if(v.length>=2){var rem=v;NLP.forEach(function(p){rem=rem.replace(p.r,'').trim()});if(rem.length>=2)cards=cards.filter(function(c){return c.name.toLowerCase().indexOf(rem)>=0||c.type.toLowerCase().indexOf(rem)>=0||c.oracle.toLowerCase().indexOf(rem)>=0})}
+  rSG(cards);document.getElementById('rc').innerHTML='<b>'+cards.length+'</b> results';
+}
+function rSG(cards){
+  if(!cards)cards=SEARCH;
+  document.getElementById('sg').innerHTML=cards.map(function(c){
+    var inD=c.inDeck||DECK.some(function(d){return d.name===c.name});
+    return'<div class="ct" onclick="oM(\''+c.id+'\',\'search\')">'+cSVG(c,'sm')+(inD?'<span class="idb"></span>':'')+'<div class="cov"><div class="ov-n">'+esc(c.name)+'</div><div class="ov-m"><span>'+(c.price?'$'+c.price:'')+'</span><span>'+c.type.split('—')[0].trim()+'</span></div><div class="ov-a"><button class="ov-add" onclick="event.stopPropagation();addC(\''+esc(c.name)+'\')">+ Add to Deck</button></div></div></div>';
+  }).join('');
+}
+function rDG(){
+  document.getElementById('dg').innerHTML=DECK.map(function(c){
+    return'<div class="ct" onclick="oM(\''+c.id+'\',\'deck\')">'+cSVG(c,'sm')+'<span class="qb">×'+c.qty+'</span><div class="cov"><div class="ov-n">'+esc(c.name)+'</div><div class="ov-m"><span>'+(c.price?'$'+c.price:'')+'</span><span>'+c.type.split('—')[0].trim()+'</span></div><div class="ov-a"><div class="qty-c"><button onclick="event.stopPropagation()">−</button><span class="qn">'+c.qty+'</span><button onclick="event.stopPropagation()">+</button></div></div></div></div>';
+  }).join('');
+}
+
+/* MODAL */
+var mCard=null,mCtx='',mTab='details';
+function oM(id,ctx){
+  var c=DECK.concat(SEARCH).filter(function(x){return x.id===id})[0];if(!c)return;
+  mCard=c;mCtx=ctx;mTab='details';
+  document.getElementById('mA').innerHTML=cSVG(c,'lg');
+  document.getElementById('mN').textContent=c.name;
+  document.getElementById('mS').textContent=c.set||'Mystery Booster';
+  document.getElementById('mT').innerHTML='<span>'+c.type+'</span><span>'+mCH(c.cost)+'</span>';
+  document.getElementById('mO').textContent=c.oracle;
+  var fl=document.getElementById('mF');if(c.flavor){fl.style.display='';fl.textContent=c.flavor}else fl.style.display='none';
+  document.getElementById('mD').innerHTML='<dl class="m-dets"><dt>Artist</dt><dd style="color:var(--blue)">Various Artists</dd><dt>Rarity</dt><dd>Uncommon</dd><dt>Collector #</dt><dd>'+Math.floor(Math.random()*300+1)+'</dd><dt>Price</dt><dd style="color:var(--amber)">'+(c.price?'$'+c.price:'N/A')+'</dd></dl>';
+  document.getElementById('mL').innerHTML=[{f:'Standard',l:Math.random()>.5},{f:'Pioneer',l:Math.random()>.4},{f:'Modern',l:true},{f:'Legacy',l:true},{f:'Vintage',l:true},{f:'Commander',l:true},{f:'Pauper',l:Math.random()>.6}].map(function(x){return'<span class="ml '+(x.l?'y':'n')+'">'+x.f+': '+(x.l?'LEGAL':'NOT LEGAL')+'</span>'}).join('');
+  uCB();
+  document.querySelectorAll('.m-tab').forEach(function(t,i){t.classList.toggle('active',i===0)});
+  document.getElementById('mbg').classList.add('show');
+}
+function closeModal(){document.getElementById('mbg').classList.remove('show')}
+function setMT(tab,btn){mTab=tab;document.querySelectorAll('.m-tab').forEach(function(t){t.classList.remove('active')});btn.classList.add('active');uCB()}
+function uCB(){
+  var b=document.getElementById('mCB');
+  if(mCtx==='search'){
+    // Search context: always Add to Deck
+    b.className='m-ctx add';b.textContent='+ Add to Deck';b.disabled=false;
+  }else{
+    // Deck context: Confirm Art Swap (disabled in Details, active in Swap Art)
+    if(mTab==='swap'){b.className='m-ctx swap';b.textContent='Confirm Art Swap';b.disabled=false}
+    else{b.className='m-ctx disabled';b.textContent='Confirm Art Swap';b.disabled=true}
+  }
+}
+function ctxA(){
+  if(document.getElementById('mCB').disabled)return;
+  if(mCtx==='search'){addC(mCard.name);closeModal()}
+  else if(mTab==='swap'){showT('Art swap confirmed');closeModal()}
+}
+
+var mode='decks',fOn=true;
+function setMode(m){mode=m;document.getElementById('app').className='app mode-'+m;document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b.dataset.tab===m)});if(m==='search')setTimeout(function(){document.getElementById('si').focus()},100)}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('collapsed')}
+function toggleFilter(){fOn=!fOn;document.getElementById('fb').classList.toggle('off',!fOn)}
+function addC(n){showT('Added '+n+' to Rats Deck')}
+function showT(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2000)}
+function selCat(id){document.querySelectorAll('.chip').forEach(function(c){c.classList.remove('active')});document.querySelectorAll('[data-cat="'+id+'"]').forEach(function(c){c.classList.add('active')})}
+function clickRange(e,el){var r=el.getBoundingClientRect(),p=Math.max(0,Math.min(100,Math.round((e.clientX-r.left)/r.width*100)));document.getElementById('rf').style.width=p+'%';document.getElementById('priceMax').value='$'+Math.round(p*2)}
+function updateRange(){
+  var min=parseInt((document.getElementById('priceMin').value||'0').replace(/[^0-9]/g,''))||0;
+  var max=parseInt((document.getElementById('priceMax').value||'100').replace(/[^0-9]/g,''))||100;
+  if(max<min)max=min;
+  document.getElementById('priceMin').value='$'+min;document.getElementById('priceMax').value='$'+max;
+  document.getElementById('rf').style.width=Math.min(100,Math.round(max/2))+'%';
+}
+
+document.getElementById('cats').innerHTML=CATS.map(function(c){return'<button class="chip" onclick="selCat(\''+c.id+'\')" data-cat="'+c.id+'"><span style="font-size:11px">'+c.i+'</span>'+c.l+'</button>'}).join('');
+rSG();rDG();
+document.addEventListener('click',function(e){if(!e.target.closest('.search-bar'))document.getElementById('acd').classList.remove('show')});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal()});
+</script>
+</body>
+</html>
