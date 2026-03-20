@@ -90,7 +90,7 @@ export default function Dashboard() {
             onTileSizeChange={setTileSize}
           />
         </div>
-        <div className={activeTab === "decks" ? "flex-1 overflow-hidden p-4 md:p-8" : "hidden"}>
+        <div className={activeTab === "decks" ? "flex-1 overflow-hidden p-4" : "hidden"}>
           <Workspace
             pendingImport={pendingImport}
             processImport={processImport}
