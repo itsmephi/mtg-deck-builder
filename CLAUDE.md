@@ -45,7 +45,7 @@ For straightforward bug fixes and small enhancements, `/plan` → PROCEED → bu
 ---
 
 ## Active Milestone
-→ No active milestone. v1.6.0 Search Overhaul shipped (#72, #26 closed). Next milestone pending triage.
+→ Next patch (10 items) — CardModal open-after-add, planeswalker commander bug, group-by commander, in-deck pill tooltip, Swap Art loading spinner, filter Deselect All, color chip tints, price "Any" toggle, set/Secret Lair NLP token, Discard NLP token
 
 ---
 
