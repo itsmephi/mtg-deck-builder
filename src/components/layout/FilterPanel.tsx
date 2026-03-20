@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export interface FilterState {
   priceMin: number;
@@ -25,7 +25,7 @@ export function buildSidebarFilterSyntax(filters: FilterState): string {
 
   if (!filters.anyPrice) {
     if (filters.priceMin > 0) parts.push(`usd>=${filters.priceMin}`);
-    if (filters.priceMax < 100) parts.push(`usd<=${filters.priceMax}`);
+    parts.push(`usd<=${filters.priceMax}`);
   }
 
   const allRarities = new Set(["common", "uncommon", "rare", "mythic"]);
@@ -108,13 +108,37 @@ const COLOR_ACTIVE_CLASS: Record<string, string> = {
 
 export default function FilterPanel({ filters, onFiltersChange }: FilterPanelProps) {
   const sliderRef = useRef<HTMLDivElement>(null);
+  const [localMin, setLocalMin] = useState(String(filters.priceMin));
+  const [localMax, setLocalMax] = useState(String(filters.priceMax));
 
-  const handleSliderClick = (e: React.MouseEvent) => {
+  useEffect(() => { setLocalMin(String(filters.priceMin)); }, [filters.priceMin]);
+  useEffect(() => { setLocalMax(String(filters.priceMax)); }, [filters.priceMax]);
+
+  const [dragMax, setDragMax] = useState<number | null>(null);
+
+  const calcMax = (clientX: number, rect: DOMRect) => {
+    const ratio = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+    return Math.min(100, Math.round(Math.max(filters.priceMin + 1, ratio * 100)));
+  };
+
+  const handleSliderMouseDown = (e: React.MouseEvent) => {
     if (!sliderRef.current) return;
+    e.preventDefault();
     const rect = sliderRef.current.getBoundingClientRect();
-    const ratio = (e.clientX - rect.left) / rect.width;
-    const newMax = Math.round(Math.max(filters.priceMin + 1, ratio * 100));
-    onFiltersChange({ ...filters, priceMax: Math.min(100, newMax) });
+    setDragMax(calcMax(e.clientX, rect));
+
+    const onMove = (me: MouseEvent) => {
+      setDragMax(calcMax(me.clientX, rect));
+    };
+    const onUp = (me: MouseEvent) => {
+      const val = calcMax(me.clientX, rect);
+      setDragMax(null);
+      onFiltersChange({ ...filters, priceMax: val });
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onUp);
+    };
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onUp);
   };
 
   return (
@@ -135,43 +159,62 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
           </button>
         </div>
         <div className={`flex items-center gap-2 ${filters.anyPrice ? "opacity-30 pointer-events-none" : ""}`}>
-          <input
-            type="text"
-            value={`$${filters.priceMin}`}
-            onChange={(e) => {
-              const val = parseInt(e.target.value.replace(/[^0-9]/g, "") || "0", 10);
-              onFiltersChange({
-                ...filters,
-                priceMin: Math.max(0, Math.min(val, filters.priceMax - 1)),
-              });
-            }}
-            className="w-12 bg-neutral-800 border border-neutral-700 rounded text-xs text-neutral-300 px-1.5 py-0.5 text-center focus:outline-none focus:border-neutral-500"
-          />
+          <div className="flex items-center">
+            <span className="text-xs text-neutral-400 mr-0.5">$</span>
+            <input
+              type="text"
+              value={localMin}
+              onFocus={(e) => e.target.select()}
+              onChange={(e) => setLocalMin(e.target.value.replace(/[^0-9]/g, ""))}
+              onKeyDown={(e) => { if (e.key === "Enter") e.currentTarget.blur(); }}
+              onBlur={() => {
+                const val = Math.max(0, Math.min(parseInt(localMin || "0", 10), filters.priceMax - 1));
+                setLocalMin(String(val));
+                onFiltersChange({ ...filters, priceMin: val });
+              }}
+              className="w-10 bg-neutral-800 border border-neutral-700 rounded text-xs text-neutral-300 px-1.5 py-0.5 text-center focus:outline-none focus:border-neutral-500"
+            />
+          </div>
           <div
             ref={sliderRef}
             className="flex-1 relative h-2 bg-neutral-700 rounded cursor-pointer"
-            onClick={handleSliderClick}
+            onMouseDown={handleSliderMouseDown}
           >
-            <div
-              className="absolute h-full bg-blue-500 rounded"
-              style={{
-                left: `${(filters.priceMin / 100) * 100}%`,
-                width: `${((filters.priceMax - filters.priceMin) / 100) * 100}%`,
+            {(() => {
+              const displayMax = dragMax ?? filters.priceMax;
+              return (
+                <>
+                  <div
+                    className="absolute h-full bg-blue-500 rounded"
+                    style={{
+                      left: `${(filters.priceMin / 100) * 100}%`,
+                      width: `${((displayMax - filters.priceMin) / 100) * 100}%`,
+                    }}
+                  />
+                  <div
+                    className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 bg-white rounded-full border-2 border-blue-500 shadow"
+                    style={{ left: `${(displayMax / 100) * 100}%` }}
+                  />
+                </>
+              );
+            })()}
+          </div>
+          <div className="flex items-center">
+            <span className="text-xs text-neutral-400 mr-0.5">$</span>
+            <input
+              type="text"
+              value={dragMax !== null ? String(dragMax) : localMax}
+              onFocus={(e) => e.target.select()}
+              onChange={(e) => setLocalMax(e.target.value.replace(/[^0-9]/g, ""))}
+              onKeyDown={(e) => { if (e.key === "Enter") e.currentTarget.blur(); }}
+              onBlur={() => {
+                const val = Math.min(100, Math.max(filters.priceMin + 1, parseInt(localMax || "0", 10)));
+                setLocalMax(String(val));
+                onFiltersChange({ ...filters, priceMax: val });
               }}
+              className="w-10 bg-neutral-800 border border-neutral-700 rounded text-xs text-neutral-300 px-1.5 py-0.5 text-center focus:outline-none focus:border-neutral-500"
             />
           </div>
-          <input
-            type="text"
-            value={`$${filters.priceMax}`}
-            onChange={(e) => {
-              const val = parseInt(e.target.value.replace(/[^0-9]/g, "") || "0", 10);
-              onFiltersChange({
-                ...filters,
-                priceMax: Math.min(100, Math.max(filters.priceMin + 1, val)),
-              });
-            }}
-            className="w-12 bg-neutral-800 border border-neutral-700 rounded text-xs text-neutral-300 px-1.5 py-0.5 text-center focus:outline-none focus:border-neutral-500"
-          />
         </div>
       </div>
 
