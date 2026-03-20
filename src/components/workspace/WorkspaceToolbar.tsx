@@ -76,14 +76,6 @@ export default function WorkspaceToolbar({
   const [formatPickerOpen, setFormatPickerOpen] = useState(false);
   const [formatPickerDir, setFormatPickerDir] = useState<"up" | "down">("down");
   const formatPickerRef = useRef<HTMLDivElement>(null);
-  const nameMeasureRef = useRef<HTMLSpanElement>(null);
-  const [nameInputWidth, setNameInputWidth] = useState(80);
-
-  useEffect(() => {
-    if (nameMeasureRef.current) {
-      setNameInputWidth(Math.max(80, nameMeasureRef.current.scrollWidth + 2));
-    }
-  }, [activeDeck.name]);
 
   const { setDeckFormat, mergeSideboardIntoDeck, deleteSideboardForFormat } = useDeckManager();
 
@@ -141,22 +133,13 @@ export default function WorkspaceToolbar({
     <div className="flex flex-col gap-2 mb-4 pb-3 border-b border-neutral-800">
       {/* Row 1: deck name + format badge */}
       <div className="flex items-center gap-1.5">
-        {/* Hidden span to measure exact rendered text width */}
-        <span
-          ref={nameMeasureRef}
-          className="invisible absolute whitespace-pre pointer-events-none text-3xl"
-          aria-hidden="true"
-        >
-          {activeDeck.name || "Untitled"}
-        </span>
         <input
           value={activeDeck.name}
           onChange={(e) => onUpdateDeckName(e.target.value)}
-          style={{ width: nameInputWidth }}
           onFocus={() => setIsEditingName(true)}
           onBlur={() => setIsEditingName(false)}
           onKeyDown={(e) => { if (e.key === "Enter") e.currentTarget.blur(); }}
-          className={`text-3xl text-white bg-transparent border-b border-transparent hover:border-neutral-700 focus:border-blue-500 focus:outline-none transition-all px-0 outline-none placeholder:text-neutral-500 ${isEditingName ? "" : "truncate"}`}
+          className={`text-3xl text-white bg-transparent border-b border-transparent hover:border-neutral-700 focus:border-blue-500 focus:outline-none transition-all px-0 outline-none placeholder:text-neutral-500 text-left min-w-20 [field-sizing:content] ${isEditingName ? "" : "truncate"}`}
           placeholder="Untitled"
         />
 

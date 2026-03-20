@@ -5,6 +5,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.8.1] — Deck Rename Jitter Fix
+
+### Fixed
+- Deck name input no longer shifts/jitters on each keystroke when renaming — replaced hidden-span JS measurement with CSS `field-sizing: content` so the browser natively auto-sizes the input to its value with no double-render (#73)
+
+---
+
 ## [1.8.0] — Tile Size Parity + Snap Slider
 
 ### Added
