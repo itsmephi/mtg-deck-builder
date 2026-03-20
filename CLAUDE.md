@@ -45,7 +45,7 @@ For straightforward bug fixes and small enhancements, `/plan` → PROCEED → bu
 ---
 
 ## Active Milestone
-→ No active milestone. v1.7.0 shipped — search polish + commander fixes. Next milestone pending triage.
+→ 2 items selected — tile size parity + grid column size presets (next version TBD)
 
 ---
 
