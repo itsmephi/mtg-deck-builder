@@ -1,8 +1,11 @@
-export const APP_VERSION = "1.8.3";
+export const APP_VERSION = "1.8.4";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.8.4": [
+    "Bug fix: resolved hydration mismatch from filter persistence — server now always renders with default filters; stored values are applied after mount, matching the tile size pattern",
+  ],
   "1.8.3": [
     "Tile size slider thumb restyled to match the price slider — white fill, blue border, neutral drop shadow; stop dots unchanged",
     "Price slider thumb now shows grab/grabbing cursor during drag",

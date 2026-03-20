@@ -22,14 +22,7 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<"search" | "decks">("search");
   const [activeChipId, setActiveChipId] = useState<string | null>(null);
   const [activeChipQuery, setActiveChipQuery] = useState<string | null>(null);
-  const [sidebarFilters, setSidebarFilters] = useState<FilterState>(() => {
-    try {
-      const raw = localStorage.getItem(SIDEBAR_FILTERS_STORAGE_KEY);
-      return raw ? deserializeFilters(raw) : DEFAULT_FILTERS;
-    } catch {
-      return DEFAULT_FILTERS;
-    }
-  });
+  const [sidebarFilters, setSidebarFilters] = useState<FilterState>(DEFAULT_FILTERS);
   const [tileSize, setTileSizeState] = useState<TileSizeKey>(DEFAULT_TILE_SIZE);
 
   useEffect(() => {
@@ -37,6 +30,8 @@ export default function Dashboard() {
     if (stored === "search" || stored === "decks") setActiveTab(stored);
     const storedTile = localStorage.getItem(TILE_SIZE_STORAGE_KEY) as TileSizeKey | null;
     if (storedTile && TILE_SIZE_STOPS.some((s) => s.key === storedTile)) setTileSizeState(storedTile);
+    const storedFilters = localStorage.getItem(SIDEBAR_FILTERS_STORAGE_KEY);
+    if (storedFilters) setSidebarFilters(deserializeFilters(storedFilters));
   }, []);
 
   useEffect(() => {
