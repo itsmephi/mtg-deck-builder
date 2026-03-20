@@ -1,8 +1,14 @@
-export const APP_VERSION = "1.8.4";
+export const APP_VERSION = "1.9.0";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.9.0": [
+    "Release year filter: dual text inputs (year from / to) in the sidebar filter panel with three quick-select presets — This Year, Last 5 Yrs (default), and All; filter is active by default showing only the past 5 years",
+    "Year syntax: injects year>= and year<= Scryfall clauses only when the range is meaningfully constrained (yearMin > 1993 or yearMax < current year); All preset produces no syntax",
+    "CardModal Product Details: Released date row added below Price, showing the printing's release date (YYYY-MM-DD) from Scryfall",
+    "Year filter persists to localStorage via the existing mtg-sidebar-filters key — survives page refresh and tab switches; old saved state without year fields falls back to defaults gracefully",
+  ],
   "1.8.4": [
     "Bug fix: resolved hydration mismatch from filter persistence — server now always renders with default filters; stored values are applied after mount, matching the tile size pattern",
   ],

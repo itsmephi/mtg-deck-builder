@@ -384,6 +384,12 @@ export default function CardModal({
                             : "N/A"}
                         </span>
                       </p>
+                      {previewCard.released_at && (
+                        <p>
+                          <span className="font-bold text-white">Released:</span>{" "}
+                          {previewCard.released_at}
+                        </p>
+                      )}
                     </div>
                   </section>
 

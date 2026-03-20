@@ -2,6 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 
+const CURRENT_YEAR = new Date().getFullYear();
+const DEFAULT_YEAR_MIN = CURRENT_YEAR - 4;
+const DEFAULT_YEAR_MAX = CURRENT_YEAR;
+
 export interface FilterState {
   priceMin: number;
   priceMax: number;
@@ -9,6 +13,8 @@ export interface FilterState {
   rarities: Set<string>;
   types: Set<string>;
   colors: Set<string>;
+  yearMin: number;
+  yearMax: number;
 }
 
 export const DEFAULT_FILTERS: FilterState = {
@@ -18,6 +24,8 @@ export const DEFAULT_FILTERS: FilterState = {
   rarities: new Set(["common", "uncommon", "rare", "mythic"]),
   types: new Set(["creature", "instant", "sorcery", "enchantment", "artifact", "land", "planeswalker"]),
   colors: new Set(["W", "U", "B", "R", "G", "C"]),
+  yearMin: DEFAULT_YEAR_MIN,
+  yearMax: DEFAULT_YEAR_MAX,
 };
 
 export const SIDEBAR_FILTERS_STORAGE_KEY = "mtg-sidebar-filters";
@@ -30,6 +38,8 @@ export function serializeFilters(f: FilterState): string {
     rarities: Array.from(f.rarities),
     types: Array.from(f.types),
     colors: Array.from(f.colors),
+    yearMin: f.yearMin,
+    yearMax: f.yearMax,
   });
 }
 
@@ -43,6 +53,8 @@ export function deserializeFilters(raw: string): FilterState {
       rarities: new Set(parsed.rarities ?? Array.from(DEFAULT_FILTERS.rarities)),
       types: new Set(parsed.types ?? Array.from(DEFAULT_FILTERS.types)),
       colors: new Set(parsed.colors ?? Array.from(DEFAULT_FILTERS.colors)),
+      yearMin: parsed.yearMin ?? DEFAULT_FILTERS.yearMin,
+      yearMax: parsed.yearMax ?? DEFAULT_FILTERS.yearMax,
     };
   } catch {
     return DEFAULT_FILTERS;
@@ -74,6 +86,9 @@ export function buildSidebarFilterSyntax(filters: FilterState): string {
     const q = Array.from(filters.colors).map((c) => `c:${c}`).join(" OR ");
     parts.push(`(${q})`);
   }
+
+  if (filters.yearMin > 1993) parts.push(`year>=${filters.yearMin}`);
+  if (filters.yearMax < CURRENT_YEAR) parts.push(`year<=${filters.yearMax}`);
 
   return parts.join(" ");
 }
@@ -139,9 +154,13 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
   const sliderRef = useRef<HTMLDivElement>(null);
   const [localMin, setLocalMin] = useState(String(filters.priceMin));
   const [localMax, setLocalMax] = useState(String(filters.priceMax));
+  const [localYearMin, setLocalYearMin] = useState(String(filters.yearMin));
+  const [localYearMax, setLocalYearMax] = useState(String(filters.yearMax));
 
   useEffect(() => { setLocalMin(String(filters.priceMin)); }, [filters.priceMin]);
   useEffect(() => { setLocalMax(String(filters.priceMax)); }, [filters.priceMax]);
+  useEffect(() => { setLocalYearMin(String(filters.yearMin)); }, [filters.yearMin]);
+  useEffect(() => { setLocalYearMax(String(filters.yearMax)); }, [filters.yearMax]);
 
   const [dragMax, setDragMax] = useState<number | null>(null);
 
@@ -244,6 +263,64 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
               className="w-10 bg-neutral-800 border border-neutral-700 rounded text-xs text-neutral-300 px-1.5 py-0.5 text-center focus:outline-none focus:border-neutral-500"
             />
           </div>
+        </div>
+      </div>
+
+      {/* Release Year */}
+      <div>
+        <div className="mb-2">
+          <div className="text-[10px] text-neutral-500 uppercase tracking-wider mb-1.5">Release Year</div>
+          <div className="flex gap-1">
+            {([
+              { label: "This Year", min: CURRENT_YEAR, max: CURRENT_YEAR },
+              { label: "Last 5 Yrs", min: DEFAULT_YEAR_MIN, max: DEFAULT_YEAR_MAX },
+              { label: "All", min: 1993, max: CURRENT_YEAR },
+            ] as const).map((preset) => {
+              const active = filters.yearMin === preset.min && filters.yearMax === preset.max;
+              return (
+                <button
+                  key={preset.label}
+                  onClick={() => onFiltersChange({ ...filters, yearMin: preset.min, yearMax: preset.max })}
+                  className={`flex-1 px-1.5 py-0.5 rounded text-[10px] border transition-colors ${
+                    active
+                      ? "bg-blue-900/30 border-blue-500/30 text-blue-400"
+                      : "bg-neutral-800 border-neutral-700 text-neutral-500 hover:text-neutral-300"
+                  }`}
+                >
+                  {preset.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <input
+            type="text"
+            value={localYearMin}
+            onFocus={(e) => e.target.select()}
+            onChange={(e) => setLocalYearMin(e.target.value.replace(/[^0-9]/g, ""))}
+            onKeyDown={(e) => { if (e.key === "Enter") e.currentTarget.blur(); }}
+            onBlur={() => {
+              const val = Math.max(1993, Math.min(parseInt(localYearMin || "1993", 10), filters.yearMax));
+              setLocalYearMin(String(val));
+              onFiltersChange({ ...filters, yearMin: val });
+            }}
+            className="w-14 bg-neutral-800 border border-neutral-700 rounded text-xs text-neutral-300 px-1.5 py-0.5 text-center focus:outline-none focus:border-neutral-500"
+          />
+          <span className="text-xs text-neutral-500">to</span>
+          <input
+            type="text"
+            value={localYearMax}
+            onFocus={(e) => e.target.select()}
+            onChange={(e) => setLocalYearMax(e.target.value.replace(/[^0-9]/g, ""))}
+            onKeyDown={(e) => { if (e.key === "Enter") e.currentTarget.blur(); }}
+            onBlur={() => {
+              const val = Math.min(CURRENT_YEAR, Math.max(filters.yearMin, parseInt(localYearMax || String(CURRENT_YEAR), 10)));
+              setLocalYearMax(String(val));
+              onFiltersChange({ ...filters, yearMax: val });
+            }}
+            className="w-14 bg-neutral-800 border border-neutral-700 rounded text-xs text-neutral-300 px-1.5 py-0.5 text-center focus:outline-none focus:border-neutral-500"
+          />
         </div>
       </div>
 

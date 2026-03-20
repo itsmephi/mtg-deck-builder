@@ -33,6 +33,7 @@ export interface ScryfallCard {
   mana_cost?: string;
   cmc?: number;
   color_identity?: string[];
+  released_at?: string;
 }
 
 export interface DeckCard extends ScryfallCard {
