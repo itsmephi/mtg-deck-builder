@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tile Size Slider v4 — Brewslinger Prototype</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a0c; color: #e5e5e5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; min-height: 100vh; }
+  .app-shell { display: flex; height: 100vh; }
+  .sidebar { width: 200px; background: #111114; border-right: 1px solid #1a1a1e; display: flex; flex-direction: column; flex-shrink: 0; transition: width 0.2s ease; position: relative; }
+  .sidebar.collapsed { width: 48px; }
+  .sidebar.collapsed .sidebar-tabs, .sidebar.collapsed .sidebar-decks, .sidebar.collapsed .sidebar-footer { display: none; }
+  .sidebar.collapsed .rail { display: flex; }
+  .sidebar-tabs { display: flex; border-bottom: 1px solid #1a1a1e; }
+  .sidebar-tab { flex: 1; padding: 10px 0; text-align: center; font-size: 12px; font-weight: 600; color: #525252; cursor: pointer; border: none; border-bottom: 2px solid transparent; background: none; transition: all 0.15s; }
+  .sidebar-tab:hover { color: #a3a3a3; }
+  .sidebar-tab.active { color: #60a5fa; border-bottom-color: #60a5fa; }
+  .sidebar-decks { flex: 1; padding: 8px; overflow-y: auto; }
+  .deck-row { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: background 0.1s; font-size: 12px; }
+  .deck-row:hover { background: #1a1a1e; }
+  .deck-row.active { background: #1a1a1e; }
+  .deck-row .dot { width: 6px; height: 6px; border-radius: 50%; background: #60a5fa; flex-shrink: 0; }
+  .deck-row .name { flex: 1; color: #d4d4d4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .deck-row .count { color: #525252; font-size: 11px; font-variant-numeric: tabular-nums; }
+  .deck-row .badge { font-size: 9px; font-weight: 700; padding: 1px 4px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .badge-std { background: #1e3a5f; color: #60a5fa; }
+  .badge-cmd { background: #3b1f0b; color: #fb923c; }
+  .badge-ff { background: #262626; color: #737373; }
+  .sidebar-footer { padding: 8px; border-top: 1px solid #1a1a1e; display: flex; gap: 4px; }
+  .sidebar-footer button { flex: 1; padding: 6px 0; font-size: 11px; font-weight: 600; background: #1a1a1e; border: 1px solid #262626; border-radius: 6px; color: #a3a3a3; cursor: pointer; transition: all 0.15s; }
+  .sidebar-footer button:hover { background: #262626; color: #e5e5e5; }
+  .rail { display: none; flex-direction: column; align-items: center; padding-top: 12px; gap: 8px; }
+  .rail-icon { width: 32px; height: 32px; border-radius: 8px; background: #1a1a1e; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #737373; cursor: pointer; transition: background 0.15s, color 0.15s; }
+  .rail-icon:hover { background: #262626; color: #d4d4d4; }
+  .collapse-toggle { position: absolute; bottom: 8px; left: 8px; width: 28px; height: 28px; border-radius: 6px; background: #1a1a1e; border: 1px solid #262626; color: #525252; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; z-index: 10; }
+  .collapse-toggle:hover { background: #262626; color: #a3a3a3; }
+  .sidebar.collapsed .collapse-toggle svg { transform: rotate(180deg); }
+
+  .workspace { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .deck-header { padding: 16px 20px 0; }
+  .deck-title-row { display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px; }
+  .deck-title { font-size: 24px; font-weight: 700; color: #e5e5e5; }
+  .deck-format-tag { font-size: 11px; color: #737373; background: #1a1a1e; padding: 2px 8px; border-radius: 4px; }
+  .deck-stats { font-size: 12px; color: #a3a3a3; display: flex; gap: 12px; margin-bottom: 12px; }
+  .deck-stats .value { color: #e5e5e5; font-weight: 600; }
+  .deck-stats .buy { color: #4ade80; font-weight: 600; }
+
+  .toolbar { padding: 0 20px; height: 40px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #1a1a1e; flex-shrink: 0; }
+  .pill-toggle { display: flex; align-items: center; height: 30px; background: #171717; border: 1px solid #262626; border-radius: 8px; padding: 2px; gap: 1px; }
+  .pill-btn { height: 26px; padding: 0 12px; border: none; border-radius: 6px; font-size: 11px; font-weight: 600; color: #737373; background: transparent; cursor: pointer; transition: all 0.15s; }
+  .pill-btn:hover { color: #a3a3a3; }
+  .pill-btn.active { background: #3b82f6; color: #fff; }
+  .toolbar-spacer { flex: 1; }
+  .sort-control { display: flex; align-items: center; gap: 4px; height: 30px; }
+  .sort-select { height: 30px; padding: 0 8px; background: #171717; border: 1px solid #262626; border-radius: 8px; color: #a3a3a3; font-size: 11px; cursor: pointer; outline: none; }
+  .sort-dir-btn { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; background: #171717; border: 1px solid #262626; border-radius: 8px; color: #a3a3a3; cursor: pointer; transition: all 0.15s; }
+  .sort-dir-btn:hover { background: #262626; color: #e5e5e5; }
+  .toolbar-icon-btn { position: relative; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 6px; border: 1px solid transparent; background: transparent; color: #525252; cursor: pointer; transition: all 0.15s; }
+  .toolbar-icon-btn:hover { color: #a3a3a3; }
+  .toolbar-icon-btn.active { background: #262626; color: #e5e5e5; border-color: rgba(115,115,115,0.3); }
+  .toolbar-divider { width: 1px; height: 18px; background: #262626; }
+
+  .size-slider-anchor { position: relative; }
+  .size-slider-popover { position: absolute; top: calc(100% + 8px); left: 50%; background: #1a1a1e; border: 1px solid #333; border-radius: 10px; padding: 14px 10px; display: flex; flex-direction: column; align-items: center; z-index: 200; box-shadow: 0 12px 40px rgba(0,0,0,0.6); opacity: 0; pointer-events: none; transition: opacity 0.15s, transform 0.15s; transform: translateX(-50%) translateY(-4px); }
+  .size-slider-popover.open { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
+  .size-slider-popover::before { content: ''; position: absolute; top: -5px; left: 50%; transform: translateX(-50%) rotate(45deg); width: 10px; height: 10px; background: #1a1a1e; border-top: 1px solid #333; border-left: 1px solid #333; }
+  .slider-track-container { position: relative; width: 20px; height: 140px; display: flex; align-items: center; justify-content: center; }
+  .slider-track { width: 3px; height: 100%; background: #333; border-radius: 2px; position: relative; }
+  .slider-fill { position: absolute; bottom: 0; left: 0; width: 100%; background: #3b82f6; border-radius: 2px; transition: height 0.15s ease; }
+  .slider-stops { position: absolute; inset: 0; display: flex; flex-direction: column-reverse; justify-content: space-between; align-items: center; pointer-events: none; }
+  .slider-stop-dot { width: 7px; height: 7px; border-radius: 50%; background: #404040; transition: background 0.15s; }
+  .slider-stop-dot.filled { background: #3b82f6; }
+  .slider-thumb { position: absolute; left: 50%; transform: translate(-50%, 50%); width: 16px; height: 16px; border-radius: 50%; background: #3b82f6; border: 2px solid #60a5fa; cursor: grab; transition: bottom 0.15s ease, box-shadow 0.15s; box-shadow: 0 2px 8px rgba(59,130,246,0.3); z-index: 10; }
+  .slider-thumb:hover { box-shadow: 0 2px 12px rgba(59,130,246,0.5); }
+  .slider-thumb.dragging { cursor: grabbing; transition: none; box-shadow: 0 2px 16px rgba(59,130,246,0.6); }
+  .slider-hint { font-size: 9px; color: #404040; text-align: center; line-height: 1; }
+  .slider-hint-top { margin-bottom: 6px; }
+  .slider-hint-bottom { margin-top: 6px; }
+
+  .grid-scroll { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 80px; }
+  .card-grid { display: grid; align-content: start; }
+  .type-header { font-size: 10px; font-weight: 700; color: #525252; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px; margin-left: 2px; }
+  .type-section { margin-bottom: 40px; }
+  .type-section:last-child { margin-bottom: 0; }
+
+  .card-tile { position: relative; border-radius: 12px; cursor: pointer; aspect-ratio: 2.5 / 3.5; overflow: hidden; transition: transform 0.15s ease, box-shadow 0.15s ease; }
+  .card-tile:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+  .card-tile img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 12px; }
+
+  .qty-pill { position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; z-index: 20; box-shadow: 0 2px 6px rgba(0,0,0,0.5); transition: opacity 0.15s; }
+  .qty-pill.green { background: #166534; color: #4ade80; }
+  .qty-pill.neutral { background: #171717; color: #a3a3a3; }
+  .qty-pill.warning { background: #7c2d12; color: #fb923c; }
+  .in-deck-dot { position: absolute; top: 8px; left: 8px; width: 8px; height: 8px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 0 2px #0a0a0c; z-index: 10; }
+
+  .card-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.78); backdrop-filter: blur(8px); padding: 10px 8px; transform: translateY(100%); transition: transform 0.2s ease-out; display: flex; flex-direction: column; align-items: center; gap: 8px; z-index: 20; }
+  .card-tile:hover .card-overlay { transform: translateY(0); }
+  .card-tile:hover .qty-pill { opacity: 0; pointer-events: none; }
+  .overlay-controls { display: flex; align-items: center; gap: 8px; }
+  .overlay-btn { width: 28px; height: 28px; border-radius: 50%; background: rgba(115,115,115,0.3); color: #d4d4d4; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 300; transition: background 0.15s; }
+  .overlay-btn:hover { background: rgba(115,115,115,0.5); color: #fff; }
+  .overlay-qty { font-size: 16px; font-weight: 700; color: #fff; font-variant-numeric: tabular-nums; min-width: 20px; text-align: center; }
+  .overlay-owned { font-size: 10px; color: #a3a3a3; cursor: pointer; }
+  .overlay-owned.complete { color: #4ade80; }
+
+  .search-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.82); backdrop-filter: blur(8px); padding: 10px 8px; transform: translateY(100%); transition: transform 0.2s ease-out; display: flex; flex-direction: column; gap: 4px; z-index: 20; }
+  .card-tile:hover .search-overlay { transform: translateY(0); }
+  .search-name { font-size: 12px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .search-meta { font-size: 10px; color: #a3a3a3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .search-add-btn { margin-top: 4px; width: 100%; padding: 6px 0; border: none; border-radius: 6px; background: #3b82f6; color: #fff; font-size: 12px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+  .search-add-btn:hover { background: #2563eb; }
+
+  .info-bar { position: fixed; bottom: 0; right: 0; height: 36px; background: #111114; border-top: 1px solid #1a1a1e; display: flex; align-items: center; justify-content: center; gap: 24px; font-size: 11px; color: #525252; z-index: 100; transition: left 0.2s ease; }
+  .info-bar code { font-family: 'SF Mono','Fira Code',monospace; background: #1a1a1e; padding: 2px 6px; border-radius: 4px; color: #a3a3a3; font-size: 10px; }
+  .col-target { color: #3b82f6; font-weight: 600; }
+  .col-match { color: #4ade80 !important; }
+  .col-miss { color: #f87171 !important; }
+
+  .grid-scroll::-webkit-scrollbar { width: 6px; }
+  .grid-scroll::-webkit-scrollbar-track { background: transparent; }
+  .grid-scroll::-webkit-scrollbar-thumb { background: #262626; border-radius: 3px; }
+  .grid-scroll::-webkit-scrollbar-thumb:hover { background: #404040; }
+  .popover-backdrop { position: fixed; inset: 0; z-index: 150; display: none; }
+  .popover-backdrop.active { display: block; }
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-tabs">
+      <button class="sidebar-tab" id="stab-search" onclick="setTab('search')">Search</button>
+      <button class="sidebar-tab active" id="stab-decks" onclick="setTab('deck')">Decks</button>
+    </div>
+    <div class="sidebar-decks">
+      <div class="deck-row"><span class="name">Izzet Lessons</span><span class="count">68</span><span class="badge badge-std">STD</span></div>
+      <div class="deck-row"><span class="name">Ashling, the Li...</span><span class="count">55</span><span class="badge badge-cmd">CMD</span></div>
+      <div class="deck-row active"><span class="dot"></span><span class="name">Rats Deck</span><span class="count">67</span><span class="badge badge-ff">FF</span></div>
+      <div class="deck-row"><span class="name">Untitled (3)</span><span class="count">2</span><span class="badge badge-cmd">CMD</span></div>
+    </div>
+    <div class="sidebar-footer"><button>Export</button><button>Import</button></div>
+    <div class="rail"><div class="rail-icon">🔍</div><div class="rail-icon">📇</div></div>
+    <button class="collapse-toggle" onclick="toggleSidebar()" title="Toggle sidebar">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+  </div>
+
+  <div class="workspace">
+    <div class="deck-header">
+      <div class="deck-title-row">
+        <span class="deck-title" id="deck-title">Rats Deck</span>
+        <span class="deck-format-tag" id="deck-format">Freeform</span>
+      </div>
+      <div class="deck-stats" id="deck-stats">
+        <span><span class="value">67</span> Cards</span>
+        <span>Value: <span class="value">$109.10</span></span>
+        <span>To Buy: <span class="buy">$44.58</span></span>
+      </div>
+    </div>
+    <div class="toolbar">
+      <button style="display:flex;align-items:center;gap:6px;height:30px;padding:0 12px;background:#171717;border:1px solid #262626;border-radius:8px;font-size:11px;font-weight:700;color:#a3a3a3;cursor:pointer;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="8" height="8" rx="1.5"/><rect x="14" y="4" width="8" height="8" rx="1.5"/><rect x="8" y="12" width="8" height="8" rx="1.5"/></svg>
+        Simulator
+      </button>
+      <div class="pill-toggle"><button class="pill-btn active">Main</button><button class="pill-btn">Side</button></div>
+      <div class="toolbar-spacer"></div>
+      <div class="sort-control">
+        <select class="sort-select"><option>Original</option><option>Name</option><option>Color</option><option>Mana Value</option><option>Price</option></select>
+        <button class="sort-dir-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12l7-7 7 7"/></svg></button>
+      </div>
+      <div class="toolbar-divider"></div>
+      <div class="toolbar-icon-btn active" id="group-btn" title="Toggle Type Groups" onclick="toggleGroup()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="3" width="18" height="7" rx="1"/><rect x="3" y="14" width="18" height="7" rx="1"/></svg>
+      </div>
+      <div class="toolbar-divider"></div>
+      <div class="size-slider-anchor">
+        <button class="toolbar-icon-btn" id="size-btn" title="Card size" onclick="toggleSlider()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+        </button>
+        <div class="size-slider-popover" id="slider-popover">
+          <div class="slider-hint slider-hint-top"><svg width="16" height="12" viewBox="0 0 20 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="1" width="18" height="12" rx="2"/></svg></div>
+          <div class="slider-track-container" id="slider-container">
+            <div class="slider-track">
+              <div class="slider-fill" id="slider-fill"></div>
+              <div class="slider-stops" id="slider-stops"></div>
+              <div class="slider-thumb" id="slider-thumb"></div>
+            </div>
+          </div>
+          <div class="slider-hint slider-hint-bottom"><svg width="10" height="8" viewBox="0 0 20 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="1" width="18" height="12" rx="2"/></svg></div>
+        </div>
+      </div>
+      <div class="toolbar-divider"></div>
+      <button class="toolbar-icon-btn active" title="Grid view"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></button>
+      <button class="toolbar-icon-btn" title="List view" style="color:#404040;cursor:not-allowed;" disabled><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></button>
+    </div>
+    <div class="grid-scroll" id="grid-scroll"><div id="card-grid"></div></div>
+  </div>
+</div>
+<div class="popover-backdrop" id="popover-backdrop" onclick="closeSlider()"></div>
+<div class="info-bar" id="info-bar">
+  <span>Preset: <code id="info-preset">M</code></span>
+  <span>Min: <code id="info-min">185px</code></span>
+  <span>Gap: <code id="info-gap">16px</code></span>
+  <span>Target: <code id="info-target" class="col-target">—</code></span>
+  <span>Actual: <code id="info-cols">—</code></span>
+  <span>Tile: <code id="info-tile">—</code></span>
+  <span>Grid: <code id="info-grid">—</code></span>
+</div>
+<script>
+// Tuned for ~1680px effective grid (1720 workspace - 40px padding, sidebar EXPANDED)
+// Formula per stop: minWidth = floor((gridWidth - (targetCols-1)*gap) / targetCols) - safety margin
+const STOPS = [
+  { key: 'xs', label: 'XS', minWidth: 130, gap: 10, targetCols: 12 },
+  { key: 's',  label: 'S',  minWidth: 148, gap: 12, targetCols: 10 },
+  { key: 'm',  label: 'M',  minWidth: 185, gap: 16, targetCols: 8  },
+  { key: 'l',  label: 'L',  minWidth: 258, gap: 18, targetCols: 6  },
+  { key: 'xl', label: 'XL', minWidth: 395, gap: 20, targetCols: 4  },
+];
+
+let activeStopIndex = 2, activeTab = 'deck', isGrouped = true, sliderOpen = false, sidebarCollapsed = false;
+
+const DECK_CARDS = [
+  { name: 'Song of Totentanz', type: 'Sorcery', qty: 4, owned: 4, pill: 'green' },
+  { name: 'Tainted Strike', type: 'Instant', qty: 3, owned: 1, pill: 'neutral' },
+  { name: 'Village Rites', type: 'Instant', qty: 4, owned: 4, pill: 'green' },
+  { name: 'Dark Ritual', type: 'Instant', qty: 3, owned: 3, pill: 'green' },
+  { name: 'Heroic Intervention', type: 'Instant', qty: 1, owned: 0, pill: 'neutral' },
+  { name: 'Shared Animosity', type: 'Enchantment', qty: 1, owned: 0, pill: 'neutral' },
+  { name: 'Impact Tremors', type: 'Enchantment', qty: 2, owned: 2, pill: 'green' },
+  { name: 'Ferocity of the Wilds', type: 'Enchantment', qty: 1, owned: 0, pill: 'neutral' },
+  { name: 'Rat Colony', type: 'Creature', qty: 4, owned: 4, pill: 'warning' },
+  { name: 'Ogre Slumlord', type: 'Creature', qty: 2, owned: 1, pill: 'neutral' },
+  { name: 'Piper of the Swarm', type: 'Creature', qty: 3, owned: 3, pill: 'green' },
+  { name: 'Swarm of Rats', type: 'Creature', qty: 4, owned: 2, pill: 'neutral' },
+  { name: 'Typhoid Rats', type: 'Creature', qty: 4, owned: 4, pill: 'green' },
+  { name: 'Chittering Witch', type: 'Creature', qty: 2, owned: 0, pill: 'neutral' },
+  { name: 'Marrow-Gnawer', type: 'Creature', qty: 1, owned: 0, pill: 'neutral' },
+  { name: 'Sol Ring', type: 'Artifact', qty: 1, owned: 1, pill: 'green' },
+  { name: 'Thrumming Stone', type: 'Artifact', qty: 1, owned: 0, pill: 'neutral' },
+  { name: 'Blood Crypt', type: 'Land', qty: 2, owned: 1, pill: 'neutral' },
+  { name: 'Dragonskull Summit', type: 'Land', qty: 2, owned: 2, pill: 'green' },
+  { name: 'Swamp', type: 'Land', qty: 8, owned: 8, pill: 'green' },
+  { name: 'Mountain', type: 'Land', qty: 6, owned: 6, pill: 'green' },
+];
+const SEARCH_CARDS = [
+  { name: 'Rat Colony', price: '$0.35', type: 'Creature — Rat', inDeck: true },
+  { name: 'Pack Rat', price: '$1.50', type: 'Creature — Rat', inDeck: false },
+  { name: 'Rats of Resentment', price: '$0.25', type: 'Creature — Rat', inDeck: false },
+  { name: 'Piper of the Swarm', price: '$0.75', type: 'Creature — Human', inDeck: true },
+  { name: 'Ogre Slumlord', price: '$2.00', type: 'Creature — Ogre Rogue', inDeck: true },
+  { name: 'Swarm of Rats', price: '$0.15', type: 'Creature — Rat', inDeck: true },
+  { name: 'Typhoid Rats', price: '$0.10', type: 'Creature — Rat', inDeck: true },
+  { name: 'Chittering Witch', price: '$0.50', type: 'Creature — Human Warlock', inDeck: true },
+  { name: 'Karumonix the Rat King', price: '$0.40', type: 'Legendary — Phyrexian Rat', inDeck: false },
+  { name: 'Ink-Eyes Servant of Oni', price: '$8.00', type: 'Legendary — Rat Ninja', inDeck: false },
+  { name: 'Marrow-Gnawer', price: '$12.50', type: 'Legendary — Rat Rogue', inDeck: false },
+  { name: 'Nezumi Bone-Reader', price: '$0.50', type: 'Creature — Rat Shaman', inDeck: false },
+  { name: 'Crypt Rats', price: '$1.25', type: 'Creature — Rat', inDeck: false },
+  { name: 'Relentless Rats', price: '$1.00', type: 'Creature — Rat', inDeck: false },
+  { name: 'Burglar Rat', price: '$0.10', type: 'Creature — Rat', inDeck: false },
+  { name: 'Nezumi Shortfang', price: '$0.75', type: 'Creature — Rat Rogue', inDeck: false },
+];
+
+function ci(n){return `https://api.scryfall.com/cards/named?exact=${encodeURIComponent(n)}&format=image&version=normal`;}
+function toggleSidebar(){sidebarCollapsed=!sidebarCollapsed;document.getElementById('sidebar').classList.toggle('collapsed',sidebarCollapsed);document.getElementById('info-bar').style.left=sidebarCollapsed?'48px':'200px';setTimeout(()=>{render();},220);}
+
+function initSlider(){const el=document.getElementById('slider-stops');el.innerHTML='';STOPS.forEach(()=>{const d=document.createElement('div');d.className='slider-stop-dot';el.appendChild(d);});updateSliderVisual();initDrag();}
+function updateSliderVisual(){const p=activeStopIndex/(STOPS.length-1);document.getElementById('slider-fill').style.height=(p*100)+'%';document.getElementById('slider-thumb').style.bottom=(p*100)+'%';document.querySelectorAll('.slider-stop-dot').forEach((d,i)=>d.classList.toggle('filled',i<=activeStopIndex));}
+function setStop(i){activeStopIndex=Math.max(0,Math.min(STOPS.length-1,i));updateSliderVisual();render();}
+function initDrag(){const thumb=document.getElementById('slider-thumb'),ctr=document.getElementById('slider-container');let dr=false;function idx(y){const r=ctr.getBoundingClientRect();return Math.round(Math.max(0,Math.min(STOPS.length-1,(1-((y-r.top)/r.height))*(STOPS.length-1))));}thumb.addEventListener('mousedown',e=>{e.preventDefault();dr=true;thumb.classList.add('dragging');});ctr.addEventListener('mousedown',e=>{if(e.target===thumb)return;setStop(idx(e.clientY));dr=true;thumb.classList.add('dragging');});window.addEventListener('mousemove',e=>{if(!dr)return;const i=idx(e.clientY);if(i!==activeStopIndex)setStop(i);});window.addEventListener('mouseup',()=>{if(dr){dr=false;thumb.classList.remove('dragging');}});}
+function toggleSlider(){sliderOpen=!sliderOpen;document.getElementById('slider-popover').classList.toggle('open',sliderOpen);document.getElementById('popover-backdrop').classList.toggle('active',sliderOpen);document.getElementById('size-btn').classList.toggle('active',sliderOpen);}
+function closeSlider(){sliderOpen=false;document.getElementById('slider-popover').classList.remove('open');document.getElementById('popover-backdrop').classList.remove('active');document.getElementById('size-btn').classList.remove('active');}
+
+function gs(){const s=STOPS[activeStopIndex];return `grid-template-columns:repeat(auto-fill,minmax(${s.minWidth}px,1fr));gap:${s.gap}px;`;}
+function dt(c){return `<div class="card-tile"><img src="${ci(c.name)}" alt="${c.name}" loading="lazy"/><div class="qty-pill ${c.pill}">${c.qty}</div><div class="card-overlay"><div class="overlay-controls"><button class="overlay-btn">−</button><span class="overlay-qty">${c.qty}</span><button class="overlay-btn">+</button></div><span class="overlay-owned ${c.owned>=c.qty?'complete':''}">Owned: ${c.owned}/${c.qty}</span></div></div>`;}
+function st(c){return `<div class="card-tile"><img src="${ci(c.name)}" alt="${c.name}" loading="lazy"/>${c.inDeck?'<div class="in-deck-dot" title="Already in deck"></div>':''}<div class="search-overlay"><div class="search-name">${c.name}</div><div class="search-meta">${c.price} · ${c.type}</div><button class="search-add-btn">+ Add to Deck</button></div></div>`;}
+
+function render(){
+  const grid=document.getElementById('card-grid'),style=gs();
+  if(activeTab==='deck'){
+    document.getElementById('deck-title').textContent='Rats Deck';
+    document.getElementById('deck-format').textContent='Freeform';
+    document.getElementById('deck-stats').innerHTML='<span><span class="value">67</span> Cards</span><span>Value: <span class="value">$109.10</span></span><span>To Buy: <span class="buy">$44.58</span></span>';
+    if(isGrouped){const g={},order=['Creature','Instant','Sorcery','Enchantment','Artifact','Land'];DECK_CARDS.forEach(c=>{if(!g[c.type])g[c.type]=[];g[c.type].push(c);});let h='';order.forEach(t=>{const cards=g[t];if(!cards)return;const q=cards.reduce((s,c)=>s+c.qty,0);h+=`<div class="type-section"><div class="type-header">${t}s (${q})</div><div class="card-grid" style="${style}">${cards.map(dt).join('')}</div></div>`;});grid.innerHTML=h;}
+    else{grid.innerHTML=`<div class="card-grid" style="${style}">${DECK_CARDS.map(dt).join('')}</div>`;}
+  }else{
+    document.getElementById('deck-title').textContent='rat creature';
+    document.getElementById('deck-format').textContent='Search Results';
+    document.getElementById('deck-stats').innerHTML='<span><span class="value">16</span> results</span>';
+    grid.innerHTML=`<div class="card-grid" style="${style}">${SEARCH_CARDS.map(st).join('')}</div>`;
+  }
+  updateInfo();
+}
+function setTab(t){activeTab=t;document.getElementById('stab-decks').classList.toggle('active',t==='deck');document.getElementById('stab-search').classList.toggle('active',t==='search');render();}
+function toggleGroup(){isGrouped=!isGrouped;document.getElementById('group-btn').classList.toggle('active',isGrouped);render();}
+
+function updateInfo(){
+  const s=STOPS[activeStopIndex];
+  document.getElementById('info-preset').textContent=s.label;
+  document.getElementById('info-min').textContent=s.minWidth+'px';
+  document.getElementById('info-gap').textContent=s.gap+'px';
+  document.getElementById('info-target').textContent=s.targetCols+' cols';
+  requestAnimationFrame(()=>{
+    const g=document.querySelector('.card-grid[style]');
+    if(g&&g.children.length>0){
+      const cols=getComputedStyle(g).gridTemplateColumns.split(' ').filter(x=>x.trim()).length;
+      const el=document.getElementById('info-cols');
+      el.textContent=cols+' cols';
+      el.className=cols===s.targetCols?'col-match':'col-miss';
+      const tw=g.querySelector('.card-tile');
+      document.getElementById('info-tile').textContent=tw?Math.round(tw.getBoundingClientRect().width)+'px':'—';
+    }
+    const ws=document.getElementById('grid-scroll');
+    document.getElementById('info-grid').textContent=ws?Math.round(ws.getBoundingClientRect().width-40)+'px':'—';
+  });
+}
+window.addEventListener('resize',updateInfo);
+document.getElementById('info-bar').style.left='200px';
+initSlider();render();
+</script>
+</body>
+</html>
