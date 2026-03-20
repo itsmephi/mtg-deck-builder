@@ -12,13 +12,15 @@ import VisualCard from "./VisualCard";
 import CardModal from "@/components/layout/CardModal";
 import { FilterState, buildSidebarFilterSyntax } from "@/components/layout/FilterPanel";
 import TileSizeSlider from "./TileSizeSlider";
-import { TILE_SIZE_STOPS, TileSizeKey, DEFAULT_TILE_SIZE, TILE_SIZE_STORAGE_KEY } from "@/config/gridConfig";
+import { TILE_SIZE_STOPS, TileSizeKey } from "@/config/gridConfig";
 
 interface SearchWorkspaceProps {
   isActive: boolean;
   activeChipQuery: string | null;
   onDeactivateChip: () => void;
   sidebarFilters: FilterState;
+  tileSize: TileSizeKey;
+  onTileSizeChange: (stop: TileSizeKey) => void;
 }
 
 function buildFilterSyntax(activeDeck: Deck | undefined, filterActive: boolean): string {
@@ -36,13 +38,12 @@ function buildFilterSyntax(activeDeck: Deck | undefined, filterActive: boolean):
   return syntax;
 }
 
-export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivateChip, sidebarFilters }: SearchWorkspaceProps) {
+export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivateChip, sidebarFilters, tileSize, onTileSizeChange }: SearchWorkspaceProps) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<ScryfallCard[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedCard, setSelectedCard] = useState<ScryfallCard | null>(null);
   const [filterActive, setFilterActive] = useState(true);
-  const [tileSize, setTileSizeState] = useState<TileSizeKey>(DEFAULT_TILE_SIZE);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showAutocomplete, setShowAutocomplete] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -100,17 +101,6 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
     () => new Set(activeDeck?.cards.map((c) => c.name) ?? []),
     [activeDeck?.cards]
   );
-
-  // Restore tile size on mount
-  useEffect(() => {
-    const stored = localStorage.getItem(TILE_SIZE_STORAGE_KEY) as TileSizeKey | null;
-    if (stored && TILE_SIZE_STOPS.some((s) => s.key === stored)) setTileSizeState(stored);
-  }, []);
-
-  const setTileSize = (s: TileSizeKey) => {
-    setTileSizeState(s);
-    localStorage.setItem(TILE_SIZE_STORAGE_KEY, s);
-  };
 
   // Focus input when tab becomes active
   useEffect(() => {
@@ -333,7 +323,7 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
               <option value="color" className="bg-neutral-900">Color</option>
             </select>
             <div className="w-px h-[18px] bg-neutral-800" />
-            <TileSizeSlider activeStop={tileSize} onChangeStop={setTileSize} />
+            <TileSizeSlider activeStop={tileSize} onChangeStop={onTileSizeChange} />
             <div className="w-px h-[18px] bg-neutral-800" />
             <button
               className="h-7 px-2 flex items-center justify-center rounded-md bg-neutral-800 text-white border border-neutral-700/50 transition-all"

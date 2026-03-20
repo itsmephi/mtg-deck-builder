@@ -25,17 +25,18 @@ function yToStopIndex(y: number): number {
   return Math.round(raw);
 }
 
-// Card-shaped SVG hint
+// Card-shaped SVG hint — simple rounded rect, matches prototype
 function CardHint({ size }: { size: "large" | "small" }) {
-  const w = size === "large" ? 16 : 10;
-  const h = size === "large" ? 22 : 14;
+  if (size === "large") {
+    return (
+      <svg width="16" height="12" viewBox="0 0 20 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-neutral-600">
+        <rect x="1" y="1" width="18" height="12" rx="2" />
+      </svg>
+    );
+  }
   return (
-    <svg width={w} height={h} viewBox="0 0 16 22" fill="none">
-      <rect x="0.5" y="0.5" width="15" height="21" rx="2" stroke="#555" strokeWidth="1" fill="#2a2a2e" />
-      <rect x="2" y="2" width="12" height="8" rx="1" fill="#3a3a40" />
-      <rect x="2" y="12" width="8" height="1.5" rx="0.75" fill="#444" />
-      <rect x="2" y="15" width="6" height="1.5" rx="0.75" fill="#444" />
-      <rect x="2" y="18" width="10" height="1.5" rx="0.75" fill="#444" />
+    <svg width="10" height="8" viewBox="0 0 20 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-neutral-600">
+      <rect x="1" y="1" width="18" height="12" rx="2" />
     </svg>
   );
 }
@@ -115,112 +116,107 @@ export default function TileSizeSlider({ activeStop, onChangeStop }: TileSizeSli
         <ZoomIn className="w-3.5 h-3.5" />
       </button>
 
-      {open && (
+      {/* Always in DOM — visibility controlled by opacity + pointer-events for smooth transition */}
+      <div
+        ref={popoverRef}
+        className="absolute top-full mt-2 left-1/2 z-50 flex flex-col items-center py-4 px-4 rounded-[10px] border border-[#333]"
+        style={{
+          background: "#1a1a1e",
+          boxShadow: "0 12px 40px rgba(0,0,0,0.6)",
+          opacity: open ? 1 : 0,
+          transform: open ? "translateX(-50%) translateY(0)" : "translateX(-50%) translateY(-4px)",
+          pointerEvents: open ? "auto" : "none",
+          transition: "opacity 0.15s ease, transform 0.15s ease",
+        }}
+      >
+        {/* Arrow */}
         <div
-          ref={popoverRef}
-          className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center py-4 px-4 rounded-[10px] border border-[#333]"
-          style={{
-            background: "#1a1a1e",
-            boxShadow: "0 12px 40px rgba(0,0,0,0.6)",
-            animation: "tileSliderFadeIn 0.15s ease",
-          }}
+          className="absolute -top-[7px] left-1/2 -translate-x-1/2 w-3 h-3 rotate-45 border-l border-t border-[#333]"
+          style={{ background: "#1a1a1e" }}
+        />
+
+        {/* Top hint: large card */}
+        <div className="mb-3">
+          <CardHint size="large" />
+        </div>
+
+        {/* Track area */}
+        <div
+          ref={trackRef}
+          className="relative flex items-center justify-center cursor-pointer"
+          style={{ width: 24, height: TRACK_HEIGHT }}
+          onClick={handleTrackClick}
         >
-          {/* Arrow */}
+          {/* Track background */}
           <div
-            className="absolute -top-[7px] left-1/2 -translate-x-1/2 w-3 h-3 rotate-45 border-l border-t border-[#333]"
-            style={{ background: "#1a1a1e" }}
+            className="absolute rounded-full"
+            style={{
+              width: 3,
+              top: 0,
+              bottom: 0,
+              left: "50%",
+              transform: "translateX(-50%)",
+              background: "#333",
+            }}
           />
 
-          {/* Top hint: large card */}
-          <div className="mb-3 opacity-60">
-            <CardHint size="large" />
-          </div>
-
-          {/* Track area */}
+          {/* Blue fill — from bottom up to thumb */}
           <div
-            ref={trackRef}
-            className="relative flex items-center justify-center cursor-pointer"
-            style={{ width: 24, height: TRACK_HEIGHT }}
-            onClick={handleTrackClick}
-          >
-            {/* Track background */}
-            <div
-              className="absolute rounded-full"
-              style={{
-                width: 3,
-                top: 0,
-                bottom: 0,
-                left: "50%",
-                transform: "translateX(-50%)",
-                background: "#333",
-              }}
-            />
+            className="absolute rounded-full bg-blue-500"
+            style={{
+              width: 3,
+              bottom: 0,
+              height: `${fillPercent}%`,
+              left: "50%",
+              transform: "translateX(-50%)",
+            }}
+          />
 
-            {/* Blue fill — from bottom up to thumb */}
-            <div
-              className="absolute rounded-full bg-blue-500"
-              style={{
-                width: 3,
-                bottom: 0,
-                height: `${fillPercent}%`,
-                left: "50%",
-                transform: "translateX(-50%)",
-              }}
-            />
+          {/* Stop dots */}
+          {TILE_SIZE_STOPS.map((stop, idx) => {
+            const fromBottom = stopToY(idx);
+            const isActive = idx <= activeIndex;
+            return (
+              <div
+                key={stop.key}
+                className="absolute rounded-full"
+                style={{
+                  width: DOT_SIZE,
+                  height: DOT_SIZE,
+                  bottom: fromBottom - DOT_SIZE / 2,
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  background: isActive ? "#3b82f6" : "#404040",
+                  transition: "background 0.1s",
+                  zIndex: 1,
+                }}
+              />
+            );
+          })}
 
-            {/* Stop dots */}
-            {TILE_SIZE_STOPS.map((stop, idx) => {
-              const fromBottom = stopToY(idx);
-              const isActive = idx <= activeIndex;
-              return (
-                <div
-                  key={stop.key}
-                  className="absolute rounded-full"
-                  style={{
-                    width: DOT_SIZE,
-                    height: DOT_SIZE,
-                    bottom: fromBottom - DOT_SIZE / 2,
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    background: isActive ? "#3b82f6" : "#404040",
-                    transition: "background 0.1s",
-                    zIndex: 1,
-                  }}
-                />
-              );
-            })}
-
-            {/* Draggable thumb */}
-            <div
-              onMouseDown={handleThumbMouseDown}
-              className="absolute rounded-full bg-blue-500 border-2 border-blue-400"
-              style={{
-                width: THUMB_SIZE,
-                height: THUMB_SIZE,
-                bottom: thumbY - THUMB_SIZE / 2,
-                left: "50%",
-                transform: "translateX(-50%)",
-                boxShadow: "0 2px 8px rgba(59,130,246,0.5)",
-                cursor: dragging ? "grabbing" : "grab",
-                transition: dragging ? "none" : "bottom 0.15s ease",
-                zIndex: 2,
-              }}
-            />
-          </div>
-
-          {/* Bottom hint: small card */}
-          <div className="mt-3 opacity-40">
-            <CardHint size="small" />
-          </div>
+          {/* Draggable thumb */}
+          <div
+            onMouseDown={handleThumbMouseDown}
+            className="absolute rounded-full bg-blue-500 border-2 border-blue-400"
+            style={{
+              width: THUMB_SIZE,
+              height: THUMB_SIZE,
+              bottom: thumbY - THUMB_SIZE / 2,
+              left: "50%",
+              transform: "translateX(-50%)",
+              boxShadow: "0 2px 8px rgba(59,130,246,0.5)",
+              cursor: dragging ? "grabbing" : "grab",
+              transition: dragging ? "none" : "bottom 0.15s ease",
+              zIndex: 2,
+            }}
+          />
         </div>
-      )}
 
-      <style>{`
-        @keyframes tileSliderFadeIn {
-          from { opacity: 0; transform: translateX(-50%) translateY(-4px); }
-          to   { opacity: 1; transform: translateX(-50%) translateY(0); }
-        }
-      `}</style>
+        {/* Bottom hint: small card */}
+        <div className="mt-3">
+          <CardHint size="small" />
+        </div>
+      </div>
     </div>
   );
 }

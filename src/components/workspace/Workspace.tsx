@@ -13,12 +13,14 @@ import WorkspaceToolbar from "./WorkspaceToolbar";
 import { ScryfallCard, DeckCard } from "@/types";
 import { DeckFormat, getFormatRules } from "@/lib/formatRules";
 import { backfillColorIdentity } from "@/lib/scryfall";
-import { TILE_SIZE_STOPS, TileSizeKey, DEFAULT_TILE_SIZE, TILE_SIZE_STORAGE_KEY } from "@/config/gridConfig";
+import { TILE_SIZE_STOPS, TileSizeKey } from "@/config/gridConfig";
 
 interface WorkspaceProps {
   pendingImport: { filename: string; lines: string[] } | null;
   processImport: (mode: "current" | "new") => Promise<void>;
   cancelImport: () => void;
+  tileSize: TileSizeKey;
+  onTileSizeChange: (stop: TileSizeKey) => void;
 }
 
 // Color sort: WUBRG mono → multicolor (by combination) → colorless/missing
@@ -46,7 +48,7 @@ interface ConfirmDialogState {
   targetFormat: DeckFormat;
 }
 
-export default function Workspace({ pendingImport, processImport, cancelImport }: WorkspaceProps) {
+export default function Workspace({ pendingImport, processImport, cancelImport, tileSize, onTileSizeChange }: WorkspaceProps) {
   const {
     decks,
     activeDeck,
@@ -74,8 +76,6 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
 
   const [viewMode, setViewModeState] = useState<"visual" | "list">("visual");
   const [isGrouped, setIsGroupedState] = useState(false);
-  const [tileSize, setTileSizeState] = useState<TileSizeKey>(DEFAULT_TILE_SIZE);
-
   const setViewMode = (v: "visual" | "list") => {
     setViewModeState(v);
     localStorage.setItem("mtg-view-mode", v);
@@ -84,11 +84,6 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
   const setIsGrouped = (g: boolean) => {
     setIsGroupedState(g);
     localStorage.setItem("mtg-group-by-type", String(g));
-  };
-
-  const setTileSize = (s: TileSizeKey) => {
-    setTileSizeState(s);
-    localStorage.setItem(TILE_SIZE_STORAGE_KEY, s);
   };
 
   const [selectedCard, setSelectedCard] = useState<ScryfallCard | null>(null);
@@ -119,8 +114,6 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
     if (storedView === "list" || storedView === "visual") setViewModeState(storedView);
     const storedGrouped = localStorage.getItem("mtg-group-by-type");
     if (storedGrouped === "true") setIsGroupedState(true);
-    const storedTileSize = localStorage.getItem(TILE_SIZE_STORAGE_KEY) as TileSizeKey | null;
-    if (storedTileSize && TILE_SIZE_STOPS.some((s) => s.key === storedTileSize)) setTileSizeState(storedTileSize);
   }, []);
 
   useEffect(() => {
@@ -431,7 +424,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
         onOpenSampleHand={() => setIsSampleHandOpen(true)}
         onRequestFormatChange={handleRequestFormatChange}
         tileSize={tileSize}
-        onTileSizeChange={setTileSize}
+        onTileSizeChange={onTileSizeChange}
       />
 
       <div

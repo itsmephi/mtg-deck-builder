@@ -6,6 +6,7 @@ import Workspace from "@/components/workspace/Workspace";
 import SearchWorkspace from "@/components/workspace/SearchWorkspace";
 import { useDeckImportExport } from "@/hooks/useDeckImportExport";
 import { FilterState, DEFAULT_FILTERS } from "@/components/layout/FilterPanel";
+import { TILE_SIZE_STOPS, TileSizeKey, DEFAULT_TILE_SIZE, TILE_SIZE_STORAGE_KEY } from "@/config/gridConfig";
 
 export default function Dashboard() {
   const {
@@ -22,11 +23,19 @@ export default function Dashboard() {
   const [activeChipId, setActiveChipId] = useState<string | null>(null);
   const [activeChipQuery, setActiveChipQuery] = useState<string | null>(null);
   const [sidebarFilters, setSidebarFilters] = useState<FilterState>(DEFAULT_FILTERS);
+  const [tileSize, setTileSizeState] = useState<TileSizeKey>(DEFAULT_TILE_SIZE);
 
   useEffect(() => {
     const stored = localStorage.getItem("mtg-sidebar-active-tab");
     if (stored === "search" || stored === "decks") setActiveTab(stored);
+    const storedTile = localStorage.getItem(TILE_SIZE_STORAGE_KEY) as TileSizeKey | null;
+    if (storedTile && TILE_SIZE_STOPS.some((s) => s.key === storedTile)) setTileSizeState(storedTile);
   }, []);
+
+  const setTileSize = (s: TileSizeKey) => {
+    setTileSizeState(s);
+    localStorage.setItem(TILE_SIZE_STORAGE_KEY, s);
+  };
 
   const handleTabChange = (tab: "search" | "decks") => {
     setActiveTab(tab);
@@ -77,6 +86,8 @@ export default function Dashboard() {
             activeChipQuery={activeChipQuery}
             onDeactivateChip={handleDeactivateChip}
             sidebarFilters={sidebarFilters}
+            tileSize={tileSize}
+            onTileSizeChange={setTileSize}
           />
         </div>
         <div className={activeTab === "decks" ? "flex-1 overflow-hidden p-4 md:p-8" : "hidden"}>
@@ -84,6 +95,8 @@ export default function Dashboard() {
             pendingImport={pendingImport}
             processImport={processImport}
             cancelImport={cancelImport}
+            tileSize={tileSize}
+            onTileSizeChange={setTileSize}
           />
         </div>
       </main>

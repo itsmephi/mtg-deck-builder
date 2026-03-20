@@ -341,11 +341,11 @@ export default function WorkspaceToolbar({
             </span>
           </div>
 
-          <div className="w-px h-4 bg-neutral-700 mx-0.5" />
+          <div className="w-px self-stretch bg-neutral-800 mx-0.5" />
 
           <TileSizeSlider activeStop={tileSize} onChangeStop={onTileSizeChange} />
 
-          <div className="w-px h-4 bg-neutral-700 mx-0.5" />
+          <div className="w-px self-stretch bg-neutral-800 mx-0.5" />
 
           <div className="group relative h-full flex items-center justify-center">
             <button
