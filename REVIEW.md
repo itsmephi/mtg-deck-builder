@@ -2,18 +2,16 @@
 
 ---
 
-## v1.8.3 — Slider Polish + Filter Persistence
+## v1.8.4 — Hydration Fix for Filter Persistence
 Status: APPROVED ✅
 
 ### Session Summary
 
-**What shipped:**
+**What shipped** (`src/app/page.tsx` only):
 
-- **Tile size slider thumb restyled** (`TileSizeSlider.tsx`): thumb changed from blue-fill + blue-border + blue glow shadow to white-fill + `border-blue-500` + neutral drop shadow — now matches the price slider's graphic language. Stop dots retained unchanged.
+- **Hydration mismatch fixed:** The lazy `useState` initializer added in v1.8.3 called `localStorage.getItem` synchronously during render. On the server, `localStorage` doesn't exist — the `catch` block returned `DEFAULT_FILTERS`. On the client, the same initializer ran during hydration and returned the stored value. This caused React to detect a mismatch between server-rendered HTML (e.g. `width:"100%"` for priceMax=100) and client state (e.g. `width:"50%"` for stored priceMax=50).
 
-- **Price slider grab cursor** (`FilterPanel.tsx`): thumb now shows `cursor: grab` at rest and `cursor: grabbing` while drag is active (using existing `dragMax !== null` signal). No new state added.
-
-- **Filter state persistence** (`FilterPanel.tsx`, `page.tsx`): `serializeFilters` / `deserializeFilters` helpers added to `FilterPanel.tsx` to handle `Set` ↔ array round-tripping through JSON. `sidebarFilters` in `page.tsx` now uses a lazy `useState` initializer that reads from `localStorage` on mount, and a `useEffect` that writes the full filter state on every change. Storage key: `mtg-sidebar-filters`. All filter groups persist (price, anyPrice, rarities, types, colors). Malformed or missing storage silently falls back to `DEFAULT_FILTERS`.
+- **Fix:** Replaced the lazy initializer with `useState(DEFAULT_FILTERS)` and moved the localStorage read into the existing mount `useEffect` alongside `mtg-sidebar-active-tab` and `mtg-tile-size`. This matches the pattern already used by tile size — server and client always agree on the first render; stored values are applied after hydration.
 
 ---
 

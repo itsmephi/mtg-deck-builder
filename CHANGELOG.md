@@ -5,6 +5,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.8.4] — Hydration Fix for Filter Persistence
+
+### Fixed
+- Resolved Next.js hydration mismatch caused by reading localStorage in a lazy `useState` initializer — server rendered with defaults while client hydrated with stored values; now uses the mount-effect pattern (same as tile size) so server and client always agree on first render
+
+---
+
 ## [1.8.3] — Slider Polish + Filter Persistence
 
 ### Changed
