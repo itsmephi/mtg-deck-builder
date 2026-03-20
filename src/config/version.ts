@@ -1,8 +1,11 @@
-export const APP_VERSION = "1.8.0";
+export const APP_VERSION = "1.8.1";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.8.1": [
+    "Bug fix: deck name input no longer shifts or jitters when renaming — replaced JS width measurement with CSS field-sizing: content for native auto-sizing with no double-render",
+  ],
   "1.8.0": [
     "Tile size snap slider: new toolbar control in both deck and search views — 5 presets (XS/S/M/L/XL) via a vertical popover slider with drag-to-snap, click-to-jump, and card-shape visual hints",
     "Unified grid sizing: deck grid and search grid now share the same tile size config (gridConfig.ts) and the same localStorage key (mtg-tile-size) — changing size in one view persists to the other",
