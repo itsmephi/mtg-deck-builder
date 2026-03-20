@@ -39,6 +39,23 @@
 - [ ] **enhancement** | Search: highlight newly added cards on deck view switch — when returning to deck view after adding cards from search, briefly highlight or scroll to new cards ⚠️ needs design
 - [ ] **enhancement** | Search: emoji in deck names — optional personalization feature for deck names
 - [ ] **enhancement** | Search CardModal: keep modal open after adding card — return to Details tab instead of closing, matching deck view Confirm Art Swap behavior
+- [ ] **enhancement** | Active deck / sideboard indicator — show which board is active beyond just the toggle button ⚠️ needs design
+- [ ] **enhancement** | Search: max price filter — filter results to cards under a set price threshold (e.g. under $5)
+- [ ] **feature** | Commander brackets support — tag cards with bracket ratings (e.g. Game Changer) per EDH bracket system ⚠️ needs design
+- [ ] **feature** | Deck rating / power score — calculate and display a score based on deck composition ⚠️ needs design
+- [ ] **feature** | Search pillars — curated search modes for brewing, discovery, beginner deck building ⚠️ needs design
+- [ ] **feature** | Cloud save / deck sharing — sync decks to cloud and share decks via link ⚠️ needs design
+- [ ] **enhancement** | Export: email deck list — send decklist via email from the export panel ⚠️ needs design
+- [ ] **enhancement** | Search by set / Secret Lair — filter search results by set name or Secret Lair product
+- [ ] **enhancement** | Search by foil — filter search results to foil printings only
+- [ ] **enhancement** | Search: spelling correction — suggest corrected card name on typo / no-results
+- [ ] **enhancement** | Foil card visual effect — apply foil shimmer or halo FX to foil cards in grid view ⚠️ needs design
+- [ ] **enhancement** | Group by type: separate commander into its own group
+- [ ] **bug** | Planeswalker commander eligibility — Legendary alone should not qualify; require "can be your commander" in oracle text unless Legendary Creature
+- [ ] **enhancement** | Search filters: add Discard to the sidebar filter panel
+- [ ] **enhancement** | Search view: add tooltip for green in-deck pill icon on card tiles
+- [ ] **enhancement** | Card tile size parity — match tile sizes between search and deck grid views
+- [ ] **enhancement** | CardModal Swap Art tab: show loading spinner while fetching printings
 
 ---
 
