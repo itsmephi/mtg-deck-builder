@@ -2,8 +2,28 @@
 
 ---
 
-## v1.8.0 — Tile Size Parity + Snap Slider
+## v1.8.2 — Price Filter UX Fixes
 Status: APPROVED ✅
+
+### Session Summary
+
+**What shipped** (`src/components/layout/FilterPanel.tsx` only):
+
+- **Default $100 cap enforced:** `buildSidebarFilterSyntax` had `if (priceMax < 100)` guarding the `usd<=` clause — since the default is exactly 100, the clause was never appended and cards over $100 always appeared. Guard removed; clause always emits when `anyPrice` is false.
+- **`$` label separated from input value:** Inputs previously used `value={\`$${n}\`}`. The `$` prefix caused cursor/backspace issues. Both inputs now show a static `$` span alongside a plain numeric input.
+- **Auto-select on focus:** Both inputs call `e.target.select()` on focus — click to select all, then type replacement value.
+- **Blur-deferred validation:** `onChange` updates `localMin`/`localMax` string state freely with no clamping. `onBlur` applies min/max constraints and commits to parent. Allows intermediate states like empty field or partial entry while typing.
+- **Enter key commits:** `onKeyDown` calls `e.currentTarget.blur()` on Enter, triggering the blur commit path.
+- **Drag slider:** Replaced `onClick` with `onMouseDown` + document-level `mousemove`/`mouseup`. A white drag dot with blue border tracks the max position during drag. The max price input reflects `dragMax` live during drag. Value commits to parent only on `mouseup`.
+
+---
+
+## How This File Works
+This file is the live session journal shared between Phi, Claude Chat, and Claude Code.
+- **Claude Code writes:** Plan review table, testing checklist, session summary — committed only at session end
+- **Phi writes:** Test results (checking boxes), inline comments on failures, emerging issues during QA
+- **Claude Chat reads:** Verifies plan review, triages failures, incorporates findings into next Claude Code prompt
+- Never committed to git mid-session — only in the final commit alongside CLAUDE.md and CHANGELOG.md
 
 ---
 

@@ -5,6 +5,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.8.2] — Price Filter UX Fixes
+
+### Fixed
+- Default $100 price ceiling now correctly filters out cards over $100 — removed an incorrect `< 100` guard in `buildSidebarFilterSyntax` that caused the `usd<=` clause to never be appended at the default value
+- Price inputs now auto-select all text on focus — no more manual cursor positioning
+- Price inputs accept free-form editing — `$` sign is a static label; validation and clamping are deferred to blur/Enter so intermediate states (empty field, partial number) are allowed while typing
+- Price range slider upgraded from click-only to drag — includes a drag dot at the max handle position, the max price input updates live during drag, and the value commits on mouse release
+
+---
+
 ## [1.8.1] — Deck Rename Jitter Fix
 
 ### Fixed

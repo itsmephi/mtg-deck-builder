@@ -1,8 +1,13 @@
-export const APP_VERSION = "1.8.1";
+export const APP_VERSION = "1.8.2";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.8.2": [
+    "Bug fix: price filter default $100 ceiling now correctly filters out cards over $100 — removed an incorrect guard that skipped the usd<= clause at the default value",
+    "Price inputs now auto-select on focus and accept free-form editing — the $ sign is a static label, validation is deferred to blur/Enter so intermediate values like empty or partial numbers are allowed",
+    "Price range slider replaced with a drag-to-set control — includes a drag dot at the max position, live numeric feedback in the max input during drag, and commits on mouse release",
+  ],
   "1.8.1": [
     "Bug fix: deck name input no longer shifts or jitters when renaming — replaced JS width measurement with CSS field-sizing: content for native auto-sizing with no double-render",
   ],
