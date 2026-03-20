@@ -117,4 +117,6 @@ src/
 - Claude Code allowedTools whitelist: Bash(git *) and Bash(npm *). Intentional.
 - Never prepend cd to git or npm commands — already in the project root.
 - Design before build, always. No prompt generation until design is fully signed off.
+- Safe handoff: every Claude Code prompt must leave the app in a stable, testable state. No prompt should introduce known regressions that require the next prompt to fix. After each prompt, WIP commit on the branch and push — this is the machine handoff point (workstation ↔ Steam Deck). Only `/commit-release` merges to main.
+- Carry-forward fixes: if QA surfaces 2+ bugs, they become their own dedicated fix prompt (not bundled into the next feature prompt). This keeps each prompt's QA surface small and ensures the app is stable before new features land. A single minor fix can still be bundled as a carry-forward at the top of the next prompt.
 - Root cause before fix. Diagnose intended behavior before writing any fix spec.

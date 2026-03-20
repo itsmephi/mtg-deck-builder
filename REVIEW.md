@@ -23,6 +23,8 @@ Status: APPROVED ✅
 - **Discard NLP token:** `o:"discard"` added to nlpParser archetypes.
 - **`set:CODE` NLP passthrough:** Also added `set:(\w+)` → `e:CODE` dynamic token (complements the natural language lookup).
 
+Workflow improvement: added safe-handoff and carry-forward rules to CLAUDE.md and release-workflow.md based on lessons learned from the v1.6.0 milestone (4-prompt sequence where Prompt 2 carry-forwards + features created an unstable intermediate state).
+
 ---
 
 ## How This File Works
