@@ -13,6 +13,7 @@ import WorkspaceToolbar from "./WorkspaceToolbar";
 import { ScryfallCard, DeckCard } from "@/types";
 import { DeckFormat, getFormatRules } from "@/lib/formatRules";
 import { backfillColorIdentity } from "@/lib/scryfall";
+import { TILE_SIZE_STOPS, TileSizeKey, DEFAULT_TILE_SIZE, TILE_SIZE_STORAGE_KEY } from "@/config/gridConfig";
 
 interface WorkspaceProps {
   pendingImport: { filename: string; lines: string[] } | null;
@@ -73,6 +74,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
 
   const [viewMode, setViewModeState] = useState<"visual" | "list">("visual");
   const [isGrouped, setIsGroupedState] = useState(false);
+  const [tileSize, setTileSizeState] = useState<TileSizeKey>(DEFAULT_TILE_SIZE);
 
   const setViewMode = (v: "visual" | "list") => {
     setViewModeState(v);
@@ -82,6 +84,11 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
   const setIsGrouped = (g: boolean) => {
     setIsGroupedState(g);
     localStorage.setItem("mtg-group-by-type", String(g));
+  };
+
+  const setTileSize = (s: TileSizeKey) => {
+    setTileSizeState(s);
+    localStorage.setItem(TILE_SIZE_STORAGE_KEY, s);
   };
 
   const [selectedCard, setSelectedCard] = useState<ScryfallCard | null>(null);
@@ -112,6 +119,8 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
     if (storedView === "list" || storedView === "visual") setViewModeState(storedView);
     const storedGrouped = localStorage.getItem("mtg-group-by-type");
     if (storedGrouped === "true") setIsGroupedState(true);
+    const storedTileSize = localStorage.getItem(TILE_SIZE_STORAGE_KEY) as TileSizeKey | null;
+    if (storedTileSize && TILE_SIZE_STOPS.some((s) => s.key === storedTileSize)) setTileSizeState(storedTileSize);
   }, []);
 
   useEffect(() => {
@@ -351,6 +360,14 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
 
   const isSideboard = deckViewMode === "sideboard";
 
+  const activeTileStop = TILE_SIZE_STOPS.find((s) => s.key === tileSize) ?? TILE_SIZE_STOPS[2];
+  const gridStyle: React.CSSProperties = {
+    display: "grid",
+    gridTemplateColumns: `repeat(auto-fill, minmax(${activeTileStop.minWidth}px, 1fr))`,
+    gap: `${activeTileStop.gap}px`,
+    alignContent: "start",
+  };
+
   const cardActionProps = isSideboard
     ? {
         onUpdateQuantity: updateSideboardQuantity,
@@ -413,6 +430,8 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
         sideboardCardCount={sideboardCardCount}
         onOpenSampleHand={() => setIsSampleHandOpen(true)}
         onRequestFormatChange={handleRequestFormatChange}
+        tileSize={tileSize}
+        onTileSizeChange={setTileSize}
       />
 
       <div
@@ -429,7 +448,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
                       {cat} ({cards.reduce((s, c) => s + c.quantity, 0)})
                     </h3>
                     {viewMode === "visual" ? (
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-5 gap-y-7">
+                      <div style={gridStyle}>
                         {cards.map((card) => (
                           <div
                             key={card.id}
@@ -465,7 +484,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
             )}
           </div>
         ) : viewMode === "visual" ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-5 gap-y-7">
+          <div style={gridStyle}>
             {sortedCards.map((card, index) => (
               <React.Fragment key={card.id}>
                 <div

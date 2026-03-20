@@ -1,8 +1,13 @@
-export const APP_VERSION = "1.7.0";
+export const APP_VERSION = "1.8.0";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.8.0": [
+    "Tile size snap slider: new toolbar control in both deck and search views — 5 presets (XS/S/M/L/XL) via a vertical popover slider with drag-to-snap, click-to-jump, and card-shape visual hints",
+    "Unified grid sizing: deck grid and search grid now share the same tile size config (gridConfig.ts) and the same localStorage key (mtg-tile-size) — changing size in one view persists to the other",
+    "Grid column count at M (default): ~8 columns at 1680px effective width (1920px − sidebar − padding); XS reaches ~12 columns, XL drops to ~4 for large art view",
+  ],
   "1.7.0": [
     "Bug fix: Planeswalker commander eligibility — Legendary alone no longer qualifies; must be Legendary Creature or have 'can be your commander' in oracle text",
     "Natural language set search: type 'jaws secret lair' or 'The Brothers War' to search cards from that set — fuzzy-matches against all Scryfall sets with a 'Set: [name]' chip shown in results",

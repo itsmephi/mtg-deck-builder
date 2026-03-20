@@ -7,8 +7,7 @@
 ## Active Milestone
 <!-- Items promoted from Pipeline for the current release. Cleared after release ships. -->
 
-- [ ] **enhancement** | Card tile size parity — match tile sizes between search and deck grid views
-- [ ] **enhancement** | Grid view column size presets — small (6 col), medium (4 col), large (2 col); bonus: auto-set based on screen size
+*(empty — v1.8.0 shipped, next milestone pending triage)*
 
 ---
 
@@ -60,6 +59,10 @@
 
 ## Closed (Recent)
 <!-- Keep last 2 releases, then archive to CHANGELOG.md -->
+
+### v1.8.0
+- [x] **enhancement** | Card tile size parity — match tile sizes between search and deck grid views *(closed v1.8.0)*
+- [x] **enhancement** | Grid view column size presets — small (6 col), medium (4 col), large (2 col) *(closed v1.8.0)*
 
 ### v1.7.0
 - [x] **enhancement** | Search CardModal: keep modal open after adding card — return to Details tab instead of closing, matching deck view Confirm Art Swap behavior *(closed v1.7.0)*

@@ -11,6 +11,8 @@ import SearchBar from "./SearchBar";
 import VisualCard from "./VisualCard";
 import CardModal from "@/components/layout/CardModal";
 import { FilterState, buildSidebarFilterSyntax } from "@/components/layout/FilterPanel";
+import TileSizeSlider from "./TileSizeSlider";
+import { TILE_SIZE_STOPS, TileSizeKey, DEFAULT_TILE_SIZE, TILE_SIZE_STORAGE_KEY } from "@/config/gridConfig";
 
 interface SearchWorkspaceProps {
   isActive: boolean;
@@ -40,6 +42,7 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
   const [isLoading, setIsLoading] = useState(false);
   const [selectedCard, setSelectedCard] = useState<ScryfallCard | null>(null);
   const [filterActive, setFilterActive] = useState(true);
+  const [tileSize, setTileSizeState] = useState<TileSizeKey>(DEFAULT_TILE_SIZE);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showAutocomplete, setShowAutocomplete] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -97,6 +100,17 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
     () => new Set(activeDeck?.cards.map((c) => c.name) ?? []),
     [activeDeck?.cards]
   );
+
+  // Restore tile size on mount
+  useEffect(() => {
+    const stored = localStorage.getItem(TILE_SIZE_STORAGE_KEY) as TileSizeKey | null;
+    if (stored && TILE_SIZE_STOPS.some((s) => s.key === stored)) setTileSizeState(stored);
+  }, []);
+
+  const setTileSize = (s: TileSizeKey) => {
+    setTileSizeState(s);
+    localStorage.setItem(TILE_SIZE_STORAGE_KEY, s);
+  };
 
   // Focus input when tab becomes active
   useEffect(() => {
@@ -309,7 +323,7 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
               </button>
             </div>
           )}
-          <div className="ml-auto flex items-center gap-1.5">
+          <div className="ml-auto flex items-center gap-1.5 h-7">
             <select className="bg-neutral-900 border border-neutral-800 text-xs text-neutral-400 rounded px-1.5 py-0.5 focus:outline-none cursor-pointer">
               <option value="relevance" className="bg-neutral-900">Sort: Relevance</option>
               <option value="name" className="bg-neutral-900">Name</option>
@@ -318,6 +332,8 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
               <option value="mv" className="bg-neutral-900">Mana Value</option>
               <option value="color" className="bg-neutral-900">Color</option>
             </select>
+            <div className="w-px h-[18px] bg-neutral-800" />
+            <TileSizeSlider activeStop={tileSize} onChangeStop={setTileSize} />
             <div className="w-px h-[18px] bg-neutral-800" />
             <button
               className="h-7 px-2 flex items-center justify-center rounded-md bg-neutral-800 text-white border border-neutral-700/50 transition-all"
@@ -361,8 +377,8 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
             className="p-3.5"
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(175px, 1fr))",
-              gap: "12px",
+              gridTemplateColumns: `repeat(auto-fill, minmax(${(TILE_SIZE_STOPS.find((s) => s.key === tileSize) ?? TILE_SIZE_STOPS[2]).minWidth}px, 1fr))`,
+              gap: `${(TILE_SIZE_STOPS.find((s) => s.key === tileSize) ?? TILE_SIZE_STOPS[2]).gap}px`,
               alignContent: "start",
             }}
           >

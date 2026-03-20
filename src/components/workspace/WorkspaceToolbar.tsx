@@ -14,6 +14,8 @@ import { Deck } from "@/types";
 import { SortBy, SortDir, useDeckManager } from "@/hooks/useDeckManager";
 import { getFormatRules, DeckFormat } from "@/lib/formatRules";
 import { FormatPicker } from "@/components/layout/FormatPicker";
+import TileSizeSlider from "./TileSizeSlider";
+import { TileSizeKey } from "@/config/gridConfig";
 
 interface Props {
   activeDeck: Deck;
@@ -41,6 +43,9 @@ interface Props {
   onOpenSampleHand: () => void;
   // Commander dialog trigger (from parent for sideboard-to-commander case)
   onRequestFormatChange?: (format: DeckFormat) => void;
+  // Tile size
+  tileSize: TileSizeKey;
+  onTileSizeChange: (stop: TileSizeKey) => void;
 }
 
 export default function WorkspaceToolbar({
@@ -64,6 +69,8 @@ export default function WorkspaceToolbar({
   sideboardCardCount,
   onOpenSampleHand,
   onRequestFormatChange,
+  tileSize,
+  onTileSizeChange,
 }: Props) {
   const [isEditingName, setIsEditingName] = useState(false);
   const [formatPickerOpen, setFormatPickerOpen] = useState(false);
@@ -333,6 +340,12 @@ export default function WorkspaceToolbar({
               Toggle Type Groups
             </span>
           </div>
+
+          <div className="w-px h-4 bg-neutral-700 mx-0.5" />
+
+          <TileSizeSlider activeStop={tileSize} onChangeStop={onTileSizeChange} />
+
+          <div className="w-px h-4 bg-neutral-700 mx-0.5" />
 
           <div className="group relative h-full flex items-center justify-center">
             <button

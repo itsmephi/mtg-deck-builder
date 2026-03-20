@@ -2,28 +2,70 @@
 
 ---
 
-## v1.7.0 — Search Polish + Commander Fixes
-Status: APPROVED ✅
+## v1.8.0 — Tile Size Parity + Snap Slider
+Status: IN PROGRESS
 
 ---
 
-## Session Summary
+## Plan Review
 
-**What shipped:**
+| File | Action | Changes |
+|---|---|---|
+| `src/config/gridConfig.ts` | CREATE | 5-stop tile size config (XS/S/M/L/XL with minWidth + gap), `TileSizeKey` type, `DEFAULT_TILE_SIZE`, `TILE_SIZE_STORAGE_KEY` constant |
+| `src/components/workspace/TileSizeSlider.tsx` | CREATE | Toolbar icon button (ZoomIn icon) toggling a vertical popover snap-slider; 5 stop dots, blue fill, draggable thumb, card-shape SVG hints, backdrop close, no text labels |
+| `src/components/workspace/Workspace.tsx` | MODIFY | Add `tileSize` state (read/write localStorage `mtg-tile-size`); replace both `grid-cols-2 sm:grid-cols-3 ...` class blocks (grouped + ungrouped) with inline style using active stop's `minWidth`/`gap`; thread `tileSize` + `onTileSizeChange` props to WorkspaceToolbar |
+| `src/components/workspace/WorkspaceToolbar.tsx` | MODIFY | Accept `tileSize` + `onTileSizeChange` props; insert `TileSizeSlider` between the group-by-type button and grid/list buttons, with `toolbar-divider` on each side |
+| `src/components/workspace/SearchWorkspace.tsx` | MODIFY | Add `tileSize` state (same `mtg-tile-size` key); replace hardcoded `minmax(175px, 1fr)` / `gap: 12px` inline style with shared config; insert `TileSizeSlider` in toolbar row 2 before grid/list buttons with dividers on each side |
+| `src/config/version.ts` | MODIFY | Bump `APP_VERSION` to `"1.8.0"`; add `1.8.0` CHANGELOG entry |
+| `CLAUDE.md` | MODIFY | Add `mtg-tile-size` to UI state persistence keys; add `gridConfig.ts` to `config/` and `TileSizeSlider.tsx` to `components/workspace/` in file structure |
+| `BACKLOG.md` | MODIFY | Mark "Card tile size parity" and "Grid view column size presets" as closed v1.8.0 |
+| `docs/tile-size-slider-v4.html` | ADD (already present) | No action needed — confirmed in repo |
+| `docs/tile-size-design-spec.md` | ADD (already present) | No action needed — confirmed in repo |
 
-- **CardModal open-after-add (search context):** Modal stays open after clicking "+ Add to Deck" and snaps back to Details tab — matches deck view Confirm Art Swap behavior. `SearchWorkspace.tsx` no longer calls `setSelectedCard(null)` on add; `CardModal.tsx` calls `setView("details")` in the add handler.
-- **Planeswalker commander eligibility bug:** `isEligibleCommander` in `formatRules.ts` now requires `Legendary` AND `Creature` in `type_line` — Legendary Planeswalkers no longer qualify unless oracle text says "can be your commander".
-- **Group by type — commander floats to top:** `groupCardsByType` in `Workspace.tsx` prepends a `Commander` group when format=commander, commanderId is set, and deckViewMode is `main`. Commander card is pulled out of its type bucket and placed first.
-- **In-deck pill tooltip:** Green dot on search card tiles gets `title="Already in deck"`.
-- **CardModal Swap Art loading spinner:** Prints view shows a spinner while `loading && variants.length === 0` before the printings grid populates.
-- **Filter section All/None toggle:** Each filter group (Rarity, Card Type, Colors) gets an inline All/None toggle button next to its label — selects or deselects the entire group in one click.
-- **Color filter chip tints:** Active color chips now use per-color tints (W=stone, U=blue, B=dark-neutral, R=red, G=green, C=neutral-gray) via `COLOR_ACTIVE_CLASS` map and `activeClassName` prop on `ToggleChip`.
-- **Price filter "Any" toggle:** `anyPrice: boolean` added to `FilterState`; when on, all price filter syntax is suppressed and the slider/inputs dim. "Any" button toggles it inline with the Price Range label.
-- **Set name natural language search:** `lookupSetCode(name)` in `scryfall.ts` fetches all sets once (module-level cache), normalizes to words, and returns the best all-words-match by specificity score. `SearchWorkspace` fires a debounced lookup when `parsed.remainder` has 2+ words; injects `e:CODE` into the Scryfall query and shows a "Set: [name] ×" chip in toolbar row 2.
-- **Discard NLP token:** `o:"discard"` added to nlpParser archetypes.
-- **`set:CODE` NLP passthrough:** Also added `set:(\w+)` → `e:CODE` dynamic token (complements the natural language lookup).
+**Total: 8 files touched, 2 new files created (gridConfig.ts, TileSizeSlider.tsx)**
 
-Workflow improvement: added safe-handoff and carry-forward rules to CLAUDE.md and release-workflow.md based on lessons learned from the v1.6.0 milestone (4-prompt sequence where Prompt 2 carry-forwards + features created an unstable intermediate state).
+---
+
+## Testing Checklist
+
+### Deck View — Tile Slider
+- [ ] Toolbar shows ZoomIn icon between group-by-type toggle and grid/list buttons, with dividers on each side
+- [ ] Clicking the ZoomIn button opens the vertical popover below the button
+- [ ] Clicking the ZoomIn button again closes the popover
+- [ ] Clicking outside the popover closes it
+- [ ] Popover shows: large card hint (top), 5 stop dots on track, draggable thumb, small card hint (bottom)
+- [ ] Stop dots below and including active stop are blue; dots above are gray
+- [ ] Blue fill on track rises from bottom to thumb position
+- [ ] Clicking a stop dot / track area jumps to nearest stop — grid updates immediately
+- [ ] Dragging thumb snaps to stops in real-time — grid updates as you drag
+- [ ] Thumb shows grab cursor at rest, grabbing cursor while dragging
+- [ ] Open animation: popover fades in with slight upward movement
+
+### Deck View — Grid Sizing
+- [ ] Default size (M) renders ~8 columns at full 1920px width with sidebar open
+- [ ] XS stop produces densest grid (smallest tiles, most columns)
+- [ ] XL stop produces largest tiles (~4 columns wide)
+- [ ] Grouped view (group-by-type on) uses same tile size as ungrouped view
+- [ ] List view unaffected — tile size only changes grid view
+- [ ] Tile size persists after page refresh (localStorage `mtg-tile-size`)
+
+### Search View — Tile Slider
+- [ ] Search toolbar row 2 shows TileSizeSlider before grid/list buttons, with dividers on each side
+- [ ] Slider works identically to deck view slider
+- [ ] Search grid resizes to match selected stop
+
+### Cross-view Persistence
+- [ ] Change tile size in deck view → switch to search tab → search grid reflects same size
+- [ ] Change tile size in search view → switch to deck tab → deck grid reflects same size
+- [ ] Size persists across page refresh in both views
+
+### Regression
+- [ ] Deck name editing, format badge, format picker — all unaffected
+- [ ] Sort dropdown, sort direction, group-by-type, grid/list toggle — all unaffected
+- [ ] Simulator button, Main/Side pill — unaffected
+- [ ] Commander crown badges, qty pills, warning badges — still visible and positioned correctly at all sizes
+- [ ] Hover overlays on VisualCard — work at all tile sizes
+- [ ] Card modal opens on click in both views at all sizes
 
 ---
 

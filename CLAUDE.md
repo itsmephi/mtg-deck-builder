@@ -3,7 +3,7 @@ Authors: Phi & Thurgood Nguyen
 Stack: Next.js + TypeScript + Tailwind CSS
 Deployed: Vercel | Repo: GitHub (itsmephi/mtg-deck-builder)
 IDE: VS Code (Windows, primary) · Zed on Steam Deck (Linux, secondary)
-Current Version: v1.7.0 — see CHANGELOG.md for full history
+Current Version: v1.8.0 — see CHANGELOG.md for full history
 
 ---
 
@@ -45,7 +45,7 @@ For straightforward bug fixes and small enhancements, `/plan` → PROCEED → bu
 ---
 
 ## Active Milestone
-→ 2 items selected — tile size parity + grid column size presets (next version TBD)
+→ No active milestone. v1.8.0 shipped — tile size parity + snap slider. Next milestone pending triage.
 
 ---
 
@@ -60,9 +60,10 @@ Labels: bug · feature · enhancement · chore · high · med · low
 src/
   app/               → layout.tsx, page.tsx, globals.css
   config/            → version.ts ← bump APP_VERSION each release; CHANGELOG entries are string[] (one string per bullet point, not a single paragraph)
+                       gridConfig.ts ← shared tile size stops, TileSizeKey type, DEFAULT_TILE_SIZE, TILE_SIZE_STORAGE_KEY
   components/
     layout/          → Sidebar.tsx (shell), SidebarRail.tsx, SidebarSearchTab.tsx, SidebarDecksTab.tsx, CardModal.tsx, SampleHandModal.tsx, FormatPicker.tsx, CategoryChips.tsx, FilterPanel.tsx
-    workspace/       → Workspace.tsx, WorkspaceToolbar.tsx, VisualCard.tsx, ListCardTable.tsx, ImportModal.tsx, SearchWorkspace.tsx, SearchBar.tsx
+    workspace/       → Workspace.tsx, WorkspaceToolbar.tsx, VisualCard.tsx, ListCardTable.tsx, ImportModal.tsx, SearchWorkspace.tsx, SearchBar.tsx, TileSizeSlider.tsx
                        (DeckDropdown.tsx retired v1.3.0 — absorbed into SidebarDecksTab)
   hooks/             → useDeckManager.tsx, useDeckImportExport.tsx, useDeckStats.ts
   lib/               → scryfall.ts, formatRules.ts, nlpParser.ts
@@ -85,7 +86,7 @@ src/
 - 4-copy rule exemptions: check type_line for "Basic Land" and oracle_text for "A deck can have any number"
 - Qty 0: card stays in deck, grays out, excluded from total count and to-buy cost
 - 4-copy rule is a soft warning (highlight) not a hard cap
-- UI state persistence keys: mtg-view-mode, mtg-group-by-type, mtg-active-deck, mtg-deck-view-mode, mtg-sort-preference, mtg-show-thumbnail, mtg-sidebar-collapsed, mtg-sidebar-active-tab
+- UI state persistence keys: mtg-view-mode, mtg-group-by-type, mtg-active-deck, mtg-deck-view-mode, mtg-sort-preference, mtg-show-thumbnail, mtg-sidebar-collapsed, mtg-sidebar-active-tab, mtg-tile-size (values: "xs"|"s"|"m"|"l"|"xl", default "m")
 - Sideboard: enabled per-deck as sideboard?: DeckCard[] — undefined = no sideboard, [] = enabled but empty
 - deckViewMode lives in useDeckManager context
 - `format` and `commanderId` persisted as part of deck data in `mtg_builder_decks` localStorage
