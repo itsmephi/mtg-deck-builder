@@ -197,14 +197,14 @@ export default function TileSizeSlider({ activeStop, onChangeStop }: TileSizeSli
           {/* Draggable thumb */}
           <div
             onMouseDown={handleThumbMouseDown}
-            className="absolute rounded-full bg-blue-500 border-2 border-blue-400"
+            className="absolute rounded-full bg-white border-2 border-blue-500"
             style={{
               width: THUMB_SIZE,
               height: THUMB_SIZE,
               bottom: thumbY - THUMB_SIZE / 2,
               left: "50%",
               transform: "translateX(-50%)",
-              boxShadow: "0 2px 8px rgba(59,130,246,0.5)",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.4)",
               cursor: dragging ? "grabbing" : "grab",
               transition: dragging ? "none" : "bottom 0.15s ease",
               zIndex: 2,

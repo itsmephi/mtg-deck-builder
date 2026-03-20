@@ -5,7 +5,7 @@ import Sidebar from "@/components/layout/Sidebar";
 import Workspace from "@/components/workspace/Workspace";
 import SearchWorkspace from "@/components/workspace/SearchWorkspace";
 import { useDeckImportExport } from "@/hooks/useDeckImportExport";
-import { FilterState, DEFAULT_FILTERS } from "@/components/layout/FilterPanel";
+import { FilterState, DEFAULT_FILTERS, SIDEBAR_FILTERS_STORAGE_KEY, serializeFilters, deserializeFilters } from "@/components/layout/FilterPanel";
 import { TILE_SIZE_STOPS, TileSizeKey, DEFAULT_TILE_SIZE, TILE_SIZE_STORAGE_KEY } from "@/config/gridConfig";
 
 export default function Dashboard() {
@@ -22,7 +22,14 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<"search" | "decks">("search");
   const [activeChipId, setActiveChipId] = useState<string | null>(null);
   const [activeChipQuery, setActiveChipQuery] = useState<string | null>(null);
-  const [sidebarFilters, setSidebarFilters] = useState<FilterState>(DEFAULT_FILTERS);
+  const [sidebarFilters, setSidebarFilters] = useState<FilterState>(() => {
+    try {
+      const raw = localStorage.getItem(SIDEBAR_FILTERS_STORAGE_KEY);
+      return raw ? deserializeFilters(raw) : DEFAULT_FILTERS;
+    } catch {
+      return DEFAULT_FILTERS;
+    }
+  });
   const [tileSize, setTileSizeState] = useState<TileSizeKey>(DEFAULT_TILE_SIZE);
 
   useEffect(() => {
@@ -31,6 +38,10 @@ export default function Dashboard() {
     const storedTile = localStorage.getItem(TILE_SIZE_STORAGE_KEY) as TileSizeKey | null;
     if (storedTile && TILE_SIZE_STOPS.some((s) => s.key === storedTile)) setTileSizeState(storedTile);
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem(SIDEBAR_FILTERS_STORAGE_KEY, serializeFilters(sidebarFilters));
+  }, [sidebarFilters]);
 
   const setTileSize = (s: TileSizeKey) => {
     setTileSizeState(s);

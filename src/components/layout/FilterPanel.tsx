@@ -20,6 +20,35 @@ export const DEFAULT_FILTERS: FilterState = {
   colors: new Set(["W", "U", "B", "R", "G", "C"]),
 };
 
+export const SIDEBAR_FILTERS_STORAGE_KEY = "mtg-sidebar-filters";
+
+export function serializeFilters(f: FilterState): string {
+  return JSON.stringify({
+    priceMin: f.priceMin,
+    priceMax: f.priceMax,
+    anyPrice: f.anyPrice,
+    rarities: Array.from(f.rarities),
+    types: Array.from(f.types),
+    colors: Array.from(f.colors),
+  });
+}
+
+export function deserializeFilters(raw: string): FilterState {
+  try {
+    const parsed = JSON.parse(raw);
+    return {
+      priceMin: parsed.priceMin ?? DEFAULT_FILTERS.priceMin,
+      priceMax: parsed.priceMax ?? DEFAULT_FILTERS.priceMax,
+      anyPrice: parsed.anyPrice ?? DEFAULT_FILTERS.anyPrice,
+      rarities: new Set(parsed.rarities ?? Array.from(DEFAULT_FILTERS.rarities)),
+      types: new Set(parsed.types ?? Array.from(DEFAULT_FILTERS.types)),
+      colors: new Set(parsed.colors ?? Array.from(DEFAULT_FILTERS.colors)),
+    };
+  } catch {
+    return DEFAULT_FILTERS;
+  }
+}
+
 export function buildSidebarFilterSyntax(filters: FilterState): string {
   const parts: string[] = [];
 
@@ -193,7 +222,7 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
                   />
                   <div
                     className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 bg-white rounded-full border-2 border-blue-500 shadow"
-                    style={{ left: `${(displayMax / 100) * 100}%` }}
+                    style={{ left: `${(displayMax / 100) * 100}%`, cursor: dragMax !== null ? "grabbing" : "grab" }}
                   />
                 </>
               );

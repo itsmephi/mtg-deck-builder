@@ -1,8 +1,13 @@
-export const APP_VERSION = "1.8.2";
+export const APP_VERSION = "1.8.3";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.8.3": [
+    "Tile size slider thumb restyled to match the price slider — white fill, blue border, neutral drop shadow; stop dots unchanged",
+    "Price slider thumb now shows grab/grabbing cursor during drag",
+    "Filter state (price, rarities, types, colors) now persists to localStorage and restores on page refresh — no more losing your filter settings after a refresh",
+  ],
   "1.8.2": [
     "Bug fix: price filter default $100 ceiling now correctly filters out cards over $100 — removed an incorrect guard that skipped the usd<= clause at the default value",
     "Price inputs now auto-select on focus and accept free-form editing — the $ sign is a static label, validation is deferred to blur/Enter so intermediate values like empty or partial numbers are allowed",
