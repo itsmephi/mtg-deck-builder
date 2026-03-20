@@ -7,8 +7,8 @@
 ## Active Milestone
 <!-- Items promoted from Pipeline for the current release. Cleared after release ships. -->
 
-- [ ] **enhancement** | Search filtering by format legality / color identity (#72)
-- [ ] **enhancement** | EDHREC improved search suggestions (#26) — *Partially addressed in v1.3.0: mana symbols in search results. Dynamic categories and NLP search deferred.*
+- [x] **enhancement** | Search filtering by format legality / color identity (#72) *(closed v1.6.0)*
+- [x] **enhancement** | EDHREC improved search suggestions (#26) *(closed v1.6.0)*
 
 ---
 
@@ -29,6 +29,16 @@
 - [ ] **enhancement** | Combine qty and owned fields into a single elegant input — two separate fields is redundant UX; design a unified interaction ⚠️ needs design
 - [ ] **enhancement** | Import/export format compatibility — support MTGGoldfish format (e.g. `1 Ashling, the Limitless <borderless> [ECC] (F)`) and confirm cross-compatibility with TCGPlayer and Card Kingdom import
 - [ ] **enhancement** | Import modal — add "Paste from clipboard" button as an alternative to typing/pasting manually ⚠️ needs design
+- [ ] **enhancement** | Search: list view toggle for search results — grid/list toggle in search toolbar, list view mirrors sidebar search list but wider ⚠️ needs design
+- [ ] **enhancement** | Search: deck health panel — analyze deck composition and surface gaps (removal, card draw, ramp) in a dedicated panel, not in search categories ⚠️ needs design
+- [ ] **enhancement** | Search: hold-to-peek — while in search view, hold a button to temporarily reveal the deck view, release to return to search ⚠️ needs design
+- [ ] **enhancement** | Search: price filter "Any" toggle — remove price ceiling for searching expensive cards
+- [ ] **enhancement** | Search: filter section "Deselect All" button — quick way to clear all toggles in a filter group then select one
+- [ ] **enhancement** | Search: color filter chips match mana colors — W chip white-tinted, R chip red-tinted, etc.
+- [ ] **enhancement** | Search: filter badge color per format — Commander gold, Standard blue, Freeform gray (needs design to avoid confusion with active/inactive states)
+- [ ] **enhancement** | Search: highlight newly added cards on deck view switch — when returning to deck view after adding cards from search, briefly highlight or scroll to new cards ⚠️ needs design
+- [ ] **enhancement** | Search: emoji in deck names — optional personalization feature for deck names
+- [ ] **enhancement** | Search CardModal: keep modal open after adding card — return to Details tab instead of closing, matching deck view Confirm Art Swap behavior
 
 ---
 

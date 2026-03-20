@@ -5,6 +5,21 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.6.0] — Search Overhaul
+
+### Added
+- Two-tab app architecture: Search tab opens a full-width card grid workspace; Decks tab shows the deck builder. Both tabs always mounted — state persists across switches.
+- NLP search parser with ~30 natural language patterns: colors ("black", "blue"), types ("creatures", "instants"), keywords ("flying", "trample"), price ("under $2", "budget"), CMC ("under 3 mana"), archetypes ("ramp", "removal", "counterspells", "wipes"), and rarity. Matched tokens appear as removable chips inline in the search bar.
+- Context-aware filter badge: auto-filters by active deck's format legality (`legal:commander`, `legal:standard`) and commander color identity (`id<=WUB`). Badge colors are format-specific — Commander gold, Standard blue, Freeform neutral. Toggle on/off by clicking the badge.
+- Autocomplete dropdown: Scryfall card name suggestions appear after 2 characters typed; cards already in the active deck show a green indicator dot; Escape or Enter closes the dropdown.
+- Category chips in sidebar Search tab: format-relevant quick-search shortcuts (Ramp, Removal, Card Draw, Wipes, Tokens, Creatures — plus Counters/Tutors/Lands for Commander, Burn for Standard/Freeform). Clicking a chip fires a prebuilt Scryfall query; clicking again deactivates it.
+- Sidebar filter controls: price range (text inputs + visual bar), rarity toggles (Common/Uncommon/Rare/Mythic), card type toggles (7 types), color toggles (6 colors with mana pip icons). All combine live into the Scryfall query. Default state (all on) appends no extra syntax.
+- Search results in-deck indicator: cards already in the active deck show a green dot and 40% opacity dim.
+- CardModal context-aware action button: opened from search shows "+ Add to Deck" (blue, always active, adds current or Swap Art–selected variant printing and closes modal); opened from deck view shows "Confirm Art Swap" (existing behavior, unchanged).
+- Toast notification on add from search: "Added {name} to {deck}"; duplicate adds show "(×N)" count. Auto-dismisses after 2s; rapid adds replace the previous toast.
+
+---
+
 ## [1.5.4] — UX Polish & List Performance
 
 ### Changed

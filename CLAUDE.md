@@ -3,7 +3,7 @@ Authors: Phi & Thurgood Nguyen
 Stack: Next.js + TypeScript + Tailwind CSS
 Deployed: Vercel | Repo: GitHub (itsmephi/mtg-deck-builder)
 IDE: VS Code (Windows, primary) · Zed on Steam Deck (Linux, secondary)
-Current Version: v1.5.4 — see CHANGELOG.md for full history
+Current Version: v1.6.0 — see CHANGELOG.md for full history
 
 ---
 
@@ -45,7 +45,7 @@ For straightforward bug fixes and small enhancements, `/plan` → PROCEED → bu
 ---
 
 ## Active Milestone
-→ 2 items promoted — search improvements (#72 format/color filtering, #26 EDHREC suggestions). Pending design with Claude Chat.
+→ No active milestone. v1.6.0 Search Overhaul shipped (#72, #26 closed). Next milestone pending triage.
 
 ---
 
@@ -61,11 +61,11 @@ src/
   app/               → layout.tsx, page.tsx, globals.css
   config/            → version.ts ← bump APP_VERSION each release; CHANGELOG entries are string[] (one string per bullet point, not a single paragraph)
   components/
-    layout/          → Sidebar.tsx (shell), SidebarRail.tsx, SidebarSearchTab.tsx, SidebarDecksTab.tsx, CardModal.tsx, SampleHandModal.tsx, FormatPicker.tsx
-    workspace/       → Workspace.tsx, WorkspaceToolbar.tsx, VisualCard.tsx, ListCardTable.tsx, ImportModal.tsx
+    layout/          → Sidebar.tsx (shell), SidebarRail.tsx, SidebarSearchTab.tsx, SidebarDecksTab.tsx, CardModal.tsx, SampleHandModal.tsx, FormatPicker.tsx, CategoryChips.tsx, FilterPanel.tsx
+    workspace/       → Workspace.tsx, WorkspaceToolbar.tsx, VisualCard.tsx, ListCardTable.tsx, ImportModal.tsx, SearchWorkspace.tsx, SearchBar.tsx
                        (DeckDropdown.tsx retired v1.3.0 — absorbed into SidebarDecksTab)
   hooks/             → useDeckManager.tsx, useDeckImportExport.tsx, useDeckStats.ts
-  lib/               → scryfall.ts, formatRules.ts
+  lib/               → scryfall.ts, formatRules.ts, nlpParser.ts
   types/             → index.ts
 ```
 
@@ -97,6 +97,11 @@ src/
 - Lazy backfill: `backfillColorIdentity(cards)` triggered in Workspace useEffect when activeDeck switches to Commander; uses Scryfall `/cards/collection`; silent failure
 - Simulator thresholds: 8%/4% (Freeform/Standard 60-card), 5%/2% (Commander 100-card) — set in `formatRules.ts` as `probGreen`/`probYellow`
 - List view column order: Qty, Owned, Name, Type, Mana, Price, ×
+- NLP parser: `parseSearchQuery(input)` in `lib/nlpParser.ts` — returns `{ tokens, scryfallQuery, remainder }`; `ParsedToken` has `matchedText` field used for token removal via `query.replace(token.matchedText, '')`
+- Sidebar filter state: `FilterState` + `DEFAULT_FILTERS` + `buildSidebarFilterSyntax()` exported from `FilterPanel.tsx`; only appends syntax when some toggles are OFF (default all-on = no syntax)
+- Autocomplete: `autocompleteCards(query)` in `scryfall.ts` calls Scryfall `/cards/autocomplete?q=...`, returns `string[]` of card names
+- SearchWorkspace query assembly order: format filter + chip-or-NLP + sidebar filter syntax — all three joined by space
+- CardModal `context` prop: `'search'` shows "+ Add to Deck" button (calls `onAddToDeck(previewCard)`); `'deck'` (default) shows "Confirm Art Swap" — backwards compatible, Workspace.tsx passes no context
 
 ---
 
