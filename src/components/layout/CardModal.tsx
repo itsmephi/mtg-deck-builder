@@ -19,6 +19,8 @@ interface CardModalProps {
   onSwap?: (oldCardId: string, newCard: ScryfallCard) => void;
   onNext?: () => void;
   onPrev?: () => void;
+  context?: "search" | "deck";
+  onAddToDeck?: (card: ScryfallCard) => void;
 }
 
 export default function CardModal({
@@ -27,6 +29,8 @@ export default function CardModal({
   onSwap,
   onNext,
   onPrev,
+  context = "deck",
+  onAddToDeck,
 }: CardModalProps) {
   if (!card) return null;
 
@@ -282,16 +286,27 @@ export default function CardModal({
                     <ImageIcon className="w-4 h-4" /> Swap Art
                   </button>
                 </div>
-                <button
-                  onClick={() => {
-                    onSwap && onSwap(card.id, previewCard);
-                    setView("details");
-                  }}
-                  disabled={previewCard.id === card.id}
-                  className="w-full py-2 rounded-lg text-sm font-medium transition-colors disabled:cursor-not-allowed bg-blue-600 hover:bg-blue-500 text-white disabled:bg-neutral-800 disabled:text-neutral-600"
-                >
-                  Confirm Art Swap
-                </button>
+                {context === "search" ? (
+                  <button
+                    onClick={() => onAddToDeck?.(previewCard)}
+                    disabled={!onAddToDeck}
+                    title={!onAddToDeck ? "No deck selected" : undefined}
+                    className="w-full py-2 rounded-lg text-sm font-medium transition-colors bg-blue-600 hover:bg-blue-500 text-white disabled:bg-neutral-800 disabled:text-neutral-500 disabled:cursor-not-allowed"
+                  >
+                    + Add to Deck
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      onSwap && onSwap(card.id, previewCard);
+                      setView("details");
+                    }}
+                    disabled={previewCard.id === card.id}
+                    className="w-full py-2 rounded-lg text-sm font-medium transition-colors disabled:cursor-not-allowed bg-blue-600 hover:bg-blue-500 text-white disabled:bg-neutral-800 disabled:text-neutral-600"
+                  >
+                    Confirm Art Swap
+                  </button>
+                )}
               </div>
             </div>
 

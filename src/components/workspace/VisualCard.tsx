@@ -5,32 +5,81 @@ import { DeckFormat, getCardWarnings, isEligibleCommander } from '@/lib/formatRu
 
 interface VisualCardProps {
   card: DeckCard;
-  onUpdateQuantity: (id: string, delta: number) => void;
-  onSetQuantity: (id: string, qty: number) => void;
-  onUpdateOwnedQty: (id: string, qty: number) => void;
-  onRemove: (id: string) => void;
   onSelect: (card: ScryfallCard) => void;
+  // Deck mode props (not used in search mode)
+  onUpdateQuantity?: (id: string, delta: number) => void;
+  onSetQuantity?: (id: string, qty: number) => void;
+  onUpdateOwnedQty?: (id: string, qty: number) => void;
+  onRemove?: (id: string) => void;
   extraQty?: number;
   // Commander/format props
   format?: DeckFormat;
   commanderId?: string;
   commanderIdentity?: string[];
   onSetCommander?: (id: string | undefined) => void;
+  // Search mode props
+  mode?: "deck" | "search";
+  inDeck?: boolean;
+  onAdd?: (card: ScryfallCard) => void;
 }
 
 export default function VisualCard({
   card,
-  onUpdateQuantity,
-  onSetQuantity,
-  onUpdateOwnedQty,
-  onRemove,
   onSelect,
+  onUpdateQuantity = () => {},
+  onSetQuantity = () => {},
+  onUpdateOwnedQty = () => {},
+  onRemove = () => {},
   extraQty = 0,
   format = "freeform",
   commanderId,
   commanderIdentity,
   onSetCommander,
+  mode = "deck",
+  inDeck = false,
+  onAdd,
 }: VisualCardProps) {
+  // Search mode — simplified tile with "+ Add to Deck" overlay
+  if (mode === "search") {
+    const imgSrc = card.card_faces?.[0].image_uris?.normal || card.image_uris?.normal;
+    const price = card.prices?.usd ? `$${card.prices.usd}` : "—";
+    return (
+      <div
+        className="relative group rounded-xl cursor-pointer aspect-[2.5/3.5]"
+        onClick={() => onSelect(card)}
+      >
+        <div className="absolute inset-0 rounded-xl overflow-hidden">
+          <img src={imgSrc} className={`w-full h-full object-cover${inDeck ? " opacity-40" : ""}`} alt={card.name} />
+          {/* Slide-up overlay */}
+          <div
+            className="absolute bottom-0 left-0 right-0 bg-black/75 backdrop-blur-sm px-2 py-2 translate-y-full group-hover:translate-y-0 transition-transform duration-200 ease-out z-20 flex flex-col items-center gap-1.5"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <span className="text-xs font-semibold text-white text-center leading-tight line-clamp-2">
+              {card.name}
+            </span>
+            <span className="text-[10px] text-neutral-400 truncate w-full text-center">
+              {card.type_line}
+            </span>
+            <span className="text-[10px] text-neutral-400">{price}</span>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onAdd?.(card);
+              }}
+              className="mt-0.5 px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium rounded-full transition-colors"
+            >
+              + Add to Deck
+            </button>
+          </div>
+        </div>
+        {/* In-deck indicator */}
+        {inDeck && (
+          <div className="absolute top-1.5 left-1.5 z-20 w-2 h-2 rounded-full bg-green-500 ring-2 ring-neutral-950" />
+        )}
+      </div>
+    );
+  }
   const isExempt =
     card.type_line?.toLowerCase().includes("basic land") ||
     card.oracle_text?.includes("A deck can have any number");

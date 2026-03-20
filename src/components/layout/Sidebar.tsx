@@ -7,16 +7,22 @@ import SidebarRail from "./SidebarRail";
 import SidebarSearchTab from "./SidebarSearchTab";
 import SidebarDecksTab from "./SidebarDecksTab";
 import { useDeckManager, SortBy, SortDir } from "@/hooks/useDeckManager";
+import { FilterState } from "./FilterPanel";
 
 interface Props {
   onImport: () => void;
   onExport: () => void;
   isImporting: boolean;
+  activeTab: "search" | "decks";
+  onTabChange: (tab: "search" | "decks") => void;
+  activeChipId: string | null;
+  onChipSelect: (id: string, query: string) => void;
+  sidebarFilters: FilterState;
+  onFiltersChange: (filters: FilterState) => void;
 }
 
-export default function Sidebar({ onImport, onExport, isImporting }: Props) {
+export default function Sidebar({ onImport, onExport, isImporting, activeTab, onTabChange, activeChipId, onChipSelect, sidebarFilters, onFiltersChange }: Props) {
   const [collapsed, setCollapsed] = useState(false);
-  const [activeTab, setActiveTab] = useState<"search" | "decks">("search");
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isChangelogOpen, setIsChangelogOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
@@ -36,25 +42,17 @@ export default function Sidebar({ onImport, onExport, isImporting }: Props) {
   useEffect(() => {
     const stored = localStorage.getItem("mtg-sidebar-collapsed");
     if (stored === "true") setCollapsed(true);
-    const storedTab = localStorage.getItem("mtg-sidebar-active-tab");
-    if (storedTab === "search" || storedTab === "decks") setActiveTab(storedTab);
   }, []);
 
   const expandTo = (tab: "search" | "decks") => {
     setCollapsed(false);
-    setActiveTab(tab);
+    onTabChange(tab);
     localStorage.setItem("mtg-sidebar-collapsed", "false");
-    localStorage.setItem("mtg-sidebar-active-tab", tab);
   };
 
   const handleCollapse = () => {
     setCollapsed(true);
     localStorage.setItem("mtg-sidebar-collapsed", "true");
-  };
-
-  const handleTabChange = (tab: "search" | "decks") => {
-    setActiveTab(tab);
-    localStorage.setItem("mtg-sidebar-active-tab", tab);
   };
 
   const isCollapsed = isDesktop && collapsed;
@@ -78,7 +76,7 @@ export default function Sidebar({ onImport, onExport, isImporting }: Props) {
           {/* Tab bar */}
           <div className="flex items-center border-b border-neutral-800 shrink-0">
             <button
-              onClick={() => handleTabChange("search")}
+              onClick={() => onTabChange("search")}
               className={`flex items-center gap-1.5 flex-1 justify-center px-3 py-2.5 text-xs font-medium border-b-2 transition-colors ${
                 activeTab === "search"
                   ? "text-blue-400 border-blue-500"
@@ -89,7 +87,7 @@ export default function Sidebar({ onImport, onExport, isImporting }: Props) {
               Search
             </button>
             <button
-              onClick={() => handleTabChange("decks")}
+              onClick={() => onTabChange("decks")}
               className={`flex items-center gap-1.5 flex-1 justify-center px-3 py-2.5 text-xs font-medium border-b-2 transition-colors ${
                 activeTab === "decks"
                   ? "text-blue-400 border-blue-500"
@@ -113,7 +111,12 @@ export default function Sidebar({ onImport, onExport, isImporting }: Props) {
           {/* Tab content */}
           <div className="flex-1 overflow-hidden">
             {activeTab === "search" ? (
-              <SidebarSearchTab />
+              <SidebarSearchTab
+                activeChipId={activeChipId}
+                onSelectChip={onChipSelect}
+                filters={sidebarFilters}
+                onFiltersChange={onFiltersChange}
+              />
             ) : (
               <SidebarDecksTab
                 onImport={onImport}

@@ -91,6 +91,21 @@ export async function backfillColorIdentity(cards: DeckCard[]): Promise<DeckCard
   );
 }
 
+export async function autocompleteCards(query: string): Promise<string[]> {
+  if (query.length < 2) return [];
+  try {
+    const res = await fetch(
+      `${SCRYFALL_BASE}/cards/autocomplete?q=${encodeURIComponent(query)}`,
+      { headers: HEADERS },
+    );
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.data || [];
+  } catch {
+    return [];
+  }
+}
+
 export async function getCardRulings(
   cardId: string,
 ): Promise<{ source: string; published_at: string; comment: string }[]> {

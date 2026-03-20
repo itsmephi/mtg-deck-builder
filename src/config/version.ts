@@ -1,8 +1,19 @@
-export const APP_VERSION = "1.5.4";
+export const APP_VERSION = "1.6.0";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.6.0": [
+    "Search overhaul: two-tab app architecture — Search tab opens a full-width card grid workspace, Decks tab shows the deck builder; state persists across tab switches",
+    "NLP search parser: natural language queries like \"black flying creatures under $2\" or \"ramp\" translate to structured Scryfall syntax; matched tokens shown as removable chips inline in the search bar",
+    "Context-aware filter badge: auto-filters by active deck's format legality and commander color identity; format-specific badge colors (Commander gold, Standard blue, Freeform neutral)",
+    "Autocomplete dropdown: Scryfall card name suggestions appear after 2 characters; cards already in the active deck show a green dot; Escape or Enter closes the dropdown",
+    "Category chips: format-relevant quick-search shortcuts in the sidebar (Ramp, Removal, Card Draw, Wipes, Tokens, Creatures, Counters, Tutors, Lands, Burn) — filtered by active deck's format",
+    "Sidebar filter controls: price range slider, rarity toggles, card type toggles, color toggles with mana pip icons — all combine into the live Scryfall query",
+    "Search results in-deck indicator: cards already in the active deck show a green dot and 40% opacity dim",
+    "CardModal context: opened from search shows '+ Add to Deck' button (adds current or variant printing); opened from deck view shows 'Confirm Art Swap' (unchanged)",
+    "Toast feedback on add: shows 'Added {name} to {deck}'; duplicate adds show '(×N)' count",
+  ],
   "1.5.4": [
     "Delete Deck and Delete Sideboard in the sidebar dropdown no longer show a second confirmation dialog — clicking the action executes immediately",
     "Owned −/+ increment buttons added to list view alongside the X/Y owned display — hover-visible, matching the qty button pattern",
