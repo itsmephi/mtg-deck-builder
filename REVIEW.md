@@ -3,7 +3,7 @@
 ---
 
 ## v1.8.0 — Tile Size Parity + Snap Slider
-Status: IN PROGRESS
+Status: APPROVED ✅
 
 ---
 
@@ -23,6 +23,34 @@ Status: IN PROGRESS
 | `docs/tile-size-design-spec.md` | ADD (already present) | No action needed — confirmed in repo |
 
 **Total: 8 files touched, 2 new files created (gridConfig.ts, TileSizeSlider.tsx)**
+
+---
+
+## Session Summary
+
+**What shipped:**
+
+- **`gridConfig.ts` (new):** Shared tile size configuration — 5 stops (XS/S/M/L/XL) with `minWidth` and `gap` values tuned for 1624px effective grid (1920px − 256px sidebar − 40px scroll padding). Types `TileSizeKey`, `DEFAULT_TILE_SIZE`, and `TILE_SIZE_STORAGE_KEY` exported for consumption by both views.
+
+- **`TileSizeSlider.tsx` (new):** Vertical snap-slider popover triggered by a `ZoomIn` toolbar icon button. Drag-to-snap and click-to-jump interactions. Always rendered in DOM — open/close controlled by `opacity` + `translateY` + `pointer-events` for smooth 0.15s fade transition. Card-shape SVG hints (simple rounded rects) at top (large) and bottom (small). Blue fill and dot coloring track active stop position.
+
+- **Workspace.tsx:** Both grouped and ungrouped deck grids replaced Tailwind responsive `grid-cols-*` classes with inline `gridTemplateColumns: repeat(auto-fill, minmax(...))` style from `gridConfig.ts`. Tile size state lifted to `page.tsx` (received as props). `md:p-8` outer wrapper padding removed — deck grid now 1600px wide, matching search view's effective width closely enough for identical column counts at all stops.
+
+- **WorkspaceToolbar.tsx:** `TileSizeSlider` inserted between group-by-type toggle and grid/list view buttons, with `self-stretch bg-neutral-800` dividers on each side matching existing toolbar divider style.
+
+- **SearchWorkspace.tsx:** Hardcoded `minmax(175px, 1fr)` / `gap: 12px` replaced with shared `gridConfig.ts` values. `TileSizeSlider` added to toolbar row 2 before grid/list buttons with dividers.
+
+- **`page.tsx`:** Tile size state lifted here (single source of truth). `setTileSize` writes to `localStorage`. Both `Workspace` and `SearchWorkspace` receive `tileSize` + `onTileSizeChange` as props — cross-view sync is instant with no localStorage polling.
+
+**Carry-forward fixes applied:**
+- minWidth values recalculated for 256px sidebar (was 200px — original spec assumed narrower sidebar)
+- Cross-view sync implemented via Option B (lifted state) — changing size in one tab reflects immediately in the other
+- Popover animation fixed (always-in-DOM opacity/transform transition instead of conditional mount)
+- Toolbar dividers corrected to `self-stretch` full height
+- Hint icons simplified to match prototype (plain rounded rect SVGs, `text-neutral-600`)
+- XL column count in deck view fixed by removing `md:p-8` from deck wrapper in `page.tsx`
+
+**Noted for future:** Search and deck views still differ slightly in outer padding (search is edge-to-edge, deck has `p-4` outer + `p-4` scroll container). Captured in backlog for a future design pass.
 
 ---
 

@@ -5,6 +5,20 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.8.0] — Tile Size Parity + Snap Slider
+
+### Added
+- Tile size snap slider: new toolbar control in both deck and search views — 5 presets (XS / S / M / L / XL) accessed via a vertical popover slider with drag-to-snap, click-to-jump interaction, and card-shape visual hints at top and bottom
+- `gridConfig.ts`: shared tile size configuration consumed by both grid views — single source of truth for `minWidth`, `gap`, stop keys, default, and localStorage key
+
+### Changed
+- Deck grid and search grid now use identical `repeat(auto-fill, minmax(...px, 1fr))` layout driven by `gridConfig.ts` — tile sizes are fully unified across views
+- Tile size persists to localStorage (`mtg-tile-size`) and is shared across both views: changing the slider in deck view is reflected immediately in search view and vice versa
+- Deck view outer wrapper padding reduced from `md:p-8` to `p-4` — aligns effective grid width with search view for consistent column counts at all size stops
+- Default tile size (M) targets ~8 columns at 1920px with sidebar expanded; XL targets ~4 columns; XS targets ~12 columns
+
+---
+
 ## [1.7.0] — Search Polish + Commander Fixes
 
 ### Fixed
