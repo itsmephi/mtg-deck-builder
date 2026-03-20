@@ -39,6 +39,7 @@
 - [ ] **enhancement** | Search by foil — filter search results to foil printings only
 - [ ] **enhancement** | Search: spelling correction — suggest corrected card name on typo / no-results
 - [ ] **enhancement** | Margin parity between search and deck views — search is edge-to-edge, deck has p-4 outer + p-4 scroll container; future design pass to unify outer padding
+- [x] **enhancement** | Release year filter — year range (dual text inputs, default last 5 years) in sidebar FilterPanel + Released date row in CardModal Product Details *(closed v1.9.0)*
 
 ---
 

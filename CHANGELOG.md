@@ -5,6 +5,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.9.0] — Release Year Filter + CardModal Release Date
+
+### Added
+- Release year filter in the sidebar filter panel — dual text inputs (year from / to) with three quick-select presets: "This Year", "Last 5 Yrs" (default), and "All"; active by default showing the past 5 years
+- Year filter injects `year>=` / `year<=` Scryfall clauses only when the range is meaningfully constrained; "All" (1993–current year) produces no syntax
+- CardModal Product Details: "Released" date row added below Price, showing the printing's Scryfall release date (YYYY-MM-DD)
+- Year filter persists to `mtg-sidebar-filters` localStorage key alongside all other filter state; old saved state without year fields falls back to defaults gracefully
+
+---
+
 ## [1.8.4] — Hydration Fix for Filter Persistence
 
 ### Fixed

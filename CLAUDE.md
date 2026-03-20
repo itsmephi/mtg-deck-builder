@@ -3,7 +3,7 @@ Authors: Phi & Thurgood Nguyen
 Stack: Next.js + TypeScript + Tailwind CSS
 Deployed: Vercel | Repo: GitHub (itsmephi/mtg-deck-builder)
 IDE: VS Code (Windows, primary) · Zed on Steam Deck (Linux, secondary)
-Current Version: v1.8.4 — see CHANGELOG.md for full history
+Current Version: v1.9.0 — see CHANGELOG.md for full history
 
 ---
 
@@ -45,7 +45,7 @@ For straightforward bug fixes and small enhancements, `/plan` → PROCEED → bu
 ---
 
 ## Active Milestone
-→ No active milestone. v1.8.4 shipped — hydration fix for filter persistence. Next milestone pending triage.
+→ No active milestone. v1.9.0 shipped — release year filter + CardModal release date. Next milestone pending triage.
 
 ---
 
@@ -86,7 +86,7 @@ src/
 - 4-copy rule exemptions: check type_line for "Basic Land" and oracle_text for "A deck can have any number"
 - Qty 0: card stays in deck, grays out, excluded from total count and to-buy cost
 - 4-copy rule is a soft warning (highlight) not a hard cap
-- UI state persistence keys: mtg-view-mode, mtg-group-by-type, mtg-active-deck, mtg-deck-view-mode, mtg-sort-preference, mtg-show-thumbnail, mtg-sidebar-collapsed, mtg-sidebar-active-tab, mtg-tile-size (values: "xs"|"s"|"m"|"l"|"xl", default "m"), mtg-sidebar-filters (serialized FilterState — price, anyPrice, rarities, types, colors)
+- UI state persistence keys: mtg-view-mode, mtg-group-by-type, mtg-active-deck, mtg-deck-view-mode, mtg-sort-preference, mtg-show-thumbnail, mtg-sidebar-collapsed, mtg-sidebar-active-tab, mtg-tile-size (values: "xs"|"s"|"m"|"l"|"xl", default "m"), mtg-sidebar-filters (serialized FilterState — price, anyPrice, rarities, types, colors, yearMin, yearMax)
 - Sideboard: enabled per-deck as sideboard?: DeckCard[] — undefined = no sideboard, [] = enabled but empty
 - deckViewMode lives in useDeckManager context
 - `format` and `commanderId` persisted as part of deck data in `mtg_builder_decks` localStorage
@@ -99,13 +99,14 @@ src/
 - Simulator thresholds: 8%/4% (Freeform/Standard 60-card), 5%/2% (Commander 100-card) — set in `formatRules.ts` as `probGreen`/`probYellow`
 - List view column order: Qty, Owned, Name, Type, Mana, Price, ×
 - NLP parser: `parseSearchQuery(input)` in `lib/nlpParser.ts` — returns `{ tokens, scryfallQuery, remainder }`; `ParsedToken` has `matchedText` field used for token removal via `query.replace(token.matchedText, '')`
-- Sidebar filter state: `FilterState` + `DEFAULT_FILTERS` + `buildSidebarFilterSyntax()` + `serializeFilters()` + `deserializeFilters()` + `SIDEBAR_FILTERS_STORAGE_KEY` exported from `FilterPanel.tsx`; only appends syntax when some toggles are OFF (default all-on = no syntax); full state persists to `mtg-sidebar-filters` localStorage key
+- Sidebar filter state: `FilterState` + `DEFAULT_FILTERS` + `buildSidebarFilterSyntax()` + `serializeFilters()` + `deserializeFilters()` + `SIDEBAR_FILTERS_STORAGE_KEY` exported from `FilterPanel.tsx`; full state persists to `mtg-sidebar-filters` localStorage key
 - Autocomplete: `autocompleteCards(query)` in `scryfall.ts` calls Scryfall `/cards/autocomplete?q=...`, returns `string[]` of card names
 - SearchWorkspace query assembly order: format filter + chip-or-NLP + sidebar filter syntax — all three joined by space
 - CardModal `context` prop: `'search'` shows "+ Add to Deck" button (calls `onAddToDeck(previewCard)` then `setView("details")`); `'deck'` (default) shows "Confirm Art Swap" — backwards compatible, Workspace.tsx passes no context
 - `lookupSetCode(name)` in `scryfall.ts`: fetches `/sets` once, caches module-level; normalizes to words; returns best all-words-match scored by `queryWords.length / setWords.length` (higher = more specific)
 - `setMatch` state in SearchWorkspace: debounced 500ms lookup fires when `parsed.remainder` has 2+ words; injects `e:CODE` into scryfallQuery; guarded by `setMatch.query === parsed.remainder`
 - `anyPrice: boolean` in FilterState: when true, `buildSidebarFilterSyntax` skips all price clauses; slider/inputs dim via `opacity-30 pointer-events-none`
+- `yearMin`/`yearMax` in FilterState: default last 5 years (CURRENT_YEAR-4 to CURRENT_YEAR); year syntax only injected when `yearMin > 1993` or `yearMax < CURRENT_YEAR`; presets: "This Year" (currentYear–currentYear), "Last 5 Yrs" (default), "All" (1993–currentYear); `released_at?: string` on `ScryfallCard` (ISO date "YYYY-MM-DD") — displayed in CardModal Product Details
 - `isEligibleCommander`: requires `type_line` contains both "Legendary" AND "Creature", OR `oracle_text` contains "can be your commander"
 - `groupCardsByType` in Workspace: prepends `Commander` group when `format === "commander" && commanderId && deckViewMode === "main"`; commander card is routed there instead of its type bucket
 
