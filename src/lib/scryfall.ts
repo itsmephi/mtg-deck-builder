@@ -106,6 +106,50 @@ export async function autocompleteCards(query: string): Promise<string[]> {
   }
 }
 
+interface ScryfallSet {
+  code: string;
+  name: string;
+}
+
+let setsCache: ScryfallSet[] | null = null;
+
+function normalizeWords(s: string): string[] {
+  return s.toLowerCase().replace(/[^a-z0-9\s]/g, "").split(/\s+/).filter(Boolean);
+}
+
+export async function lookupSetCode(
+  name: string,
+): Promise<{ code: string; name: string } | null> {
+  if (!setsCache) {
+    try {
+      const res = await fetch(`${SCRYFALL_BASE}/sets`, { headers: HEADERS });
+      if (!res.ok) return null;
+      const data = await res.json();
+      setsCache = (data.data || []) as ScryfallSet[];
+    } catch {
+      return null;
+    }
+  }
+
+  const queryWords = normalizeWords(name);
+  if (queryWords.length === 0) return null;
+
+  let bestMatch: { code: string; name: string; score: number } | null = null;
+
+  for (const set of setsCache) {
+    const setWords = normalizeWords(set.name);
+    const allFound = queryWords.every((w) => setWords.includes(w));
+    if (allFound) {
+      const score = queryWords.length / setWords.length;
+      if (!bestMatch || score > bestMatch.score) {
+        bestMatch = { code: set.code, name: set.name, score };
+      }
+    }
+  }
+
+  return bestMatch ? { code: bestMatch.code, name: bestMatch.name } : null;
+}
+
 export async function getCardRulings(
   cardId: string,
 ): Promise<{ source: string; published_at: string; comment: string }[]> {

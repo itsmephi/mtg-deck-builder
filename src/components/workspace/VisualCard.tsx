@@ -75,7 +75,7 @@ export default function VisualCard({
         </div>
         {/* In-deck indicator */}
         {inDeck && (
-          <div className="absolute top-1.5 left-1.5 z-20 w-2 h-2 rounded-full bg-green-500 ring-2 ring-neutral-950" />
+          <div title="Already in deck" className="absolute top-1.5 left-1.5 z-20 w-2 h-2 rounded-full bg-green-500 ring-2 ring-neutral-950" />
         )}
       </div>
     );

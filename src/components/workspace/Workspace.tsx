@@ -230,7 +230,10 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
     );
 
   const groupCardsByType = (cards: DeckCard[]) => {
+    const showCommanderGroup =
+      format === "commander" && !!activeDeck.commanderId && deckViewMode === "main";
     const groups: Record<string, DeckCard[]> = {
+      ...(showCommanderGroup ? { Commander: [] } : {}),
       Creatures: [],
       Planeswalkers: [],
       "Instants/Sorceries": [],
@@ -240,6 +243,10 @@ export default function Workspace({ pendingImport, processImport, cancelImport }
       Other: [],
     };
     cards.forEach((card) => {
+      if (showCommanderGroup && card.id === activeDeck.commanderId) {
+        groups["Commander"].push(card);
+        return;
+      }
       const type = (card.type_line || "").toLowerCase();
       if (type.includes("creature")) groups["Creatures"].push(card);
       else if (type.includes("planeswalker")) groups["Planeswalkers"].push(card);

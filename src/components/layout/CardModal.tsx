@@ -288,7 +288,7 @@ export default function CardModal({
                 </div>
                 {context === "search" ? (
                   <button
-                    onClick={() => onAddToDeck?.(previewCard)}
+                    onClick={() => { onAddToDeck?.(previewCard); setView("details"); }}
                     disabled={!onAddToDeck}
                     title={!onAddToDeck ? "No deck selected" : undefined}
                     className="w-full py-2 rounded-lg text-sm font-medium transition-colors bg-blue-600 hover:bg-blue-500 text-white disabled:bg-neutral-800 disabled:text-neutral-500 disabled:cursor-not-allowed"
@@ -432,6 +432,10 @@ export default function CardModal({
                       </ul>
                     )}
                   </section>
+                </div>
+              ) : loading && variants.length === 0 ? (
+                <div className="flex justify-center p-12">
+                  <div className="w-5 h-5 border-2 border-neutral-600 border-t-neutral-400 rounded-full animate-spin" />
                 </div>
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">

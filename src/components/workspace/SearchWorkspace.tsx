@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { LayoutGrid, List } from "lucide-react";
-import { searchCards, autocompleteCards } from "@/lib/scryfall";
+import { searchCards, autocompleteCards, lookupSetCode } from "@/lib/scryfall";
 import { parseSearchQuery } from "@/lib/nlpParser";
 import { ScryfallCard } from "@/types";
 import { Deck } from "@/types";
@@ -43,6 +43,7 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showAutocomplete, setShowAutocomplete] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [setMatch, setSetMatch] = useState<{ query: string; code: string; name: string } | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -63,11 +64,18 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
 
   const scryfallQuery = useMemo(() => {
     const parts = [filterSyntax];
-    if (activeChipQuery !== null) parts.push(activeChipQuery);
-    else if (parsed.scryfallQuery) parts.push(parsed.scryfallQuery);
+    if (activeChipQuery !== null) {
+      parts.push(activeChipQuery);
+    } else if (setMatch && setMatch.query === parsed.remainder) {
+      const tokenPart = parsed.tokens.map((t) => t.scryfall).join(" ");
+      if (tokenPart) parts.push(tokenPart);
+      parts.push(`e:${setMatch.code}`);
+    } else if (parsed.scryfallQuery) {
+      parts.push(parsed.scryfallQuery);
+    }
     if (sidebarFilterSyntax) parts.push(sidebarFilterSyntax);
     return parts.filter(Boolean).join(" ").trim();
-  }, [filterSyntax, activeChipQuery, parsed.scryfallQuery, sidebarFilterSyntax]);
+  }, [filterSyntax, activeChipQuery, parsed, sidebarFilterSyntax, setMatch]);
 
   // Derived: filter badge data
   const filterBadge = useMemo(() => {
@@ -130,6 +138,24 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
       if (names.length > 0 || parsed.tokens.length > 0) setShowAutocomplete(true);
     }).catch(() => setSuggestions([]));
   }, [query, parsed.tokens.length]);
+
+  // Set name lookup — fires when remainder has 2+ words
+  useEffect(() => {
+    const words = parsed.remainder.trim().split(/\s+/).filter(Boolean);
+    if (words.length < 2) {
+      setSetMatch(null);
+      return;
+    }
+    const timer = setTimeout(async () => {
+      const result = await lookupSetCode(parsed.remainder);
+      if (result) {
+        setSetMatch({ query: parsed.remainder, ...result });
+      } else {
+        setSetMatch(null);
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [parsed.remainder]);
 
   // Clear query input when a chip activates
   useEffect(() => {
@@ -247,7 +273,7 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
           <SearchBar
             query={query}
             onChange={handleQueryChange}
-            onClear={() => { setQuery(""); setSuggestions([]); setShowAutocomplete(false); }}
+            onClear={() => { setQuery(""); setSuggestions([]); setShowAutocomplete(false); setSetMatch(null); }}
             inputRef={searchInputRef}
             tokens={parsed.tokens}
             onRemoveToken={handleRemoveToken}
@@ -271,6 +297,18 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
               "Search to find cards"
             )}
           </span>
+          {setMatch && setMatch.query === parsed.remainder && (
+            <div className="flex items-center gap-1 px-1.5 py-0.5 bg-neutral-800 border border-neutral-700 rounded text-[10px] text-neutral-300 max-w-[220px]">
+              <span className="text-neutral-500 shrink-0">Set:</span>
+              <span className="truncate">{setMatch.name}</span>
+              <button
+                onClick={() => setQuery("")}
+                className="ml-0.5 text-neutral-500 hover:text-white shrink-0"
+              >
+                ×
+              </button>
+            </div>
+          )}
           <div className="ml-auto flex items-center gap-1.5">
             <select className="bg-neutral-900 border border-neutral-800 text-xs text-neutral-400 rounded px-1.5 py-0.5 focus:outline-none cursor-pointer">
               <option value="relevance" className="bg-neutral-900">Sort: Relevance</option>
@@ -349,7 +387,6 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
           context="search"
           onAddToDeck={async (card) => {
             await handleAdd(card);
-            setSelectedCard(null);
           }}
         />
       )}

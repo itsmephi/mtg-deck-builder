@@ -124,7 +124,7 @@ export function getCardWarnings(
 
 export function isEligibleCommander(card: DeckCard): boolean {
   return (
-    (card.type_line?.includes("Legendary") ?? false) ||
+    ((card.type_line?.includes("Legendary") && card.type_line?.includes("Creature")) ?? false) ||
     (card.oracle_text?.includes("can be your commander") ?? false)
   );
 }

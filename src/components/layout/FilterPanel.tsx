@@ -5,6 +5,7 @@ import { useRef } from "react";
 export interface FilterState {
   priceMin: number;
   priceMax: number;
+  anyPrice: boolean;
   rarities: Set<string>;
   types: Set<string>;
   colors: Set<string>;
@@ -13,6 +14,7 @@ export interface FilterState {
 export const DEFAULT_FILTERS: FilterState = {
   priceMin: 0,
   priceMax: 100,
+  anyPrice: false,
   rarities: new Set(["common", "uncommon", "rare", "mythic"]),
   types: new Set(["creature", "instant", "sorcery", "enchantment", "artifact", "land", "planeswalker"]),
   colors: new Set(["W", "U", "B", "R", "G", "C"]),
@@ -21,8 +23,10 @@ export const DEFAULT_FILTERS: FilterState = {
 export function buildSidebarFilterSyntax(filters: FilterState): string {
   const parts: string[] = [];
 
-  if (filters.priceMin > 0) parts.push(`usd>=${filters.priceMin}`);
-  if (filters.priceMax < 100) parts.push(`usd<=${filters.priceMax}`);
+  if (!filters.anyPrice) {
+    if (filters.priceMin > 0) parts.push(`usd>=${filters.priceMin}`);
+    if (filters.priceMax < 100) parts.push(`usd<=${filters.priceMax}`);
+  }
 
   const allRarities = new Set(["common", "uncommon", "rare", "mythic"]);
   if (filters.rarities.size < allRarities.size && filters.rarities.size > 0) {
@@ -71,10 +75,12 @@ const COLORS = [
 function ToggleChip({
   active,
   onClick,
+  activeClassName = "bg-blue-900/30 border-blue-500/30 text-blue-400",
   children,
 }: {
   active: boolean;
   onClick: () => void;
+  activeClassName?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -82,7 +88,7 @@ function ToggleChip({
       onClick={onClick}
       className={`flex items-center gap-1 px-2 py-0.5 rounded text-[10px] border transition-colors ${
         active
-          ? "bg-blue-900/30 border-blue-500/30 text-blue-400"
+          ? activeClassName
           : "bg-neutral-800 border-neutral-700 text-neutral-500"
       }`}
     >
@@ -90,6 +96,15 @@ function ToggleChip({
     </button>
   );
 }
+
+const COLOR_ACTIVE_CLASS: Record<string, string> = {
+  W: "bg-stone-700/40 border-stone-400/50 text-stone-300",
+  U: "bg-blue-900/40 border-blue-500/40 text-blue-400",
+  B: "bg-neutral-700/60 border-neutral-500/50 text-neutral-300",
+  R: "bg-red-900/40 border-red-600/40 text-red-400",
+  G: "bg-green-900/40 border-green-600/40 text-green-400",
+  C: "bg-neutral-700/40 border-neutral-500/40 text-neutral-400",
+};
 
 export default function FilterPanel({ filters, onFiltersChange }: FilterPanelProps) {
   const sliderRef = useRef<HTMLDivElement>(null);
@@ -106,10 +121,20 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
     <div className="p-2.5 space-y-4">
       {/* Price Range */}
       <div>
-        <div className="text-[10px] text-neutral-500 uppercase tracking-wider mb-2">
-          Price Range
+        <div className="flex items-center justify-between mb-2">
+          <div className="text-[10px] text-neutral-500 uppercase tracking-wider">Price Range</div>
+          <button
+            onClick={() => onFiltersChange({ ...filters, anyPrice: !filters.anyPrice })}
+            className={`text-[10px] px-1.5 py-0.5 rounded border transition-colors ${
+              filters.anyPrice
+                ? "bg-blue-900/30 border-blue-500/30 text-blue-400"
+                : "bg-neutral-800 border-neutral-700 text-neutral-500 hover:text-neutral-300"
+            }`}
+          >
+            Any
+          </button>
         </div>
-        <div className="flex items-center gap-2">
+        <div className={`flex items-center gap-2 ${filters.anyPrice ? "opacity-30 pointer-events-none" : ""}`}>
           <input
             type="text"
             value={`$${filters.priceMin}`}
@@ -152,7 +177,20 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
 
       {/* Rarity */}
       <div>
-        <div className="text-[10px] text-neutral-500 uppercase tracking-wider mb-2">Rarity</div>
+        <div className="flex items-center justify-between mb-2">
+          <div className="text-[10px] text-neutral-500 uppercase tracking-wider">Rarity</div>
+          <button
+            onClick={() =>
+              onFiltersChange({
+                ...filters,
+                rarities: filters.rarities.size === RARITIES.length ? new Set() : new Set(RARITIES),
+              })
+            }
+            className="text-[10px] text-neutral-500 hover:text-neutral-300 transition-colors"
+          >
+            {filters.rarities.size === RARITIES.length ? "None" : "All"}
+          </button>
+        </div>
         <div className="flex flex-wrap gap-1.5">
           {RARITIES.map((r) => (
             <ToggleChip
@@ -170,7 +208,20 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
 
       {/* Card Type */}
       <div>
-        <div className="text-[10px] text-neutral-500 uppercase tracking-wider mb-2">Card Type</div>
+        <div className="flex items-center justify-between mb-2">
+          <div className="text-[10px] text-neutral-500 uppercase tracking-wider">Card Type</div>
+          <button
+            onClick={() =>
+              onFiltersChange({
+                ...filters,
+                types: filters.types.size === TYPES.length ? new Set() : new Set(TYPES),
+              })
+            }
+            className="text-[10px] text-neutral-500 hover:text-neutral-300 transition-colors"
+          >
+            {filters.types.size === TYPES.length ? "None" : "All"}
+          </button>
+        </div>
         <div className="flex flex-wrap gap-1.5">
           {TYPES.map((t) => (
             <ToggleChip
@@ -188,12 +239,26 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
 
       {/* Colors */}
       <div>
-        <div className="text-[10px] text-neutral-500 uppercase tracking-wider mb-2">Colors</div>
+        <div className="flex items-center justify-between mb-2">
+          <div className="text-[10px] text-neutral-500 uppercase tracking-wider">Colors</div>
+          <button
+            onClick={() =>
+              onFiltersChange({
+                ...filters,
+                colors: filters.colors.size === COLORS.length ? new Set() : new Set(COLORS.map((c) => c.key)),
+              })
+            }
+            className="text-[10px] text-neutral-500 hover:text-neutral-300 transition-colors"
+          >
+            {filters.colors.size === COLORS.length ? "None" : "All"}
+          </button>
+        </div>
         <div className="flex flex-wrap gap-1.5">
           {COLORS.map(({ key, label }) => (
             <ToggleChip
               key={key}
               active={filters.colors.has(key)}
+              activeClassName={COLOR_ACTIVE_CLASS[key]}
               onClick={() =>
                 onFiltersChange({ ...filters, colors: toggle(filters.colors, key) })
               }

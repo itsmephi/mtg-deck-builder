@@ -110,6 +110,16 @@ const PATTERNS: PatternEntry[] = [
     regex: /\blifegain\b/i,
     token: { label: "archetype", value: "Lifegain", scryfall: 'o:"gain" o:"life"' },
   },
+  {
+    regex: /\bdiscard\b/i,
+    token: { label: "archetype", value: "Discard", scryfall: 'o:"discard"' },
+  },
+
+  // Set filter
+  {
+    regex: /set:(\w+)/i,
+    dynamic: (m) => ({ label: "set", value: m[1].toUpperCase(), scryfall: `e:${m[1]}` }),
+  },
 
   // Rarity
   { regex: /\bcommon\b/i, token: { label: "rarity", value: "Common", scryfall: "r:common" } },

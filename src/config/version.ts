@@ -1,8 +1,21 @@
-export const APP_VERSION = "1.6.0";
+export const APP_VERSION = "1.7.0";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.7.0": [
+    "Bug fix: Planeswalker commander eligibility — Legendary alone no longer qualifies; must be Legendary Creature or have 'can be your commander' in oracle text",
+    "Natural language set search: type 'jaws secret lair' or 'The Brothers War' to search cards from that set — fuzzy-matches against all Scryfall sets with a 'Set: [name]' chip shown in results",
+    "set:CODE NLP token: direct passthrough for users who know set codes (e.g. 'set:BRO')",
+    "Discard archetype NLP token: typing 'discard' maps to o:\"discard\" in search",
+    "CardModal search context: modal stays open after '+ Add to Deck' and returns to Details tab instead of closing",
+    "Group by type — commander group: designated commander card floats to its own top group when 'Group by Type' is enabled",
+    "CardModal Swap Art tab: loading spinner while printings are fetching",
+    "In-deck green dot tooltip: hovering the dot shows 'Already in deck'",
+    "Filter All/None toggle: one-click select/deselect all for Rarity, Card Type, and Colors filter groups",
+    "Color filter chip tints: active chips match their mana color (W stone, U blue, B dark, R red, G green, C gray)",
+    "Price 'Any' toggle: disables the price ceiling filter entirely; slider dims when Any is active",
+  ],
   "1.6.0": [
     "Search overhaul: two-tab app architecture — Search tab opens a full-width card grid workspace, Decks tab shows the deck builder; state persists across tab switches",
     "NLP search parser: natural language queries like \"black flying creatures under $2\" or \"ramp\" translate to structured Scryfall syntax; matched tokens shown as removable chips inline in the search bar",
