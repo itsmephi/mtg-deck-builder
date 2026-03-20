@@ -5,6 +5,17 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.8.3] — Slider Polish + Filter Persistence
+
+### Changed
+- Tile size slider thumb restyled to match price slider graphic language — white fill, blue border, neutral drop shadow (was blue fill with blue glow)
+- Price slider thumb now shows grab/grabbing cursor during drag
+
+### Added
+- Filter state (price, anyPrice, rarities, types, colors) persists to localStorage (`mtg-sidebar-filters`) and is restored on page refresh
+
+---
+
 ## [1.8.2] — Price Filter UX Fixes
 
 ### Fixed
