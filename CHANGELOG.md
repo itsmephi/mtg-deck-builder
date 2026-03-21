@@ -5,6 +5,23 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.10.0] — Design Token System
+
+### Added
+- 12 semantic CSS custom properties in `globals.css` `:root` block — surfaces (`surface-base/raised/overlay/backdrop`), text content (`text-primary/heading/secondary/tertiary/muted/faint`), and borders (`border-line-default/line-subtle`)
+- All tokens registered via Tailwind v4 `@theme inline` as utility classes: `bg-surface-*`, `text-content-*`, `border-line-*`
+
+### Changed
+- All hardcoded `bg-neutral-*`, `text-neutral-*`, and `border-neutral-*` classes replaced with semantic token utilities across 17 files — changing a theme color now requires editing one place in `globals.css`
+- Token naming follows Tailwind v4 `@theme inline` rule: `--color-X` generates `[prefix]-X` (not doubled) — text tokens use `--color-content-*`, border tokens use `--color-line-*`
+
+### Not tokenized (intentional)
+- Opacity variants (e.g. `bg-neutral-800/50`) — Tailwind v4 doesn't support opacity-modified tokens in `@theme inline`
+- Accent colors (blue, red, green, yellow, amber) — remain as raw Tailwind
+- Mid-tone flagged classes (`text-neutral-700`, `bg-neutral-950`, `border-neutral-600`, `hover:bg-neutral-600`) — contextual states with no direct token mapping
+
+---
+
 ## [1.9.0] — Release Year Filter + CardModal Release Date
 
 ### Added

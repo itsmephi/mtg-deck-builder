@@ -3,7 +3,7 @@
 ---
 
 ## v1.10.0 — Design Tokens: Workspace Components (Prompt 3 of 3)
-Status: IN PROGRESS — awaiting QA
+Status: APPROVED ✅
 
 ### Plan Review
 
@@ -98,6 +98,15 @@ Status: IN PROGRESS — awaiting QA
 - [ ] Sidebar and workspace background continuity — no visible seam
 - [ ] Dark theme consistent across all views (grid, list, modal, search)
 - [ ] No new borders appearing where there weren't borders before (Tailwind v4 border-width injection check)
+
+### Session Summary
+
+**What shipped:**
+
+- **`src/app/globals.css`** — 12 semantic CSS custom properties in `:root`; `@theme inline` block registers them as Tailwind utilities. Final naming: `--color-surface-*` → `bg-surface-*`, `--color-content-*` → `text-content-*`, `--color-line-*` → `border-line-*`
+- **17 source files migrated** — all hardcoded `bg-neutral-*`, `text-neutral-*`, `border-neutral-*` classes replaced with token utilities across layout (8 files) and workspace (8 files) + `page.tsx`
+- **Token naming fix (post-QA investigation)** — discovered Tailwind v4 `@theme inline` generates `[prefix]-[color-name]`; original `--color-text-*` would have generated `text-text-*` (doubled prefix) not `text-*`; similarly `--color-border-line-*` would have generated `border-border-line-*`. Renamed: `--color-text-*` → `--color-content-*` (253 class renames across 17 files), `--color-border-line-*` → `--color-line-*` (globals.css only — class names `border-line-default`/`border-line-subtle` unchanged). All 8 token utility classes verified in production CSS output.
+- **Flagged classes carried forward** — `text-neutral-700` (disabled states), `text-neutral-100` (no lighter-than-white token), `border-neutral-600` / `hover:bg-neutral-600` (mid-tone gap), `bg-neutral-950` (intentional SearchBar depth), `focus-within:border-neutral-600` (focus ring)
 
 ### Flagged Classes (carried forward from Prompts 1–2, plus new in Prompt 3)
 
