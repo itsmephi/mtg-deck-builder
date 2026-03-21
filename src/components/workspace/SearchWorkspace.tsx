@@ -292,29 +292,29 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
         </div>
         {/* Toolbar Row 2: Results count + sort + view toggles */}
         <div className="flex items-center px-3.5 gap-2 min-h-[34px] pb-1">
-          <span className="text-xs text-muted">
+          <span className="text-xs text-content-muted">
             {scryfallQuery.trim() ? (
               <>
-                <b className="text-tertiary font-medium">{results.length}</b> results
+                <b className="text-content-tertiary font-medium">{results.length}</b> results
               </>
             ) : (
               "Search to find cards"
             )}
           </span>
           {setMatch && setMatch.query === parsed.remainder && (
-            <div className="flex items-center gap-1 px-1.5 py-0.5 bg-surface-raised border border-line-default rounded text-[10px] text-secondary max-w-[220px]">
-              <span className="text-muted shrink-0">Set:</span>
+            <div className="flex items-center gap-1 px-1.5 py-0.5 bg-surface-raised border border-line-default rounded text-[10px] text-content-secondary max-w-[220px]">
+              <span className="text-content-muted shrink-0">Set:</span>
               <span className="truncate">{setMatch.name}</span>
               <button
                 onClick={() => setQuery("")}
-                className="ml-0.5 text-muted hover:text-primary shrink-0"
+                className="ml-0.5 text-content-muted hover:text-content-primary shrink-0"
               >
                 ×
               </button>
             </div>
           )}
           <div className="ml-auto flex items-center gap-1.5 h-7">
-            <select className="bg-surface-base border border-line-subtle text-xs text-tertiary rounded px-1.5 py-0.5 focus:outline-none cursor-pointer">
+            <select className="bg-surface-base border border-line-subtle text-xs text-content-tertiary rounded px-1.5 py-0.5 focus:outline-none cursor-pointer">
               <option value="relevance" className="bg-surface-base">Sort: Relevance</option>
               <option value="name" className="bg-surface-base">Name</option>
               <option value="price_asc" className="bg-surface-base">Price ↑</option>
@@ -326,7 +326,7 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
             <TileSizeSlider activeStop={tileSize} onChangeStop={onTileSizeChange} />
             <div className="w-px h-[18px] bg-surface-raised" />
             <button
-              className="h-7 px-2 flex items-center justify-center rounded-md bg-surface-raised text-primary border border-neutral-700/50 transition-all"
+              className="h-7 px-2 flex items-center justify-center rounded-md bg-surface-raised text-content-primary border border-neutral-700/50 transition-all"
               title="Grid view"
             >
               <LayoutGrid className="w-3.5 h-3.5" />
@@ -352,13 +352,13 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
 
         {showEmpty && (
           <div className="flex items-center justify-center h-full">
-            <p className="text-sm text-muted">Type something to search cards</p>
+            <p className="text-sm text-content-muted">Type something to search cards</p>
           </div>
         )}
 
         {showNoResults && (
           <div className="flex items-center justify-center h-full">
-            <p className="text-sm text-muted">No cards found</p>
+            <p className="text-sm text-content-muted">No cards found</p>
           </div>
         )}
 
@@ -399,7 +399,7 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
 
       {/* Toast notification */}
       {toastMessage && (
-        <div className="fixed bottom-4 right-4 z-50 px-3 py-2 bg-surface-raised border border-line-default rounded-lg text-xs text-heading shadow-lg max-w-xs">
+        <div className="fixed bottom-4 right-4 z-50 px-3 py-2 bg-surface-raised border border-line-default rounded-lg text-xs text-content-heading shadow-lg max-w-xs">
           {toastMessage}
         </div>
       )}

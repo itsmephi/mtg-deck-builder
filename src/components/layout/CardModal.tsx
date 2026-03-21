@@ -112,7 +112,7 @@ export default function CardModal({
   const renderOracleText = (text: string | undefined) => {
     if (!text)
       return (
-        <span className="text-muted italic">
+        <span className="text-content-muted italic">
           No rules text available.
         </span>
       );
@@ -148,9 +148,9 @@ export default function CardModal({
     if (status === "legal")
       return "bg-green-900/50 text-green-400 border-green-800";
     if (status === "not_legal")
-      return "bg-surface-raised text-muted border-line-default";
+      return "bg-surface-raised text-content-muted border-line-default";
     if (status === "banned") return "bg-red-900/50 text-red-400 border-red-800";
-    return "bg-surface-raised text-muted border-line-default";
+    return "bg-surface-raised text-content-muted border-line-default";
   };
 
   const formats = [
@@ -190,7 +190,7 @@ export default function CardModal({
               e.stopPropagation();
               onPrev();
             }}
-            className="absolute left-2 md:-left-16 p-3 bg-surface-base border border-line-default rounded-full text-primary hover:bg-surface-overlay hover:scale-110 transition-all z-50 shadow-xl"
+            className="absolute left-2 md:-left-16 p-3 bg-surface-base border border-line-default rounded-full text-content-primary hover:bg-surface-overlay hover:scale-110 transition-all z-50 shadow-xl"
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
@@ -202,7 +202,7 @@ export default function CardModal({
         >
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-2 bg-surface-base border border-line-subtle rounded-full text-tertiary hover:text-primary z-20 shadow-md"
+            className="absolute top-4 right-4 p-2 bg-surface-base border border-line-subtle rounded-full text-content-tertiary hover:text-content-primary z-20 shadow-md"
           >
             <X className="w-5 h-5" />
           </button>
@@ -255,7 +255,7 @@ export default function CardModal({
                   )}
                 </div>
                 {isDoubleFaced && (
-                  <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 px-3 py-1.5 bg-black/90 text-primary rounded-full text-[10px] font-bold uppercase tracking-widest border border-line-default opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                  <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 px-3 py-1.5 bg-black/90 text-content-primary rounded-full text-[10px] font-bold uppercase tracking-widest border border-line-default opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
                     {isRoom ? (
                       <Maximize2 className="w-3 h-3" />
                     ) : (
@@ -275,13 +275,13 @@ export default function CardModal({
                       setView("details");
                       setFaceIndex(0);
                     }}
-                    className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm rounded-md transition-colors ${view === "details" ? "bg-surface-raised text-primary" : "text-muted hover:text-secondary"}`}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm rounded-md transition-colors ${view === "details" ? "bg-surface-raised text-content-primary" : "text-content-muted hover:text-content-secondary"}`}
                   >
                     <Info className="w-4 h-4" /> Details
                   </button>
                   <button
                     onClick={() => setView("prints")}
-                    className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm rounded-md transition-colors ${view === "prints" ? "bg-surface-raised text-primary" : "text-muted hover:text-secondary"}`}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm rounded-md transition-colors ${view === "prints" ? "bg-surface-raised text-content-primary" : "text-content-muted hover:text-content-secondary"}`}
                   >
                     <ImageIcon className="w-4 h-4" /> Swap Art
                   </button>
@@ -291,7 +291,7 @@ export default function CardModal({
                     onClick={() => { onAddToDeck?.(previewCard); setView("details"); }}
                     disabled={!onAddToDeck}
                     title={!onAddToDeck ? "No deck selected" : undefined}
-                    className="w-full py-2 rounded-lg text-sm font-medium transition-colors bg-blue-600 hover:bg-blue-500 text-primary disabled:bg-surface-raised disabled:text-muted disabled:cursor-not-allowed"
+                    className="w-full py-2 rounded-lg text-sm font-medium transition-colors bg-blue-600 hover:bg-blue-500 text-content-primary disabled:bg-surface-raised disabled:text-content-muted disabled:cursor-not-allowed"
                   >
                     + Add to Deck
                   </button>
@@ -302,7 +302,7 @@ export default function CardModal({
                       setView("details");
                     }}
                     disabled={previewCard.id === card.id}
-                    className="w-full py-2 rounded-lg text-sm font-medium transition-colors disabled:cursor-not-allowed bg-blue-600 hover:bg-blue-500 text-primary disabled:bg-surface-raised disabled:text-faint"
+                    className="w-full py-2 rounded-lg text-sm font-medium transition-colors disabled:cursor-not-allowed bg-blue-600 hover:bg-blue-500 text-content-primary disabled:bg-surface-raised disabled:text-content-faint"
                   >
                     Confirm Art Swap
                   </button>
@@ -310,16 +310,16 @@ export default function CardModal({
               </div>
             </div>
 
-            <div className="w-full md:w-3/5 p-8 overflow-y-auto bg-surface-base text-heading">
+            <div className="w-full md:w-3/5 p-8 overflow-y-auto bg-surface-base text-content-heading">
               {view === "details" ? (
                 <div className="space-y-8">
                   <section>
-                    <h2 className="text-3xl font-bold text-primary leading-tight">
+                    <h2 className="text-3xl font-bold text-content-primary leading-tight">
                       {isDoubleFaced
                         ? `${previewCard.card_faces![0].name} // ${previewCard.card_faces![1].name}`
                         : previewCard.name}
                     </h2>
-                    <p className="text-sm text-muted">
+                    <p className="text-sm text-content-muted">
                       {previewCard.set_name || previewCard.set.toUpperCase()}
                     </p>
                   </section>
@@ -340,44 +340,44 @@ export default function CardModal({
                       </div>
                     )}
                     <div className="flex justify-between items-center text-sm">
-                      <span className="font-bold text-primary">
+                      <span className="font-bold text-content-primary">
                         {currentFace.type_line}
                       </span>
                       {renderManaSymbols(currentFace.mana_cost)}
                     </div>
-                    <div className="text-sm text-secondary">
+                    <div className="text-sm text-content-secondary">
                       {renderOracleText(currentFace.oracle_text)}
                     </div>
                     {currentFace.flavor_text && (
-                      <div className="text-sm leading-relaxed text-muted italic border-t border-line-subtle pt-3 mt-1">
+                      <div className="text-sm leading-relaxed text-content-muted italic border-t border-line-subtle pt-3 mt-1">
                         {currentFace.flavor_text}
                       </div>
                     )}
                   </section>
 
                   <section>
-                    <h3 className="text-xs font-bold text-muted uppercase tracking-widest mb-3 px-1">
+                    <h3 className="text-xs font-bold text-content-muted uppercase tracking-widest mb-3 px-1">
                       Product Details
                     </h3>
                     <div className="space-y-1 text-sm px-1">
                       <p>
-                        <span className="font-bold text-primary">Artist:</span>{" "}
+                        <span className="font-bold text-content-primary">Artist:</span>{" "}
                         <span className="text-blue-400">
                           {currentFace.artist}
                         </span>
                       </p>
                       <p>
-                        <span className="font-bold text-primary">Rarity:</span>{" "}
+                        <span className="font-bold text-content-primary">Rarity:</span>{" "}
                         <span className="capitalize">{previewCard.rarity}</span>
                       </p>
                       <p>
-                        <span className="font-bold text-primary">
+                        <span className="font-bold text-content-primary">
                           Collector #:
                         </span>{" "}
                         {previewCard.collector_number}
                       </p>
                       <p>
-                        <span className="font-bold text-primary">Price:</span>{" "}
+                        <span className="font-bold text-content-primary">Price:</span>{" "}
                         <span className="text-green-400">
                           {previewCard.prices.usd
                             ? `$${previewCard.prices.usd}`
@@ -386,7 +386,7 @@ export default function CardModal({
                       </p>
                       {previewCard.released_at && (
                         <p>
-                          <span className="font-bold text-primary">Released:</span>{" "}
+                          <span className="font-bold text-content-primary">Released:</span>{" "}
                           {previewCard.released_at}
                         </p>
                       )}
@@ -394,7 +394,7 @@ export default function CardModal({
                   </section>
 
                   <section>
-                    <h3 className="text-xs font-bold text-muted uppercase tracking-widest mb-3 px-1">
+                    <h3 className="text-xs font-bold text-content-muted uppercase tracking-widest mb-3 px-1">
                       Legalities
                     </h3>
                     <div className="flex flex-wrap gap-2">
@@ -411,15 +411,15 @@ export default function CardModal({
                   </section>
 
                   <section>
-                    <h3 className="text-xs font-bold text-muted uppercase tracking-widest mb-3 px-1">
+                    <h3 className="text-xs font-bold text-content-muted uppercase tracking-widest mb-3 px-1">
                       Oracle Rulings
                     </h3>
                     {loading ? (
-                      <p className="text-xs text-muted italic px-1">
+                      <p className="text-xs text-content-muted italic px-1">
                         Loading...
                       </p>
                     ) : rulings.length === 0 ? (
-                      <p className="text-xs text-muted italic px-1">
+                      <p className="text-xs text-content-muted italic px-1">
                         No rulings available.
                       </p>
                     ) : (
@@ -427,9 +427,9 @@ export default function CardModal({
                         {rulings.map((r, i) => (
                           <li
                             key={i}
-                            className="text-xs text-tertiary bg-neutral-900/50 p-3 rounded-lg border border-line-subtle"
+                            className="text-xs text-content-tertiary bg-neutral-900/50 p-3 rounded-lg border border-line-subtle"
                           >
-                            <span className="text-[10px] text-faint font-bold block mb-1">
+                            <span className="text-[10px] text-content-faint font-bold block mb-1">
                               {r.published_at}
                             </span>
                             {r.comment}
@@ -459,9 +459,9 @@ export default function CardModal({
                         className="rounded-lg mb-1"
                         alt={v.name}
                       />
-                      <div className="flex justify-between text-[10px] uppercase font-bold text-muted">
+                      <div className="flex justify-between text-[10px] uppercase font-bold text-content-muted">
                         <span>{v.set}</span>
-                        <span className="text-secondary">
+                        <span className="text-content-secondary">
                           {v.prices.usd ? `$${v.prices.usd}` : "N/A"}
                         </span>
                       </div>
@@ -479,7 +479,7 @@ export default function CardModal({
               e.stopPropagation();
               onNext();
             }}
-            className="absolute right-2 md:-right-16 p-3 bg-surface-base border border-line-default rounded-full text-primary hover:bg-surface-overlay hover:scale-110 transition-all z-50 shadow-xl"
+            className="absolute right-2 md:-right-16 p-3 bg-surface-base border border-line-default rounded-full text-content-primary hover:bg-surface-overlay hover:scale-110 transition-all z-50 shadow-xl"
           >
             <ChevronRight className="w-6 h-6" />
           </button>

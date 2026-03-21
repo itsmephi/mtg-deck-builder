@@ -16,7 +16,7 @@ export function FormatPicker({ onSelect, currentFormat }: FormatPickerProps) {
   }[] = [
     {
       value: "freeform",
-      icon: <span className="text-[9px] font-bold text-muted bg-neutral-500/10 px-0.5 rounded leading-none">FF</span>,
+      icon: <span className="text-[9px] font-bold text-content-muted bg-neutral-500/10 px-0.5 rounded leading-none">FF</span>,
       label: "Freeform",
       description: "No rules. Build anything.",
     },
@@ -36,7 +36,7 @@ export function FormatPicker({ onSelect, currentFormat }: FormatPickerProps) {
 
   return (
     <div className="py-1">
-      <div className="px-3 py-1.5 text-[9px] font-bold text-muted uppercase tracking-widest">
+      <div className="px-3 py-1.5 text-[9px] font-bold text-content-muted uppercase tracking-widest">
         Choose Format
       </div>
       {formats.map(({ value, icon, label, description }) => (
@@ -51,8 +51,8 @@ export function FormatPicker({ onSelect, currentFormat }: FormatPickerProps) {
             {icon}
           </span>
           <span className="flex flex-col gap-0.5">
-            <span className="text-xs font-medium text-heading">{label}</span>
-            <span className="text-[10px] text-muted">{description}</span>
+            <span className="text-xs font-medium text-content-heading">{label}</span>
+            <span className="text-[10px] text-content-muted">{description}</span>
           </span>
         </button>
       ))}

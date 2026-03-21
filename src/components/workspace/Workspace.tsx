@@ -226,7 +226,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
 
   if (!isMounted || !activeDeck)
     return (
-      <div className="p-8 text-muted text-sm italic">
+      <div className="p-8 text-content-muted text-sm italic">
         Initializing workspace...
       </div>
     );
@@ -437,7 +437,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
               ([cat, cards]) =>
                 cards.length > 0 && (
                   <div key={cat}>
-                    <h3 className="text-[10px] font-bold text-muted uppercase tracking-widest mb-4 ml-1">
+                    <h3 className="text-[10px] font-bold text-content-muted uppercase tracking-widest mb-4 ml-1">
                       {cat} ({cards.reduce((s, c) => s + c.quantity, 0)})
                     </h3>
                     {viewMode === "visual" ? (
@@ -623,10 +623,10 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
             onClick={(e) => e.stopPropagation()}
           >
             <div>
-              <h3 className="text-sm font-bold text-primary mb-1">
+              <h3 className="text-sm font-bold text-content-primary mb-1">
                 Commander decks don&apos;t use sideboards
               </h3>
-              <p className="text-xs text-tertiary">
+              <p className="text-xs text-content-tertiary">
                 Your sideboard has {confirmDialog.sideboardCount}{" "}
                 {confirmDialog.sideboardCount === 1 ? "card" : "cards"}. What would you
                 like to do?

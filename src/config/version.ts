@@ -4,9 +4,9 @@ export const APP_VERSION = "1.10.0";
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
   "1.10.0": [
-    "Design token system: 12 semantic CSS custom properties defined in globals.css and registered via Tailwind v4 @theme inline — surfaces (base/raised/overlay/backdrop), text (primary/heading/secondary/tertiary/muted/faint), and borders (line-default/line-subtle)",
+    "Design token system: 12 semantic CSS custom properties defined in globals.css and registered via Tailwind v4 @theme inline — surfaces (bg-surface-base/raised/overlay/backdrop), text (text-content-primary/heading/secondary/tertiary/muted/faint), and borders (border-line-default/line-subtle)",
     "All hardcoded neutral color classes replaced with token utilities across 17 files — changing a theme color now requires editing one place in globals.css",
-    "Border token naming uses border-line-* prefix to avoid Tailwind v4 border-width namespace collision (border-default would inject border-width: 1px; border-line-default does not)",
+    "Token naming rule: @theme inline --color-X generates utility [prefix]-X — text tokens use --color-content-* and border tokens use --color-line-* to avoid the doubled-prefix trap (--color-text-* would generate text-text-*, --color-border-* would generate border-border-*)",
     "Opacity variants (e.g. bg-neutral-800/50) and mid-tone flagged classes (text-neutral-700, bg-neutral-950, border-neutral-600, hover:bg-neutral-600) intentionally left as raw Tailwind — no token mapping needed for contextual states",
   ],
   "1.9.0": [

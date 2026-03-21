@@ -26,15 +26,15 @@
     --color-surface-overlay:  var(--surface-overlay);
     --color-surface-backdrop: var(--surface-backdrop);
 
-    --color-text-primary:   var(--text-primary);
-    --color-text-heading:   var(--text-heading);
-    --color-text-secondary: var(--text-secondary);
-    --color-text-tertiary:  var(--text-tertiary);
-    --color-text-muted:     var(--text-muted);
-    --color-text-faint:     var(--text-faint);
+    --color-content-primary:   var(--text-primary);
+    --color-content-heading:   var(--text-heading);
+    --color-content-secondary: var(--text-secondary);
+    --color-content-tertiary:  var(--text-tertiary);
+    --color-content-muted:     var(--text-muted);
+    --color-content-faint:     var(--text-faint);
 
-    --color-border-line-default: var(--border-line-default);
-    --color-border-line-subtle:  var(--border-line-subtle);
+    --color-line-default: var(--border-line-default);
+    --color-line-subtle:  var(--border-line-subtle);
 
     --font-sans: var(--font-geist-sans);
     --font-mono: var(--font-geist-mono);

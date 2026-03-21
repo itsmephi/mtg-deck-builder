@@ -29,13 +29,13 @@ function yToStopIndex(y: number): number {
 function CardHint({ size }: { size: "large" | "small" }) {
   if (size === "large") {
     return (
-      <svg width="16" height="12" viewBox="0 0 20 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-faint">
+      <svg width="16" height="12" viewBox="0 0 20 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-content-faint">
         <rect x="1" y="1" width="18" height="12" rx="2" />
       </svg>
     );
   }
   return (
-    <svg width="10" height="8" viewBox="0 0 20 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-faint">
+    <svg width="10" height="8" viewBox="0 0 20 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-content-faint">
       <rect x="1" y="1" width="18" height="12" rx="2" />
     </svg>
   );
@@ -110,7 +110,7 @@ export default function TileSizeSlider({ activeStop, onChangeStop }: TileSizeSli
         className={`h-full px-2 flex items-center justify-center rounded-md transition-all ${
           open
             ? "bg-neutral-800 text-white border border-neutral-700/50"
-            : "text-muted hover:text-secondary border border-transparent"
+            : "text-content-muted hover:text-content-secondary border border-transparent"
         }`}
       >
         <ZoomIn className="w-3.5 h-3.5" />

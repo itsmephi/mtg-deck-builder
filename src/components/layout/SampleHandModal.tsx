@@ -189,10 +189,10 @@ export default function SampleHandModal({
               <BarChart3 className="w-6 h-6 text-blue-400" />
             </div>
             <div>
-              <h2 className="text-lg md:text-xl font-bold text-primary">
+              <h2 className="text-lg md:text-xl font-bold text-content-primary">
                 Opening Hand Simulator
               </h2>
-              <p className="text-muted text-[10px] md:text-xs uppercase tracking-widest font-bold">
+              <p className="text-content-muted text-[10px] md:text-xs uppercase tracking-widest font-bold">
                 Hand: {hand.length} · Library: {library.length} · Mulligans: {mulliganCount}
               </p>
             </div>
@@ -201,19 +201,19 @@ export default function SampleHandModal({
             <button
               onClick={drawCard}
               disabled={library.length === 0}
-              className="flex items-center gap-2 px-3 md:px-4 py-2 bg-blue-600 border border-blue-500 rounded-lg text-xs md:text-sm font-bold text-primary hover:bg-blue-500 disabled:opacity-30 transition-all"
+              className="flex items-center gap-2 px-3 md:px-4 py-2 bg-blue-600 border border-blue-500 rounded-lg text-xs md:text-sm font-bold text-content-primary hover:bg-blue-500 disabled:opacity-30 transition-all"
             >
               <PlusCircle className="w-4 h-4" /> Draw
             </button>
             <button
               onClick={shuffleAndDraw}
-              className="flex items-center gap-2 px-3 md:px-4 py-2 bg-surface-raised border border-line-default rounded-lg text-xs md:text-sm font-bold text-primary hover:bg-surface-overlay transition-colors"
+              className="flex items-center gap-2 px-3 md:px-4 py-2 bg-surface-raised border border-line-default rounded-lg text-xs md:text-sm font-bold text-content-primary hover:bg-surface-overlay transition-colors"
             >
               <RefreshCw className="w-4 h-4" /> Mulligan
             </button>
             <button
               onClick={onClose}
-              className="p-2 bg-surface-base border border-line-subtle rounded-full text-tertiary hover:text-primary transition-all hover:bg-surface-raised shadow-sm"
+              className="p-2 bg-surface-base border border-line-subtle rounded-full text-content-tertiary hover:text-content-primary transition-all hover:bg-surface-raised shadow-sm"
             >
               <X className="w-5 h-5" />
             </button>
@@ -227,7 +227,7 @@ export default function SampleHandModal({
 
               {/* Section 1 — Mana Curve */}
               <section>
-                <h4 className="text-[10px] font-bold text-muted uppercase tracking-widest mb-3">
+                <h4 className="text-[10px] font-bold text-content-muted uppercase tracking-widest mb-3">
                   Mana Curve
                 </h4>
                 {/* Histogram bars */}
@@ -241,7 +241,7 @@ export default function SampleHandModal({
                         key={cmc}
                         className="flex-1 flex flex-col items-center justify-end h-full gap-0.5"
                       >
-                        <span className="text-[9px] text-tertiary font-bold leading-none">
+                        <span className="text-[9px] text-content-tertiary font-bold leading-none">
                           {count > 0 ? count : ""}
                         </span>
                         <div
@@ -259,7 +259,7 @@ export default function SampleHandModal({
                 <div className="flex gap-1 mb-3">
                   {[1, 2, 3, 4, 5, 6, 7].map((cmc) => (
                     <div key={cmc} className="flex-1 text-center">
-                      <span className="text-[9px] text-faint font-bold">
+                      <span className="text-[9px] text-content-faint font-bold">
                         {cmc === 7 ? "7+" : cmc}
                       </span>
                     </div>
@@ -268,8 +268,8 @@ export default function SampleHandModal({
                 {/* Lands strip */}
                 <div className="flex items-center gap-2 pt-2.5 border-t border-line-subtle">
                   <div className="w-2.5 h-2.5 rounded-sm bg-emerald-500 shrink-0" />
-                  <span className="text-[11px] text-tertiary">Lands</span>
-                  <span className="ml-auto text-[11px] font-bold text-secondary">
+                  <span className="text-[11px] text-content-tertiary">Lands</span>
+                  <span className="ml-auto text-[11px] font-bold text-content-secondary">
                     {curveBuckets.landCount} / {totalCards}
                   </span>
                   <span className="text-[11px] font-bold text-emerald-400">
@@ -280,21 +280,21 @@ export default function SampleHandModal({
 
               {/* Section 2 — Current Hand */}
               <section>
-                <h4 className="text-[10px] font-bold text-muted uppercase tracking-widest mb-3">
+                <h4 className="text-[10px] font-bold text-content-muted uppercase tracking-widest mb-3">
                   Current Hand
                 </h4>
                 <div className="space-y-2.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-tertiary">Cards in hand</span>
-                    <span className="text-sm font-bold text-primary">{hand.length}</span>
+                    <span className="text-sm text-content-tertiary">Cards in hand</span>
+                    <span className="text-sm font-bold text-content-primary">{hand.length}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-tertiary">Lands</span>
-                    <span className="text-sm font-bold text-primary">{handStats.lands}</span>
+                    <span className="text-sm text-content-tertiary">Lands</span>
+                    <span className="text-sm font-bold text-content-primary">{handStats.lands}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-tertiary">Avg. CMC</span>
-                    <span className="text-sm font-bold text-primary">
+                    <span className="text-sm text-content-tertiary">Avg. CMC</span>
+                    <span className="text-sm font-bold text-content-primary">
                       {handStats.avgCMC !== null ? handStats.avgCMC.toFixed(1) : "—"}
                     </span>
                   </div>
@@ -304,7 +304,7 @@ export default function SampleHandModal({
               {/* Section 3 — Draw Odds */}
               <section>
                 <div className="flex items-center justify-between mb-3">
-                  <h4 className="text-[10px] font-bold text-muted uppercase tracking-widest">
+                  <h4 className="text-[10px] font-bold text-content-muted uppercase tracking-widest">
                     Draw Odds
                   </h4>
                   <button
@@ -312,7 +312,7 @@ export default function SampleHandModal({
                     className={`text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded border transition-colors ${
                       showLands
                         ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-400"
-                        : "bg-surface-raised border-line-default text-muted hover:text-tertiary"
+                        : "bg-surface-raised border-line-default text-content-muted hover:text-content-tertiary"
                     }`}
                   >
                     Lands
@@ -320,7 +320,7 @@ export default function SampleHandModal({
                 </div>
                 <div className="space-y-1.5">
                   {drawOdds.length === 0 && (
-                    <p className="text-[11px] text-faint italic">
+                    <p className="text-[11px] text-content-faint italic">
                       No cards remaining in library.
                     </p>
                   )}
@@ -340,12 +340,12 @@ export default function SampleHandModal({
                         )}
                         <span
                           className={`text-[11px] font-medium truncate flex-1 ${
-                            isPinned ? "text-blue-300" : "text-secondary"
+                            isPinned ? "text-blue-300" : "text-content-secondary"
                           }`}
                         >
                           {card.name}
                         </span>
-                        <span className="text-[10px] text-faint shrink-0 ml-1">
+                        <span className="text-[10px] text-content-faint shrink-0 ml-1">
                           ×{copiesInLibrary}
                         </span>
                         <span
@@ -395,11 +395,11 @@ export default function SampleHandModal({
                       />
                       {isPinned && (
                         <div className="absolute top-1.5 right-1.5 bg-blue-600 rounded-full p-0.5 shadow-md">
-                          <Star className="w-2.5 h-2.5 text-primary fill-white" />
+                          <Star className="w-2.5 h-2.5 text-content-primary fill-white" />
                         </div>
                       )}
                     </div>
-                    <p className="mt-2 text-[9px] text-muted font-bold truncate text-center uppercase tracking-tight">
+                    <p className="mt-2 text-[9px] text-content-muted font-bold truncate text-center uppercase tracking-tight">
                       {card.name}
                     </p>
                   </div>
@@ -410,12 +410,12 @@ export default function SampleHandModal({
               {library.length === 0 && (
                 <div className="col-span-full mt-10 flex flex-col items-center justify-center p-12 border border-dashed border-line-subtle rounded-2xl bg-neutral-900/30 w-full max-w-2xl mx-auto">
                   <AlertCircle className="w-10 h-10 text-neutral-700 mb-3" />
-                  <p className="text-muted font-medium text-sm">
+                  <p className="text-content-muted font-medium text-sm">
                     Library depleted.
                   </p>
                   <button
                     onClick={shuffleAndDraw}
-                    className="mt-4 px-6 py-2 bg-surface-raised hover:bg-surface-overlay text-primary rounded-lg text-xs font-bold uppercase tracking-widest transition-colors"
+                    className="mt-4 px-6 py-2 bg-surface-raised hover:bg-surface-overlay text-content-primary rounded-lg text-xs font-bold uppercase tracking-widest transition-colors"
                   >
                     Reshuffle
                   </button>

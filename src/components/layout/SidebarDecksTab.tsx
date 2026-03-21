@@ -152,16 +152,16 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
                   }
                 }}
                 className={`flex-1 text-left text-xs truncate transition-colors min-w-0 ${
-                  isActive ? "text-primary" : "text-tertiary hover:text-primary"
+                  isActive ? "text-content-primary" : "text-content-tertiary hover:text-content-primary"
                 }`}
               >
-                <span className={!deck.name ? "text-muted" : ""}>
+                <span className={!deck.name ? "text-content-muted" : ""}>
                   {deck.name || "Untitled"}
                 </span>
               </button>
 
               {/* Card count */}
-              <span className="text-[10px] text-faint shrink-0">{cardCount}</span>
+              <span className="text-[10px] text-content-faint shrink-0">{cardCount}</span>
 
               {/* Format badge — clickable, opens format picker */}
               <div className="shrink-0">
@@ -221,10 +221,10 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
                 }
                 className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-colors ${
                   isCommander
-                    ? "text-faint cursor-not-allowed opacity-40"
+                    ? "text-content-faint cursor-not-allowed opacity-40"
                     : hasSideboard
                     ? "text-blue-400 hover:bg-blue-500/10"
-                    : "text-neutral-700 hover:text-tertiary"
+                    : "text-neutral-700 hover:text-content-tertiary"
                 }`}
               >
                 <Layers className="w-3 h-3" />
@@ -238,7 +238,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
                       openDeleteDropdownId === deck.id ? null : deck.id
                     )
                   }
-                  className="w-6 h-6 rounded-full flex items-center justify-center text-neutral-700 hover:text-tertiary opacity-0 group-hover:opacity-100 transition-all"
+                  className="w-6 h-6 rounded-full flex items-center justify-center text-neutral-700 hover:text-content-tertiary opacity-0 group-hover:opacity-100 transition-all"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -284,7 +284,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
               setNewDeckPickerDir(dir);
               setNewDeckPickerOpen(!newDeckPickerOpen);
             }}
-            className="flex items-center gap-2 w-full px-2 py-1.5 mt-1 text-xs text-muted hover:text-primary hover:bg-neutral-800/50 rounded-lg transition-colors"
+            className="flex items-center gap-2 w-full px-2 py-1.5 mt-1 text-xs text-content-muted hover:text-content-primary hover:bg-neutral-800/50 rounded-lg transition-colors"
           >
             <Plus className="w-3.5 h-3.5" />
             New Deck
@@ -310,7 +310,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
         <div className="flex items-center gap-1.5">
           <button
             onClick={onExport}
-            className="flex items-center gap-1.5 flex-1 justify-center px-2 py-1.5 bg-surface-raised hover:bg-surface-overlay rounded-lg text-xs text-secondary hover:text-primary transition-colors"
+            className="flex items-center gap-1.5 flex-1 justify-center px-2 py-1.5 bg-surface-raised hover:bg-surface-overlay rounded-lg text-xs text-content-secondary hover:text-content-primary transition-colors"
           >
             <Download className="w-3 h-3" />
             Export
@@ -318,7 +318,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
           <button
             onClick={onImport}
             disabled={isImporting}
-            className="flex items-center gap-1.5 flex-1 justify-center px-2 py-1.5 bg-surface-raised hover:bg-surface-overlay rounded-lg text-xs text-secondary hover:text-primary transition-colors disabled:opacity-50"
+            className="flex items-center gap-1.5 flex-1 justify-center px-2 py-1.5 bg-surface-raised hover:bg-surface-overlay rounded-lg text-xs text-content-secondary hover:text-content-primary transition-colors disabled:opacity-50"
           >
             {isImporting ? (
               <RefreshCw className="w-3 h-3 animate-spin" />
@@ -357,10 +357,10 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
             onClick={(e) => e.stopPropagation()}
           >
             <div>
-              <h3 className="text-sm font-bold text-primary mb-1">
+              <h3 className="text-sm font-bold text-content-primary mb-1">
                 Commander decks don&apos;t use sideboards
               </h3>
-              <p className="text-xs text-tertiary">
+              <p className="text-xs text-content-tertiary">
                 Your sideboard has {confirmDialog.sideboardCount}{" "}
                 {confirmDialog.sideboardCount === 1 ? "card" : "cards"}. What would you
                 like to do?
@@ -373,7 +373,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
                   setDeckFormat(confirmDialog.deckId, "commander");
                   setConfirmDialog(null);
                 }}
-                className="w-full px-3 py-2 rounded-lg text-xs font-medium bg-yellow-600 hover:bg-yellow-500 text-primary transition-colors"
+                className="w-full px-3 py-2 rounded-lg text-xs font-medium bg-yellow-600 hover:bg-yellow-500 text-content-primary transition-colors"
               >
                 Merge into Main Deck
               </button>

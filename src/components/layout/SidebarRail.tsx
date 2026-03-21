@@ -13,7 +13,7 @@ interface Props {
 
 function RailTooltip({ label }: { label: string }) {
   return (
-    <span className="absolute left-full ml-2 top-1/2 -translate-y-1/2 px-2 py-1 bg-surface-raised border border-line-default text-heading text-[10px] font-medium rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+    <span className="absolute left-full ml-2 top-1/2 -translate-y-1/2 px-2 py-1 bg-surface-raised border border-line-default text-content-heading text-[10px] font-medium rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
       {label}
     </span>
   );
@@ -68,7 +68,7 @@ export default function SidebarRail({ expandTo, activeTab }: Props) {
       <div className="group relative flex items-center">
         <button
           onClick={(e) => { e.stopPropagation(); expandTo(activeTab); }}
-          className="w-9 h-9 rounded-full flex items-center justify-center text-muted hover:text-primary hover:bg-surface-raised transition-colors"
+          className="w-9 h-9 rounded-full flex items-center justify-center text-content-muted hover:text-content-primary hover:bg-surface-raised transition-colors"
         >
           <PanelLeftOpen className="w-4 h-4" />
         </button>
@@ -79,7 +79,7 @@ export default function SidebarRail({ expandTo, activeTab }: Props) {
       <div className="group relative flex items-center">
         <button
           onClick={(e) => { e.stopPropagation(); expandTo("search"); }}
-          className="w-9 h-9 rounded-full flex items-center justify-center text-muted hover:text-primary hover:bg-surface-raised transition-colors"
+          className="w-9 h-9 rounded-full flex items-center justify-center text-content-muted hover:text-content-primary hover:bg-surface-raised transition-colors"
         >
           <Search className="w-4 h-4" />
         </button>
@@ -90,7 +90,7 @@ export default function SidebarRail({ expandTo, activeTab }: Props) {
       <div className="group relative flex items-center">
         <button
           onClick={(e) => { e.stopPropagation(); expandTo("decks"); }}
-          className="w-9 h-9 rounded-full flex items-center justify-center text-muted hover:text-primary hover:bg-surface-raised transition-colors"
+          className="w-9 h-9 rounded-full flex items-center justify-center text-content-muted hover:text-content-primary hover:bg-surface-raised transition-colors"
         >
           <Layers className="w-4 h-4" />
         </button>
@@ -101,7 +101,7 @@ export default function SidebarRail({ expandTo, activeTab }: Props) {
       <div className="group relative flex items-center">
         <button
           onClick={handleNewDeck}
-          className="w-9 h-9 rounded-full flex items-center justify-center text-muted hover:text-primary hover:bg-surface-raised transition-colors"
+          className="w-9 h-9 rounded-full flex items-center justify-center text-content-muted hover:text-content-primary hover:bg-surface-raised transition-colors"
         >
           <Plus className="w-4 h-4" />
         </button>
@@ -125,7 +125,7 @@ export default function SidebarRail({ expandTo, activeTab }: Props) {
           target="_blank"
           rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}
-          className="w-9 h-9 rounded-full flex items-center justify-center text-muted hover:text-yellow-400 transition-colors"
+          className="w-9 h-9 rounded-full flex items-center justify-center text-content-muted hover:text-yellow-400 transition-colors"
         >
           <Coffee className="w-4 h-4" />
         </a>
@@ -136,7 +136,7 @@ export default function SidebarRail({ expandTo, activeTab }: Props) {
       <div className="group relative flex items-center">
         <button
           onClick={(e) => { e.stopPropagation(); expandTo("search"); }}
-          className="w-9 h-9 rounded-full flex items-center justify-center text-muted hover:text-primary hover:bg-surface-raised transition-colors"
+          className="w-9 h-9 rounded-full flex items-center justify-center text-content-muted hover:text-content-primary hover:bg-surface-raised transition-colors"
         >
           <Settings className="w-4 h-4" />
         </button>

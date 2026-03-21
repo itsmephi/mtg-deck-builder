@@ -41,7 +41,7 @@ export default function CategoryChips({
 
   return (
     <div className="px-2.5 pt-2 pb-1 border-b border-line-subtle shrink-0">
-      <div className="text-[9px] text-faint uppercase tracking-wider mb-1.5">
+      <div className="text-[9px] text-content-faint uppercase tracking-wider mb-1.5">
         Quick Search
       </div>
       <div className="flex flex-wrap gap-1.5">
@@ -54,7 +54,7 @@ export default function CategoryChips({
               className={`px-2 py-0.5 rounded text-[10px] border transition-colors ${
                 isActive
                   ? "bg-blue-900/30 border-blue-500/30 text-blue-400"
-                  : "bg-surface-raised border-line-default text-tertiary hover:text-heading hover:border-neutral-600"
+                  : "bg-surface-raised border-line-default text-content-tertiary hover:text-content-heading hover:border-neutral-600"
               }`}
             >
               {cat.label}

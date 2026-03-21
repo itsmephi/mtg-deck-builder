@@ -80,7 +80,7 @@ export default function Sidebar({ onImport, onExport, isImporting, activeTab, on
               className={`flex items-center gap-1.5 flex-1 justify-center px-3 py-2.5 text-xs font-medium border-b-2 transition-colors ${
                 activeTab === "search"
                   ? "text-blue-400 border-blue-500"
-                  : "text-muted border-transparent hover:text-secondary"
+                  : "text-content-muted border-transparent hover:text-content-secondary"
               }`}
             >
               <Search className="w-3.5 h-3.5" />
@@ -91,7 +91,7 @@ export default function Sidebar({ onImport, onExport, isImporting, activeTab, on
               className={`flex items-center gap-1.5 flex-1 justify-center px-3 py-2.5 text-xs font-medium border-b-2 transition-colors ${
                 activeTab === "decks"
                   ? "text-blue-400 border-blue-500"
-                  : "text-muted border-transparent hover:text-secondary"
+                  : "text-content-muted border-transparent hover:text-content-secondary"
               }`}
             >
               <Layers className="w-3.5 h-3.5" />
@@ -101,7 +101,7 @@ export default function Sidebar({ onImport, onExport, isImporting, activeTab, on
             {isDesktop && (
               <button
                 onClick={handleCollapse}
-                className="px-2.5 py-2.5 text-muted hover:text-primary transition-colors shrink-0"
+                className="px-2.5 py-2.5 text-content-muted hover:text-content-primary transition-colors shrink-0"
               >
                 <PanelRightOpen className="w-4 h-4" />
               </button>
@@ -145,7 +145,7 @@ export default function Sidebar({ onImport, onExport, isImporting, activeTab, on
                   target="_blank"
                   rel="noopener noreferrer"
                   title="Support our Project"
-                  className="p-1 text-muted hover:text-yellow-400 transition-colors"
+                  className="p-1 text-content-muted hover:text-yellow-400 transition-colors"
                 >
                   <Coffee className="w-3.5 h-3.5" />
                 </a>
@@ -153,7 +153,7 @@ export default function Sidebar({ onImport, onExport, isImporting, activeTab, on
               <button
                 onClick={() => setIsSettingsOpen(!isSettingsOpen)}
                 className={`p-1 rounded transition-colors ${
-                  isSettingsOpen ? "text-primary" : "text-faint hover:text-secondary"
+                  isSettingsOpen ? "text-content-primary" : "text-content-faint hover:text-content-secondary"
                 }`}
               >
                 <Settings className="w-3.5 h-3.5" />
@@ -162,10 +162,10 @@ export default function Sidebar({ onImport, onExport, isImporting, activeTab, on
 
             {isChangelogOpen && (
               <div className="px-3 pb-3 pt-1 border-t border-neutral-800/50">
-                <p className="text-[9px] font-bold text-muted uppercase tracking-widest mb-2">
+                <p className="text-[9px] font-bold text-content-muted uppercase tracking-widest mb-2">
                   What&apos;s New in v{APP_VERSION}
                 </p>
-                <ul className="text-[10px] text-tertiary leading-relaxed max-h-32 overflow-y-auto custom-scrollbar space-y-1">
+                <ul className="text-[10px] text-content-tertiary leading-relaxed max-h-32 overflow-y-auto custom-scrollbar space-y-1">
                   {CURRENT_CHANGELOG.map((item, i) => (
                     <li key={i} className="flex gap-1.5">
                       <span className="shrink-0 mt-px">–</span>
@@ -178,11 +178,11 @@ export default function Sidebar({ onImport, onExport, isImporting, activeTab, on
 
             {isSettingsOpen && (
               <div className="px-4 pb-3 pt-1 border-t border-neutral-800/50">
-                <p className="text-[9px] font-bold text-muted uppercase tracking-widest mb-3">
+                <p className="text-[9px] font-bold text-content-muted uppercase tracking-widest mb-3">
                   Settings
                 </p>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-tertiary">Card Preview</span>
+                  <span className="text-xs text-content-tertiary">Card Preview</span>
                   <button
                     onClick={() => setShowThumbnail(!showThumbnail)}
                     className={`relative w-8 h-4 rounded-full transition-colors ${
@@ -197,11 +197,11 @@ export default function Sidebar({ onImport, onExport, isImporting, activeTab, on
                   </button>
                 </div>
                 <div className="flex items-center justify-between mt-3">
-                  <span className="text-xs text-tertiary">Sort By</span>
+                  <span className="text-xs text-content-tertiary">Sort By</span>
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as SortBy)}
-                    className="bg-surface-raised border border-line-default text-xs text-secondary rounded px-1.5 py-0.5 focus:outline-none cursor-pointer"
+                    className="bg-surface-raised border border-line-default text-xs text-content-secondary rounded px-1.5 py-0.5 focus:outline-none cursor-pointer"
                   >
                     <option value="original">Original</option>
                     <option value="name">Name</option>
@@ -210,14 +210,14 @@ export default function Sidebar({ onImport, onExport, isImporting, activeTab, on
                   </select>
                 </div>
                 <div className="flex items-center justify-between mt-2">
-                  <span className="text-xs text-tertiary">Direction</span>
+                  <span className="text-xs text-content-tertiary">Direction</span>
                   <button
                     onClick={() => setSortDir(sortDir === "asc" ? "desc" : "asc")}
                     disabled={sortBy === "original"}
                     className={`flex items-center gap-1 px-2 py-0.5 text-xs rounded border transition-colors ${
                       sortBy === "original"
-                        ? "text-faint border-line-subtle cursor-not-allowed"
-                        : "text-secondary border-line-default hover:text-primary hover:border-neutral-500"
+                        ? "text-content-faint border-line-subtle cursor-not-allowed"
+                        : "text-content-secondary border-line-default hover:text-content-primary hover:border-neutral-500"
                     }`}
                   >
                     {sortDir === "asc" ? (

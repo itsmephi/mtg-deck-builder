@@ -55,13 +55,13 @@ export default function VisualCard({
             className="absolute bottom-0 left-0 right-0 bg-black/75 backdrop-blur-sm px-2 py-2 translate-y-full group-hover:translate-y-0 transition-transform duration-200 ease-out z-20 flex flex-col items-center gap-1.5"
             onClick={(e) => e.stopPropagation()}
           >
-            <span className="text-xs font-semibold text-primary text-center leading-tight line-clamp-2">
+            <span className="text-xs font-semibold text-content-primary text-center leading-tight line-clamp-2">
               {card.name}
             </span>
-            <span className="text-[10px] text-tertiary truncate w-full text-center">
+            <span className="text-[10px] text-content-tertiary truncate w-full text-center">
               {card.type_line}
             </span>
-            <span className="text-[10px] text-tertiary">{price}</span>
+            <span className="text-[10px] text-content-tertiary">{price}</span>
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -139,7 +139,7 @@ export default function VisualCard({
     ? "text-red-400"
     : isFullyOwned
     ? "text-green-400"
-    : "text-primary";
+    : "text-content-primary";
 
   const eligible = isEligibleCommander(card);
 
@@ -149,7 +149,7 @@ export default function VisualCard({
     ? "bg-red-900 text-red-400"
     : isFullyOwnedForPill
     ? "bg-green-800 text-green-400"
-    : "bg-surface-base text-tertiary";
+    : "bg-surface-base text-content-tertiary";
 
   return (
     <div
@@ -171,7 +171,7 @@ export default function VisualCard({
             e.stopPropagation();
             onRemove(card.id);
           }}
-          className="absolute top-1.5 right-1.5 w-6 h-6 flex items-center justify-center rounded-full bg-surface-base text-tertiary hover:text-red-400 hover:bg-red-900 opacity-0 group-hover:opacity-100 transition-all z-30"
+          className="absolute top-1.5 right-1.5 w-6 h-6 flex items-center justify-center rounded-full bg-surface-base text-content-tertiary hover:text-red-400 hover:bg-red-900 opacity-0 group-hover:opacity-100 transition-all z-30"
         >
           <X className="w-3 h-3" />
         </button>
@@ -214,7 +214,7 @@ export default function VisualCard({
               e.stopPropagation();
               onUpdateQuantity(card.id, -1);
             }}
-            className="w-7 h-7 rounded-full bg-neutral-700/50 text-secondary hover:bg-neutral-600 hover:text-primary flex items-center justify-center transition-colors"
+            className="w-7 h-7 rounded-full bg-neutral-700/50 text-content-secondary hover:bg-neutral-600 hover:text-content-primary flex items-center justify-center transition-colors"
           >
             <Minus className="w-3.5 h-3.5" />
           </button>
@@ -243,7 +243,7 @@ export default function VisualCard({
                 }
               }}
               onClick={(e) => e.stopPropagation()}
-              className="w-8 text-center text-sm font-bold bg-surface-raised border border-blue-500 rounded text-primary focus:outline-none tabular-nums"
+              className="w-8 text-center text-sm font-bold bg-surface-raised border border-blue-500 rounded text-content-primary focus:outline-none tabular-nums"
               autoFocus
             />
           ) : (
@@ -263,7 +263,7 @@ export default function VisualCard({
               e.stopPropagation();
               onUpdateQuantity(card.id, 1);
             }}
-            className="w-7 h-7 rounded-full bg-neutral-700/50 text-secondary hover:bg-neutral-600 hover:text-primary flex items-center justify-center transition-colors"
+            className="w-7 h-7 rounded-full bg-neutral-700/50 text-content-secondary hover:bg-neutral-600 hover:text-content-primary flex items-center justify-center transition-colors"
           >
             <Plus className="w-3.5 h-3.5" />
           </button>
@@ -276,7 +276,7 @@ export default function VisualCard({
               e.stopPropagation();
               onUpdateOwnedQty(card.id, Math.max(0, card.ownedQty - 1));
             }}
-            className="w-7 h-7 rounded-full bg-neutral-700/50 text-secondary hover:bg-neutral-600 hover:text-primary flex items-center justify-center transition-colors"
+            className="w-7 h-7 rounded-full bg-neutral-700/50 text-content-secondary hover:bg-neutral-600 hover:text-content-primary flex items-center justify-center transition-colors"
           >
             <Minus className="w-3.5 h-3.5" />
           </button>
@@ -316,7 +316,7 @@ export default function VisualCard({
                   startOwnedEdit();
                 }}
                 className={`text-[10px] tabular-nums cursor-pointer hover:underline ${
-                  isFullyOwned ? "text-green-400" : "text-tertiary"
+                  isFullyOwned ? "text-green-400" : "text-content-tertiary"
                 }`}
               >
                 {card.ownedQty}
@@ -324,7 +324,7 @@ export default function VisualCard({
             )}
             <span
               className={`text-[10px] tabular-nums ${
-                isFullyOwned ? "text-green-400" : "text-tertiary"
+                isFullyOwned ? "text-green-400" : "text-content-tertiary"
               }`}
             >
               /{card.quantity}
@@ -336,7 +336,7 @@ export default function VisualCard({
               e.stopPropagation();
               onUpdateOwnedQty(card.id, card.ownedQty + 1);
             }}
-            className="w-7 h-7 rounded-full bg-neutral-700/50 text-secondary hover:bg-neutral-600 hover:text-primary flex items-center justify-center transition-colors"
+            className="w-7 h-7 rounded-full bg-neutral-700/50 text-content-secondary hover:bg-neutral-600 hover:text-content-primary flex items-center justify-center transition-colors"
           >
             <Plus className="w-3.5 h-3.5" />
           </button>
