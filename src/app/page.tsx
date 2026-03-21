@@ -64,7 +64,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-900 text-neutral-200 flex flex-col md:flex-row overflow-hidden font-sans">
+    <div className="min-h-screen bg-surface-base text-heading flex flex-col md:flex-row overflow-hidden font-sans">
       <Sidebar
         onImport={() => fileInputRef.current?.click()}
         onExport={exportDeck}

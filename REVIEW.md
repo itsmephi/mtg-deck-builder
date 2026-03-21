@@ -2,6 +2,21 @@
 
 ---
 
+## v1.10.0 — Design Tokens: Foundation + Page Shell (Prompt 1 of 3)
+Status: IN PROGRESS
+
+### Plan Review
+
+| File | Change |
+|---|---|
+| `src/app/globals.css` | Replace `--background`/`--foreground` vars with 12 semantic design tokens in `:root`; register all tokens in `@theme inline` block so Tailwind generates utility classes; update `body` rule to use `--surface-base`/`--text-primary`; keep `prefers-color-scheme: dark` block referencing same token values; update hardcoded scrollbar hex values to reference new tokens |
+| `src/app/page.tsx` | Replace `bg-neutral-900` → `bg-surface-base`, `text-neutral-200` → `text-heading` on root shell div |
+| `src/app/layout.tsx` | No hardcoded color classes present — no changes needed |
+
+3 files reviewed, 2 modified. No new components.
+
+---
+
 ## v1.9.0 — Release Year Filter + CardModal Release Date
 Status: APPROVED ✅
 

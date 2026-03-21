@@ -1,27 +1,67 @@
 @import "tailwindcss";
 
 :root {
-    --background: #ffffff;
-    --foreground: #171717;
+    /* Surface tokens */
+    --surface-base:     #0a0a0a;
+    --surface-raised:   #262626;
+    --surface-overlay:  #404040;
+    --surface-backdrop: rgba(0,0,0,0.8);
+
+    /* Text tokens */
+    --text-primary:   #ffffff;
+    --text-heading:   #e5e5e5;
+    --text-secondary: #d4d4d4;
+    --text-tertiary:  #a3a3a3;
+    --text-muted:     #737373;
+    --text-faint:     #525252;
+
+    /* Border tokens */
+    --border-default: #404040;
+    --border-subtle:  #262626;
 }
 
 @theme inline {
-    --color-background: var(--background);
-    --color-foreground: var(--foreground);
+    --color-surface-base:     var(--surface-base);
+    --color-surface-raised:   var(--surface-raised);
+    --color-surface-overlay:  var(--surface-overlay);
+    --color-surface-backdrop: var(--surface-backdrop);
+
+    --color-text-primary:   var(--text-primary);
+    --color-text-heading:   var(--text-heading);
+    --color-text-secondary: var(--text-secondary);
+    --color-text-tertiary:  var(--text-tertiary);
+    --color-text-muted:     var(--text-muted);
+    --color-text-faint:     var(--text-faint);
+
+    --color-border-default: var(--border-default);
+    --color-border-subtle:  var(--border-subtle);
+
     --font-sans: var(--font-geist-sans);
     --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --background: #0a0a0a;
-        --foreground: #ededed;
+        --surface-base:     #0a0a0a;
+        --surface-raised:   #262626;
+        --surface-overlay:  #404040;
+        --surface-backdrop: rgba(0,0,0,0.8);
+
+        --text-primary:   #ffffff;
+        --text-heading:   #e5e5e5;
+        --text-secondary: #d4d4d4;
+        --text-tertiary:  #a3a3a3;
+        --text-muted:     #737373;
+        --text-faint:     #525252;
+
+        --border-default: #404040;
+        --border-subtle:  #262626;
     }
 }
 
 body {
-    background: var(--background);
-    color: var(--foreground);
+    background: var(--surface-base);
+    color: var(--text-primary);
     font-family: Arial, Helvetica, sans-serif;
 }
 @tailwind base;
@@ -39,16 +79,16 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #404040;
+    background: var(--surface-overlay);
     border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #525252;
+    background: var(--text-faint);
 }
 
 /* Firefox */
 * {
     scrollbar-width: thin;
-    scrollbar-color: #404040 transparent;
+    scrollbar-color: var(--surface-overlay) transparent;
 }
