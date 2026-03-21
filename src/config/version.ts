@@ -1,8 +1,14 @@
-export const APP_VERSION = "1.9.0";
+export const APP_VERSION = "1.10.0";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.10.0": [
+    "Design token system: 12 semantic CSS custom properties defined in globals.css and registered via Tailwind v4 @theme inline — surfaces (base/raised/overlay/backdrop), text (primary/heading/secondary/tertiary/muted/faint), and borders (line-default/line-subtle)",
+    "All hardcoded neutral color classes replaced with token utilities across 17 files — changing a theme color now requires editing one place in globals.css",
+    "Border token naming uses border-line-* prefix to avoid Tailwind v4 border-width namespace collision (border-default would inject border-width: 1px; border-line-default does not)",
+    "Opacity variants (e.g. bg-neutral-800/50) and mid-tone flagged classes (text-neutral-700, bg-neutral-950, border-neutral-600, hover:bg-neutral-600) intentionally left as raw Tailwind — no token mapping needed for contextual states",
+  ],
   "1.9.0": [
     "Release year filter: dual text inputs (year from / to) in the sidebar filter panel with three quick-select presets — This Year, Last 5 Yrs (default), and All; filter is active by default showing only the past 5 years",
     "Year syntax: injects year>= and year<= Scryfall clauses only when the range is meaningfully constrained (yearMin > 1993 or yearMax < current year); All preset produces no syntax",
