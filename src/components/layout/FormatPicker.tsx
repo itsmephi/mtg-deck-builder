@@ -16,7 +16,7 @@ export function FormatPicker({ onSelect, currentFormat }: FormatPickerProps) {
   }[] = [
     {
       value: "freeform",
-      icon: <span className="text-[9px] font-bold text-neutral-500 bg-neutral-500/10 px-0.5 rounded leading-none">FF</span>,
+      icon: <span className="text-[9px] font-bold text-muted bg-neutral-500/10 px-0.5 rounded leading-none">FF</span>,
       label: "Freeform",
       description: "No rules. Build anything.",
     },
@@ -36,14 +36,14 @@ export function FormatPicker({ onSelect, currentFormat }: FormatPickerProps) {
 
   return (
     <div className="py-1">
-      <div className="px-3 py-1.5 text-[9px] font-bold text-neutral-500 uppercase tracking-widest">
+      <div className="px-3 py-1.5 text-[9px] font-bold text-muted uppercase tracking-widest">
         Choose Format
       </div>
       {formats.map(({ value, icon, label, description }) => (
         <button
           key={value}
           onClick={() => onSelect(value)}
-          className={`w-full flex items-center gap-2.5 px-3 py-2.5 hover:bg-neutral-800 cursor-pointer transition-colors text-left ${
+          className={`w-full flex items-center gap-2.5 px-3 py-2.5 hover:bg-surface-raised cursor-pointer transition-colors text-left ${
             currentFormat === value ? "bg-neutral-800/50" : ""
           }`}
         >
@@ -51,8 +51,8 @@ export function FormatPicker({ onSelect, currentFormat }: FormatPickerProps) {
             {icon}
           </span>
           <span className="flex flex-col gap-0.5">
-            <span className="text-xs font-medium text-neutral-200">{label}</span>
-            <span className="text-[10px] text-neutral-500">{description}</span>
+            <span className="text-xs font-medium text-heading">{label}</span>
+            <span className="text-[10px] text-muted">{description}</span>
           </span>
         </button>
       ))}

@@ -2,8 +2,40 @@
 
 ---
 
-## v1.10.0 — Design Tokens: Foundation + Page Shell (Prompt 1 of 3)
+## v1.10.0 — Design Tokens: Layout Components (Prompt 2 of 3)
 Status: IN PROGRESS
+
+### Plan Review
+
+| File | Changes |
+|---|---|
+| `src/components/layout/Sidebar.tsx` | `bg-neutral-900` → `bg-surface-base`; `bg-neutral-800` → `bg-surface-raised`; `bg-neutral-700` → `bg-surface-overlay`; `border-neutral-800` → `border-subtle`; `border-neutral-700` → `border-default`; `text-white` → `text-primary`; `text-neutral-600` → `text-faint`; `text-neutral-500` → `text-muted`; `text-neutral-400` → `text-tertiary`; `text-neutral-300` → `text-secondary`; leave `border-neutral-500` (flagged), opacity variants, accent colors |
+| `src/components/layout/SidebarRail.tsx` | `bg-neutral-900` → `bg-surface-base`; `bg-neutral-800` → `bg-surface-raised`; `border-neutral-700` → `border-default`; `text-white` → `text-primary`; `text-neutral-500` → `text-muted`; `text-neutral-200` → `text-heading` |
+| `src/components/layout/SidebarDecksTab.tsx` | `bg-neutral-900` → `bg-surface-base`; `bg-neutral-800` → `bg-surface-raised`; `bg-neutral-700` → `bg-surface-overlay`; `border-neutral-800` → `border-subtle`; `border-neutral-700` → `border-default`; `text-white` → `text-primary`; `text-neutral-600` → `text-faint`; `text-neutral-500` → `text-muted`; `text-neutral-400` → `text-tertiary`; `text-neutral-300` → `text-secondary`; leave `text-neutral-700` (flagged), opacity variants, accent colors |
+| `src/components/layout/SidebarSearchTab.tsx` | No color classes — no changes |
+| `src/components/layout/CardModal.tsx` | `bg-black/80` → `bg-surface-backdrop`; `bg-neutral-900` → `bg-surface-base`; `bg-neutral-800` → `bg-surface-raised`; `bg-neutral-700` → `bg-surface-overlay`; `border-neutral-800` → `border-subtle`; `border-neutral-700` → `border-default`; `text-white` → `text-primary`; `text-neutral-600` → `text-faint`; `text-neutral-500` → `text-muted`; `text-neutral-400` → `text-tertiary`; `text-neutral-300` → `text-secondary`; `text-neutral-200` → `text-heading`; leave `bg-black/90`, `border-neutral-600` (flagged), `bg-neutral-900/50`, accent colors |
+| `src/components/layout/SampleHandModal.tsx` | `bg-black/80` → `bg-surface-backdrop`; `bg-neutral-900` → `bg-surface-base`; `bg-neutral-800` → `bg-surface-raised`; `bg-neutral-700` → `bg-surface-overlay`; `border-neutral-800` → `border-subtle`; `border-neutral-700` → `border-default`; `text-white` → `text-primary`; `text-neutral-600` → `text-faint`; `text-neutral-500` → `text-muted`; `text-neutral-400` → `text-tertiary`; `text-neutral-300` → `text-secondary`; leave `text-neutral-700` (flagged), `bg-neutral-900/30`, accent colors |
+| `src/components/layout/FormatPicker.tsx` | `hover:bg-neutral-800` → `hover:bg-surface-raised`; `text-neutral-200` → `text-heading`; `text-neutral-500` → `text-muted`; leave `bg-neutral-800/50` (opacity variant), `bg-neutral-500/10` (opacity variant) |
+| `src/components/layout/CategoryChips.tsx` | `border-neutral-800` → `border-subtle`; `text-neutral-600` → `text-faint`; `bg-neutral-800` → `bg-surface-raised`; `border-neutral-700` → `border-default`; `text-neutral-400` → `text-tertiary`; `text-neutral-200` → `text-heading`; leave `hover:border-neutral-600` (flagged) |
+| `src/components/layout/FilterPanel.tsx` | `bg-neutral-800` → `bg-surface-raised`; `bg-neutral-700` → `bg-surface-overlay`; `border-neutral-700` → `border-default`; `text-neutral-500` → `text-muted`; `text-neutral-400` → `text-tertiary`; `text-neutral-300` → `text-secondary`; migrate stone drift: `bg-stone-707/40` → `bg-surface-overlay`, `border-stone-400/50` → `border-default`, `text-stone-300` → `text-secondary`; leave `border-neutral-500/50`, `border-neutral-500/40` (opacity variants), accent colors |
+
+9 files reviewed, 8 modified. No new components.
+
+### Flagged Classes (not migrated — noted for evaluation)
+
+| Class | Count in scope | Location & role |
+|---|---|---|
+| `text-neutral-100` | 0 in layout | Workspace files only — deferred to prompt 3 |
+| `text-neutral-700` | 2 in layout | SidebarDecksTab L227: layers icon (no-sideboard grayed state); SampleHandModal L413: depleted-library AlertCircle icon. Darker than `text-faint` (#525252) — no direct token match yet |
+| `border-neutral-600` | 2 in layout | CardModal L444: spinner border (`border-t-neutral-400`); CategoryChips: `hover:border-neutral-600`. Mid-tone gap between `border-default` (#404040) and token-less `neutral-600` (#525252) |
+| `border-neutral-500` | 1 in layout | Sidebar sort-direction hover: `hover:border-neutral-500`. No token mapped for `neutral-500` border |
+| `bg-neutral-600` | 0 in layout | VisualCard.tsx (workspace) — deferred to prompt 3 |
+| `bg-neutral-950` | 0 in layout | SearchBar.tsx (workspace) — deferred to prompt 3 |
+
+---
+
+## v1.10.0 — Design Tokens: Foundation + Page Shell (Prompt 1 of 3)
+Status: APPROVED ✅
 
 ### Plan Review
 
