@@ -479,7 +479,7 @@ export default function CardModal({
               e.stopPropagation();
               onNext();
             }}
-            className="absolute right-2 md:-right-16 p-3 bg-neutral-900 border border-neutral-700 rounded-full text-primary hover:bg-neutral-700 hover:scale-110 transition-all z-50 shadow-xl"
+            className="absolute right-2 md:-right-16 p-3 bg-surface-base border border-default rounded-full text-primary hover:bg-surface-overlay hover:scale-110 transition-all z-50 shadow-xl"
           >
             <ChevronRight className="w-6 h-6" />
           </button>
