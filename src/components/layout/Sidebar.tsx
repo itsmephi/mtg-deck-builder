@@ -59,7 +59,7 @@ export default function Sidebar({ onImport, onExport, isImporting, activeTab, on
 
   return (
     <aside
-      className={`h-[40vh] md:h-screen border-b md:border-b-0 md:border-r border-subtle bg-surface-base flex flex-col ${isCollapsed ? "overflow-visible" : "overflow-hidden"}`}
+      className={`h-[40vh] md:h-screen border-b md:border-b-0 md:border-r border-line-subtle bg-surface-base flex flex-col ${isCollapsed ? "overflow-visible" : "overflow-hidden"}`}
       style={
         isDesktop
           ? {
@@ -74,7 +74,7 @@ export default function Sidebar({ onImport, onExport, isImporting, activeTab, on
       ) : (
         <div className="flex flex-col h-full min-w-0">
           {/* Tab bar */}
-          <div className="flex items-center border-b border-subtle shrink-0">
+          <div className="flex items-center border-b border-line-subtle shrink-0">
             <button
               onClick={() => onTabChange("search")}
               className={`flex items-center gap-1.5 flex-1 justify-center px-3 py-2.5 text-xs font-medium border-b-2 transition-colors ${
@@ -127,7 +127,7 @@ export default function Sidebar({ onImport, onExport, isImporting, activeTab, on
           </div>
 
           {/* Footer */}
-          <div className="mt-auto border-t border-subtle bg-neutral-900/50 shrink-0">
+          <div className="mt-auto border-t border-line-subtle bg-neutral-900/50 shrink-0">
             <div className="flex items-center justify-between px-3 py-2">
               <div className="flex items-center gap-2">
                 <button
@@ -201,7 +201,7 @@ export default function Sidebar({ onImport, onExport, isImporting, activeTab, on
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as SortBy)}
-                    className="bg-surface-raised border border-default text-xs text-secondary rounded px-1.5 py-0.5 focus:outline-none cursor-pointer"
+                    className="bg-surface-raised border border-line-default text-xs text-secondary rounded px-1.5 py-0.5 focus:outline-none cursor-pointer"
                   >
                     <option value="original">Original</option>
                     <option value="name">Name</option>
@@ -216,8 +216,8 @@ export default function Sidebar({ onImport, onExport, isImporting, activeTab, on
                     disabled={sortBy === "original"}
                     className={`flex items-center gap-1 px-2 py-0.5 text-xs rounded border transition-colors ${
                       sortBy === "original"
-                        ? "text-faint border-subtle cursor-not-allowed"
-                        : "text-secondary border-default hover:text-primary hover:border-neutral-500"
+                        ? "text-faint border-line-subtle cursor-not-allowed"
+                        : "text-secondary border-line-default hover:text-primary hover:border-neutral-500"
                     }`}
                   >
                     {sortDir === "asc" ? (

@@ -193,7 +193,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
                 {formatPickerDeckId === deck.id && (
                   <div
                     ref={formatPickerRef}
-                    className={`absolute left-2 right-2 bg-surface-base border border-default rounded-lg shadow-xl z-50 ${formatPickerDir === "down" ? "top-full mt-1" : "bottom-full mb-1"}`}
+                    className={`absolute left-2 right-2 bg-surface-base border border-line-default rounded-lg shadow-xl z-50 ${formatPickerDir === "down" ? "top-full mt-1" : "bottom-full mb-1"}`}
                   >
                     <FormatPicker
                       currentFormat={deck.format}
@@ -246,7 +246,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
                 {openDeleteDropdownId === deck.id && (
                   <div
                     ref={deleteDropdownRef}
-                    className="absolute right-0 top-full mt-1 w-40 bg-surface-base border border-default rounded-lg shadow-xl py-1 z-50"
+                    className="absolute right-0 top-full mt-1 w-40 bg-surface-base border border-line-default rounded-lg shadow-xl py-1 z-50"
                   >
                     <button
                       onClick={() => {
@@ -292,7 +292,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
           {newDeckPickerOpen && (
             <div
               ref={newDeckPickerRef}
-              className={`absolute left-0 w-52 bg-surface-base border border-default rounded-lg shadow-xl z-50 ${newDeckPickerDir === "down" ? "top-full mt-1" : "bottom-full mb-1"}`}
+              className={`absolute left-0 w-52 bg-surface-base border border-line-default rounded-lg shadow-xl z-50 ${newDeckPickerDir === "down" ? "top-full mt-1" : "bottom-full mb-1"}`}
             >
               <FormatPicker
                 onSelect={(format) => {
@@ -306,7 +306,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
       </div>
 
       {/* Actions strip */}
-      <div className="border-t border-subtle p-2 space-y-1.5 shrink-0">
+      <div className="border-t border-line-subtle p-2 space-y-1.5 shrink-0">
         <div className="flex items-center gap-1.5">
           <button
             onClick={onExport}
@@ -353,7 +353,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
           onClick={() => setConfirmDialog(null)}
         >
           <div
-            className="bg-surface-base border border-default rounded-xl shadow-2xl p-6 w-80 flex flex-col gap-4"
+            className="bg-surface-base border border-line-default rounded-xl shadow-2xl p-6 w-80 flex flex-col gap-4"
             onClick={(e) => e.stopPropagation()}
           >
             <div>

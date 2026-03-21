@@ -148,9 +148,9 @@ export default function CardModal({
     if (status === "legal")
       return "bg-green-900/50 text-green-400 border-green-800";
     if (status === "not_legal")
-      return "bg-surface-raised text-muted border-default";
+      return "bg-surface-raised text-muted border-line-default";
     if (status === "banned") return "bg-red-900/50 text-red-400 border-red-800";
-    return "bg-surface-raised text-muted border-default";
+    return "bg-surface-raised text-muted border-line-default";
   };
 
   const formats = [
@@ -190,19 +190,19 @@ export default function CardModal({
               e.stopPropagation();
               onPrev();
             }}
-            className="absolute left-2 md:-left-16 p-3 bg-surface-base border border-default rounded-full text-primary hover:bg-surface-overlay hover:scale-110 transition-all z-50 shadow-xl"
+            className="absolute left-2 md:-left-16 p-3 bg-surface-base border border-line-default rounded-full text-primary hover:bg-surface-overlay hover:scale-110 transition-all z-50 shadow-xl"
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
         )}
 
         <div
-          className="bg-surface-base border border-subtle rounded-xl w-full h-[700px] max-h-[85vh] overflow-hidden flex flex-col shadow-2xl relative"
+          className="bg-surface-base border border-line-subtle rounded-xl w-full h-[700px] max-h-[85vh] overflow-hidden flex flex-col shadow-2xl relative"
           onClick={(e) => e.stopPropagation()}
         >
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-2 bg-surface-base border border-subtle rounded-full text-tertiary hover:text-primary z-20 shadow-md"
+            className="absolute top-4 right-4 p-2 bg-surface-base border border-line-subtle rounded-full text-tertiary hover:text-primary z-20 shadow-md"
           >
             <X className="w-5 h-5" />
           </button>
@@ -210,7 +210,7 @@ export default function CardModal({
           <div
             className={`flex flex-col md:flex-row w-full h-full transition-all duration-150 ease-in-out ${isTransitioning ? "opacity-0 blur-sm scale-[0.98]" : "opacity-100 blur-0 scale-100"}`}
           >
-            <div className="w-full md:w-2/5 p-6 bg-surface-base flex flex-col items-center justify-between border-b md:border-b-0 md:border-r border-subtle shrink-0">
+            <div className="w-full md:w-2/5 p-6 bg-surface-base flex flex-col items-center justify-between border-b md:border-b-0 md:border-r border-line-subtle shrink-0">
               <div
                 className="relative w-full flex-1 group cursor-pointer overflow-hidden rounded-xl shadow-lg mb-4"
                 style={{ perspective: "1000px" }}
@@ -255,7 +255,7 @@ export default function CardModal({
                   )}
                 </div>
                 {isDoubleFaced && (
-                  <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 px-3 py-1.5 bg-black/90 text-primary rounded-full text-[10px] font-bold uppercase tracking-widest border border-default opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                  <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 px-3 py-1.5 bg-black/90 text-primary rounded-full text-[10px] font-bold uppercase tracking-widest border border-line-default opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
                     {isRoom ? (
                       <Maximize2 className="w-3 h-3" />
                     ) : (
@@ -269,7 +269,7 @@ export default function CardModal({
               </div>
 
               <div className="flex flex-col gap-2 w-full max-w-xs">
-                <div className="flex bg-surface-base border border-subtle rounded-lg p-1 w-full">
+                <div className="flex bg-surface-base border border-line-subtle rounded-lg p-1 w-full">
                   <button
                     onClick={() => {
                       setView("details");
@@ -324,9 +324,9 @@ export default function CardModal({
                     </p>
                   </section>
 
-                  <section className="bg-surface-base border border-subtle rounded-xl p-6 space-y-4 shadow-inner">
+                  <section className="bg-surface-base border border-line-subtle rounded-xl p-6 space-y-4 shadow-inner">
                     {isDoubleFaced && (
-                      <div className="flex justify-end border-b border-subtle pb-2">
+                      <div className="flex justify-end border-b border-line-subtle pb-2">
                         <span className="text-[10px] font-bold text-blue-400 uppercase tracking-widest">
                           Viewing:{" "}
                           {isRoom
@@ -349,7 +349,7 @@ export default function CardModal({
                       {renderOracleText(currentFace.oracle_text)}
                     </div>
                     {currentFace.flavor_text && (
-                      <div className="text-sm leading-relaxed text-muted italic border-t border-subtle pt-3 mt-1">
+                      <div className="text-sm leading-relaxed text-muted italic border-t border-line-subtle pt-3 mt-1">
                         {currentFace.flavor_text}
                       </div>
                     )}
@@ -427,7 +427,7 @@ export default function CardModal({
                         {rulings.map((r, i) => (
                           <li
                             key={i}
-                            className="text-xs text-tertiary bg-neutral-900/50 p-3 rounded-lg border border-subtle"
+                            className="text-xs text-tertiary bg-neutral-900/50 p-3 rounded-lg border border-line-subtle"
                           >
                             <span className="text-[10px] text-faint font-bold block mb-1">
                               {r.published_at}
@@ -449,7 +449,7 @@ export default function CardModal({
                     <div
                       key={v.id}
                       onClick={() => setPreviewCard(v)}
-                      className={`p-2 rounded-xl border cursor-pointer transition-all ${previewCard.id === v.id ? "border-blue-500 bg-blue-500/10" : "border-subtle bg-surface-base hover:border-default"}`}
+                      className={`p-2 rounded-xl border cursor-pointer transition-all ${previewCard.id === v.id ? "border-blue-500 bg-blue-500/10" : "border-line-subtle bg-surface-base hover:border-line-default"}`}
                     >
                       <img
                         src={
@@ -479,7 +479,7 @@ export default function CardModal({
               e.stopPropagation();
               onNext();
             }}
-            className="absolute right-2 md:-right-16 p-3 bg-surface-base border border-default rounded-full text-primary hover:bg-surface-overlay hover:scale-110 transition-all z-50 shadow-xl"
+            className="absolute right-2 md:-right-16 p-3 bg-surface-base border border-line-default rounded-full text-primary hover:bg-surface-overlay hover:scale-110 transition-all z-50 shadow-xl"
           >
             <ChevronRight className="w-6 h-6" />
           </button>

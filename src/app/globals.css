@@ -16,8 +16,8 @@
     --text-faint:     #525252;
 
     /* Border tokens */
-    --border-default: #404040;
-    --border-subtle:  #262626;
+    --border-line-default: #404040;
+    --border-line-subtle:  #262626;
 }
 
 @theme inline {
@@ -33,8 +33,8 @@
     --color-text-muted:     var(--text-muted);
     --color-text-faint:     var(--text-faint);
 
-    --color-border-default: var(--border-default);
-    --color-border-subtle:  var(--border-subtle);
+    --color-border-line-default: var(--border-line-default);
+    --color-border-line-subtle:  var(--border-line-subtle);
 
     --font-sans: var(--font-geist-sans);
     --font-mono: var(--font-geist-mono);
@@ -54,8 +54,8 @@
         --text-muted:     #737373;
         --text-faint:     #525252;
 
-        --border-default: #404040;
-        --border-subtle:  #262626;
+        --border-line-default: #404040;
+        --border-line-subtle:  #262626;
     }
 }
 

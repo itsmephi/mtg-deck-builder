@@ -179,11 +179,11 @@ export default function SampleHandModal({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-[1600px] h-full flex flex-col bg-surface-base rounded-2xl border border-subtle shadow-2xl overflow-hidden"
+        className="w-full max-w-[1600px] h-full flex flex-col bg-surface-base rounded-2xl border border-line-subtle shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-subtle p-4 md:p-6 bg-surface-base z-10">
+        <div className="flex items-center justify-between border-b border-line-subtle p-4 md:p-6 bg-surface-base z-10">
           <div className="flex items-center gap-4">
             <div className="p-2 bg-blue-500/10 rounded-lg hidden sm:block">
               <BarChart3 className="w-6 h-6 text-blue-400" />
@@ -207,13 +207,13 @@ export default function SampleHandModal({
             </button>
             <button
               onClick={shuffleAndDraw}
-              className="flex items-center gap-2 px-3 md:px-4 py-2 bg-surface-raised border border-default rounded-lg text-xs md:text-sm font-bold text-primary hover:bg-surface-overlay transition-colors"
+              className="flex items-center gap-2 px-3 md:px-4 py-2 bg-surface-raised border border-line-default rounded-lg text-xs md:text-sm font-bold text-primary hover:bg-surface-overlay transition-colors"
             >
               <RefreshCw className="w-4 h-4" /> Mulligan
             </button>
             <button
               onClick={onClose}
-              className="p-2 bg-surface-base border border-subtle rounded-full text-tertiary hover:text-primary transition-all hover:bg-surface-raised shadow-sm"
+              className="p-2 bg-surface-base border border-line-subtle rounded-full text-tertiary hover:text-primary transition-all hover:bg-surface-raised shadow-sm"
             >
               <X className="w-5 h-5" />
             </button>
@@ -222,7 +222,7 @@ export default function SampleHandModal({
 
         <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
           {/* Stats Sidebar */}
-          <div className="w-full lg:w-72 border-b lg:border-b-0 lg:border-r border-subtle bg-surface-base overflow-y-auto shrink-0 custom-scrollbar">
+          <div className="w-full lg:w-72 border-b lg:border-b-0 lg:border-r border-line-subtle bg-surface-base overflow-y-auto shrink-0 custom-scrollbar">
             <div className="p-4 lg:p-5 flex flex-col gap-7">
 
               {/* Section 1 — Mana Curve */}
@@ -266,7 +266,7 @@ export default function SampleHandModal({
                   ))}
                 </div>
                 {/* Lands strip */}
-                <div className="flex items-center gap-2 pt-2.5 border-t border-subtle">
+                <div className="flex items-center gap-2 pt-2.5 border-t border-line-subtle">
                   <div className="w-2.5 h-2.5 rounded-sm bg-emerald-500 shrink-0" />
                   <span className="text-[11px] text-tertiary">Lands</span>
                   <span className="ml-auto text-[11px] font-bold text-secondary">
@@ -312,7 +312,7 @@ export default function SampleHandModal({
                     className={`text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded border transition-colors ${
                       showLands
                         ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-400"
-                        : "bg-surface-raised border-default text-muted hover:text-tertiary"
+                        : "bg-surface-raised border-line-default text-muted hover:text-tertiary"
                     }`}
                   >
                     Lands
@@ -331,7 +331,7 @@ export default function SampleHandModal({
                       className={`rounded-lg px-2.5 py-2 cursor-pointer transition-all border ${
                         isPinned
                           ? "bg-blue-500/10 border-blue-500/30"
-                          : "bg-surface-base border-transparent hover:border-default"
+                          : "bg-surface-base border-transparent hover:border-line-default"
                       }`}
                     >
                       <div className="flex items-center gap-1 mb-1.5">
@@ -388,7 +388,7 @@ export default function SampleHandModal({
                         className={`w-full rounded-lg shadow-xl border transition-all cursor-pointer hover:scale-105 ${
                           isPinned
                             ? "border-blue-500 ring-2 ring-blue-500"
-                            : "border-subtle hover:border-blue-500/50"
+                            : "border-line-subtle hover:border-blue-500/50"
                         }`}
                         alt={card.name}
                         onClick={() => toggleMark(card.id)}
@@ -408,7 +408,7 @@ export default function SampleHandModal({
               <div ref={scrollEndRef} className="col-span-full h-1 w-full" />
 
               {library.length === 0 && (
-                <div className="col-span-full mt-10 flex flex-col items-center justify-center p-12 border border-dashed border-subtle rounded-2xl bg-neutral-900/30 w-full max-w-2xl mx-auto">
+                <div className="col-span-full mt-10 flex flex-col items-center justify-center p-12 border border-dashed border-line-subtle rounded-2xl bg-neutral-900/30 w-full max-w-2xl mx-auto">
                   <AlertCircle className="w-10 h-10 text-neutral-700 mb-3" />
                   <p className="text-muted font-medium text-sm">
                     Library depleted.

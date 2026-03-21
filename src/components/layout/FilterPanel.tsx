@@ -133,7 +133,7 @@ function ToggleChip({
       className={`flex items-center gap-1 px-2 py-0.5 rounded text-[10px] border transition-colors ${
         active
           ? activeClassName
-          : "bg-surface-raised border-default text-muted"
+          : "bg-surface-raised border-line-default text-muted"
       }`}
     >
       {children}
@@ -142,7 +142,7 @@ function ToggleChip({
 }
 
 const COLOR_ACTIVE_CLASS: Record<string, string> = {
-  W: "bg-surface-overlay border-default text-secondary",
+  W: "bg-surface-overlay border-line-default text-secondary",
   U: "bg-blue-900/40 border-blue-500/40 text-blue-400",
   B: "bg-neutral-700/60 border-neutral-500/50 text-secondary",
   R: "bg-red-900/40 border-red-600/40 text-red-400",
@@ -200,7 +200,7 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
             className={`text-[10px] px-1.5 py-0.5 rounded border transition-colors ${
               filters.anyPrice
                 ? "bg-blue-900/30 border-blue-500/30 text-blue-400"
-                : "bg-surface-raised border-default text-muted hover:text-secondary"
+                : "bg-surface-raised border-line-default text-muted hover:text-secondary"
             }`}
           >
             Any
@@ -220,7 +220,7 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
                 setLocalMin(String(val));
                 onFiltersChange({ ...filters, priceMin: val });
               }}
-              className="w-10 bg-surface-raised border border-default rounded text-xs text-secondary px-1.5 py-0.5 text-center focus:outline-none focus:border-neutral-500"
+              className="w-10 bg-surface-raised border border-line-default rounded text-xs text-secondary px-1.5 py-0.5 text-center focus:outline-none focus:border-neutral-500"
             />
           </div>
           <div
@@ -260,7 +260,7 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
                 setLocalMax(String(val));
                 onFiltersChange({ ...filters, priceMax: val });
               }}
-              className="w-10 bg-surface-raised border border-default rounded text-xs text-secondary px-1.5 py-0.5 text-center focus:outline-none focus:border-neutral-500"
+              className="w-10 bg-surface-raised border border-line-default rounded text-xs text-secondary px-1.5 py-0.5 text-center focus:outline-none focus:border-neutral-500"
             />
           </div>
         </div>
@@ -284,7 +284,7 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
                   className={`flex-1 px-1.5 py-0.5 rounded text-[10px] border transition-colors ${
                     active
                       ? "bg-blue-900/30 border-blue-500/30 text-blue-400"
-                      : "bg-surface-raised border-default text-muted hover:text-secondary"
+                      : "bg-surface-raised border-line-default text-muted hover:text-secondary"
                   }`}
                 >
                   {preset.label}
@@ -305,7 +305,7 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
               setLocalYearMin(String(val));
               onFiltersChange({ ...filters, yearMin: val });
             }}
-            className="w-14 bg-surface-raised border border-default rounded text-xs text-secondary px-1.5 py-0.5 text-center focus:outline-none focus:border-neutral-500"
+            className="w-14 bg-surface-raised border border-line-default rounded text-xs text-secondary px-1.5 py-0.5 text-center focus:outline-none focus:border-neutral-500"
           />
           <span className="text-xs text-muted">to</span>
           <input
@@ -319,7 +319,7 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
               setLocalYearMax(String(val));
               onFiltersChange({ ...filters, yearMax: val });
             }}
-            className="w-14 bg-surface-raised border border-default rounded text-xs text-secondary px-1.5 py-0.5 text-center focus:outline-none focus:border-neutral-500"
+            className="w-14 bg-surface-raised border border-line-default rounded text-xs text-secondary px-1.5 py-0.5 text-center focus:outline-none focus:border-neutral-500"
           />
         </div>
       </div>

@@ -13,7 +13,7 @@ interface Props {
 
 function RailTooltip({ label }: { label: string }) {
   return (
-    <span className="absolute left-full ml-2 top-1/2 -translate-y-1/2 px-2 py-1 bg-surface-raised border border-default text-heading text-[10px] font-medium rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+    <span className="absolute left-full ml-2 top-1/2 -translate-y-1/2 px-2 py-1 bg-surface-raised border border-line-default text-heading text-[10px] font-medium rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
       {label}
     </span>
   );
@@ -109,7 +109,7 @@ export default function SidebarRail({ expandTo, activeTab }: Props) {
         {railPickerOpen && (
           <div
             ref={railPickerRef}
-            className="absolute left-full ml-2 top-0 w-52 bg-surface-base border border-default rounded-lg shadow-xl z-50"
+            className="absolute left-full ml-2 top-0 w-52 bg-surface-base border border-line-default rounded-lg shadow-xl z-50"
           >
             <FormatPicker onSelect={handleRailFormatSelect} />
           </div>
