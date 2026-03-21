@@ -272,7 +272,7 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       {/* Toolbar Row 1: Search Bar */}
-      <div className="bg-neutral-900 border-b border-neutral-800">
+      <div className="bg-surface-base border-b border-line-subtle">
         <div className="flex items-center px-3.5 gap-2 min-h-[38px] pt-1">
           <SearchBar
             query={query}
@@ -292,41 +292,41 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
         </div>
         {/* Toolbar Row 2: Results count + sort + view toggles */}
         <div className="flex items-center px-3.5 gap-2 min-h-[34px] pb-1">
-          <span className="text-xs text-neutral-500">
+          <span className="text-xs text-muted">
             {scryfallQuery.trim() ? (
               <>
-                <b className="text-neutral-400 font-medium">{results.length}</b> results
+                <b className="text-tertiary font-medium">{results.length}</b> results
               </>
             ) : (
               "Search to find cards"
             )}
           </span>
           {setMatch && setMatch.query === parsed.remainder && (
-            <div className="flex items-center gap-1 px-1.5 py-0.5 bg-neutral-800 border border-neutral-700 rounded text-[10px] text-neutral-300 max-w-[220px]">
-              <span className="text-neutral-500 shrink-0">Set:</span>
+            <div className="flex items-center gap-1 px-1.5 py-0.5 bg-surface-raised border border-line-default rounded text-[10px] text-secondary max-w-[220px]">
+              <span className="text-muted shrink-0">Set:</span>
               <span className="truncate">{setMatch.name}</span>
               <button
                 onClick={() => setQuery("")}
-                className="ml-0.5 text-neutral-500 hover:text-white shrink-0"
+                className="ml-0.5 text-muted hover:text-primary shrink-0"
               >
                 ×
               </button>
             </div>
           )}
           <div className="ml-auto flex items-center gap-1.5 h-7">
-            <select className="bg-neutral-900 border border-neutral-800 text-xs text-neutral-400 rounded px-1.5 py-0.5 focus:outline-none cursor-pointer">
-              <option value="relevance" className="bg-neutral-900">Sort: Relevance</option>
-              <option value="name" className="bg-neutral-900">Name</option>
-              <option value="price_asc" className="bg-neutral-900">Price ↑</option>
-              <option value="price_desc" className="bg-neutral-900">Price ↓</option>
-              <option value="mv" className="bg-neutral-900">Mana Value</option>
-              <option value="color" className="bg-neutral-900">Color</option>
+            <select className="bg-surface-base border border-line-subtle text-xs text-tertiary rounded px-1.5 py-0.5 focus:outline-none cursor-pointer">
+              <option value="relevance" className="bg-surface-base">Sort: Relevance</option>
+              <option value="name" className="bg-surface-base">Name</option>
+              <option value="price_asc" className="bg-surface-base">Price ↑</option>
+              <option value="price_desc" className="bg-surface-base">Price ↓</option>
+              <option value="mv" className="bg-surface-base">Mana Value</option>
+              <option value="color" className="bg-surface-base">Color</option>
             </select>
-            <div className="w-px h-[18px] bg-neutral-800" />
+            <div className="w-px h-[18px] bg-surface-raised" />
             <TileSizeSlider activeStop={tileSize} onChangeStop={onTileSizeChange} />
-            <div className="w-px h-[18px] bg-neutral-800" />
+            <div className="w-px h-[18px] bg-surface-raised" />
             <button
-              className="h-7 px-2 flex items-center justify-center rounded-md bg-neutral-800 text-white border border-neutral-700/50 transition-all"
+              className="h-7 px-2 flex items-center justify-center rounded-md bg-surface-raised text-primary border border-neutral-700/50 transition-all"
               title="Grid view"
             >
               <LayoutGrid className="w-3.5 h-3.5" />
@@ -346,19 +346,19 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
       <div className="flex-1 overflow-y-auto">
         {isLoading && (
           <div className="flex justify-center p-12">
-            <div className="w-5 h-5 border-2 border-neutral-600 border-t-neutral-400 rounded-full animate-spin" />
+            <div className="w-5 h-5 border-2 border-line-default border-t-tertiary rounded-full animate-spin" />
           </div>
         )}
 
         {showEmpty && (
           <div className="flex items-center justify-center h-full">
-            <p className="text-sm text-neutral-500">Type something to search cards</p>
+            <p className="text-sm text-muted">Type something to search cards</p>
           </div>
         )}
 
         {showNoResults && (
           <div className="flex items-center justify-center h-full">
-            <p className="text-sm text-neutral-500">No cards found</p>
+            <p className="text-sm text-muted">No cards found</p>
           </div>
         )}
 
@@ -399,7 +399,7 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
 
       {/* Toast notification */}
       {toastMessage && (
-        <div className="fixed bottom-4 right-4 z-50 px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-xs text-neutral-200 shadow-lg max-w-xs">
+        <div className="fixed bottom-4 right-4 z-50 px-3 py-2 bg-surface-raised border border-line-default rounded-lg text-xs text-heading shadow-lg max-w-xs">
           {toastMessage}
         </div>
       )}

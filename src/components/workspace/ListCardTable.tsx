@@ -197,7 +197,7 @@ export default function ListCardTable({
     const cellOpacity = card.quantity === 0 ? 0.3 : 1 - ownershipRatio * 0.6;
     const cellGrayscale = card.quantity === 0 ? "grayscale" : "";
     const nameColor = card.quantity === 0
-      ? "text-neutral-500"
+      ? "text-muted"
       : isFullyOwned
       ? "text-green-400"
       : "text-neutral-100";
@@ -225,7 +225,7 @@ export default function ListCardTable({
       rowBg = getRowTint(card);
     }
 
-    const qtyButtonBase = "w-5 h-5 rounded-full bg-neutral-800 text-neutral-400 hover:bg-neutral-700 hover:text-white flex items-center justify-center transition-colors";
+    const qtyButtonBase = "w-5 h-5 rounded-full bg-surface-raised text-tertiary hover:bg-surface-overlay hover:text-primary flex items-center justify-center transition-colors";
     const qtyButtonClass = isThisCommander
       ? qtyButtonBase
       : `${qtyButtonBase} opacity-0 group-hover:opacity-100`;
@@ -285,25 +285,25 @@ export default function ListCardTable({
                       setEditingId(null);
                     }
                   }}
-                  className="w-6 text-center text-xs font-medium bg-neutral-800 border border-blue-500 rounded text-neutral-200 focus:outline-none"
+                  className="w-6 text-center text-xs font-medium bg-surface-raised border border-blue-500 rounded text-heading focus:outline-none"
                   autoFocus
                 />
               ) : overCopyLimit ? (
                 <div className="group/badge relative flex items-center justify-center">
                   <span
                     onClick={() => startEdit(card)}
-                    className="w-6 text-center font-medium cursor-text hover:bg-neutral-800 rounded text-red-400"
+                    className="w-6 text-center font-medium cursor-text hover:bg-surface-raised rounded text-red-400"
                   >
                     {card.quantity}
                   </span>
-                  <span className="absolute top-full mt-1.5 left-1/2 -translate-x-1/2 px-2 py-1 bg-neutral-800 border border-neutral-700 text-neutral-200 text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover/badge:opacity-100 transition-opacity pointer-events-none whitespace-normal max-w-xs z-50">
+                  <span className="absolute top-full mt-1.5 left-1/2 -translate-x-1/2 px-2 py-1 bg-surface-raised border border-line-default text-heading text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover/badge:opacity-100 transition-opacity pointer-events-none whitespace-normal max-w-xs z-50">
                     {format === "commander" ? "Exceeds singleton limit" : `Exceeds ${rules.copyLimit}-copy limit`}
                   </span>
                 </div>
               ) : (
                 <span
                   onClick={() => startEdit(card)}
-                  className={`w-6 text-center font-medium cursor-text hover:bg-neutral-800 rounded ${isFullyOwned ? "text-green-400" : "text-neutral-300"}`}
+                  className={`w-6 text-center font-medium cursor-text hover:bg-surface-raised rounded ${isFullyOwned ? "text-green-400" : "text-secondary"}`}
                 >
                   {card.quantity}
                 </span>
@@ -326,7 +326,7 @@ export default function ListCardTable({
             <div className="px-2 flex items-center gap-1.5">
               <button
                 onClick={() => onUpdateOwnedQty(card.id, Math.max(0, card.ownedQty - 1))}
-                className={`w-5 h-5 rounded-full bg-neutral-800 text-neutral-400 hover:bg-neutral-700 hover:text-white flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100`}
+                className={`w-5 h-5 rounded-full bg-surface-raised text-tertiary hover:bg-surface-overlay hover:text-primary flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100`}
               >
                 <svg width="8" height="8" viewBox="0 0 8 2" fill="currentColor">
                   <rect x="0" y="0" width="8" height="2" />
@@ -357,17 +357,17 @@ export default function ListCardTable({
                         setEditingOwnedId(null);
                       }
                     }}
-                    className="w-5 text-center text-[10px] font-medium bg-neutral-800 border border-blue-500 rounded text-green-400 focus:outline-none"
+                    className="w-5 text-center text-[10px] font-medium bg-surface-raised border border-blue-500 rounded text-green-400 focus:outline-none"
                     autoFocus
                   />
-                  <span className={`text-[10px] tabular-nums ${isFullyOwned ? "text-green-400" : "text-neutral-400"}`}>
+                  <span className={`text-[10px] tabular-nums ${isFullyOwned ? "text-green-400" : "text-tertiary"}`}>
                     /{card.quantity}
                   </span>
                 </div>
               ) : (
                 <span
                   onClick={() => startOwnedEdit(card)}
-                  className={`text-[10px] tabular-nums cursor-pointer hover:underline ${isFullyOwned ? "text-green-400" : "text-neutral-400"}`}
+                  className={`text-[10px] tabular-nums cursor-pointer hover:underline ${isFullyOwned ? "text-green-400" : "text-tertiary"}`}
                 >
                   {card.ownedQty}/{card.quantity}
                 </span>
@@ -375,7 +375,7 @@ export default function ListCardTable({
 
               <button
                 onClick={() => onUpdateOwnedQty(card.id, card.ownedQty + 1)}
-                className={`w-5 h-5 rounded-full bg-neutral-800 text-neutral-400 hover:bg-neutral-700 hover:text-white flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100`}
+                className={`w-5 h-5 rounded-full bg-surface-raised text-tertiary hover:bg-surface-overlay hover:text-primary flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100`}
               >
                 <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor">
                   <rect x="3" y="0" width="2" height="8" />
@@ -411,7 +411,7 @@ export default function ListCardTable({
                     }
                     className={`opacity-0 group-hover:opacity-100 shrink-0 transition-opacity ${eligibleCommander ? "cursor-pointer" : "cursor-not-allowed"}`}
                   >
-                    <CrownOutline className={`w-3.5 h-3.5 ${eligibleCommander ? "text-neutral-600 hover:text-yellow-400" : "text-neutral-600"}`} />
+                    <CrownOutline className={`w-3.5 h-3.5 ${eligibleCommander ? "text-faint hover:text-yellow-400" : "text-faint"}`} />
                   </button>
                 )
               )}
@@ -438,7 +438,7 @@ export default function ListCardTable({
           </td>
 
           {/* Type */}
-          <td className={`px-2 py-1 text-[10px] text-neutral-500 truncate w-48 ${cellGrayscale}`} style={{ opacity: cellOpacity }}>
+          <td className={`px-2 py-1 text-[10px] text-muted truncate w-48 ${cellGrayscale}`} style={{ opacity: cellOpacity }}>
             {card.type_line || "—"}
           </td>
 
@@ -447,7 +447,7 @@ export default function ListCardTable({
             {card.card_faces ? (
               <div className="flex items-center gap-1">
                 {renderManaSymbols(card.card_faces[0].mana_cost)}
-                <span className="text-[10px] text-neutral-600 font-bold">//</span>
+                <span className="text-[10px] text-faint font-bold">//</span>
                 {renderManaSymbols(card.card_faces[1].mana_cost)}
               </div>
             ) : (
@@ -457,7 +457,7 @@ export default function ListCardTable({
 
           {/* Price */}
           <td
-            className={`px-2 py-1 text-right text-[10px] tabular-nums w-20 ${isFullyOwned ? "text-green-500/50" : "text-neutral-400"} ${cellGrayscale}`}
+            className={`px-2 py-1 text-right text-[10px] tabular-nums w-20 ${isFullyOwned ? "text-green-500/50" : "text-tertiary"} ${cellGrayscale}`}
             style={{ opacity: cellOpacity }}
           >
             {card.prices.usd ? `$${card.prices.usd}` : "N/A"}
@@ -477,12 +477,12 @@ export default function ListCardTable({
 
   return (
     <div
-      className="bg-neutral-900 border border-neutral-800 rounded-lg shadow-sm"
+      className="bg-surface-base border border-line-subtle rounded-lg shadow-sm"
       onMouseMove={onMouseMove}
     >
       <table className="w-full table-fixed text-left text-xs">
         {showHeader && (
-          <thead className="bg-neutral-900 text-[10px] text-neutral-500 border-b border-neutral-800 uppercase tracking-wider">
+          <thead className="bg-surface-base text-[10px] text-muted border-b border-line-subtle uppercase tracking-wider">
             <tr>
               <th className="px-2 py-1.5 w-24">Qty</th>
               <th className="py-1.5 w-20">Owned</th>

@@ -3,7 +3,7 @@ Authors: Phi & Thurgood Nguyen
 Stack: Next.js + TypeScript + Tailwind CSS
 Deployed: Vercel | Repo: GitHub (itsmephi/mtg-deck-builder)
 IDE: VS Code (Windows, primary) · Zed on Steam Deck (Linux, secondary)
-Current Version: v1.9.0 — see CHANGELOG.md for full history
+Current Version: v1.10.0 — see CHANGELOG.md for full history
 
 ---
 
@@ -45,7 +45,7 @@ For straightforward bug fixes and small enhancements, `/plan` → PROCEED → bu
 ---
 
 ## Active Milestone
-→ No active milestone. v1.9.0 shipped — release year filter + CardModal release date. Next milestone pending triage.
+→ No active milestone. v1.10.0 shipped — design token system (CSS custom properties). Next milestone pending triage.
 
 ---
 
@@ -109,6 +109,7 @@ src/
 - `yearMin`/`yearMax` in FilterState: default last 5 years (CURRENT_YEAR-4 to CURRENT_YEAR); year syntax only injected when `yearMin > 1993` or `yearMax < CURRENT_YEAR`; presets: "This Year" (currentYear–currentYear), "Last 5 Yrs" (default), "All" (1993–currentYear); `released_at?: string` on `ScryfallCard` (ISO date "YYYY-MM-DD") — displayed in CardModal Product Details
 - `isEligibleCommander`: requires `type_line` contains both "Legendary" AND "Creature", OR `oracle_text` contains "can be your commander"
 - `groupCardsByType` in Workspace: prepends `Commander` group when `format === "commander" && commanderId && deckViewMode === "main"`; commander card is routed there instead of its type bucket
+- Design token system: 12 semantic CSS custom properties in `:root` (`globals.css`); registered via `@theme inline` as Tailwind utilities. Surfaces: `surface-base/raised/overlay/backdrop`. Text: `primary/heading/secondary/tertiary/muted/faint`. Borders: `line-default/line-subtle`. NOT tokenized: opacity variants (e.g. `bg-neutral-800/50`), accent colors, flagged mid-tones (`text-neutral-700`, `bg-neutral-950`, `border-neutral-600`, `hover:bg-neutral-600`). `border-line-*` naming avoids Tailwind v4 `--color-border-*` namespace (which injects border-width).
 
 ---
 

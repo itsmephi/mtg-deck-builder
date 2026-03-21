@@ -226,7 +226,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
 
   if (!isMounted || !activeDeck)
     return (
-      <div className="p-8 text-neutral-500 text-sm italic">
+      <div className="p-8 text-muted text-sm italic">
         Initializing workspace...
       </div>
     );
@@ -401,7 +401,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
     deckViewMode === "main";
 
   return (
-    <div className="w-full h-full flex flex-col relative text-sm bg-neutral-900">
+    <div className="w-full h-full flex flex-col relative text-sm bg-surface-base">
       <WorkspaceToolbar
         activeDeck={activeDeck}
         onUpdateDeckName={(name) => updateActiveDeck((d) => ({ ...d, name }))}
@@ -437,7 +437,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
               ([cat, cards]) =>
                 cards.length > 0 && (
                   <div key={cat}>
-                    <h3 className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-4 ml-1">
+                    <h3 className="text-[10px] font-bold text-muted uppercase tracking-widest mb-4 ml-1">
                       {cat} ({cards.reduce((s, c) => s + c.quantity, 0)})
                     </h3>
                     {viewMode === "visual" ? (
@@ -525,7 +525,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
       {viewMode === "list" && hoveredCardList && showThumbnail && (
         <div
           ref={tooltipRef}
-          className="fixed z-50 pointer-events-none w-56 rounded-xl overflow-hidden shadow-2xl border border-neutral-700"
+          className="fixed z-50 pointer-events-none w-56 rounded-xl overflow-hidden shadow-2xl border border-line-default"
           style={{ left: `${mousePosRef.current.x}px`, top: `${mousePosRef.current.y}px` }}
         >
           <img
@@ -619,14 +619,14 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
           tabIndex={-1}
         >
           <div
-            className="bg-neutral-900 border border-neutral-700 rounded-xl shadow-2xl p-6 w-80 flex flex-col gap-4"
+            className="bg-surface-base border border-line-default rounded-xl shadow-2xl p-6 w-80 flex flex-col gap-4"
             onClick={(e) => e.stopPropagation()}
           >
             <div>
-              <h3 className="text-sm font-bold text-white mb-1">
+              <h3 className="text-sm font-bold text-primary mb-1">
                 Commander decks don&apos;t use sideboards
               </h3>
-              <p className="text-xs text-neutral-400">
+              <p className="text-xs text-tertiary">
                 Your sideboard has {confirmDialog.sideboardCount}{" "}
                 {confirmDialog.sideboardCount === 1 ? "card" : "cards"}. What would you
                 like to do?

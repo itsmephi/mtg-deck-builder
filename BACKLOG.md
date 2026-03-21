@@ -23,7 +23,7 @@
 - [ ] **enhancement** | Simulator modal has no view mode toggle — consider adding compact list view inside modal for larger decks; would also make pin-from-list interaction more prominent
 - [ ] **enhancement** | Settings panel redesign — 2 clicks to access settings is a UX regression from v1.3.0 sidebar changes
 - [ ] **enhancement** | Card price display missing from persistent grid tile — deferred from v1.3.0 design, needs design decision ⚠️ needs design
-- [ ] **enhancement** | Unify project styling via CSS custom properties or design tokens — changing a background color or theme value should touch one place, not multiple files
+- [x] **enhancement** | Unify project styling via CSS custom properties or design tokens — changing a background color or theme value should touch one place, not multiple files *(closed v1.10.0)*
 - [ ] **enhancement** | Combine qty and owned fields into a single elegant input — two separate fields is redundant UX; design a unified interaction ⚠️ needs design
 - [ ] **enhancement** | Import/export format compatibility — support MTGGoldfish format (e.g. `1 Ashling, the Limitless <borderless> [ECC] (F)`) and confirm cross-compatibility with TCGPlayer and Card Kingdom import
 - [ ] **enhancement** | Import modal — add "Paste from clipboard" button as an alternative to typing/pasting manually ⚠️ needs design
@@ -39,7 +39,6 @@
 - [ ] **enhancement** | Search by foil — filter search results to foil printings only
 - [ ] **enhancement** | Search: spelling correction — suggest corrected card name on typo / no-results
 - [ ] **enhancement** | Margin parity between search and deck views — search is edge-to-edge, deck has p-4 outer + p-4 scroll container; future design pass to unify outer padding
-- [x] **enhancement** | Release year filter — year range (dual text inputs, default last 5 years) in sidebar FilterPanel + Released date row in CardModal Product Details *(closed v1.9.0)*
 
 ---
 
@@ -61,6 +60,12 @@
 
 ## Closed (Recent)
 <!-- Keep last 2 releases, then archive to CHANGELOG.md -->
+
+### v1.10.0
+- [x] **enhancement** | Unify project styling via CSS custom properties or design tokens — 12 semantic tokens in globals.css, registered via @theme inline; 17 files migrated across layout and workspace components *(closed v1.10.0)*
+
+### v1.9.0
+- [x] **enhancement** | Release year filter — year range (dual text inputs, default last 5 years) in sidebar FilterPanel + Released date row in CardModal Product Details *(closed v1.9.0)*
 
 ### v1.8.0
 - [x] **enhancement** | Card tile size parity — match tile sizes between search and deck grid views *(closed v1.8.0)*
