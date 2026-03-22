@@ -39,6 +39,8 @@
 - [ ] **enhancement** | Search by foil — filter search results to foil printings only
 - [ ] **enhancement** | Search: spelling correction — suggest corrected card name on typo / no-results
 - [ ] **enhancement** | Margin parity between search and deck views — search is edge-to-edge, deck has p-4 outer + p-4 scroll container; future design pass to unify outer padding
+- [ ] **enhancement** | Search bar focus ring (border-input-edge-focus) is too prominent — copper #c07a50 is visually heavy; try a more muted value like #a0725c or lower opacity; one-line change in globals.css :root and [data-theme="zed-dark"] equivalent if needed
+- [ ] **chore** | Add Claude Chat deliverable rule to CLAUDE.md: spec and prompts must be separate files — spec = one reference doc (committed to docs/), each Claude Code prompt = its own standalone file, paste-ready; never combine spec + prompts into a single document
 
 ---
 
