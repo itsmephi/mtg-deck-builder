@@ -54,7 +54,7 @@ export default function CategoryChips({
               className={`px-2 py-0.5 rounded text-[10px] border transition-colors ${
                 isActive
                   ? "bg-blue-900/30 border-blue-500/30 text-blue-400"
-                  : "bg-surface-raised border-line-default text-content-tertiary hover:text-content-heading hover:border-neutral-600"
+                  : "bg-surface-raised border-line-default text-content-tertiary hover:text-content-heading hover:border-line-hover"
               }`}
             >
               {cat.label}

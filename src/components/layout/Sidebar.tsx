@@ -59,7 +59,7 @@ export default function Sidebar({ onImport, onExport, isImporting, activeTab, on
 
   return (
     <aside
-      className={`h-[40vh] md:h-screen border-b md:border-b-0 md:border-r border-line-subtle bg-surface-base flex flex-col ${isCollapsed ? "overflow-visible" : "overflow-hidden"}`}
+      className={`h-[40vh] md:h-screen border-b md:border-b-0 md:border-r border-line-panel bg-surface-panel flex flex-col ${isCollapsed ? "overflow-visible" : "overflow-hidden"}`}
       style={
         isDesktop
           ? {
@@ -217,7 +217,7 @@ export default function Sidebar({ onImport, onExport, isImporting, activeTab, on
                     className={`flex items-center gap-1 px-2 py-0.5 text-xs rounded border transition-colors ${
                       sortBy === "original"
                         ? "text-content-faint border-line-subtle cursor-not-allowed"
-                        : "text-content-secondary border-line-default hover:text-content-primary hover:border-neutral-500"
+                        : "text-content-secondary border-line-default hover:text-content-primary hover:border-line-hover"
                     }`}
                   >
                     {sortDir === "asc" ? (

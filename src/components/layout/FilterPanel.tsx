@@ -220,7 +220,7 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
                 setLocalMin(String(val));
                 onFiltersChange({ ...filters, priceMin: val });
               }}
-              className="w-10 bg-surface-raised border border-line-default rounded text-xs text-content-secondary px-1.5 py-0.5 text-center focus:outline-none focus:border-neutral-500"
+              className="w-10 bg-input-surface border border-input-edge rounded text-xs text-content-secondary px-1.5 py-0.5 text-center focus:outline-none focus:border-neutral-500"
             />
           </div>
           <div
@@ -260,7 +260,7 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
                 setLocalMax(String(val));
                 onFiltersChange({ ...filters, priceMax: val });
               }}
-              className="w-10 bg-surface-raised border border-line-default rounded text-xs text-content-secondary px-1.5 py-0.5 text-center focus:outline-none focus:border-neutral-500"
+              className="w-10 bg-input-surface border border-input-edge rounded text-xs text-content-secondary px-1.5 py-0.5 text-center focus:outline-none focus:border-neutral-500"
             />
           </div>
         </div>
@@ -305,7 +305,7 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
               setLocalYearMin(String(val));
               onFiltersChange({ ...filters, yearMin: val });
             }}
-            className="w-14 bg-surface-raised border border-line-default rounded text-xs text-content-secondary px-1.5 py-0.5 text-center focus:outline-none focus:border-neutral-500"
+            className="w-14 bg-input-surface border border-input-edge rounded text-xs text-content-secondary px-1.5 py-0.5 text-center focus:outline-none focus:border-neutral-500"
           />
           <span className="text-xs text-content-muted">to</span>
           <input
@@ -319,7 +319,7 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
               setLocalYearMax(String(val));
               onFiltersChange({ ...filters, yearMax: val });
             }}
-            className="w-14 bg-surface-raised border border-line-default rounded text-xs text-content-secondary px-1.5 py-0.5 text-center focus:outline-none focus:border-neutral-500"
+            className="w-14 bg-input-surface border border-input-edge rounded text-xs text-content-secondary px-1.5 py-0.5 text-center focus:outline-none focus:border-neutral-500"
           />
         </div>
       </div>

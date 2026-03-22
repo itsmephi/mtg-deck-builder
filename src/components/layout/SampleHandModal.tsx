@@ -409,7 +409,7 @@ export default function SampleHandModal({
 
               {library.length === 0 && (
                 <div className="col-span-full mt-10 flex flex-col items-center justify-center p-12 border border-dashed border-line-subtle rounded-2xl bg-neutral-900/30 w-full max-w-2xl mx-auto">
-                  <AlertCircle className="w-10 h-10 text-neutral-700 mb-3" />
+                  <AlertCircle className="w-10 h-10 text-content-disabled mb-3" />
                   <p className="text-content-muted font-medium text-sm">
                     Library depleted.
                   </p>

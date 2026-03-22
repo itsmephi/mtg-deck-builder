@@ -131,7 +131,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
             <div
               key={deck.id}
               className={`flex items-center gap-1.5 px-2 py-1.5 rounded-lg group relative ${
-                isActive ? "bg-surface-raised" : "hover:bg-neutral-800/50"
+                isActive ? "bg-surface-panel" : "hover:bg-neutral-800/50"
               } transition-colors`}
             >
               {/* Active dot */}
@@ -224,7 +224,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
                     ? "text-content-faint cursor-not-allowed opacity-40"
                     : hasSideboard
                     ? "text-blue-400 hover:bg-blue-500/10"
-                    : "text-neutral-700 hover:text-content-tertiary"
+                    : "text-content-disabled hover:text-content-tertiary"
                 }`}
               >
                 <Layers className="w-3 h-3" />
@@ -238,7 +238,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
                       openDeleteDropdownId === deck.id ? null : deck.id
                     )
                   }
-                  className="w-6 h-6 rounded-full flex items-center justify-center text-neutral-700 hover:text-content-tertiary opacity-0 group-hover:opacity-100 transition-all"
+                  className="w-6 h-6 rounded-full flex items-center justify-center text-content-disabled hover:text-content-tertiary opacity-0 group-hover:opacity-100 transition-all"
                 >
                   <X className="w-3 h-3" />
                 </button>
