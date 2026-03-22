@@ -5,6 +5,25 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.11.0] — Dual-Palette Theme System
+
+### Added
+- Dual-palette system: **Warm Stone** (default, `:root`) with brown undertones and copper accents; **Zed Dark** alt-theme (`[data-theme="zed-dark"]`) with blue-gray tones and blue accents — switch via `document.documentElement.dataset.theme`, no UI toggle yet
+- Token count expanded from 12 to 25 — new categories: sidebar panel surfaces (`bg-surface-panel`, `bg-surface-panel-raised`, `border-line-panel`), input field tokens (`bg-input-surface`, `border-input-edge`, `border-input-edge-focus`, `text-input-value`, `text-input-placeholder`), focus/hover borders (`border-line-focus`, `border-line-hover`), and resolved flagged classes (`text-content-disabled`, `bg-surface-deep`, `bg-surface-hover`)
+
+### Changed
+- Sidebar panel depth: Warm Stone sidebar is **raised** (lighter than workspace background); Zed Dark sidebar is **recessed** (darker than workspace background) — same token names, palette drives the difference
+- Input fields migrated to dedicated raised tokens across search bar, filter panel, workspace toolbar name input — inputs sit above their parent surface in both themes
+- All v1.10.0 flagged mid-tone classes resolved: `text-neutral-700` → `text-content-disabled`, `bg-neutral-950` → `bg-surface-deep`, `hover:bg-neutral-600` → `hover:bg-surface-hover`, `border-neutral-600` → `border-line-hover`, `focus-within:border-neutral-600` → `focus-within:border-input-edge-focus`
+
+### Not tokenized (intentional)
+- Opacity variants (`bg-neutral-800/50`, `border-neutral-700/50`, etc.) — unchanged
+- Accent colors (blue, red, green, yellow, amber) — remain as raw Tailwind
+- `text-neutral-100` — no lighter-than-primary token defined yet
+- `ring-offset-neutral-950` (highlight ring offsets in Workspace), `focus:border-neutral-500` (FilterPanel input focus) — contextual states not in migration map
+
+---
+
 ## [1.10.0] — Design Token System
 
 ### Added
