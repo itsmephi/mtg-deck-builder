@@ -1,8 +1,15 @@
-export const APP_VERSION = "1.10.0";
+export const APP_VERSION = "1.11.0";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.11.0": [
+    "Dual-palette theme system: Warm Stone (default) with brown undertones and copper accents, plus Zed Dark alt-theme with blue-gray tones and blue accents — switch via data-theme attribute on <html>, no UI toggle yet",
+    "Token count expanded from 12 to 25: added sidebar panel surfaces (bg-surface-panel, bg-surface-panel-raised, border-line-panel), input field tokens (bg-input-surface, border-input-edge, border-input-edge-focus, text-input-value, text-input-placeholder), focus/hover borders (border-line-focus, border-line-hover), and resolved flagged classes (text-content-disabled, bg-surface-deep, bg-surface-hover)",
+    "Sidebar panel depth: Warm Stone sidebar is raised (lighter than workspace), Zed Dark sidebar is recessed (darker than workspace) — same token names, different visual hierarchy per theme",
+    "All v1.10.0 flagged mid-tone classes resolved: text-neutral-700 → text-content-disabled, bg-neutral-950 → bg-surface-deep, hover:bg-neutral-600 → hover:bg-surface-hover, border-neutral-600 → border-line-hover, focus-within:border-neutral-600 → focus-within:border-input-edge-focus",
+    "Input fields use dedicated raised tokens across search bar, filter panel, workspace toolbar name input, and import modal — inputs sit above their parent surface in both themes",
+  ],
   "1.10.0": [
     "Design token system: 12 semantic CSS custom properties defined in globals.css and registered via Tailwind v4 @theme inline — surfaces (bg-surface-base/raised/overlay/backdrop), text (text-content-primary/heading/secondary/tertiary/muted/faint), and borders (border-line-default/line-subtle)",
     "All hardcoded neutral color classes replaced with token utilities across 17 files — changing a theme color now requires editing one place in globals.css",

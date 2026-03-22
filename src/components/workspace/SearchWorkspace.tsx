@@ -332,7 +332,7 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
               <LayoutGrid className="w-3.5 h-3.5" />
             </button>
             <button
-              className="h-7 px-2 flex items-center justify-center rounded-md text-neutral-700 border border-transparent cursor-not-allowed"
+              className="h-7 px-2 flex items-center justify-center rounded-md text-content-disabled border border-transparent cursor-not-allowed"
               title="List view (coming soon)"
               disabled
             >

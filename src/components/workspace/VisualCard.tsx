@@ -214,7 +214,7 @@ export default function VisualCard({
               e.stopPropagation();
               onUpdateQuantity(card.id, -1);
             }}
-            className="w-7 h-7 rounded-full bg-neutral-700/50 text-content-secondary hover:bg-neutral-600 hover:text-content-primary flex items-center justify-center transition-colors"
+            className="w-7 h-7 rounded-full bg-neutral-700/50 text-content-secondary hover:bg-surface-hover hover:text-content-primary flex items-center justify-center transition-colors"
           >
             <Minus className="w-3.5 h-3.5" />
           </button>
@@ -263,7 +263,7 @@ export default function VisualCard({
               e.stopPropagation();
               onUpdateQuantity(card.id, 1);
             }}
-            className="w-7 h-7 rounded-full bg-neutral-700/50 text-content-secondary hover:bg-neutral-600 hover:text-content-primary flex items-center justify-center transition-colors"
+            className="w-7 h-7 rounded-full bg-neutral-700/50 text-content-secondary hover:bg-surface-hover hover:text-content-primary flex items-center justify-center transition-colors"
           >
             <Plus className="w-3.5 h-3.5" />
           </button>
@@ -276,7 +276,7 @@ export default function VisualCard({
               e.stopPropagation();
               onUpdateOwnedQty(card.id, Math.max(0, card.ownedQty - 1));
             }}
-            className="w-7 h-7 rounded-full bg-neutral-700/50 text-content-secondary hover:bg-neutral-600 hover:text-content-primary flex items-center justify-center transition-colors"
+            className="w-7 h-7 rounded-full bg-neutral-700/50 text-content-secondary hover:bg-surface-hover hover:text-content-primary flex items-center justify-center transition-colors"
           >
             <Minus className="w-3.5 h-3.5" />
           </button>
@@ -336,7 +336,7 @@ export default function VisualCard({
               e.stopPropagation();
               onUpdateOwnedQty(card.id, card.ownedQty + 1);
             }}
-            className="w-7 h-7 rounded-full bg-neutral-700/50 text-content-secondary hover:bg-neutral-600 hover:text-content-primary flex items-center justify-center transition-colors"
+            className="w-7 h-7 rounded-full bg-neutral-700/50 text-content-secondary hover:bg-surface-hover hover:text-content-primary flex items-center justify-center transition-colors"
           >
             <Plus className="w-3.5 h-3.5" />
           </button>

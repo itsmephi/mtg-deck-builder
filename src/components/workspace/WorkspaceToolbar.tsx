@@ -139,7 +139,7 @@ export default function WorkspaceToolbar({
           onFocus={() => setIsEditingName(true)}
           onBlur={() => setIsEditingName(false)}
           onKeyDown={(e) => { if (e.key === "Enter") e.currentTarget.blur(); }}
-          className={`text-3xl text-content-primary bg-transparent border-b border-transparent hover:border-line-default focus:border-blue-500 focus:outline-none transition-all px-0 outline-none placeholder:text-content-muted text-left min-w-20 [field-sizing:content] ${isEditingName ? "" : "truncate"}`}
+          className={`text-3xl text-content-primary bg-transparent border-b border-transparent hover:border-input-edge focus:border-blue-500 focus:outline-none transition-all px-0 outline-none placeholder:text-content-muted text-left min-w-20 [field-sizing:content] ${isEditingName ? "" : "truncate"}`}
           placeholder="Untitled"
         />
 
@@ -264,7 +264,7 @@ export default function WorkspaceToolbar({
                   ? "bg-blue-600 text-white border border-blue-500/50"
                   : activeDeckHasSideboard
                   ? "text-content-muted hover:text-content-secondary border border-transparent"
-                  : "text-neutral-700 cursor-not-allowed border border-transparent"
+                  : "text-content-disabled cursor-not-allowed border border-transparent"
               }`}
             >
               Side
@@ -292,7 +292,7 @@ export default function WorkspaceToolbar({
                 disabled={sortBy === "original"}
                 className={`flex items-center justify-center w-5 h-5 rounded transition-colors ${
                   sortBy === "original"
-                    ? "text-neutral-700 cursor-not-allowed"
+                    ? "text-content-disabled cursor-not-allowed"
                     : "text-content-tertiary hover:text-content-primary"
                 }`}
               >

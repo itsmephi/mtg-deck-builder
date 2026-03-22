@@ -61,6 +61,9 @@
 ## Closed (Recent)
 <!-- Keep last 2 releases, then archive to CHANGELOG.md -->
 
+### v1.11.0
+- [x] **enhancement** | Dual-palette theme system: 25 tokens (expanded from 12), Warm Stone default + Zed Dark alt palette, sidebar panel tokens, input tokens, resolved all v1.10.0 flagged mid-tone classes *(closed v1.11.0)*
+
 ### v1.10.0
 - [x] **enhancement** | Unify project styling via CSS custom properties or design tokens — 12 semantic tokens in globals.css, registered via @theme inline; 17 files migrated across layout and workspace components *(closed v1.10.0)*
 

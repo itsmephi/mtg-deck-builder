@@ -68,7 +68,7 @@ export default function SearchBar({
   return (
     <div ref={containerRef} className="flex-1 relative min-w-0">
       {/* Search bar row */}
-      <div className="flex items-center flex-wrap min-w-0 bg-neutral-950 border border-line-subtle rounded-lg px-2 gap-1 min-h-[32px] transition-colors focus-within:border-neutral-600">
+      <div className="flex items-center flex-wrap min-w-0 bg-surface-deep border border-line-subtle rounded-lg px-2 gap-1 min-h-[32px] transition-colors focus-within:border-input-edge-focus">
         <Search size={14} className="text-content-muted shrink-0" />
 
         {/* Filter badge */}
@@ -81,7 +81,7 @@ export default function SearchBar({
                   ? "bg-yellow-900/30 border border-yellow-500/25 text-yellow-400"
                   : filterBadge.label.toLowerCase() === "standard"
                   ? "bg-blue-900/30 border border-blue-500/25 text-blue-400"
-                  : "bg-surface-raised border border-neutral-600 text-content-secondary"
+                  : "bg-surface-raised border border-line-hover text-content-secondary"
                 : "bg-surface-raised border border-line-default text-content-muted"
             }`}
           >
@@ -130,7 +130,7 @@ export default function SearchBar({
             if (e.key === "Escape" || e.key === "Enter") onDismissAutocomplete();
           }}
           placeholder={tokens.length > 0 ? "Add more filters..." : "Search for cards, types, keywords..."}
-          className="flex-1 min-w-[80px] bg-transparent border-none text-content-heading text-xs outline-none placeholder:text-content-faint py-0.5"
+          className="flex-1 min-w-[80px] bg-transparent border-none text-input-value text-xs outline-none placeholder:text-input-placeholder py-0.5"
         />
 
         {/* Clear button */}

@@ -467,7 +467,7 @@ export default function ListCardTable({
           <td className="pr-3 py-1 text-center w-8">
             <X
               onClick={() => onRemove(card.id)}
-              className="w-3 h-3 inline cursor-pointer text-neutral-700 hover:text-red-500"
+              className="w-3 h-3 inline cursor-pointer text-content-disabled hover:text-red-500"
             />
           </td>
         </tr>
