@@ -1,40 +1,104 @@
 @import "tailwindcss";
 
 :root {
-    /* Surface tokens */
-    --surface-base:     #0a0a0a;
-    --surface-raised:   #262626;
-    --surface-overlay:  #404040;
-    --surface-backdrop: rgba(0,0,0,0.8);
+    /* Surface tokens — Warm Stone default palette */
+    --surface-base:          #1c1917;
+    --surface-raised:        #292524;
+    --surface-overlay:       #3f3a36;
+    --surface-backdrop:      rgba(0,0,0,0.8);
+    --surface-panel:         #231f1d;
+    --surface-panel-raised:  #2e2926;
+    --surface-deep:          #15120f;
+    --surface-hover:         #524b44;
+
+    /* Input tokens */
+    --input-surface:         #292524;
+    --input-edge:            #3f3a36;
+    --input-edge-focus:      #c07a50;
+    --input-value:           #bdb4a8;
+    --input-placeholder:     #6b6259;
 
     /* Text tokens */
-    --text-primary:   #ffffff;
-    --text-heading:   #e5e5e5;
-    --text-secondary: #d4d4d4;
-    --text-tertiary:  #a3a3a3;
-    --text-muted:     #737373;
-    --text-faint:     #525252;
+    --text-primary:          #e7e0d6;
+    --text-heading:          #bdb4a8;
+    --text-secondary:        #a69e94;
+    --text-tertiary:         #8a8279;
+    --text-muted:            #6b6259;
+    --text-faint:            #574f46;
+    --text-disabled:         #524b44;
 
     /* Border tokens */
-    --border-line-default: #404040;
-    --border-line-subtle:  #262626;
+    --border-line-default:   #3f3a36;
+    --border-line-subtle:    #292524;
+    --border-line-panel:     #1c1917;
+    --border-line-focus:     #c07a50;
+    --border-line-hover:     #524b44;
+}
+
+:root[data-theme="zed-dark"] {
+    /* Surface tokens — Zed Dark alt palette */
+    --surface-base:          #282c34;
+    --surface-raised:        #2c313a;
+    --surface-overlay:       #3a3f47;
+    --surface-backdrop:      rgba(0,0,0,0.8);
+    --surface-panel:         #21252b;
+    --surface-panel-raised:  #2c313a;
+    --surface-deep:          #1b1f24;
+    --surface-hover:         #4b5263;
+
+    /* Input tokens */
+    --input-surface:         #2c313a;
+    --input-edge:            #3a3f47;
+    --input-edge-focus:      #528bff;
+    --input-value:           #abb2bf;
+    --input-placeholder:     #5c6370;
+
+    /* Text tokens */
+    --text-primary:          #d7dae0;
+    --text-heading:          #abb2bf;
+    --text-secondary:        #9da5b4;
+    --text-tertiary:         #7f848e;
+    --text-muted:            #636d83;
+    --text-faint:            #5c6370;
+    --text-disabled:         #4b5263;
+
+    /* Border tokens */
+    --border-line-default:   #3a3f47;
+    --border-line-subtle:    #21252b;
+    --border-line-panel:     #181a1f;
+    --border-line-focus:     #528bff;
+    --border-line-hover:     #4b5263;
 }
 
 @theme inline {
-    --color-surface-base:     var(--surface-base);
-    --color-surface-raised:   var(--surface-raised);
-    --color-surface-overlay:  var(--surface-overlay);
-    --color-surface-backdrop: var(--surface-backdrop);
+    --color-surface-base:          var(--surface-base);
+    --color-surface-raised:        var(--surface-raised);
+    --color-surface-overlay:       var(--surface-overlay);
+    --color-surface-backdrop:      var(--surface-backdrop);
+    --color-surface-panel:         var(--surface-panel);
+    --color-surface-panel-raised:  var(--surface-panel-raised);
+    --color-surface-deep:          var(--surface-deep);
+    --color-surface-hover:         var(--surface-hover);
 
-    --color-content-primary:   var(--text-primary);
-    --color-content-heading:   var(--text-heading);
-    --color-content-secondary: var(--text-secondary);
-    --color-content-tertiary:  var(--text-tertiary);
-    --color-content-muted:     var(--text-muted);
-    --color-content-faint:     var(--text-faint);
+    --color-input-surface:         var(--input-surface);
+    --color-input-edge:            var(--input-edge);
+    --color-input-edge-focus:      var(--input-edge-focus);
+    --color-input-value:           var(--input-value);
+    --color-input-placeholder:     var(--input-placeholder);
 
-    --color-line-default: var(--border-line-default);
-    --color-line-subtle:  var(--border-line-subtle);
+    --color-content-primary:       var(--text-primary);
+    --color-content-heading:       var(--text-heading);
+    --color-content-secondary:     var(--text-secondary);
+    --color-content-tertiary:      var(--text-tertiary);
+    --color-content-muted:         var(--text-muted);
+    --color-content-faint:         var(--text-faint);
+    --color-content-disabled:      var(--text-disabled);
+
+    --color-line-default:          var(--border-line-default);
+    --color-line-subtle:           var(--border-line-subtle);
+    --color-line-panel:            var(--border-line-panel);
+    --color-line-focus:            var(--border-line-focus);
+    --color-line-hover:            var(--border-line-hover);
 
     --font-sans: var(--font-geist-sans);
     --font-mono: var(--font-geist-mono);
@@ -42,20 +106,34 @@
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --surface-base:     #0a0a0a;
-        --surface-raised:   #262626;
-        --surface-overlay:  #404040;
-        --surface-backdrop: rgba(0,0,0,0.8);
+        --surface-base:          #1c1917;
+        --surface-raised:        #292524;
+        --surface-overlay:       #3f3a36;
+        --surface-backdrop:      rgba(0,0,0,0.8);
+        --surface-panel:         #231f1d;
+        --surface-panel-raised:  #2e2926;
+        --surface-deep:          #15120f;
+        --surface-hover:         #524b44;
 
-        --text-primary:   #ffffff;
-        --text-heading:   #e5e5e5;
-        --text-secondary: #d4d4d4;
-        --text-tertiary:  #a3a3a3;
-        --text-muted:     #737373;
-        --text-faint:     #525252;
+        --input-surface:         #292524;
+        --input-edge:            #3f3a36;
+        --input-edge-focus:      #c07a50;
+        --input-value:           #bdb4a8;
+        --input-placeholder:     #6b6259;
 
-        --border-line-default: #404040;
-        --border-line-subtle:  #262626;
+        --text-primary:          #e7e0d6;
+        --text-heading:          #bdb4a8;
+        --text-secondary:        #a69e94;
+        --text-tertiary:         #8a8279;
+        --text-muted:            #6b6259;
+        --text-faint:            #574f46;
+        --text-disabled:         #524b44;
+
+        --border-line-default:   #3f3a36;
+        --border-line-subtle:    #292524;
+        --border-line-panel:     #1c1917;
+        --border-line-focus:     #c07a50;
+        --border-line-hover:     #524b44;
     }
 }
 
