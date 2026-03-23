@@ -8,9 +8,8 @@
 <!-- Items promoted from Pipeline for the current release. Cleared after release ships. -->
 
 ### v1.12.2 — Quick Bug Fixes
-- [ ] **bug** | CardModal: white corners visible on rounded card images in some cases (#74)
-- [ ] **bug** | Sidebar tabs: raised appearance and missing blue active indicator bar (#75)
-- [ ] **bug** | Sort broken in search view (#76)
+- [x] **bug** | Sidebar tabs: raised appearance and missing blue active indicator bar (#75) *(closed v1.12.2)*
+- [x] **bug** | Sort broken in search view (#76) *(closed v1.12.2)*
 
 ### v1.13.0 — CardModal & Search Polish
 - [ ] **enhancement** | CardModal search view: forward/back navigation buttons to mimic deck card modal behavior (#77)
@@ -34,6 +33,7 @@
 - [ ] **enhancement** | Import/export format compatibility — support MTGGoldfish format (e.g. `1 Ashling, the Limitless <borderless> [ECC] (F)`) and confirm cross-compatibility with TCGPlayer and Card Kingdom import
 - [ ] **enhancement** | Import modal — add "Paste from clipboard" button as an alternative to typing/pasting manually ⚠️ needs design
 - [ ] **enhancement** | Search: list view toggle for search results — grid/list toggle in search toolbar, list view mirrors sidebar search list but wider ⚠️ needs design
+- [ ] **enhancement** | Search: sort direction toggle — asc/desc button outside the sort dropdown, mirroring deck view for UX consistency
 - [ ] **enhancement** | Search: filter badge color per format — Commander gold, Standard blue, Freeform gray (needs design to avoid confusion with active/inactive states)
 - [ ] **enhancement** | Search: highlight newly added cards on deck view switch — when returning to deck view after adding cards from search, briefly highlight or scroll to new cards ⚠️ needs design
 - [ ] **enhancement** | Active deck / sideboard indicator — show which board is active beyond just the toggle button ⚠️ needs design

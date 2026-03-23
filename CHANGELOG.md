@@ -5,6 +5,21 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.12.2] — Sidebar Tabs + Search Sort Fix
+
+### Fixed
+- **Sidebar tab bar** restyled with a seamless physical tab metaphor: active tab uses `bg-surface-panel` with a transparent bottom border so it blends into the sidebar body; inactive tab uses `bg-surface-deep` with a visible bottom edge, sitting recessed below the active tab; blue underline indicator bar removed
+- Inactive tab hover lifts background to `bg-surface-panel` and brightens text — provides affordance without the full active treatment
+- Collapse button (desktop) and mobile gear icon gain `bg-surface-deep border-b border-line-subtle` to match the recessed tab row
+- **Search sort dropdown** now functional — selecting Name, Price ↑, Price ↓, Mana Value, or Color re-fetches results with the correct Scryfall `order:` clause; Relevance omits the clause for natural Scryfall ranking; default is Price ↓
+
+### Technical
+- `searchCards` in `scryfall.ts` no longer hardcodes `order:usd`; sort is now fully caller-controlled
+- `SearchWorkspace` adds `SORT_ORDER_MAP` constant and `sortOrder` state; sort clause appended to `scryfallQuery` useMemo
+- Price rescue in `handleAdd` explicitly appends `order:usd` to preserve priced-printing preference independent of the active sort
+
+---
+
 ## [1.12.1] — Search Toolbar Polish
 
 ### Changed

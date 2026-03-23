@@ -2,15 +2,40 @@
 
 ---
 
-## v1.12.1 — Search Toolbar Polish
+## v1.12.2 — Quick Bug Fixes
 Status: APPROVED ✅
 
 ### Plan Review
 
 | File | Changes |
 |---|---|
-| `src/components/workspace/SearchWorkspace.tsx` | Toolbar wrapper restructured with `pt-4 pb-3 flex flex-col gap-2`; rows simplified to `flex items-center px-4 gap-2`; Row 2 controls grouped in `bg-surface-base border border-line-subtle rounded-lg shadow-sm` pill; button heights `h-7` → `h-8` |
-| `src/components/workspace/SearchBar.tsx` | Inner container `min-h-[32px]` → `min-h-[40px]` to fill taller Row 1 |
+| `src/components/layout/Sidebar.tsx` | #75: seamless physical tab treatment — active tab blends into sidebar body, inactive recesses with `bg-surface-deep`; removed blue indicator bar; collapse + gear icons recessed to match |
+| `src/components/workspace/SearchWorkspace.tsx` | #76: added `SORT_ORDER_MAP`, `sortOrder` state (default `price_desc`), wired `<select>` onChange, appended sort clause to `scryfallQuery`, explicit `order:usd` in price-rescue call |
+| `src/lib/scryfall.ts` | #76: removed hardcoded `order:usd` from `searchCards` — sort now fully caller-controlled |
+| `BACKLOG.md` | discarded #74 (GitHub issue #74 closed); #75 and #76 marked closed; new Pipeline item for sort direction toggle |
+
+---
+
+### Testing Checklist
+
+**#75 — Sidebar tabs**
+- [ ] Warm Stone: active tab matches sidebar body (`bg-surface-panel`); inactive is darker (`bg-surface-deep`)
+- [ ] Zed Dark: same behavior with Zed palette
+- [ ] Tab switching: active/inactive backgrounds swap correctly
+- [ ] Inactive hover: bg lifts to `bg-surface-panel`, text brightens to `text-content-secondary`
+- [ ] Collapse button (desktop): recessed `bg-surface-deep`, hover brightens icon
+- [ ] Mobile: gear icon recessed, tabs behave identically
+- [ ] No blue underline bar visible on either theme
+
+**#76 — Sort**
+- [ ] Default: sort select shows "Price ↓" and results are sorted by price descending
+- [ ] "Sort: Relevance" — no order clause; Scryfall returns by relevance
+- [ ] "Name" — results sorted alphabetically
+- [ ] "Price ↑" — sorted ascending by price
+- [ ] "Mana Value" — sorted by CMC
+- [ ] "Color" — sorted by color
+- [ ] Adding a $0.00 card still triggers rescue and returns a priced printing
+- [ ] Sort persists when query changes within a session
 
 ---
 
@@ -18,10 +43,12 @@ Status: APPROVED ✅
 
 **What shipped:**
 
-- **`src/components/workspace/SearchWorkspace.tsx`** — search toolbar wrapper gains `pt-4 pb-3 flex flex-col gap-2` to match the deck toolbar's vertical rhythm and align the divider to the same Y position; both row divs simplified to `flex items-center px-4 gap-2` (removed per-row `min-h`, `pt`, `pb` overrides); Row 2 right-side controls regrouped into a single pill container (`bg-surface-base p-0.5 rounded-lg border border-line-subtle space-x-0.5 shadow-sm`) matching the deck toolbar's Sort/Group/View container; sort select loses individual border and sits inside a `border-r` section; view toggle buttons bumped from `h-7` to `h-8`
-- **`src/components/workspace/SearchBar.tsx`** — inner search field container `min-h-[32px]` raised to `min-h-[40px]` to fill the taller Row 1 height, matching the visual weight of the deck toolbar's title row
+- **`src/components/layout/Sidebar.tsx`** — tab bar container loses `border-b border-line-subtle`; tab buttons switch from `border-b-2` to `border-b`; active state is `bg-surface-panel text-content-primary border-transparent` (blends into sidebar body, transparent bottom border breaks the line); inactive state is `bg-surface-deep text-content-muted border-line-subtle hover:bg-surface-panel hover:text-content-secondary` (recessed shelf with visible bottom edge, lifts on hover); collapse button and mobile gear icon gain `bg-surface-deep border-b border-line-subtle` to match the recessed row; `ml-auto` removed from mobile gear button
+- **`src/lib/scryfall.ts`** — removed hardcoded `order:usd` appended in `searchCards`; sort fully caller-controlled
+- **`src/components/workspace/SearchWorkspace.tsx`** — `SORT_ORDER_MAP` maps 6 sort options to Scryfall inline syntax; `sortOrder` state defaults to `"price_desc"`; `<select>` wired to onChange; sort clause appended to `scryfallQuery` useMemo; price-rescue call explicitly appends `order:usd`
+- **`BACKLOG.md`** — #74 discarded (GitHub issue closed); #75 and #76 closed v1.12.2; new Pipeline item for sort direction toggle (asc/desc outside dropdown, matching deck view UX)
 
-**Closed from backlog:** `enhancement | Toolbar row height parity`
+**Closed from backlog:** `bug | Sidebar tabs raised appearance + missing indicator (#75)` · `bug | Sort broken in search view (#76)`
 
 ---
 
