@@ -45,7 +45,7 @@ For straightforward bug fixes and small enhancements, `/plan` → PROCEED → bu
 ---
 
 ## Active Milestone
-→ No active milestone. v1.11.0 shipped — dual-palette theme system (Warm Stone + Zed Dark), 25 tokens. Next milestone pending triage.
+→ 2 items selected — focus ring polish (globals.css one-liner) + Claude Chat deliverable rule (CLAUDE.md chore). Next milestone TBD.
 
 ---
 

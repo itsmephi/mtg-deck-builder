@@ -7,7 +7,8 @@
 ## Active Milestone
 <!-- Items promoted from Pipeline for the current release. Cleared after release ships. -->
 
-*(empty — v1.8.0 shipped, next milestone pending triage)*
+- [ ] **enhancement** | Search bar focus ring (border-input-edge-focus) is too prominent — copper #c07a50 is visually heavy; try a more muted value like #a0725c or lower opacity; one-line change in globals.css :root and [data-theme="zed-dark"] equivalent if needed
+- [ ] **chore** | Add Claude Chat deliverable rule to CLAUDE.md: spec and prompts must be separate files — spec = one reference doc (committed to docs/), each Claude Code prompt = its own standalone file, paste-ready; never combine spec + prompts into a single document
 
 ---
 
@@ -17,8 +18,6 @@
 - [ ] **feature** | New app name — Phi & Thurgood to brainstorm (#15) ⚠️ needs design
 - [ ] **feature** | Custom card sorting by drag and drop (#16)
 - [ ] **feature** | Partner commander support — deferred from v1.4.0
-- [ ] **feature** | Companion support — future format enhancement
-- [ ] **feature** | Brawl / Oathbreaker format support — future format additions
 - [ ] **feature** | Move cards between boards or decks (#62) ↑ priority
 - [ ] **enhancement** | Simulator modal has no view mode toggle — consider adding compact list view inside modal for larger decks; would also make pin-from-list interaction more prominent
 - [ ] **enhancement** | Settings panel redesign — 2 clicks to access settings is a UX regression from v1.3.0 sidebar changes
@@ -35,12 +34,9 @@
 - [ ] **enhancement** | Active deck / sideboard indicator — show which board is active beyond just the toggle button ⚠️ needs design
 - [ ] **feature** | Commander brackets support — tag cards with bracket ratings (e.g. Game Changer) per EDH bracket system ⚠️ needs design
 - [ ] **feature** | Search pillars — curated search modes for brewing, discovery, beginner deck building ⚠️ needs design
-- [ ] **enhancement** | Export: email deck list — send decklist via email from the export panel ⚠️ needs design
 - [ ] **enhancement** | Search by foil — filter search results to foil printings only
 - [ ] **enhancement** | Search: spelling correction — suggest corrected card name on typo / no-results
 - [ ] **enhancement** | Margin parity between search and deck views — search is edge-to-edge, deck has p-4 outer + p-4 scroll container; future design pass to unify outer padding
-- [ ] **enhancement** | Search bar focus ring (border-input-edge-focus) is too prominent — copper #c07a50 is visually heavy; try a more muted value like #a0725c or lower opacity; one-line change in globals.css :root and [data-theme="zed-dark"] equivalent if needed
-- [ ] **chore** | Add Claude Chat deliverable rule to CLAUDE.md: spec and prompts must be separate files — spec = one reference doc (committed to docs/), each Claude Code prompt = its own standalone file, paste-ready; never combine spec + prompts into a single document
 
 ---
 
@@ -57,6 +53,9 @@
 - [ ] **feature** | Deck rating / power score — calculate and display a score based on deck composition
 - [ ] **feature** | Cloud save / deck sharing — sync decks to cloud and share decks via link
 - [ ] **enhancement** | Foil card visual effect — apply foil shimmer or halo FX to foil cards in grid view
+- [ ] **feature** | Companion support — future format enhancement
+- [ ] **feature** | Brawl / Oathbreaker format support — future format additions
+- [ ] **enhancement** | Export: email deck list — send decklist via email from the export panel ⚠️ needs design
 
 ---
 
