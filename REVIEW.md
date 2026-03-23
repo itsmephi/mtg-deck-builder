@@ -2,38 +2,36 @@
 
 ---
 
-## v1.11.1 — Focus Ring Polish + Claude Chat Deliverable Rule
+## v1.12.0 — Settings Hub
 Status: APPROVED ✅
 
 ### Plan Review
 
 | File | Changes |
 |---|---|
-| `src/app/globals.css` | `--input-edge-focus` and `--border-line-focus` changed from `#c07a50` → `#a0725c` in `:root` and `@media (prefers-color-scheme: dark)` block (4 values). Zed Dark unchanged. |
-| `src/config/version.ts` | Bump `APP_VERSION` to `"1.11.1"`; add `"1.11.1"` CHANGELOG entry. |
-| `CLAUDE.md` | Version bump to v1.11.1; add Claude Chat deliverable rule under "When to Involve Claude Chat"; update Active Milestone line. |
-
-3 files. No new components.
+| `src/app/layout.tsx` | Inline `<script>` in `<head>` for theme init (no-flash) |
+| `src/app/page.tsx` | `showSettings` + `settingsTab` state, `openSettings` helper, conditional render; `showSettings` + `onCloseSettings` passed to Sidebar |
+| `src/components/workspace/SettingsView.tsx` | NEW — header, tab bar, 4 content tabs (Preferences, What's New, About, Support), Escape key handler; content centered at `max-w-[560px] mx-auto` |
+| `src/components/layout/Sidebar.tsx` | `onOpenSettings` prop; removed accordions, settings/changelog state, sort controls, coffee icon, gear icon from footer; footer → version badge only; mobile gear icon in tab bar; `handleTabClick` closes settings on tab switch; `expandTo` also closes settings |
+| `src/components/layout/SidebarRail.tsx` | `onOpenSettings` prop; gear icon opens Settings Hub (Preferences tab) directly |
 
 ---
-
-### Testing Checklist
-
-- [ ] `npm run build` passes with no errors
-- [ ] Search bar focus ring (Warm Stone): click into the search input — border is noticeably more muted than before (darker copper, less orange pop)
-- [ ] Focus ring in deck name input (WorkspaceToolbar): same muted tone on focus
-- [ ] Focus ring in FilterPanel price/year inputs: same muted tone
-- [ ] Zed Dark theme: add `data-theme="zed-dark"` to `<html>` — focus ring is still blue (`#528bff`), unchanged
-- [ ] No regressions on other colors (accent blue, Commander yellow, warning red, owned green)
-- [ ] App version shows `1.11.1` in the version badge
 
 ### Session Summary
 
 **What shipped:**
 
-- **`src/app/globals.css`** — `--input-edge-focus` and `--border-line-focus` changed from `#c07a50` → `#a0725c` in `:root` and `@media (prefers-color-scheme: dark)` block; Zed Dark unchanged
-- **`src/config/version.ts`** — bumped to `1.11.1`, CHANGELOG entry added
-- **`CLAUDE.md`** — version bumped to v1.11.1; Claude Chat deliverable rule added under "When to Involve Claude Chat"; Active Milestone updated
+- **`src/app/layout.tsx`** — inline `<script>` in `<head>` reads `mtg-theme` from localStorage and sets `data-theme` on `<html>` before first render; prevents flash of wrong theme on page load
+- **`src/app/page.tsx`** — `showSettings` + `settingsTab` state, `openSettings(tab)` helper, conditional render in `<main>`: `showSettings ? <SettingsView /> : <SearchWorkspace/Workspace>`; passes `onOpenSettings`, `showSettings`, `onCloseSettings` to Sidebar
+- **`src/components/workspace/SettingsView.tsx`** — new file; full settings hub with header (back chevron, "TheBrewLab" title, version badge, subtitle), tab bar with copper underline active state, scrollable body at `max-w-[560px] mx-auto`
+  - **Preferences tab**: Card Preview toggle (wired to `useDeckManager`, pixel-precise knob), Warm Stone / Zed Dark theme swatches (persist to `mtg-theme` localStorage), future placeholder
+  - **What's New tab**: last 5 CHANGELOG entries; current version blue pill badge
+  - **About tab**: single intro paragraph, two-row Team section (Phi & Thurgood Nguyen / Claude · Anthropic), Powered By (Scryfall / Next.js + Vercel / Tailwind CSS), Legal disclaimers
+  - **Support tab**: Buy Me a Coffee + GitHub external links, future placeholder
+- **`src/components/layout/Sidebar.tsx`** — gutted: removed `isSettingsOpen`, `isChangelogOpen`, settings accordion (Card Preview, Sort By, Sort Direction), changelog accordion, coffee icon, gear icon from footer; footer replaced with version badge only (→ What's New); mobile gear icon in tab bar (→ Preferences); `handleTabClick` and updated `expandTo` both call `onCloseSettings?.()` so settings closes on any sidebar tab navigation; threads `onOpenSettings` to SidebarRail
+- **`src/components/layout/SidebarRail.tsx`** — gear icon click changed from `expandTo("search")` to `onOpenSettings("preferences")` — opens Settings Hub directly without expanding sidebar
+
+**Closed from backlog:** `enhancement | Settings panel redesign` *(#pipeline item)*
 
 ---
 

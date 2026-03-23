@@ -7,7 +7,7 @@
 ## Active Milestone
 <!-- Items promoted from Pipeline for the current release. Cleared after release ships. -->
 
-*(empty — v1.11.1 shipped, next milestone pending triage)*
+*(empty — v1.12.0 shipped, next milestone pending triage)*
 
 ---
 
@@ -19,7 +19,7 @@
 - [ ] **feature** | Partner commander support — deferred from v1.4.0
 - [ ] **feature** | Move cards between boards or decks (#62) ↑ priority
 - [ ] **enhancement** | Simulator modal has no view mode toggle — consider adding compact list view inside modal for larger decks; would also make pin-from-list interaction more prominent
-- [ ] **enhancement** | Settings panel redesign — 2 clicks to access settings is a UX regression from v1.3.0 sidebar changes
+- [x] **enhancement** | Settings panel redesign — 2 clicks to access settings is a UX regression from v1.3.0 sidebar changes *(closed v1.12.0)*
 - [ ] **enhancement** | Card price display missing from persistent grid tile — deferred from v1.3.0 design, needs design decision ⚠️ needs design
 - [x] **enhancement** | Unify project styling via CSS custom properties or design tokens — changing a background color or theme value should touch one place, not multiple files *(closed v1.10.0)*
 - [ ] **enhancement** | Combine qty and owned fields into a single elegant input — two separate fields is redundant UX; design a unified interaction ⚠️ needs design

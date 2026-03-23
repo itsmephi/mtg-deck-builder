@@ -5,6 +5,30 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.12.0] — Settings Hub
+
+### Added
+- **Settings Hub** (`SettingsView.tsx`): full workspace-takeover settings view — replaces the sidebar footer accordions. Opens from the version badge (→ What's New tab), collapsed rail gear icon (→ Preferences tab), or mobile gear in the sidebar tab bar (→ Preferences tab). Back chevron and Escape close the hub.
+- **Preferences tab**: Card Preview toggle (existing) + Theme picker — select Warm Stone or Zed Dark theme via gradient swatches; persists to `localStorage` key `mtg-theme`; future placeholder block for upcoming preferences
+- **What's New tab**: last 5 changelog versions; current version gets a blue pill badge
+- **About tab**: project intro paragraph, Team (Phi & Thurgood Nguyen, Claude · Anthropic), Powered By (Scryfall, Next.js + Vercel, Tailwind CSS), Legal disclaimers (WotC Fan Content, Scryfall attribution, trademark notice)
+- **Support tab**: Buy Me a Coffee and GitHub external links; future placeholder block
+- **Theme no-flash init**: inline `<script>` in `layout.tsx` `<head>` reads `mtg-theme` from localStorage and applies `data-theme` before first render
+
+### Changed
+- Sidebar expanded footer simplified to version badge only — clicking opens Settings Hub → What's New tab
+- Coffee icon and gear icon removed from expanded sidebar footer; coffee stays in collapsed rail
+- Collapsed rail gear icon now opens Settings Hub (Preferences tab) directly — sidebar stays collapsed
+- Mobile sidebar tab bar gains a gear icon (right-aligned); clicking any Search/Decks tab while settings is open closes the hub and returns to deck view
+
+### Removed
+- Sidebar settings accordion (Card Preview toggle, Sort By, Sort Direction)
+- Sidebar changelog accordion (inline What's New)
+- `isSettingsOpen`, `isChangelogOpen` state from Sidebar.tsx
+- Sort controls from settings (Sort By + Sort Direction live in WorkspaceToolbar only)
+
+---
+
 ## [1.11.1] — Focus Ring Polish
 
 ### Changed
