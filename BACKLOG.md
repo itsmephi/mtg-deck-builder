@@ -16,7 +16,7 @@
 
 - [ ] **feature** | New app name — Phi & Thurgood to brainstorm (#15) ⚠️ needs design
 - [ ] **feature** | Custom card sorting by drag and drop (#16)
-- [ ] **feature** | Partner commander support — deferred from v1.4.0
+- [ ] **feature** | Partner commander support — allow 2 commanders for Partner and Friends Forever (Best Friends) pairs; deferred from v1.4.0
 - [ ] **feature** | Move cards between boards or decks (#62) ↑ priority
 - [ ] **enhancement** | Simulator modal has no view mode toggle — consider adding compact list view inside modal for larger decks; would also make pin-from-list interaction more prominent
 - [x] **enhancement** | Settings panel redesign — 2 clicks to access settings is a UX regression from v1.3.0 sidebar changes *(closed v1.12.0)*
@@ -37,6 +37,19 @@
 - [ ] **enhancement** | Search: spelling correction — suggest corrected card name on typo / no-results
 - [ ] **enhancement** | Toolbar row height parity — search toolbar Row 1 and Row 2 should match deck toolbar row heights; search bar should be taller to fill Row 1; no layout hitch when switching tabs *(closed v1.13.0)*
 - [ ] **enhancement** | Margin parity between search and deck views — search is edge-to-edge, deck has p-4 outer + p-4 scroll container; future design pass to unify outer padding
+- [ ] **enhancement** | CardModal search view: forward/back navigation buttons to mimic deck card modal behavior
+- [ ] **enhancement** | Search view: back button to return to previous context ⚠️ needs design
+- [ ] **bug** | CardModal: white corners visible on rounded card images in some cases
+- [ ] **feature** | Deck building via photo capture — scan physical cards with camera to add to deck
+- [ ] **feature** | Favorite/star decks — starred decks float to top or appear in a dedicated section ⚠️ needs design
+- [ ] **chore** | Architecture review for public scaling — phased roadmap including mobile/tablet touch support
+- [ ] **enhancement** | Settings Hub: "Submit a Bug" button/link in Support tab
+- [ ] **enhancement** | Search: auto-match format badge to active deck's format
+- [ ] **bug** | Sidebar tabs: raised appearance and missing blue active indicator bar
+- [ ] **chore** | Open source repo and apply for Vercel open source/supporter tier
+- [ ] **bug** | Sort broken in search view
+- [ ] **enhancement** | CardModal: show set abbreviation; clicking it searches that set in search view
+- [ ] **enhancement** | CardModal: clicking artist name triggers artist search in search view
 
 ---
 
