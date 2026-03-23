@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronLeft, Coffee, ExternalLink } from "lucide-react";
+import { ChevronLeft, Coffee } from "lucide-react";
 import { APP_VERSION, CHANGELOG } from "@/config/version";
 import { useDeckManager } from "@/hooks/useDeckManager";
 
@@ -58,7 +58,7 @@ function PreferencesTab() {
         >
           <span
             className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${
-              showThumbnail ? "translate-x-4" : "translate-x-0.5"
+              showThumbnail ? "translate-x-[18px]" : "translate-x-[2px]"
             }`}
           />
         </button>
@@ -166,17 +166,13 @@ function MonogramRow({ letter, name, role }: MonogramRowProps) {
 function AboutTab() {
   return (
     <div>
-      <p className="text-sm text-content-heading leading-relaxed mb-2">
-        A visual deck builder and goldfish simulator for Magic: The Gathering.
-      </p>
       <p className="text-sm text-content-heading leading-relaxed mb-5">
-        A father-son project by Phi and Thurgood. Built for players who love the craft of brewing.
+        A visual deck builder and goldfish simulator for Magic: The Gathering. A father-son project built for players who love the craft of brewing.
       </p>
 
       {/* Team */}
       <p className="text-[10px] font-bold uppercase tracking-widest text-content-muted mb-2">Team</p>
-      <MonogramRow letter="P" name="Phi" role="Design, UX, and product direction" />
-      <MonogramRow letter="T" name="Thurgood Nguyen" role="Design, UX, and product direction" />
+      <MonogramRow letter="P" name="Phi & Thurgood Nguyen" role="Design, UX, and product direction" />
       <MonogramRow letter="A" name="Claude · Anthropic" role="AI implementation partner" />
 
       <div className="border-b border-line-subtle my-5" />
@@ -274,42 +270,46 @@ export default function SettingsView({ activeTab, onTabChange, onClose }: Props)
   return (
     <div className="flex-1 flex flex-col overflow-hidden bg-surface-base">
       {/* Header */}
-      <div className="px-5 md:px-8 pt-5 pb-3 shrink-0">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={onClose}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-content-muted hover:text-content-primary hover:bg-surface-raised transition-colors shrink-0"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <h1 className="text-xl font-extrabold text-content-primary tracking-tight">TheBrewLab</h1>
-          <span className="ml-auto inline-flex items-center px-2 py-0.5 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[9px] font-bold uppercase tracking-wider rounded-full shrink-0">
-            v{APP_VERSION}
-          </span>
+      <div className="px-5 md:px-7 pt-5 md:pt-6 pb-3 shrink-0">
+        <div className="max-w-[560px] mx-auto">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={onClose}
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-content-muted hover:text-content-primary hover:bg-surface-raised transition-colors shrink-0"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <h1 className="text-xl font-extrabold text-content-primary tracking-tight">TheBrewLab</h1>
+            <span className="ml-auto inline-flex items-center px-2 py-0.5 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[9px] font-bold uppercase tracking-wider rounded-full shrink-0">
+              v{APP_VERSION}
+            </span>
+          </div>
+          <p className="text-xs text-content-muted pl-10 mt-0.5">Settings, info, and more</p>
         </div>
-        <p className="text-xs text-content-muted pl-10 mt-0.5">Settings, info, and more</p>
       </div>
 
       {/* Tab bar */}
-      <div className="flex px-5 md:px-8 gap-0 border-b border-line-subtle overflow-x-auto shrink-0">
-        {TABS.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => onTabChange(tab.id)}
-            className={`px-4 py-2.5 text-xs font-semibold border-b-2 transition-colors whitespace-nowrap ${
-              activeTab === tab.id
-                ? "text-content-primary border-line-focus"
-                : "text-content-muted hover:text-content-secondary border-transparent"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+      <div className="border-b border-line-subtle shrink-0 overflow-x-auto">
+        <div className="max-w-[560px] mx-auto flex gap-0 px-0">
+          {TABS.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => onTabChange(tab.id)}
+              className={`px-4 py-2.5 text-xs font-semibold border-b-2 transition-colors whitespace-nowrap ${
+                activeTab === tab.id
+                  ? "text-content-primary border-line-focus"
+                  : "text-content-muted hover:text-content-secondary border-transparent"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Scrollable body */}
       <div className="flex-1 overflow-y-auto p-5 md:p-7">
-        <div className="max-w-[560px]">
+        <div className="max-w-[560px] mx-auto">
           {activeTab === "preferences" && <PreferencesTab />}
           {activeTab === "whatsnew" && <WhatsNewTab />}
           {activeTab === "about" && <AboutTab />}

@@ -19,9 +19,11 @@ interface Props {
   sidebarFilters: FilterState;
   onFiltersChange: (filters: FilterState) => void;
   onOpenSettings: (tab: "preferences" | "whatsnew" | "about" | "support") => void;
+  showSettings?: boolean;
+  onCloseSettings?: () => void;
 }
 
-export default function Sidebar({ onImport, onExport, isImporting, activeTab, onTabChange, activeChipId, onChipSelect, sidebarFilters, onFiltersChange, onOpenSettings }: Props) {
+export default function Sidebar({ onImport, onExport, isImporting, activeTab, onTabChange, activeChipId, onChipSelect, sidebarFilters, onFiltersChange, onOpenSettings, onCloseSettings }: Props) {
   const [collapsed, setCollapsed] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
 
@@ -43,6 +45,12 @@ export default function Sidebar({ onImport, onExport, isImporting, activeTab, on
     setCollapsed(false);
     onTabChange(tab);
     localStorage.setItem("mtg-sidebar-collapsed", "false");
+    onCloseSettings?.();
+  };
+
+  const handleTabClick = (tab: "search" | "decks") => {
+    onTabChange(tab);
+    onCloseSettings?.();
   };
 
   const handleCollapse = () => {
@@ -71,7 +79,7 @@ export default function Sidebar({ onImport, onExport, isImporting, activeTab, on
           {/* Tab bar */}
           <div className="flex items-center border-b border-line-subtle shrink-0">
             <button
-              onClick={() => onTabChange("search")}
+              onClick={() => handleTabClick("search")}
               className={`flex items-center gap-1.5 flex-1 justify-center px-3 py-2.5 text-xs font-medium border-b-2 transition-colors ${
                 activeTab === "search"
                   ? "text-blue-400 border-blue-500"
@@ -82,7 +90,7 @@ export default function Sidebar({ onImport, onExport, isImporting, activeTab, on
               Search
             </button>
             <button
-              onClick={() => onTabChange("decks")}
+              onClick={() => handleTabClick("decks")}
               className={`flex items-center gap-1.5 flex-1 justify-center px-3 py-2.5 text-xs font-medium border-b-2 transition-colors ${
                 activeTab === "decks"
                   ? "text-blue-400 border-blue-500"

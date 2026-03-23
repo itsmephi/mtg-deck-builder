@@ -84,6 +84,8 @@ export default function Dashboard() {
         sidebarFilters={sidebarFilters}
         onFiltersChange={setSidebarFilters}
         onOpenSettings={openSettings}
+        showSettings={showSettings}
+        onCloseSettings={() => setShowSettings(false)}
       />
 
       <input
