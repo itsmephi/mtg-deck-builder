@@ -9,10 +9,8 @@ const HEADERS = {
 export async function searchCards(query: string): Promise<ScryfallCard[]> {
   if (!query) return [];
   try {
-    // Fix: append order:usd so Scryfall prefers printings with price data
-    const fullQuery = `${query} order:usd`;
     const res = await fetch(
-      `${SCRYFALL_BASE}/cards/search?q=${encodeURIComponent(fullQuery)}`,
+      `${SCRYFALL_BASE}/cards/search?q=${encodeURIComponent(query)}`,
       { headers: HEADERS },
     );
     if (!res.ok) return [];

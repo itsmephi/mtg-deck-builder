@@ -23,6 +23,15 @@ interface SearchWorkspaceProps {
   onTileSizeChange: (stop: TileSizeKey) => void;
 }
 
+const SORT_ORDER_MAP: Record<string, string> = {
+  relevance: "",
+  name: "order:name",
+  price_asc: "order:usd dir:asc",
+  price_desc: "order:usd",
+  mv: "order:mv",
+  color: "order:color",
+};
+
 function buildFilterSyntax(activeDeck: Deck | undefined, filterActive: boolean): string {
   if (!filterActive || !activeDeck) return "";
   const format = activeDeck.format;
@@ -47,6 +56,7 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showAutocomplete, setShowAutocomplete] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [sortOrder, setSortOrder] = useState("price_desc");
   const [setMatch, setSetMatch] = useState<{ query: string; code: string; name: string } | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -78,8 +88,10 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
       parts.push(parsed.scryfallQuery);
     }
     if (sidebarFilterSyntax) parts.push(sidebarFilterSyntax);
+    const sortClause = SORT_ORDER_MAP[sortOrder];
+    if (sortClause) parts.push(sortClause);
     return parts.filter(Boolean).join(" ").trim();
-  }, [filterSyntax, activeChipQuery, parsed, sidebarFilterSyntax, setMatch]);
+  }, [filterSyntax, activeChipQuery, parsed, sidebarFilterSyntax, setMatch, sortOrder]);
 
   // Derived: filter badge data
   const filterBadge = useMemo(() => {
@@ -211,7 +223,7 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
 
       let cardToAdd = card;
       if (!card.prices.usd || card.prices.usd === "0.00") {
-        const rescueResults = await searchCards(`!"${card.name}"`);
+        const rescueResults = await searchCards(`!"${card.name}" order:usd`);
         if (
           rescueResults.length > 0 &&
           rescueResults[0].prices.usd &&
@@ -316,7 +328,11 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
           <div className="ml-auto flex items-center gap-2 h-8">
             <div className="flex items-center h-full bg-surface-base p-0.5 rounded-lg border border-line-subtle space-x-0.5 shadow-sm">
               <div className="flex items-center px-2 border-r border-line-subtle h-full gap-1">
-                <select className="bg-transparent text-xs text-content-secondary focus:outline-none cursor-pointer h-full">
+                <select
+                  value={sortOrder}
+                  onChange={(e) => setSortOrder(e.target.value)}
+                  className="bg-transparent text-xs text-content-secondary focus:outline-none cursor-pointer h-full"
+                >
                   <option value="relevance" className="bg-surface-base">Sort: Relevance</option>
                   <option value="name" className="bg-surface-base">Name</option>
                   <option value="price_asc" className="bg-surface-base">Price ↑</option>

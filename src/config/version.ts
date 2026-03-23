@@ -1,8 +1,16 @@
-export const APP_VERSION = "1.12.1";
+export const APP_VERSION = "1.12.2";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.12.2": [
+    "Bug fix: sidebar tab bar restyled with seamless physical tab metaphor — active tab blends into sidebar body (bg-surface-panel, transparent bottom border); inactive tab recesses below it (bg-surface-deep, visible bottom edge); no blue underline indicator",
+    "Inactive tab hover lifts background to match the sidebar surface and brightens text — matches the active state appearance without the full commit",
+    "Collapse button (desktop) and mobile gear icon gain recessed background to match the tab row treatment",
+    "Bug fix: search sort dropdown now works — selecting Name, Price ↑, Price ↓, Mana Value, or Color re-fetches results with the correct Scryfall order; Relevance omits the order clause for natural Scryfall ranking",
+    "Sort default is Price ↓ (order:usd) — preserves the existing priced-printing preference",
+    "Price rescue on card add still uses order:usd internally regardless of selected sort",
+  ],
   "1.12.1": [
     "Search toolbar rows now match the deck toolbar's height rhythm — the divider lands at the same Y position when switching tabs, no layout hitch",
     "Search bar taller: inner container raised from 32px to 40px minimum height to fill the matched Row 1",
