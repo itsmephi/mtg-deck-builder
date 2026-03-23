@@ -1,8 +1,18 @@
-export const APP_VERSION = "1.11.1";
+export const APP_VERSION = "1.12.0";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.12.0": [
+    "Settings Hub: full workspace-takeover settings view replaces the sidebar footer accordions — opens from the version badge, collapsed rail gear icon, or mobile gear in the tab bar",
+    "Preferences tab: Card Preview toggle (existing) and Theme picker — select Warm Stone or Zed Dark; persists to localStorage, applies with no flash on page load",
+    "What's New tab: last 5 changelog versions with blue pill badge on current version",
+    "About tab: project intro, Team (Phi & Thurgood Nguyen, Claude · Anthropic), Powered By (Scryfall, Next.js + Vercel, Tailwind CSS), and Legal disclaimers",
+    "Support tab: Buy Me a Coffee and GitHub external links",
+    "Sidebar footer simplified to version badge only — clicking opens What's New tab; coffee icon and gear icon removed from expanded footer",
+    "Collapsed rail gear icon now opens the settings hub (Preferences tab) directly — sidebar stays collapsed",
+    "Mobile gear icon added to sidebar tab bar; settings closes automatically when Search or Decks tab is clicked",
+  ],
   "1.11.1": [
     "Focus ring color muted: --input-edge-focus and --border-line-focus changed from #c07a50 (bright copper) to #a0725c (darker, less visually heavy) in the Warm Stone palette — Zed Dark focus ring (#528bff) unchanged",
   ],
