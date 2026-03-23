@@ -47,7 +47,7 @@ For straightforward bug fixes and small enhancements, `/plan` → PROCEED → bu
 ---
 
 ## Active Milestone
-→ No active milestone. v1.12.0 shipped — Settings Hub (SettingsView workspace takeover, theme picker, What's New, About, Support tabs). Next milestone pending triage.
+→ v1.12.2 (3 bug fixes: CardModal white corners, sidebar tabs, search sort) + v1.13.0 (5 items: CardModal fwd/back nav, Submit a Bug button, search format badge, set abbreviation click, artist name click)
 
 ---
 

@@ -7,7 +7,17 @@
 ## Active Milestone
 <!-- Items promoted from Pipeline for the current release. Cleared after release ships. -->
 
-*(empty — v1.12.0 shipped, next milestone pending triage)*
+### v1.12.2 — Quick Bug Fixes
+- [ ] **bug** | CardModal: white corners visible on rounded card images in some cases
+- [ ] **bug** | Sidebar tabs: raised appearance and missing blue active indicator bar
+- [ ] **bug** | Sort broken in search view
+
+### v1.13.0 — CardModal & Search Polish
+- [ ] **enhancement** | CardModal search view: forward/back navigation buttons to mimic deck card modal behavior
+- [ ] **enhancement** | Settings Hub: "Submit a Bug" button/link in Support tab
+- [ ] **enhancement** | Search: auto-match format badge to active deck's format
+- [ ] **enhancement** | CardModal: show set abbreviation; clicking it searches that set in search view
+- [ ] **enhancement** | CardModal: clicking artist name triggers artist search in search view
 
 ---
 
@@ -26,30 +36,17 @@
 - [ ] **enhancement** | Import/export format compatibility — support MTGGoldfish format (e.g. `1 Ashling, the Limitless <borderless> [ECC] (F)`) and confirm cross-compatibility with TCGPlayer and Card Kingdom import
 - [ ] **enhancement** | Import modal — add "Paste from clipboard" button as an alternative to typing/pasting manually ⚠️ needs design
 - [ ] **enhancement** | Search: list view toggle for search results — grid/list toggle in search toolbar, list view mirrors sidebar search list but wider ⚠️ needs design
-- [ ] **enhancement** | Search: hold-to-peek — while in search view, hold a button to temporarily reveal the deck view, release to return to search ⚠️ needs design
 - [ ] **enhancement** | Search: filter badge color per format — Commander gold, Standard blue, Freeform gray (needs design to avoid confusion with active/inactive states)
 - [ ] **enhancement** | Search: highlight newly added cards on deck view switch — when returning to deck view after adding cards from search, briefly highlight or scroll to new cards ⚠️ needs design
-- [ ] **enhancement** | Search: emoji in deck names — optional personalization feature for deck names
 - [ ] **enhancement** | Active deck / sideboard indicator — show which board is active beyond just the toggle button ⚠️ needs design
 - [ ] **feature** | Commander brackets support — tag cards with bracket ratings (e.g. Game Changer) per EDH bracket system ⚠️ needs design
-- [ ] **feature** | Search pillars — curated search modes for brewing, discovery, beginner deck building ⚠️ needs design
 - [ ] **enhancement** | Search by foil — filter search results to foil printings only
 - [ ] **enhancement** | Search: spelling correction — suggest corrected card name on typo / no-results
-- [ ] **enhancement** | Toolbar row height parity — search toolbar Row 1 and Row 2 should match deck toolbar row heights; search bar should be taller to fill Row 1; no layout hitch when switching tabs *(closed v1.13.0)*
 - [ ] **enhancement** | Margin parity between search and deck views — search is edge-to-edge, deck has p-4 outer + p-4 scroll container; future design pass to unify outer padding
-- [ ] **enhancement** | CardModal search view: forward/back navigation buttons to mimic deck card modal behavior
 - [ ] **enhancement** | Search view: back button to return to previous context ⚠️ needs design
-- [ ] **bug** | CardModal: white corners visible on rounded card images in some cases
-- [ ] **feature** | Deck building via photo capture — scan physical cards with camera to add to deck
 - [ ] **feature** | Favorite/star decks — starred decks float to top or appear in a dedicated section ⚠️ needs design
 - [ ] **chore** | Architecture review for public scaling — phased roadmap including mobile/tablet touch support
-- [ ] **enhancement** | Settings Hub: "Submit a Bug" button/link in Support tab
-- [ ] **enhancement** | Search: auto-match format badge to active deck's format
-- [ ] **bug** | Sidebar tabs: raised appearance and missing blue active indicator bar
 - [ ] **chore** | Open source repo and apply for Vercel open source/supporter tier
-- [ ] **bug** | Sort broken in search view
-- [ ] **enhancement** | CardModal: show set abbreviation; clicking it searches that set in search view
-- [ ] **enhancement** | CardModal: clicking artist name triggers artist search in search view
 
 ---
 
@@ -69,6 +66,9 @@
 - [ ] **feature** | Companion support — future format enhancement
 - [ ] **feature** | Brawl / Oathbreaker format support — future format additions
 - [ ] **enhancement** | Export: email deck list — send decklist via email from the export panel ⚠️ needs design
+- [ ] **enhancement** | Search: hold-to-peek — while in search view, hold a button to temporarily reveal the deck view, release to return to search ⚠️ needs design
+- [ ] **feature** | Search pillars — curated search modes for brewing, discovery, beginner deck building ⚠️ needs design
+- [ ] **feature** | Deck building via photo capture — scan physical cards with camera to add to deck
 
 ---
 
