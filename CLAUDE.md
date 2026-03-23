@@ -3,7 +3,7 @@ Authors: Phi & Thurgood Nguyen
 Stack: Next.js + TypeScript + Tailwind CSS
 Deployed: Vercel | Repo: GitHub (itsmephi/mtg-deck-builder)
 IDE: VS Code (Windows, primary) · Zed on Steam Deck (Linux, secondary)
-Current Version: v1.11.0 — see CHANGELOG.md for full history
+Current Version: v1.11.1 — see CHANGELOG.md for full history
 
 ---
 
@@ -38,6 +38,8 @@ Process documentation lives in `.claude/rules/` — Claude Code loads these on d
 - Any `/plan` output that flags ⚠️ (5+ files or new components)
 - Workflow process changes
 
+**Claude Chat deliverable format:** spec and prompts must always be separate files. Spec = one reference doc committed to `docs/`. Each Claude Code prompt = its own standalone paste-ready `.md` file. Never combine spec + prompts into a single document.
+
 Triage and milestone planning now run in Claude Code via `/triage`. After triage, take promoted items to Claude Chat for design if they need it.
 
 For straightforward bug fixes and small enhancements, `/plan` → PROCEED → build → QA → APPROVED → `/commit-release` can run entirely in Claude Code.
@@ -45,7 +47,7 @@ For straightforward bug fixes and small enhancements, `/plan` → PROCEED → bu
 ---
 
 ## Active Milestone
-→ 2 items selected — focus ring polish (globals.css one-liner) + Claude Chat deliverable rule (CLAUDE.md chore). Next milestone TBD.
+→ No active milestone. v1.11.1 shipped — focus ring muted, Claude Chat deliverable rule documented. Next milestone pending triage.
 
 ---
 

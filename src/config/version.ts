@@ -1,8 +1,11 @@
-export const APP_VERSION = "1.11.0";
+export const APP_VERSION = "1.11.1";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.11.1": [
+    "Focus ring color muted: --input-edge-focus and --border-line-focus changed from #c07a50 (bright copper) to #a0725c (darker, less visually heavy) in the Warm Stone palette — Zed Dark focus ring (#528bff) unchanged",
+  ],
   "1.11.0": [
     "Dual-palette theme system: Warm Stone (default) with brown undertones and copper accents, plus Zed Dark alt-theme with blue-gray tones and blue accents — switch via data-theme attribute on <html>, no UI toggle yet",
     "Token count expanded from 12 to 25: added sidebar panel surfaces (bg-surface-panel, bg-surface-panel-raised, border-line-panel), input field tokens (bg-input-surface, border-input-edge, border-input-edge-focus, text-input-value, text-input-placeholder), focus/hover borders (border-line-focus, border-line-hover), and resolved flagged classes (text-content-disabled, bg-surface-deep, bg-surface-hover)",

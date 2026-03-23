@@ -14,7 +14,7 @@
     /* Input tokens */
     --input-surface:         #292524;
     --input-edge:            #3f3a36;
-    --input-edge-focus:      #c07a50;
+    --input-edge-focus:      #a0725c;
     --input-value:           #bdb4a8;
     --input-placeholder:     #6b6259;
 
@@ -31,7 +31,7 @@
     --border-line-default:   #3f3a36;
     --border-line-subtle:    #292524;
     --border-line-panel:     #1c1917;
-    --border-line-focus:     #c07a50;
+    --border-line-focus:     #a0725c;
     --border-line-hover:     #524b44;
 }
 
@@ -117,7 +117,7 @@
 
         --input-surface:         #292524;
         --input-edge:            #3f3a36;
-        --input-edge-focus:      #c07a50;
+        --input-edge-focus:      #a0725c;
         --input-value:           #bdb4a8;
         --input-placeholder:     #6b6259;
 
@@ -132,7 +132,7 @@
         --border-line-default:   #3f3a36;
         --border-line-subtle:    #292524;
         --border-line-panel:     #1c1917;
-        --border-line-focus:     #c07a50;
+        --border-line-focus:     #a0725c;
         --border-line-hover:     #524b44;
     }
 }
