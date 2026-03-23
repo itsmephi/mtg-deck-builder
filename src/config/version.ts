@@ -1,8 +1,13 @@
-export const APP_VERSION = "1.12.0";
+export const APP_VERSION = "1.12.1";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.12.1": [
+    "Search toolbar rows now match the deck toolbar's height rhythm — the divider lands at the same Y position when switching tabs, no layout hitch",
+    "Search bar taller: inner container raised from 32px to 40px minimum height to fill the matched Row 1",
+    "Search Row 2 controls grouped into a single pill container matching the deck toolbar's outlined button-group style — sort, tile size, and view toggles unified",
+  ],
   "1.12.0": [
     "Settings Hub: full workspace-takeover settings view replaces the sidebar footer accordions — opens from the version badge, collapsed rail gear icon, or mobile gear in the tab bar",
     "Preferences tab: Card Preview toggle (existing) and Theme picker — select Warm Stone or Zed Dark; persists to localStorage, applies with no flash on page load",
