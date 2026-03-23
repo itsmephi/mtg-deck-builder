@@ -7,8 +7,7 @@
 ## Active Milestone
 <!-- Items promoted from Pipeline for the current release. Cleared after release ships. -->
 
-- [ ] **enhancement** | Search bar focus ring (border-input-edge-focus) is too prominent — copper #c07a50 is visually heavy; try a more muted value like #a0725c or lower opacity; one-line change in globals.css :root and [data-theme="zed-dark"] equivalent if needed
-- [ ] **chore** | Add Claude Chat deliverable rule to CLAUDE.md: spec and prompts must be separate files — spec = one reference doc (committed to docs/), each Claude Code prompt = its own standalone file, paste-ready; never combine spec + prompts into a single document
+*(empty — v1.11.1 shipped, next milestone pending triage)*
 
 ---
 
@@ -61,6 +60,10 @@
 
 ## Closed (Recent)
 <!-- Keep last 2 releases, then archive to CHANGELOG.md -->
+
+### v1.11.1
+- [x] **enhancement** | Search bar focus ring (border-input-edge-focus) is too prominent — muted from #c07a50 to #a0725c in Warm Stone palette *(closed v1.11.1)*
+- [x] **chore** | Add Claude Chat deliverable rule to CLAUDE.md: spec and prompts must be separate files *(closed v1.11.1)*
 
 ### v1.11.0
 - [x] **enhancement** | Dual-palette theme system: 25 tokens (expanded from 12), Warm Stone default + Zed Dark alt palette, sidebar panel tokens, input tokens, resolved all v1.10.0 flagged mid-tone classes *(closed v1.11.0)*

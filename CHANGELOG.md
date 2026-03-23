@@ -5,6 +5,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.11.1] — Focus Ring Polish
+
+### Changed
+- Focus ring color muted in Warm Stone palette: `--input-edge-focus` and `--border-line-focus` changed from `#c07a50` (bright copper) to `#a0725c` (darker, less visually heavy) — Zed Dark focus ring (`#528bff`) unchanged
+
+---
+
 ## [1.11.0] — Dual-Palette Theme System
 
 ### Added
