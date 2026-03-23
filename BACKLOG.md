@@ -8,16 +8,16 @@
 <!-- Items promoted from Pipeline for the current release. Cleared after release ships. -->
 
 ### v1.12.2 — Quick Bug Fixes
-- [ ] **bug** | CardModal: white corners visible on rounded card images in some cases
-- [ ] **bug** | Sidebar tabs: raised appearance and missing blue active indicator bar
-- [ ] **bug** | Sort broken in search view
+- [ ] **bug** | CardModal: white corners visible on rounded card images in some cases (#74)
+- [ ] **bug** | Sidebar tabs: raised appearance and missing blue active indicator bar (#75)
+- [ ] **bug** | Sort broken in search view (#76)
 
 ### v1.13.0 — CardModal & Search Polish
-- [ ] **enhancement** | CardModal search view: forward/back navigation buttons to mimic deck card modal behavior
-- [ ] **enhancement** | Settings Hub: "Submit a Bug" button/link in Support tab
-- [ ] **enhancement** | Search: auto-match format badge to active deck's format
-- [ ] **enhancement** | CardModal: show set abbreviation; clicking it searches that set in search view
-- [ ] **enhancement** | CardModal: clicking artist name triggers artist search in search view
+- [ ] **enhancement** | CardModal search view: forward/back navigation buttons to mimic deck card modal behavior (#77)
+- [ ] **enhancement** | Settings Hub: "Submit a Bug" button/link in Support tab (#78)
+- [ ] **enhancement** | Search: auto-match format badge to active deck's format (#79)
+- [ ] **enhancement** | CardModal: show set abbreviation; clicking it searches that set in search view (#80)
+- [ ] **enhancement** | CardModal: clicking artist name triggers artist search in search view (#81)
 
 ---
 

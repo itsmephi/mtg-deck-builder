@@ -32,7 +32,7 @@ Valid labels: bug · feature · enhancement · chore · workflow · v2.0
 3. Pre-fill every item based on: type, age, complexity, active milestone relevance
 4. Phi reviews and calls out overrides only — everything else locks as suggested
 5. Promoted items move to Active Milestone section
-6. **GitHub issues required** — any promoted item without an issue number gets one created before building; update BACKLOG.md with the issue number immediately after
+6. **GitHub issues required** — create GitHub issues for ALL promoted items that lack one, immediately after Phi confirms the triage table (do not wait until build time). Use `gh issue create --title "..." --body "..." --label "bug|enhancement|feature|chore"`. Update BACKLOG.md with issue numbers in the same commit.
 7. Discarded items: close GitHub issue, remove from BACKLOG.md
 8. v2.0 deferrals: move to v2.0 Deferred section
 9. Workflow items get folded into CLAUDE.md or `.claude/rules/` directly — no GitHub issue
