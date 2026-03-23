@@ -272,8 +272,8 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       {/* Toolbar Row 1: Search Bar */}
-      <div className="bg-surface-base border-b border-line-subtle">
-        <div className="flex items-center px-3.5 gap-2 min-h-[38px] pt-1">
+      <div className="bg-surface-base border-b border-line-subtle flex flex-col gap-2 pt-4 pb-3">
+        <div className="flex items-center px-4 gap-2">
           <SearchBar
             query={query}
             onChange={handleQueryChange}
@@ -291,7 +291,7 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
           />
         </div>
         {/* Toolbar Row 2: Results count + sort + view toggles */}
-        <div className="flex items-center px-3.5 gap-2 min-h-[34px] pb-1">
+        <div className="flex items-center px-4 gap-2">
           <span className="text-xs text-content-muted">
             {scryfallQuery.trim() ? (
               <>
@@ -313,31 +313,34 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
               </button>
             </div>
           )}
-          <div className="ml-auto flex items-center gap-1.5 h-7">
-            <select className="bg-surface-base border border-line-subtle text-xs text-content-tertiary rounded px-1.5 py-0.5 focus:outline-none cursor-pointer">
-              <option value="relevance" className="bg-surface-base">Sort: Relevance</option>
-              <option value="name" className="bg-surface-base">Name</option>
-              <option value="price_asc" className="bg-surface-base">Price ↑</option>
-              <option value="price_desc" className="bg-surface-base">Price ↓</option>
-              <option value="mv" className="bg-surface-base">Mana Value</option>
-              <option value="color" className="bg-surface-base">Color</option>
-            </select>
-            <div className="w-px h-[18px] bg-surface-raised" />
-            <TileSizeSlider activeStop={tileSize} onChangeStop={onTileSizeChange} />
-            <div className="w-px h-[18px] bg-surface-raised" />
-            <button
-              className="h-7 px-2 flex items-center justify-center rounded-md bg-surface-raised text-content-primary border border-neutral-700/50 transition-all"
-              title="Grid view"
-            >
-              <LayoutGrid className="w-3.5 h-3.5" />
-            </button>
-            <button
-              className="h-7 px-2 flex items-center justify-center rounded-md text-content-disabled border border-transparent cursor-not-allowed"
-              title="List view (coming soon)"
-              disabled
-            >
-              <List className="w-3.5 h-3.5" />
-            </button>
+          <div className="ml-auto flex items-center gap-2 h-8">
+            <div className="flex items-center h-full bg-surface-base p-0.5 rounded-lg border border-line-subtle space-x-0.5 shadow-sm">
+              <div className="flex items-center px-2 border-r border-line-subtle h-full gap-1">
+                <select className="bg-transparent text-xs text-content-secondary focus:outline-none cursor-pointer h-full">
+                  <option value="relevance" className="bg-surface-base">Sort: Relevance</option>
+                  <option value="name" className="bg-surface-base">Name</option>
+                  <option value="price_asc" className="bg-surface-base">Price ↑</option>
+                  <option value="price_desc" className="bg-surface-base">Price ↓</option>
+                  <option value="mv" className="bg-surface-base">Mana Value</option>
+                  <option value="color" className="bg-surface-base">Color</option>
+                </select>
+              </div>
+              <TileSizeSlider activeStop={tileSize} onChangeStop={onTileSizeChange} />
+              <div className="w-px self-stretch bg-surface-raised mx-0.5" />
+              <button
+                className="h-full px-2 flex items-center justify-center rounded-md bg-surface-raised text-content-primary border border-neutral-700/50 transition-all"
+                title="Grid view"
+              >
+                <LayoutGrid className="w-3.5 h-3.5" />
+              </button>
+              <button
+                className="h-full px-2 flex items-center justify-center rounded-md text-content-disabled border border-transparent cursor-not-allowed"
+                title="List view (coming soon)"
+                disabled
+              >
+                <List className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
         </div>
       </div>

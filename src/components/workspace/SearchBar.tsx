@@ -68,7 +68,7 @@ export default function SearchBar({
   return (
     <div ref={containerRef} className="flex-1 relative min-w-0">
       {/* Search bar row */}
-      <div className="flex items-center flex-wrap min-w-0 bg-surface-deep border border-line-subtle rounded-lg px-2 gap-1 min-h-[32px] transition-colors focus-within:border-input-edge-focus">
+      <div className="flex items-center flex-wrap min-w-0 bg-surface-deep border border-line-subtle rounded-lg px-2 gap-1 min-h-[40px] transition-colors focus-within:border-input-edge-focus">
         <Search size={14} className="text-content-muted shrink-0" />
 
         {/* Filter badge */}
