@@ -17,6 +17,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `
+          try {
+            var t = localStorage.getItem('mtg-theme');
+            if (t) document.documentElement.dataset.theme = t;
+          } catch(e) {}
+        `}} />
+      </head>
       <body className={inter.className}>
         <DeckProvider>
           {children}
