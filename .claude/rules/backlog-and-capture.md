@@ -36,4 +36,5 @@ Valid labels: bug · feature · enhancement · chore · workflow · v2.0
 7. Discarded items: close GitHub issue, remove from BACKLOG.md
 8. v2.0 deferrals: move to v2.0 Deferred section
 9. Workflow items get folded into CLAUDE.md or `.claude/rules/` directly — no GitHub issue
-10. After triage, take promoted items to Claude Chat for design sessions if needed
+10. **Closed section cleanup** — after every triage, keep only the last 2 releases in `## Closed (Recent)`. Move any stale `[x]` items out of Pipeline into the Closed section under the correct version heading (or discard if their version is being archived). Archive everything older than the last 2 releases — they are already covered by CHANGELOG.md.
+11. After triage, take promoted items to Claude Chat for design sessions if needed

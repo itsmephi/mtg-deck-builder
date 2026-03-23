@@ -29,9 +29,7 @@
 - [ ] **feature** | Partner commander support — allow 2 commanders for Partner and Friends Forever (Best Friends) pairs; deferred from v1.4.0
 - [ ] **feature** | Move cards between boards or decks (#62) ↑ priority
 - [ ] **enhancement** | Simulator modal has no view mode toggle — consider adding compact list view inside modal for larger decks; would also make pin-from-list interaction more prominent
-- [x] **enhancement** | Settings panel redesign — 2 clicks to access settings is a UX regression from v1.3.0 sidebar changes *(closed v1.12.0)*
 - [ ] **enhancement** | Card price display missing from persistent grid tile — deferred from v1.3.0 design, needs design decision ⚠️ needs design
-- [x] **enhancement** | Unify project styling via CSS custom properties or design tokens — changing a background color or theme value should touch one place, not multiple files *(closed v1.10.0)*
 - [ ] **enhancement** | Combine qty and owned fields into a single elegant input — two separate fields is redundant UX; design a unified interaction ⚠️ needs design
 - [ ] **enhancement** | Import/export format compatibility — support MTGGoldfish format (e.g. `1 Ashling, the Limitless <borderless> [ECC] (F)`) and confirm cross-compatibility with TCGPlayer and Card Kingdom import
 - [ ] **enhancement** | Import modal — add "Paste from clipboard" button as an alternative to typing/pasting manually ⚠️ needs design
@@ -73,7 +71,10 @@
 ---
 
 ## Closed (Recent)
-<!-- Keep last 2 releases, then archive to CHANGELOG.md -->
+<!-- Keep last 2 releases (v1.11.x + v1.12.x); archive older entries to CHANGELOG.md -->
+
+### v1.12.0
+- [x] **enhancement** | Settings panel redesign — SettingsView workspace takeover, theme picker, What's New, About, Support tabs *(closed v1.12.0)*
 
 ### v1.11.1
 - [x] **enhancement** | Search bar focus ring (border-input-edge-focus) is too prominent — muted from #c07a50 to #a0725c in Warm Stone palette *(closed v1.11.1)*
@@ -81,31 +82,5 @@
 
 ### v1.11.0
 - [x] **enhancement** | Dual-palette theme system: 25 tokens (expanded from 12), Warm Stone default + Zed Dark alt palette, sidebar panel tokens, input tokens, resolved all v1.10.0 flagged mid-tone classes *(closed v1.11.0)*
-
-### v1.10.0
-- [x] **enhancement** | Unify project styling via CSS custom properties or design tokens — 12 semantic tokens in globals.css, registered via @theme inline; 17 files migrated across layout and workspace components *(closed v1.10.0)*
-
-### v1.9.0
-- [x] **enhancement** | Release year filter — year range (dual text inputs, default last 5 years) in sidebar FilterPanel + Released date row in CardModal Product Details *(closed v1.9.0)*
-
-### v1.8.0
-- [x] **enhancement** | Card tile size parity — match tile sizes between search and deck grid views *(closed v1.8.0)*
-- [x] **enhancement** | Grid view column size presets — small (6 col), medium (4 col), large (2 col) *(closed v1.8.0)*
-
-### v1.7.0
-- [x] **enhancement** | Search CardModal: keep modal open after adding card — return to Details tab instead of closing, matching deck view Confirm Art Swap behavior *(closed v1.7.0)*
-- [x] **bug** | Planeswalker commander eligibility — Legendary alone should not qualify; require "can be your commander" in oracle text unless Legendary Creature *(closed v1.7.0)*
-- [x] **enhancement** | Group by type: separate commander into its own group *(closed v1.7.0)*
-- [x] **enhancement** | Search view: add tooltip for green in-deck pill icon on card tiles *(closed v1.7.0)*
-- [x] **enhancement** | CardModal Swap Art tab: show loading spinner while fetching printings *(closed v1.7.0)*
-- [x] **enhancement** | Search: filter section "Deselect All" button — quick way to clear all toggles in a filter group then select one *(closed v1.7.0)*
-- [x] **enhancement** | Search: color filter chips match mana colors — W chip white-tinted, R chip red-tinted, etc. *(closed v1.7.0)*
-- [x] **enhancement** | Search: price filter "Any" toggle — remove price ceiling for searching expensive cards *(closed v1.7.0)*
-- [x] **enhancement** | Search by set / Secret Lair — natural language set name lookup maps to `e:CODE` via Scryfall sets API *(closed v1.7.0)*
-- [x] **enhancement** | Search: add Discard as NLP token / parser keyword *(closed v1.7.0)*
-
-### v1.6.0
-- [x] **enhancement** | Search filtering by format legality / color identity (#72) *(closed v1.6.0)*
-- [x] **enhancement** | EDHREC improved search suggestions (#26) *(closed v1.6.0)*
 
 ---
