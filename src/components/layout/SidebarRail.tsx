@@ -9,6 +9,7 @@ import { DeckFormat } from "@/lib/formatRules";
 interface Props {
   expandTo: (tab: "search" | "decks") => void;
   activeTab: "search" | "decks";
+  onOpenSettings: (tab: "preferences" | "whatsnew" | "about" | "support") => void;
 }
 
 function RailTooltip({ label }: { label: string }) {
@@ -19,7 +20,7 @@ function RailTooltip({ label }: { label: string }) {
   );
 }
 
-export default function SidebarRail({ expandTo, activeTab }: Props) {
+export default function SidebarRail({ expandTo, activeTab, onOpenSettings }: Props) {
   const { createNewDeck, setDeckViewMode } = useDeckManager();
   const [railPickerOpen, setRailPickerOpen] = useState(false);
   const railPickerRef = useRef<HTMLDivElement>(null);
@@ -135,7 +136,7 @@ export default function SidebarRail({ expandTo, activeTab }: Props) {
       {/* Settings */}
       <div className="group relative flex items-center">
         <button
-          onClick={(e) => { e.stopPropagation(); expandTo("search"); }}
+          onClick={(e) => { e.stopPropagation(); onOpenSettings("preferences"); }}
           className="w-9 h-9 rounded-full flex items-center justify-center text-content-muted hover:text-content-primary hover:bg-surface-raised transition-colors"
         >
           <Settings className="w-4 h-4" />

@@ -83,6 +83,7 @@ export default function Dashboard() {
         onChipSelect={handleChipSelect}
         sidebarFilters={sidebarFilters}
         onFiltersChange={setSidebarFilters}
+        onOpenSettings={openSettings}
       />
 
       <input

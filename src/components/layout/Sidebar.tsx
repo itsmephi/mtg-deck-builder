@@ -1,12 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, Layers, PanelRightOpen, Coffee, Settings, ArrowUp, ArrowDown } from "lucide-react";
-import { APP_VERSION, CURRENT_CHANGELOG } from "@/config/version";
+import { Search, Layers, PanelRightOpen, Settings } from "lucide-react";
+import { APP_VERSION } from "@/config/version";
 import SidebarRail from "./SidebarRail";
 import SidebarSearchTab from "./SidebarSearchTab";
 import SidebarDecksTab from "./SidebarDecksTab";
-import { useDeckManager, SortBy, SortDir } from "@/hooks/useDeckManager";
 import { FilterState } from "./FilterPanel";
 
 interface Props {
@@ -19,16 +18,12 @@ interface Props {
   onChipSelect: (id: string, query: string) => void;
   sidebarFilters: FilterState;
   onFiltersChange: (filters: FilterState) => void;
+  onOpenSettings: (tab: "preferences" | "whatsnew" | "about" | "support") => void;
 }
 
-export default function Sidebar({ onImport, onExport, isImporting, activeTab, onTabChange, activeChipId, onChipSelect, sidebarFilters, onFiltersChange }: Props) {
+export default function Sidebar({ onImport, onExport, isImporting, activeTab, onTabChange, activeChipId, onChipSelect, sidebarFilters, onFiltersChange, onOpenSettings }: Props) {
   const [collapsed, setCollapsed] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isChangelogOpen, setIsChangelogOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
-
-  const { showThumbnail, setShowThumbnail, sortBy, setSortBy, sortDir, setSortDir } =
-    useDeckManager();
 
   // Responsive detection
   useEffect(() => {
@@ -70,7 +65,7 @@ export default function Sidebar({ onImport, onExport, isImporting, activeTab, on
       }
     >
       {isCollapsed ? (
-        <SidebarRail expandTo={expandTo} activeTab={activeTab} />
+        <SidebarRail expandTo={expandTo} activeTab={activeTab} onOpenSettings={onOpenSettings} />
       ) : (
         <div className="flex flex-col h-full min-w-0">
           {/* Tab bar */}
@@ -106,6 +101,15 @@ export default function Sidebar({ onImport, onExport, isImporting, activeTab, on
                 <PanelRightOpen className="w-4 h-4" />
               </button>
             )}
+            {/* Settings gear — mobile only */}
+            {!isDesktop && (
+              <button
+                onClick={() => onOpenSettings("preferences")}
+                className="ml-auto w-9 h-9 flex items-center justify-center text-content-muted hover:text-content-primary transition-colors"
+              >
+                <Settings className="w-4 h-4" />
+              </button>
+            )}
           </div>
 
           {/* Tab content */}
@@ -127,112 +131,15 @@ export default function Sidebar({ onImport, onExport, isImporting, activeTab, on
           </div>
 
           {/* Footer */}
-          <div className="mt-auto border-t border-line-subtle bg-neutral-900/50 shrink-0">
-            <div className="flex items-center justify-between px-3 py-2">
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setIsChangelogOpen(!isChangelogOpen)}
-                  className={`flex items-center gap-1.5 px-2 py-0.5 border rounded-full text-[9px] font-bold uppercase tracking-wider transition-colors ${
-                    isChangelogOpen
-                      ? "bg-blue-500/30 border-blue-400 text-blue-100"
-                      : "bg-blue-500/10 border-blue-500/20 text-blue-400 hover:bg-blue-500/20"
-                  }`}
-                >
-                  v{APP_VERSION}
-                </button>
-                <a
-                  href="https://www.buymeacoffee.com/itsmephi"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title="Support our Project"
-                  className="p-1 text-content-muted hover:text-yellow-400 transition-colors"
-                >
-                  <Coffee className="w-3.5 h-3.5" />
-                </a>
-              </div>
+          <div className="mt-auto border-t border-line-subtle shrink-0">
+            <div className="flex items-center px-3 py-2">
               <button
-                onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-                className={`p-1 rounded transition-colors ${
-                  isSettingsOpen ? "text-content-primary" : "text-content-faint hover:text-content-secondary"
-                }`}
+                onClick={() => onOpenSettings("whatsnew")}
+                className="flex items-center gap-1.5 px-2 py-0.5 border rounded-full text-[9px] font-bold uppercase tracking-wider transition-colors bg-blue-500/10 border-blue-500/20 text-blue-400 hover:bg-blue-500/20"
               >
-                <Settings className="w-3.5 h-3.5" />
+                v{APP_VERSION}
               </button>
             </div>
-
-            {isChangelogOpen && (
-              <div className="px-3 pb-3 pt-1 border-t border-neutral-800/50">
-                <p className="text-[9px] font-bold text-content-muted uppercase tracking-widest mb-2">
-                  What&apos;s New in v{APP_VERSION}
-                </p>
-                <ul className="text-[10px] text-content-tertiary leading-relaxed max-h-32 overflow-y-auto custom-scrollbar space-y-1">
-                  {CURRENT_CHANGELOG.map((item, i) => (
-                    <li key={i} className="flex gap-1.5">
-                      <span className="shrink-0 mt-px">–</span>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {isSettingsOpen && (
-              <div className="px-4 pb-3 pt-1 border-t border-neutral-800/50">
-                <p className="text-[9px] font-bold text-content-muted uppercase tracking-widest mb-3">
-                  Settings
-                </p>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-content-tertiary">Card Preview</span>
-                  <button
-                    onClick={() => setShowThumbnail(!showThumbnail)}
-                    className={`relative w-8 h-4 rounded-full transition-colors ${
-                      showThumbnail ? "bg-blue-500" : "bg-surface-overlay"
-                    }`}
-                  >
-                    <span
-                      className={`absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full shadow transition-transform ${
-                        showThumbnail ? "translate-x-4" : "translate-x-0"
-                      }`}
-                    />
-                  </button>
-                </div>
-                <div className="flex items-center justify-between mt-3">
-                  <span className="text-xs text-content-tertiary">Sort By</span>
-                  <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value as SortBy)}
-                    className="bg-surface-raised border border-line-default text-xs text-content-secondary rounded px-1.5 py-0.5 focus:outline-none cursor-pointer"
-                  >
-                    <option value="original">Original</option>
-                    <option value="name">Name</option>
-                    <option value="color">Color</option>
-                    <option value="mv">Mana Value</option>
-                  </select>
-                </div>
-                <div className="flex items-center justify-between mt-2">
-                  <span className="text-xs text-content-tertiary">Direction</span>
-                  <button
-                    onClick={() => setSortDir(sortDir === "asc" ? "desc" : "asc")}
-                    disabled={sortBy === "original"}
-                    className={`flex items-center gap-1 px-2 py-0.5 text-xs rounded border transition-colors ${
-                      sortBy === "original"
-                        ? "text-content-faint border-line-subtle cursor-not-allowed"
-                        : "text-content-secondary border-line-default hover:text-content-primary hover:border-line-hover"
-                    }`}
-                  >
-                    {sortDir === "asc" ? (
-                      <>
-                        <ArrowUp className="w-3 h-3" /> Asc
-                      </>
-                    ) : (
-                      <>
-                        <ArrowDown className="w-3 h-3" /> Desc
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       )}
