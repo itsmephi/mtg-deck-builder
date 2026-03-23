@@ -2,18 +2,15 @@
 
 ---
 
-## v1.12.0 — Settings Hub
+## v1.12.1 — Search Toolbar Polish
 Status: APPROVED ✅
 
 ### Plan Review
 
 | File | Changes |
 |---|---|
-| `src/app/layout.tsx` | Inline `<script>` in `<head>` for theme init (no-flash) |
-| `src/app/page.tsx` | `showSettings` + `settingsTab` state, `openSettings` helper, conditional render; `showSettings` + `onCloseSettings` passed to Sidebar |
-| `src/components/workspace/SettingsView.tsx` | NEW — header, tab bar, 4 content tabs (Preferences, What's New, About, Support), Escape key handler; content centered at `max-w-[560px] mx-auto` |
-| `src/components/layout/Sidebar.tsx` | `onOpenSettings` prop; removed accordions, settings/changelog state, sort controls, coffee icon, gear icon from footer; footer → version badge only; mobile gear icon in tab bar; `handleTabClick` closes settings on tab switch; `expandTo` also closes settings |
-| `src/components/layout/SidebarRail.tsx` | `onOpenSettings` prop; gear icon opens Settings Hub (Preferences tab) directly |
+| `src/components/workspace/SearchWorkspace.tsx` | Toolbar wrapper restructured with `pt-4 pb-3 flex flex-col gap-2`; rows simplified to `flex items-center px-4 gap-2`; Row 2 controls grouped in `bg-surface-base border border-line-subtle rounded-lg shadow-sm` pill; button heights `h-7` → `h-8` |
+| `src/components/workspace/SearchBar.tsx` | Inner container `min-h-[32px]` → `min-h-[40px]` to fill taller Row 1 |
 
 ---
 
@@ -21,17 +18,10 @@ Status: APPROVED ✅
 
 **What shipped:**
 
-- **`src/app/layout.tsx`** — inline `<script>` in `<head>` reads `mtg-theme` from localStorage and sets `data-theme` on `<html>` before first render; prevents flash of wrong theme on page load
-- **`src/app/page.tsx`** — `showSettings` + `settingsTab` state, `openSettings(tab)` helper, conditional render in `<main>`: `showSettings ? <SettingsView /> : <SearchWorkspace/Workspace>`; passes `onOpenSettings`, `showSettings`, `onCloseSettings` to Sidebar
-- **`src/components/workspace/SettingsView.tsx`** — new file; full settings hub with header (back chevron, "TheBrewLab" title, version badge, subtitle), tab bar with copper underline active state, scrollable body at `max-w-[560px] mx-auto`
-  - **Preferences tab**: Card Preview toggle (wired to `useDeckManager`, pixel-precise knob), Warm Stone / Zed Dark theme swatches (persist to `mtg-theme` localStorage), future placeholder
-  - **What's New tab**: last 5 CHANGELOG entries; current version blue pill badge
-  - **About tab**: single intro paragraph, two-row Team section (Phi & Thurgood Nguyen / Claude · Anthropic), Powered By (Scryfall / Next.js + Vercel / Tailwind CSS), Legal disclaimers
-  - **Support tab**: Buy Me a Coffee + GitHub external links, future placeholder
-- **`src/components/layout/Sidebar.tsx`** — gutted: removed `isSettingsOpen`, `isChangelogOpen`, settings accordion (Card Preview, Sort By, Sort Direction), changelog accordion, coffee icon, gear icon from footer; footer replaced with version badge only (→ What's New); mobile gear icon in tab bar (→ Preferences); `handleTabClick` and updated `expandTo` both call `onCloseSettings?.()` so settings closes on any sidebar tab navigation; threads `onOpenSettings` to SidebarRail
-- **`src/components/layout/SidebarRail.tsx`** — gear icon click changed from `expandTo("search")` to `onOpenSettings("preferences")` — opens Settings Hub directly without expanding sidebar
+- **`src/components/workspace/SearchWorkspace.tsx`** — search toolbar wrapper gains `pt-4 pb-3 flex flex-col gap-2` to match the deck toolbar's vertical rhythm and align the divider to the same Y position; both row divs simplified to `flex items-center px-4 gap-2` (removed per-row `min-h`, `pt`, `pb` overrides); Row 2 right-side controls regrouped into a single pill container (`bg-surface-base p-0.5 rounded-lg border border-line-subtle space-x-0.5 shadow-sm`) matching the deck toolbar's Sort/Group/View container; sort select loses individual border and sits inside a `border-r` section; view toggle buttons bumped from `h-7` to `h-8`
+- **`src/components/workspace/SearchBar.tsx`** — inner search field container `min-h-[32px]` raised to `min-h-[40px]` to fill the taller Row 1 height, matching the visual weight of the deck toolbar's title row
 
-**Closed from backlog:** `enhancement | Settings panel redesign` *(#pipeline item)*
+**Closed from backlog:** `enhancement | Toolbar row height parity`
 
 ---
 

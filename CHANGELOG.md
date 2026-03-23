@@ -5,6 +5,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.12.1] — Search Toolbar Polish
+
+### Changed
+- Search toolbar rows now match the deck toolbar's height rhythm: `pt-4 pb-3 gap-2` wrapper aligns the divider to the same Y position as the deck view on tab switch
+- Search bar taller: inner container min-height raised from 32px to 40px to fill the matched Row 1 height
+- Search Row 2 controls bumped from `h-7` to `h-8` to match deck toolbar control height
+- Search toolbar Row 2 controls grouped into a single pill container matching the deck toolbar's `bg-surface-base border border-line-subtle rounded-lg shadow-sm` style — sort select, tile slider, and view toggles unified in one group
+
+---
+
 ## [1.12.0] — Settings Hub
 
 ### Added

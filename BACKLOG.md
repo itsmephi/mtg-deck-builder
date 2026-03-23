@@ -35,6 +35,7 @@
 - [ ] **feature** | Search pillars — curated search modes for brewing, discovery, beginner deck building ⚠️ needs design
 - [ ] **enhancement** | Search by foil — filter search results to foil printings only
 - [ ] **enhancement** | Search: spelling correction — suggest corrected card name on typo / no-results
+- [ ] **enhancement** | Toolbar row height parity — search toolbar Row 1 and Row 2 should match deck toolbar row heights; search bar should be taller to fill Row 1; no layout hitch when switching tabs *(closed v1.13.0)*
 - [ ] **enhancement** | Margin parity between search and deck views — search is edge-to-edge, deck has p-4 outer + p-4 scroll container; future design pass to unify outer padding
 
 ---
