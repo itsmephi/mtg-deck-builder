@@ -24,7 +24,9 @@ const TABS: { id: SettingsTab; label: string }[] = [
 
 function PreferencesTab() {
   const { showThumbnail, setShowThumbnail } = useDeckManager();
-  const [activeTheme, setActiveTheme] = useState<"warm-stone" | "zed-dark">("warm-stone");
+  const [activeTheme, setActiveTheme] = useState<"warm-stone" | "zed-dark">(
+    "warm-stone",
+  );
 
   useEffect(() => {
     const stored = localStorage.getItem("mtg-theme");
@@ -48,7 +50,9 @@ function PreferencesTab() {
       <div className="flex items-center justify-between border-b border-line-subtle py-3">
         <div>
           <p className="text-sm text-content-heading">Card Preview</p>
-          <p className="text-xs text-content-muted mt-0.5">Show card image on hover in search results</p>
+          <p className="text-xs text-content-muted mt-0.5">
+            Show card image on hover in search results
+          </p>
         </div>
         <div
           onClick={() => setShowThumbnail(!showThumbnail)}
@@ -67,15 +71,22 @@ function PreferencesTab() {
       {/* Theme picker */}
       <div className="py-3 border-b border-line-subtle">
         <p className="text-sm text-content-heading">Theme</p>
-        <p className="text-xs text-content-muted mt-0.5">Choose your color palette</p>
+        <p className="text-xs text-content-muted mt-0.5">
+          Choose your color palette
+        </p>
         <div className="flex gap-3 mt-3">
           {/* Warm Stone */}
           <button
             onClick={() => handleThemeSelect("warm-stone")}
             className={`w-[110px] h-16 rounded-lg overflow-hidden relative cursor-pointer border-2 transition-all ${
-              activeTheme === "warm-stone" ? "border-line-focus" : "border-line-default hover:border-line-hover"
+              activeTheme === "warm-stone"
+                ? "border-line-focus"
+                : "border-line-default hover:border-line-hover"
             }`}
-            style={{ background: "linear-gradient(135deg, #1c1917, #292524 50%, #3f3a36)" }}
+            style={{
+              background:
+                "linear-gradient(135deg, #1c1917, #292524 50%, #3f3a36)",
+            }}
           >
             <span className="absolute bottom-0 inset-x-0 px-2 py-1 bg-black/50 text-[9px] font-bold uppercase tracking-wide text-content-secondary text-left">
               Warm Stone
@@ -86,9 +97,14 @@ function PreferencesTab() {
           <button
             onClick={() => handleThemeSelect("zed-dark")}
             className={`w-[110px] h-16 rounded-lg overflow-hidden relative cursor-pointer border-2 transition-all ${
-              activeTheme === "zed-dark" ? "border-line-focus" : "border-line-default hover:border-line-hover"
+              activeTheme === "zed-dark"
+                ? "border-line-focus"
+                : "border-line-default hover:border-line-hover"
             }`}
-            style={{ background: "linear-gradient(135deg, #282c34, #2c313a 50%, #3a3f47)" }}
+            style={{
+              background:
+                "linear-gradient(135deg, #282c34, #2c313a 50%, #3a3f47)",
+            }}
           >
             <span className="absolute bottom-0 inset-x-0 px-2 py-1 bg-black/50 text-[9px] font-bold uppercase tracking-wide text-content-secondary text-left">
               Zed Dark
@@ -99,7 +115,9 @@ function PreferencesTab() {
 
       {/* Future placeholder */}
       <div className="border border-dashed border-line-default rounded-lg p-6 text-center mt-6">
-        <p className="text-xs text-content-disabled">More preferences coming soon</p>
+        <p className="text-xs text-content-disabled">
+          More preferences coming soon
+        </p>
         <p className="text-[10px] font-bold uppercase tracking-wide text-content-faint mt-1.5">
           Animations · Token Gallery · Display density
         </p>
@@ -124,7 +142,9 @@ function WhatsNewTab() {
                 v{version}
               </span>
             ) : (
-              <p className="text-[10px] font-bold text-content-disabled">v{version}</p>
+              <p className="text-[10px] font-bold text-content-disabled">
+                v{version}
+              </p>
             )}
           </div>
           <ul className="text-xs text-content-secondary leading-relaxed space-y-1">
@@ -167,31 +187,62 @@ function AboutTab() {
   return (
     <div>
       <p className="text-sm text-content-heading leading-relaxed mb-5">
-        A visual deck builder and goldfish simulator for Magic: The Gathering. A father-son project built for players who love the craft of brewing.
+        The Brew Lab is a minimal, visual deck builder and goldfish simulator
+        for Magic: The Gathering. A father-son project for teaching, learning,
+        and experimentation built for players who love the craft of brewing.
       </p>
 
       {/* Team */}
-      <p className="text-[10px] font-bold uppercase tracking-widest text-content-muted mb-2">Team</p>
-      <MonogramRow letter="P" name="Phi & Thurgood Nguyen" role="Design, UX, and product direction" />
-      <MonogramRow letter="A" name="Claude · Anthropic" role="AI implementation partner" />
+      <p className="text-[10px] font-bold uppercase tracking-widest text-content-muted mb-2">
+        Team
+      </p>
+      <MonogramRow
+        letter="PT"
+        name="Phi & Thurgood Nguyen"
+        role="Design, UX, and product direction"
+      />
+      <MonogramRow
+        letter="A"
+        name="Claude · Anthropic"
+        role="AI implementation partner"
+      />
 
       <div className="border-b border-line-subtle my-5" />
 
       {/* Powered By */}
-      <p className="text-[10px] font-bold uppercase tracking-widest text-content-muted mb-2">Powered By</p>
-      <MonogramRow letter="S" name="Scryfall" role="Card data, images, and search API" />
-      <MonogramRow letter="▲" name="Next.js + Vercel" role="React framework and hosting" />
-      <MonogramRow letter="T" name="Tailwind CSS" role="Utility-first styling" />
+      <p className="text-[10px] font-bold uppercase tracking-widest text-content-muted mb-2">
+        Powered By
+      </p>
+      <MonogramRow
+        letter="S"
+        name="Scryfall"
+        role="Card data, images, and search API"
+      />
+      <MonogramRow
+        letter="▲"
+        name="Next.js + Vercel"
+        role="React framework and hosting"
+      />
+      <MonogramRow
+        letter="T"
+        name="Tailwind CSS"
+        role="Utility-first styling"
+      />
 
       <div className="border-b border-line-subtle my-5" />
 
       {/* Legal */}
-      <p className="text-[10px] font-bold uppercase tracking-widest text-content-muted mb-2">Legal</p>
-      <p className="text-[10px] text-content-disabled leading-relaxed mb-3">
-        TheBrewLab is unofficial Fan Content permitted under the Fan Content Policy. Not approved/endorsed by Wizards. Portions of the materials used are property of Wizards of the Coast. ©Wizards of the Coast LLC.
+      <p className="text-[10px] font-bold uppercase tracking-widest text-content-muted mb-2">
+        Legal
       </p>
       <p className="text-[10px] text-content-disabled leading-relaxed mb-3">
-        Card data and images provided by Scryfall. TheBrewLab is not produced by or endorsed by Scryfall.
+        The Brew Lab is unofficial Fan Content permitted under the Fan Content
+        Policy. Not approved/endorsed by Wizards. Portions of the materials used
+        are property of Wizards of the Coast. ©Wizards of the Coast LLC.
+      </p>
+      <p className="text-[10px] text-content-disabled leading-relaxed mb-3">
+        Card data and images provided by Scryfall. The Brew Lab is not produced
+        by or endorsed by Scryfall.
       </p>
       <p className="text-[10px] text-content-disabled leading-relaxed mb-3">
         Magic: The Gathering is a trademark of Wizards of the Coast LLC.
@@ -206,7 +257,8 @@ function SupportTab() {
   return (
     <div>
       <p className="text-sm text-content-muted leading-relaxed mb-5">
-        TheBrewLab is free and open source. Here&apos;s how to connect and contribute.
+        The Brew Lab is free and open source. Here&apos;s how to connect and
+        contribute.
       </p>
 
       {/* Buy Me a Coffee */}
@@ -219,7 +271,9 @@ function SupportTab() {
         <Coffee className="w-[18px] h-[18px] text-yellow-400 shrink-0" />
         <div>
           <p className="text-sm text-content-heading">Buy Me a Coffee</p>
-          <p className="text-xs text-content-muted">Support development with a small tip</p>
+          <p className="text-xs text-content-muted">
+            Support development with a small tip
+          </p>
         </div>
         <span className="ml-auto text-content-disabled text-base">›</span>
       </a>
@@ -241,15 +295,21 @@ function SupportTab() {
         </svg>
         <div>
           <p className="text-sm text-content-heading">GitHub</p>
-          <p className="text-xs text-content-muted">itsmephi/mtg-deck-builder</p>
+          <p className="text-xs text-content-muted">
+            itsmephi/mtg-deck-builder
+          </p>
         </div>
         <span className="ml-auto text-content-disabled text-base">›</span>
       </a>
 
       {/* Future placeholder */}
       <div className="border border-dashed border-line-default rounded-lg p-6 text-center mt-6">
-        <p className="text-xs text-content-disabled">Bug reports, feature requests, and feedback</p>
-        <p className="text-[10px] font-bold uppercase tracking-wide text-content-faint mt-1.5">Coming soon</p>
+        <p className="text-xs text-content-disabled">
+          Bug reports, feature requests, and feedback
+        </p>
+        <p className="text-[10px] font-bold uppercase tracking-wide text-content-faint mt-1.5">
+          Coming soon
+        </p>
       </div>
     </div>
   );
@@ -257,7 +317,11 @@ function SupportTab() {
 
 // ─── SettingsView ─────────────────────────────────────────────────────────────
 
-export default function SettingsView({ activeTab, onTabChange, onClose }: Props) {
+export default function SettingsView({
+  activeTab,
+  onTabChange,
+  onClose,
+}: Props) {
   // Escape key closes settings
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -279,12 +343,16 @@ export default function SettingsView({ activeTab, onTabChange, onClose }: Props)
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
-            <h1 className="text-xl font-extrabold text-content-primary tracking-tight">TheBrewLab</h1>
+            <h1 className="text-xl font-extrabold text-content-primary tracking-tight">
+              The Brew Lab
+            </h1>
             <span className="ml-auto inline-flex items-center px-2 py-0.5 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[9px] font-bold uppercase tracking-wider rounded-full shrink-0">
               v{APP_VERSION}
             </span>
           </div>
-          <p className="text-xs text-content-muted pl-10 mt-0.5">Settings, info, and more</p>
+          <p className="text-xs text-content-muted pl-10 mt-0.5">
+            Settings, info, and more
+          </p>
         </div>
       </div>
 
