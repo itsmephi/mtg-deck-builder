@@ -5,6 +5,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.12.3] — Hotfix: The Brew Lab Rename
+
+### Fixed
+- Renamed "TheBrewLab" → "The Brew Lab" throughout Settings Hub: header title, About description, legal disclaimers (WotC Fan Content, Scryfall attribution), and Support tab intro copy
+- About description rewritten: adds project name inline, expands purpose to include "teaching, learning, and experimentation"
+- Team monogram updated: `"P"` → `"PT"` to represent Phi & Thurgood together
+
+---
+
 ## [1.12.2] — Sidebar Tabs + Search Sort Fix
 
 ### Fixed
