@@ -11,7 +11,13 @@
 - [x] **bug** | Sidebar tabs: raised appearance and missing blue active indicator bar (#75) *(closed v1.12.2)*
 - [x] **bug** | Sort broken in search view (#76) *(closed v1.12.2)*
 
-### v1.13.0 — CardModal & Search Polish
+### v1.13.0 — Commander Eligibility Fixes + Vehicle/Spacecraft Support
+- [ ] **bug** | Reversible card commander eligibility — Secret Lair display commanders fail isEligibleCommander check due to type_line in card_faces
+- [ ] **bug** | Variant picker empty after art swap — oracle_id lookup fails for reversible cards; switching to name-based lookup
+- [ ] **enhancement** | Vehicle/Spacecraft commander support — July 2025 rules update allowing legendary Vehicles/Spacecraft with P/T as commanders
+- [ ] **chore** | Extend ScryfallCard type with power/toughness fields
+
+### v1.14.0 — CardModal & Search Polish
 - [ ] **enhancement** | CardModal search view: forward/back navigation buttons to mimic deck card modal behavior (#77)
 - [ ] **enhancement** | Settings Hub: "Submit a Bug" button/link in Support tab (#78)
 - [ ] **enhancement** | Search: auto-match format badge to active deck's format (#79)
@@ -54,10 +60,9 @@
 - [x] **chore** | App title tag and meta — update page title from "MTG Deck Builder" to TheBrewLab *(closed v1.12.4)*
 - [ ] **feature** | Quick-add card by name from deck view — add a card without switching to search tab; inline name input or dedicated quick-add button ⚠️ needs design
 - [ ] **enhancement** | Default search year range should be "All" — year filter defaults to last 5 years; change default to All and update year fields to reflect
-- [ ] **enhancement** | Commander eligibility: expand to Spacecraft and Vehicle type lines — currently requires Legendary Creature; Spacecraft/Vehicle subtypes should also qualify
 - [ ] **enhancement** | Bulk mark all cards as owned — quick action to set owned qty on all cards at once ⚠️ needs design
 - [ ] **enhancement** | Font size tokens — type feels small; establish font-size CSS custom properties (similar to color token system) for consistent scaling
-- [ ] **bug** | Secret Lair cards cannot be set as commander — eligibility check fails for Secret Lair printings; likely a type_line or oracle_text mismatch
+- [ ] **chore** | Explore MCP filesystem connection — investigate whether Claude Chat can write files directly to local repo via MCP, eliminating manual download step ⚠️ needs research
 
 ---
 

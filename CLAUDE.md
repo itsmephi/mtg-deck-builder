@@ -47,7 +47,7 @@ For straightforward bug fixes and small enhancements, `/plan` → PROCEED → bu
 ---
 
 ## Active Milestone
-→ v1.13.0 (5 items: CardModal fwd/back nav, Submit a Bug button, search format badge, set abbreviation click, artist name click)
+→ v1.13.0 (4 items: reversible card commander eligibility fix, variant picker name-based lookup fix, Vehicle/Spacecraft commander support, interactive tooltip with info icon)
 
 ---
 

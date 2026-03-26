@@ -57,6 +57,41 @@ globs:
 
 12. **Sync project files** — Phi hits sync so the next planning session starts with current context.
 
+---
+
+## Prompt File Workflow
+
+Claude Chat produces spec and prompt files for implementation. Here's how they flow:
+
+### File locations
+- **Spec files** → `docs/vX.X.X-description-spec.md` (committed, permanent reference)
+- **Prompt files** → `docs/prompts/vX.X.X-prompt-N-description.md` (uncommitted, deleted after release)
+
+### Workflow steps
+
+1. **Claude Chat** generates spec + prompt files
+2. **Phi** downloads and saves to repo:
+   - Spec → `docs/`
+   - Prompts → `docs/prompts/`
+3. **Claude Code** commits spec only:
+   ```bash
+   git add docs/vX.X.X-*-spec.md
+   git commit -m "docs: add vX.X.X spec"
+   ```
+4. **Claude Code** reads and executes prompts in order (prompts stay uncommitted)
+5. **After `/commit-release vX.X.X`**, Claude Code deletes prompt files:
+   ```bash
+   rm docs/prompts/vX.X.X-*.md
+   ```
+   (No commit needed — they were never committed)
+
+### Naming conventions
+- Spec: `vX.X.X-short-description-spec.md`
+- Prompts: `vX.X.X-prompt-1-short-description.md`, `vX.X.X-prompt-2-...`, etc.
+- Prompt numbers indicate execution order
+
+---
+
 ## Carry-Forward vs Hot-Fix Rule
 - Carry-forwards are fine for one-liners or direct fixes to what was just built.
 - If a carry-forward requires new design decisions mid-QA, flag as a separate hot-fix version.
