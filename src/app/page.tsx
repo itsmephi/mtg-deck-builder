@@ -37,6 +37,7 @@ export default function Dashboard() {
   const [sidebarFilters, setSidebarFilters] = useState<FilterState>(DEFAULT_FILTERS);
   const [tileSize, setTileSizeState] = useState<TileSizeKey>(DEFAULT_TILE_SIZE);
   const [showSearchTakeover, setShowSearchTakeover] = useState(false);
+  const [pendingSearch, setPendingSearch] = useState<string | null>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem("mtg-sidebar-active-tab");
@@ -132,6 +133,8 @@ export default function Dashboard() {
                 onTileSizeChange={setTileSize}
                 showSearchTakeover={showSearchTakeover}
                 onDismissTakeover={() => setShowSearchTakeover(false)}
+                triggerSearch={pendingSearch}
+                onTriggerSearchConsumed={() => setPendingSearch(null)}
               />
             </div>
             <div className={activeTab === "decks" ? "flex-1 overflow-hidden p-4" : "hidden"}>
@@ -144,6 +147,10 @@ export default function Dashboard() {
                 onAddFirstCard={() => {
                   handleTabChange("search");
                   setShowSearchTakeover(true);
+                }}
+                onSearchQuery={(q) => {
+                  setPendingSearch(q);
+                  handleTabChange("search");
                 }}
               />
             </div>

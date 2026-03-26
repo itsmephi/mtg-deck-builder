@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { LayoutGrid, List } from "lucide-react";
+import { LayoutGrid, List, ArrowUp, ArrowDown } from "lucide-react";
 import { searchCards, autocompleteCards, lookupSetCode } from "@/lib/scryfall";
 import { parseSearchQuery } from "@/lib/nlpParser";
 import { ScryfallCard } from "@/types";
@@ -24,13 +24,14 @@ interface SearchWorkspaceProps {
   onTileSizeChange: (stop: TileSizeKey) => void;
   showSearchTakeover?: boolean;
   onDismissTakeover?: () => void;
+  triggerSearch?: string | null;
+  onTriggerSearchConsumed?: () => void;
 }
 
 const SORT_ORDER_MAP: Record<string, string> = {
   relevance: "",
   name: "order:name",
-  price_asc: "order:usd dir:asc",
-  price_desc: "order:usd",
+  price: "order:usd",
   mv: "order:mv",
   color: "order:color",
 };
@@ -50,7 +51,7 @@ function buildFilterSyntax(activeDeck: Deck | undefined, filterActive: boolean):
   return syntax;
 }
 
-export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivateChip, sidebarFilters, tileSize, onTileSizeChange, showSearchTakeover, onDismissTakeover }: SearchWorkspaceProps) {
+export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivateChip, sidebarFilters, tileSize, onTileSizeChange, showSearchTakeover, onDismissTakeover, triggerSearch, onTriggerSearchConsumed }: SearchWorkspaceProps) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<ScryfallCard[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -65,7 +66,13 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showAutocomplete, setShowAutocomplete] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [sortOrder, setSortOrder] = useState("price_desc");
+  const SORT_DIR_KEY = "mtg-search-sort-direction";
+  const [sortOrder, setSortOrder] = useState("price");
+  const [sortDir, setSortDirState] = useState<"asc" | "desc">("desc");
+  const setSortDir = (dir: "asc" | "desc") => {
+    setSortDirState(dir);
+    localStorage.setItem(SORT_DIR_KEY, dir);
+  };
   const [setMatch, setSetMatch] = useState<{ query: string; code: string; name: string } | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -98,9 +105,12 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
     }
     if (sidebarFilterSyntax) parts.push(sidebarFilterSyntax);
     const sortClause = SORT_ORDER_MAP[sortOrder];
-    if (sortClause) parts.push(sortClause);
+    if (sortClause) {
+      parts.push(sortClause);
+      parts.push(`dir:${sortDir}`);
+    }
     return parts.filter(Boolean).join(" ").trim();
-  }, [filterSyntax, activeChipQuery, parsed, sidebarFilterSyntax, setMatch, sortOrder]);
+  }, [filterSyntax, activeChipQuery, parsed, sidebarFilterSyntax, setMatch, sortOrder, sortDir]);
 
   // Derived: filter badge data
   const filterBadge = useMemo(() => {
@@ -123,9 +133,11 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
     [activeDeck?.cards]
   );
 
-  // Initialize filterActive from localStorage on mount
+  // Initialize filterActive and sortDir from localStorage on mount
   useEffect(() => {
     setFilterActive(readFilterActive(activeDeck?.id));
+    const storedDir = localStorage.getItem(SORT_DIR_KEY);
+    if (storedDir === "asc" || storedDir === "desc") setSortDirState(storedDir);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -197,6 +209,15 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
       setShowAutocomplete(false);
     }
   }, [activeChipQuery]);
+
+  // Consume external search trigger (from set/artist click in deck context)
+  useEffect(() => {
+    if (!triggerSearch) return;
+    setQuery(triggerSearch);
+    setSuggestions([]);
+    setShowAutocomplete(false);
+    onTriggerSearchConsumed?.();
+  }, [triggerSearch]);
 
   const handleRemoveToken = useCallback(
     (index: number) => {
@@ -375,11 +396,26 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
                 >
                   <option value="relevance" className="bg-surface-base">Sort: Relevance</option>
                   <option value="name" className="bg-surface-base">Name</option>
-                  <option value="price_asc" className="bg-surface-base">Price ↑</option>
-                  <option value="price_desc" className="bg-surface-base">Price ↓</option>
+                  <option value="price" className="bg-surface-base">Price</option>
                   <option value="mv" className="bg-surface-base">Mana Value</option>
                   <option value="color" className="bg-surface-base">Color</option>
                 </select>
+                <div className="group relative flex items-center justify-center">
+                  <button
+                    onClick={() => setSortDir(sortDir === "asc" ? "desc" : "asc")}
+                    disabled={sortOrder === "relevance"}
+                    className={`flex items-center justify-center w-5 h-5 rounded transition-colors ${
+                      sortOrder === "relevance"
+                        ? "text-content-disabled cursor-not-allowed"
+                        : "text-content-tertiary hover:text-content-primary"
+                    }`}
+                  >
+                    {sortDir === "asc" ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />}
+                  </button>
+                  <span className="absolute bottom-full mb-1.5 left-1/2 -translate-x-1/2 px-2 py-1 bg-surface-raised border border-line-default text-content-heading text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                    {sortDir === "asc" ? "Sort ascending" : "Sort descending"}
+                  </span>
+                </div>
               </div>
               <TileSizeSlider activeStop={tileSize} onChangeStop={onTileSizeChange} />
               <div className="w-px self-stretch bg-surface-raised mx-0.5" />
@@ -445,16 +481,22 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
         )}
       </div>
 
-      {selectedCard && (
-        <CardModal
-          card={selectedCard}
-          onClose={() => setSelectedCard(null)}
-          context="search"
-          onAddToDeck={async (card) => {
-            await handleAdd(card);
-          }}
-        />
-      )}
+      {selectedCard && (() => {
+        const idx = results.findIndex((r) => r.id === selectedCard.id);
+        const hasNext = idx >= 0 && idx < results.length - 1;
+        const hasPrev = idx > 0;
+        return (
+          <CardModal
+            card={selectedCard}
+            onClose={() => setSelectedCard(null)}
+            context="search"
+            onAddToDeck={async (card) => { await handleAdd(card); }}
+            onNext={hasNext ? () => setSelectedCard(results[idx + 1]) : undefined}
+            onPrev={hasPrev ? () => setSelectedCard(results[idx - 1]) : undefined}
+            onSearchQuery={(q) => { setQuery(q); setSelectedCard(null); }}
+          />
+        );
+      })()}
 
       {/* Toast notification */}
       {toastMessage && (

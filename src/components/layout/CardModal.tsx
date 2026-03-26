@@ -21,6 +21,7 @@ interface CardModalProps {
   onPrev?: () => void;
   context?: "search" | "deck";
   onAddToDeck?: (card: ScryfallCard) => void;
+  onSearchQuery?: (query: string) => void;
 }
 
 export default function CardModal({
@@ -31,6 +32,7 @@ export default function CardModal({
   onPrev,
   context = "deck",
   onAddToDeck,
+  onSearchQuery,
 }: CardModalProps) {
   if (!card) return null;
 
@@ -360,11 +362,33 @@ export default function CardModal({
                       Product Details
                     </h3>
                     <div className="space-y-1 text-sm px-1">
+                      {currentFace.artist && (
+                        <p>
+                          <span className="font-bold text-content-primary">Artist:</span>{" "}
+                          {onSearchQuery ? (
+                            <button
+                              onClick={() => { onSearchQuery(`a:"${currentFace.artist}"`); onClose(); }}
+                              className="text-blue-400 hover:underline cursor-pointer"
+                            >
+                              {currentFace.artist}
+                            </button>
+                          ) : (
+                            <span className="text-blue-400">{currentFace.artist}</span>
+                          )}
+                        </p>
+                      )}
                       <p>
-                        <span className="font-bold text-content-primary">Artist:</span>{" "}
-                        <span className="text-blue-400">
-                          {currentFace.artist}
-                        </span>
+                        <span className="font-bold text-content-primary">Set:</span>{" "}
+                        {onSearchQuery ? (
+                          <button
+                            onClick={() => { onSearchQuery(`e:${previewCard.set}`); onClose(); }}
+                            className="text-content-secondary hover:underline cursor-pointer uppercase"
+                          >
+                            {previewCard.set}
+                          </button>
+                        ) : (
+                          <span className="text-content-secondary uppercase">{previewCard.set}</span>
+                        )}
                       </p>
                       <p>
                         <span className="font-bold text-content-primary">Rarity:</span>{" "}

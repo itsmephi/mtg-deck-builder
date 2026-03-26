@@ -22,6 +22,7 @@ interface WorkspaceProps {
   tileSize: TileSizeKey;
   onTileSizeChange: (stop: TileSizeKey) => void;
   onAddFirstCard?: () => void;
+  onSearchQuery?: (query: string) => void;
 }
 
 // Color sort: WUBRG mono → multicolor (by combination) → colorless/missing
@@ -49,7 +50,7 @@ interface ConfirmDialogState {
   targetFormat: DeckFormat;
 }
 
-export default function Workspace({ pendingImport, processImport, cancelImport, tileSize, onTileSizeChange, onAddFirstCard }: WorkspaceProps) {
+export default function Workspace({ pendingImport, processImport, cancelImport, tileSize, onTileSizeChange, onAddFirstCard, onSearchQuery }: WorkspaceProps) {
   const {
     decks,
     activeDeck,
@@ -611,6 +612,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
                   ? () => setSelectedCard(sortedCards[currentIndex - 1])
                   : undefined
               }
+              onSearchQuery={onSearchQuery}
             />
           );
         })()}
