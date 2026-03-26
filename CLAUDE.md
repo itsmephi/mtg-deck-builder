@@ -3,7 +3,7 @@ Authors: Phi & Thurgood Nguyen
 Stack: Next.js + TypeScript + Tailwind CSS
 Deployed: Vercel | Repo: GitHub (itsmephi/mtg-deck-builder)
 IDE: VS Code (Windows, primary) · Zed on Steam Deck (Linux, secondary)
-Current Version: v1.12.5 — see CHANGELOG.md for full history
+Current Version: v1.13.0 — see CHANGELOG.md for full history
 
 ---
 
@@ -47,7 +47,7 @@ For straightforward bug fixes and small enhancements, `/plan` → PROCEED → bu
 ---
 
 ## Active Milestone
-→ v1.13.0 (4 items: reversible card commander eligibility fix, variant picker name-based lookup fix, Vehicle/Spacecraft commander support, interactive tooltip with info icon)
+→ v1.14.0 (5 items: CardModal fwd/back nav, Submit a Bug button, search format badge, set abbreviation click, artist name click)
 
 ---
 
@@ -110,7 +110,7 @@ src/
 - `setMatch` state in SearchWorkspace: debounced 500ms lookup fires when `parsed.remainder` has 2+ words; injects `e:CODE` into scryfallQuery; guarded by `setMatch.query === parsed.remainder`
 - `anyPrice: boolean` in FilterState: when true, `buildSidebarFilterSyntax` skips all price clauses; slider/inputs dim via `opacity-30 pointer-events-none`
 - `yearMin`/`yearMax` in FilterState: default last 5 years (CURRENT_YEAR-4 to CURRENT_YEAR); year syntax only injected when `yearMin > 1993` or `yearMax < CURRENT_YEAR`; presets: "This Year" (currentYear–currentYear), "Last 5 Yrs" (default), "All" (1993–currentYear); `released_at?: string` on `ScryfallCard` (ISO date "YYYY-MM-DD") — displayed in CardModal Product Details
-- `isEligibleCommander`: requires `type_line` contains both "Legendary" AND "Creature", OR `oracle_text` contains "can be your commander"
+- `isEligibleCommander`: requires `type_line` contains "Legendary" AND "Creature", OR `oracle_text` contains "can be your commander", OR `type_line` contains "Legendary" AND ("Vehicle" OR "Spacecraft") AND card has `power`/`toughness` defined; falls back to `card_faces[0]` for reversible cards where root `type_line`/`oracle_text` may be absent
 - `groupCardsByType` in Workspace: prepends `Commander` group when `format === "commander" && commanderId && deckViewMode === "main"`; commander card is routed there instead of its type bucket
 - Design token system: 25 semantic CSS custom properties; dual palette — Warm Stone default (`:root`), Zed Dark alt (`[data-theme="zed-dark"]`). Registered via `@theme inline` as Tailwind utilities. Token categories: `surface-base/raised/overlay/backdrop/panel/panel-raised/deep/hover` → `bg-surface-*`; `input-surface/edge/edge-focus/value/placeholder` → `bg-input-surface`, `border-input-edge/edge-focus`, `text-input-value/placeholder`; `content-primary/heading/secondary/tertiary/muted/faint/disabled` → `text-content-*`; `line-default/subtle/panel/focus/hover` → `border-line-*`. Depth model: Warm Stone sidebar RAISED (panel lighter than base), Zed Dark sidebar RECESSED (panel darker than base) — same token names, theme handles difference. Theme switching: `document.documentElement.dataset.theme = 'zed-dark'` / `delete document.documentElement.dataset.theme` — UI toggle in Settings Hub → Preferences tab; persists to `localStorage` key `mtg-theme`; initialized via inline `<script>` in `layout.tsx` `<head>` to prevent flash. NOT tokenized: opacity variants (e.g. `bg-neutral-800/50`), accent colors, `text-neutral-100`. All other flagged mid-tones resolved: `text-neutral-700` → `text-content-disabled`, `bg-neutral-950` → `bg-surface-deep`, `hover:bg-neutral-600` → `hover:bg-surface-hover`, `border-neutral-600` → `border-line-hover`, `focus-within:border-neutral-600` → `focus-within:border-input-edge-focus`. Naming rule: `@theme inline` generates `[property-prefix]-[color-name]` — color name must not repeat the property prefix (e.g. `--color-text-*` would generate `text-text-*`; `--color-border-*` would generate `border-border-*`).
 

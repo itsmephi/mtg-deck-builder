@@ -1,8 +1,17 @@
-export const APP_VERSION = "1.12.5";
+export const APP_VERSION = "1.13.0";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.13.0": [
+    "Bug fix: reversible card commander eligibility — Secret Lair display commanders (e.g. Atraxa, Praetors' Voice) failed the isEligibleCommander check because their type_line lives in card_faces[0] rather than the root; now falls back to card_faces[0].type_line and card_faces[0].oracle_text",
+    "Bug fix: Swap Art variant picker was empty for reversible/Secret Lair cards — oracle_id lookup fails for these layouts; now uses name-based exact search (Scryfall !'name' syntax) for DFCs and oracle_id for standard cards",
+    "Enhancement: Vehicle/Spacecraft commander support — July 2025 rules update; legendary Vehicles and Spacecraft with defined P/T are now eligible commanders",
+    "Enhancement: crown badge tooltip now uses a styled hover div instead of a browser title attribute — eligible creature commanders show 'Set as Commander'; eligible Vehicle/Spacecraft commanders add a blue ⓘ info icon linking to the WotC Edge of Eternities mechanics article",
+    "Enhancement: tooltip has a 150ms dismiss delay so the mouse can travel from the crown badge to the ⓘ link without the tooltip disappearing",
+    "Chore: ScryfallCard type extended with optional power and toughness fields (string | undefined)",
+    "Chore: isVehicleOrSpacecraftCommander helper exported from formatRules.ts for use in VisualCard and ListCardTable",
+  ],
   "1.12.5": [
     "Bug fix: home button now works from the settings overlay — clicking navigates home and closes settings in both expanded and collapsed sidebar states",
     "Bug fix: home button no longer shows prohibition cursor when settings is open on the home screen — disabled state now only applies when actually viewing the home screen without settings",

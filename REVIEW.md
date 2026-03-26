@@ -2,6 +2,24 @@
 
 ---
 
+## v1.13.0 — Commander Eligibility Fixes + Vehicle/Spacecraft Support
+Status: APPROVED ✅
+
+### Session Summary
+
+**What shipped (4 prompts):**
+
+- **`src/types/index.ts`** — `ScryfallCard` extended with `power?: string` and `toughness?: string` fields, placed after `color_identity` and before `released_at`
+- **`src/lib/formatRules.ts`** — `isEligibleCommander` rewritten: falls back to `card_faces[0]` for reversible cards; adds Vehicle/Spacecraft + P/T path for July 2025 rules; `isVehicleOrSpacecraftCommander` helper exported
+- **`src/lib/scryfall.ts`** — `getCardPrintings` signature changed to `(cardName: string, oracleId: string)`; DFCs (name contains ` // `) use front-face exact name search; standard cards use `oracleid:` query
+- **`src/components/layout/CardModal.tsx`** — `getCardPrintings` call updated to pass both `previewCard.name` and `previewCard.oracle_id`; loading spinner condition changed from `loading && variants.length === 0` to `loading`; spinner class fixed from invisible `border-t-tertiary` to `border-t-blue-400`
+- **`src/components/workspace/VisualCard.tsx`** — `isVehicleOrSpacecraftCommander` imported; `isVehicleOrSpacecraft` computed per card; `showCrownTooltip` state + `crownTooltipTimeout` ref added; non-commander crown wrapped in hover container with 150ms dismiss delay; interactive tooltip div replaces `title` attribute; ⓘ link conditionally rendered for Vehicle/Spacecraft
+- **`src/components/workspace/ListCardTable.tsx`** — same pattern as VisualCard; `hoveredCrownId` state + `crownTooltipTimeout` ref added; tooltip renders to the right of the crown icon; same 150ms dismiss delay
+
+**Closed from backlog:** reversible card eligibility bug · variant picker empty bug · Vehicle/Spacecraft commander enhancement · ScryfallCard power/toughness chore
+
+---
+
 ## v1.12.5 — Hotfix: Home Screen & Settings Navigation
 Status: APPROVED ✅
 

@@ -7,16 +7,6 @@
 ## Active Milestone
 <!-- Items promoted from Pipeline for the current release. Cleared after release ships. -->
 
-### v1.12.2 — Quick Bug Fixes
-- [x] **bug** | Sidebar tabs: raised appearance and missing blue active indicator bar (#75) *(closed v1.12.2)*
-- [x] **bug** | Sort broken in search view (#76) *(closed v1.12.2)*
-
-### v1.13.0 — Commander Eligibility Fixes + Vehicle/Spacecraft Support
-- [ ] **bug** | Reversible card commander eligibility — Secret Lair display commanders fail isEligibleCommander check due to type_line in card_faces
-- [ ] **bug** | Variant picker empty after art swap — oracle_id lookup fails for reversible cards; switching to name-based lookup
-- [ ] **enhancement** | Vehicle/Spacecraft commander support — July 2025 rules update allowing legendary Vehicles/Spacecraft with P/T as commanders
-- [ ] **chore** | Extend ScryfallCard type with power/toughness fields
-
 ### v1.14.0 — CardModal & Search Polish
 - [ ] **enhancement** | CardModal search view: forward/back navigation buttons to mimic deck card modal behavior (#77)
 - [ ] **enhancement** | Settings Hub: "Submit a Bug" button/link in Support tab (#78)
@@ -89,16 +79,16 @@
 ---
 
 ## Closed (Recent)
-<!-- Keep last 2 releases (v1.11.x + v1.12.x); archive older entries to CHANGELOG.md -->
+<!-- Keep last 2 releases (v1.12.x + v1.13.x); archive older entries to CHANGELOG.md -->
+
+### v1.13.0
+- [x] **bug** | Reversible card commander eligibility — Secret Lair display commanders fail isEligibleCommander check due to type_line in card_faces *(closed v1.13.0)*
+- [x] **bug** | Variant picker empty after art swap — oracle_id lookup fails for reversible cards; switching to name-based lookup *(closed v1.13.0)*
+- [x] **enhancement** | Vehicle/Spacecraft commander support — July 2025 rules update allowing legendary Vehicles/Spacecraft with P/T as commanders *(closed v1.13.0)*
+- [x] **chore** | Extend ScryfallCard type with power/toughness fields *(closed v1.13.0)*
 
 ### v1.12.0
 - [x] **enhancement** | Settings panel redesign — SettingsView workspace takeover, theme picker, What's New, About, Support tabs *(closed v1.12.0)*
 
-### v1.11.1
-- [x] **enhancement** | Search bar focus ring (border-input-edge-focus) is too prominent — muted from #c07a50 to #a0725c in Warm Stone palette *(closed v1.11.1)*
-- [x] **chore** | Add Claude Chat deliverable rule to CLAUDE.md: spec and prompts must be separate files *(closed v1.11.1)*
-
-### v1.11.0
-- [x] **enhancement** | Dual-palette theme system: 25 tokens (expanded from 12), Warm Stone default + Zed Dark alt palette, sidebar panel tokens, input tokens, resolved all v1.10.0 flagged mid-tone classes *(closed v1.11.0)*
 
 ---

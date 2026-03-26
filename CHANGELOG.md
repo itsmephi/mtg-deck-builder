@@ -5,6 +5,25 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.13.0] — Commander Eligibility Fixes + Vehicle/Spacecraft Support
+
+### Fixed
+- **Reversible card commander eligibility**: Secret Lair display commanders (e.g. Atraxa, Praetors' Voice) failed `isEligibleCommander` because their `type_line` lives in `card_faces[0]`, not the root. `isEligibleCommander` now falls back to `card_faces[0].type_line` and `card_faces[0].oracle_text` for reversible cards.
+- **Swap Art variant picker empty for reversible cards**: `getCardPrintings` used `oracle_id` lookup, which doesn't return results for reversible/Secret Lair layouts. Now uses Scryfall exact name search (`!"name"`) for DFCs and `oracle_id` for standard single-faced cards.
+- **Swap Art loading spinner invisible**: spinner used `border-t-tertiary`, an unmapped token that resolved to transparent. Fixed to `border-t-blue-400`; spinner container changed to `h-48` with centered alignment.
+
+### Added
+- **Vehicle/Spacecraft commander support**: July 2025 rules update — legendary Vehicles and Spacecraft with defined P/T are now eligible commanders. `isEligibleCommander` checks `type_line` for `Vehicle` or `Spacecraft` alongside existing Legendary Creature and oracle text checks.
+- **Interactive crown badge tooltip**: replaces the browser `title` attribute with a styled hover div. Shows "Set as Commander" for eligible creatures; adds a blue ⓘ info icon for eligible Vehicles/Spacecraft linking to the WotC Edge of Eternities mechanics article.
+- **Tooltip dismiss delay**: 150ms timeout before hiding the tooltip — allows the mouse to travel from the crown badge to the ⓘ link without it disappearing. Applies to both grid view (VisualCard) and list view (ListCardTable).
+
+### Technical
+- `ScryfallCard` type extended with optional `power?: string` and `toughness?: string` fields
+- `isVehicleOrSpacecraftCommander(card)` exported from `formatRules.ts` — used by VisualCard and ListCardTable to conditionally render the ⓘ link
+- `getCardPrintings` signature updated to `(cardName: string, oracleId: string)` — DFC detection via `cardName.includes(' // ')`
+
+---
+
 ## [1.12.5] — Hotfix: Home Screen & Settings Navigation
 
 ### Fixed
