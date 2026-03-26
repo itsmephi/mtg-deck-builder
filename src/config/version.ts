@@ -1,8 +1,20 @@
-export const APP_VERSION = "1.12.3";
+export const APP_VERSION = "1.12.4";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.12.4": [
+    "Home screen: app loads to a welcome screen instead of an empty workspace on first visit or after navigating home — shows heading, rotating tagline, deck cover cards, and a ghost deck card to create a new deck",
+    "Rotating taglines: 13 taglines chosen at random per session (sessionStorage-backed) — same tagline shown on refresh, new one each session",
+    "Deck cover cards: each saved deck appears on the home screen with a deterministic gradient tint; click to open directly",
+    "Ghost deck card (home screen): dashed card tile opens the format picker to create a new deck",
+    "Ghost card in empty workspace: empty deck shows a dashed ghost tile in the card grid — click to trigger the search takeover",
+    "Search takeover: empty-deck-aware search entry point — heading, autofocused input, quick-tag buttons (Ramp, Removal, Card Draw, etc.) — opens on Search tab when ghost card is clicked",
+    "Sidebar 'New Deck' button replaced with a dashed ghost slot — same FormatPicker behaviour, quieter visual",
+    "Home icon added to expanded sidebar footer (left of version badge) and collapsed rail (below Settings) — dimmed when already on home screen, navigates home when active",
+    "Page title updated to 'TheBrewLab'",
+    "useDeckManager: no auto-create deck on first load or last-deck delete — empty state now shows home screen instead of a blank Untitled deck",
+  ],
   "1.12.3": [
     "Hotfix: renamed 'TheBrewLab' to 'The Brew Lab' throughout Settings Hub — header, About description, legal disclaimers, and Support tab copy",
     "About description updated: added project name, expanded purpose to include teaching and learning",

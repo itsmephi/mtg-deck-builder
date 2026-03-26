@@ -22,7 +22,7 @@ export type SortDir = "asc" | "desc";
 interface DeckContextType {
   decks: Deck[];
   activeDeck: Deck | undefined;
-  setActiveDeckId: (id: string) => void;
+  setActiveDeckId: (id: string | null) => void;
   updateActiveDeck: (updater: (deck: Deck) => Deck) => void;
   updateOwnedQty: (cardId: string, qty: number) => void;
   createNewDeck: (format?: DeckFormat) => void;
@@ -93,27 +93,17 @@ export function DeckProvider({ children }: { children: ReactNode }) {
             }
           }
         } else {
-          const defaultDeck = {
-            id: crypto.randomUUID(),
-            name: "",
-            cards: [],
-            format: "freeform" as DeckFormat,
-          };
-          setDecks([defaultDeck]);
-          setActiveDeckIdState(defaultDeck.id);
+          // No stored decks — show home screen
+          setDecks([]);
+          setActiveDeckIdState(null);
         }
       } catch (e) {
         console.error("Failed to parse decks from local storage");
       }
     } else {
-      const defaultDeck = {
-        id: crypto.randomUUID(),
-        name: "",
-        cards: [],
-        format: "freeform" as DeckFormat,
-      };
-      setDecks([defaultDeck]);
-      setActiveDeckIdState(defaultDeck.id);
+      // No localStorage entry — first visit, show home screen
+      setDecks([]);
+      setActiveDeckIdState(null);
     }
 
     // Load sort preference
@@ -142,8 +132,12 @@ export function DeckProvider({ children }: { children: ReactNode }) {
   }, [decks, isMounted]);
 
   useEffect(() => {
-    if (isMounted && activeDeckId) {
-      localStorage.setItem(ACTIVE_DECK_KEY, activeDeckId);
+    if (isMounted) {
+      if (activeDeckId) {
+        localStorage.setItem(ACTIVE_DECK_KEY, activeDeckId);
+      } else {
+        localStorage.removeItem(ACTIVE_DECK_KEY);
+      }
     }
   }, [activeDeckId, isMounted]);
 
@@ -165,7 +159,7 @@ export function DeckProvider({ children }: { children: ReactNode }) {
     }
   }, [showThumbnail, isMounted]);
 
-  const setActiveDeckId = (id: string) => {
+  const setActiveDeckId = (id: string | null) => {
     setActiveDeckIdState(id);
   };
 
@@ -217,14 +211,8 @@ export function DeckProvider({ children }: { children: ReactNode }) {
       const filtered = prev.filter((d) => d.id !== id);
 
       if (filtered.length === 0) {
-        const freshDeck: Deck = {
-          id: crypto.randomUUID(),
-          name: "",
-          cards: [],
-          format: "freeform",
-        };
-        setActiveDeckIdState(freshDeck.id);
-        return [freshDeck];
+        setActiveDeckIdState(null);
+        return [];
       }
 
       if (activeDeckId === id) {

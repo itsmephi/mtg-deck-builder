@@ -21,6 +21,7 @@ interface WorkspaceProps {
   cancelImport: () => void;
   tileSize: TileSizeKey;
   onTileSizeChange: (stop: TileSizeKey) => void;
+  onAddFirstCard?: () => void;
 }
 
 // Color sort: WUBRG mono → multicolor (by combination) → colorless/missing
@@ -48,14 +49,12 @@ interface ConfirmDialogState {
   targetFormat: DeckFormat;
 }
 
-export default function Workspace({ pendingImport, processImport, cancelImport, tileSize, onTileSizeChange }: WorkspaceProps) {
+export default function Workspace({ pendingImport, processImport, cancelImport, tileSize, onTileSizeChange, onAddFirstCard }: WorkspaceProps) {
   const {
     decks,
     activeDeck,
-    setActiveDeckId,
     updateActiveDeck,
     updateOwnedQty,
-    createNewDeck,
     deckViewMode,
     setDeckViewMode,
     isMounted,
@@ -115,13 +114,6 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
     const storedGrouped = localStorage.getItem("mtg-group-by-type");
     if (storedGrouped === "true") setIsGroupedState(true);
   }, []);
-
-  useEffect(() => {
-    if (isMounted && !activeDeck) {
-      if (decks.length === 0) createNewDeck();
-      else setActiveDeckId(decks[0].id);
-    }
-  }, [isMounted, activeDeck, decks, createNewDeck, setActiveDeckId]);
 
   // If sideboard is deleted while in sideboard view, switch back to main
   useEffect(() => {
@@ -224,12 +216,14 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
     return activeDeck?.sideboard?.reduce((sum, c) => sum + c.quantity, 0) ?? 0;
   }, [activeDeck?.sideboard]);
 
-  if (!isMounted || !activeDeck)
+  if (!isMounted)
     return (
       <div className="p-8 text-content-muted text-sm italic">
         Initializing workspace...
       </div>
     );
+
+  if (!activeDeck) return null;
 
   const groupCardsByType = (cards: DeckCard[]) => {
     const showCommanderGroup =
@@ -431,7 +425,28 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
         ref={scrollContainerRef}
         className="flex-1 overflow-y-auto p-4 pb-20"
       >
-        {isGrouped ? (
+        {sortedCards.length === 0 && deckViewMode !== "sideboard" ? (
+          <div style={gridStyle}>
+            <div
+              onClick={onAddFirstCard}
+              className="
+                rounded-xl cursor-pointer
+                border border-dashed border-input-edge-focus
+                flex flex-col items-center justify-center gap-1.5
+                opacity-45 hover:opacity-100
+                hover:bg-[color:var(--input-edge-focus)]/5
+                transition-opacity transition-colors
+                text-[color:var(--input-edge-focus)]
+                aspect-[2.5/3.5] w-full
+              "
+            >
+              <span className="text-base leading-none">+</span>
+              <span className="text-[8px] text-center leading-tight px-1.5">
+                Add your first card
+              </span>
+            </div>
+          </div>
+        ) : isGrouped ? (
           <div className="space-y-10">
             {Object.entries(groupedCards).map(
               ([cat, cards]) =>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { Search, Layers, Coffee, Settings, Plus, PanelLeftOpen } from "lucide-react";
+import { Search, Layers, Coffee, Settings, Plus, PanelLeftOpen, Home } from "lucide-react";
 import { useDeckManager } from "@/hooks/useDeckManager";
 import { FormatPicker } from "@/components/layout/FormatPicker";
 import { DeckFormat } from "@/lib/formatRules";
@@ -10,6 +10,8 @@ interface Props {
   expandTo: (tab: "search" | "decks") => void;
   activeTab: "search" | "decks";
   onOpenSettings: (tab: "preferences" | "whatsnew" | "about" | "support") => void;
+  onGoHome: () => void;
+  isOnHomeScreen: boolean;
 }
 
 function RailTooltip({ label }: { label: string }) {
@@ -20,7 +22,7 @@ function RailTooltip({ label }: { label: string }) {
   );
 }
 
-export default function SidebarRail({ expandTo, activeTab, onOpenSettings }: Props) {
+export default function SidebarRail({ expandTo, activeTab, onOpenSettings, onGoHome, isOnHomeScreen }: Props) {
   const { createNewDeck, setDeckViewMode } = useDeckManager();
   const [railPickerOpen, setRailPickerOpen] = useState(false);
   const railPickerRef = useRef<HTMLDivElement>(null);
@@ -142,6 +144,23 @@ export default function SidebarRail({ expandTo, activeTab, onOpenSettings }: Pro
           <Settings className="w-4 h-4" />
         </button>
         <RailTooltip label="Settings" />
+      </div>
+
+      {/* Home */}
+      <div className="group relative flex items-center">
+        <button
+          onClick={isOnHomeScreen ? undefined : (e) => { e.stopPropagation(); onGoHome(); }}
+          className={`
+            w-9 h-9 rounded-full flex items-center justify-center transition-colors
+            ${isOnHomeScreen
+              ? "text-content-disabled cursor-not-allowed"
+              : "text-content-muted hover:text-content-primary hover:bg-surface-raised"
+            }
+          `}
+        >
+          <Home className="w-4 h-4" />
+        </button>
+        {!isOnHomeScreen && <RailTooltip label="Home" />}
       </div>
     </div>
   );

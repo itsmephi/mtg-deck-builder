@@ -5,7 +5,9 @@ import Sidebar from "@/components/layout/Sidebar";
 import Workspace from "@/components/workspace/Workspace";
 import SearchWorkspace from "@/components/workspace/SearchWorkspace";
 import SettingsView from "@/components/workspace/SettingsView";
+import HomeScreen from "@/components/home/HomeScreen";
 import { useDeckImportExport } from "@/hooks/useDeckImportExport";
+import { useDeckManager } from "@/hooks/useDeckManager";
 import { FilterState, DEFAULT_FILTERS, SIDEBAR_FILTERS_STORAGE_KEY, serializeFilters, deserializeFilters } from "@/components/layout/FilterPanel";
 import { TILE_SIZE_STOPS, TileSizeKey, DEFAULT_TILE_SIZE, TILE_SIZE_STORAGE_KEY } from "@/config/gridConfig";
 
@@ -18,6 +20,8 @@ export default function Dashboard() {
     processImport,
     cancelImport,
   } = useDeckImportExport();
+
+  const { activeDeck, decks, setActiveDeckId, createNewDeck } = useDeckManager();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [activeTab, setActiveTab] = useState<"search" | "decks">("search");
@@ -32,6 +36,7 @@ export default function Dashboard() {
   const [activeChipQuery, setActiveChipQuery] = useState<string | null>(null);
   const [sidebarFilters, setSidebarFilters] = useState<FilterState>(DEFAULT_FILTERS);
   const [tileSize, setTileSizeState] = useState<TileSizeKey>(DEFAULT_TILE_SIZE);
+  const [showSearchTakeover, setShowSearchTakeover] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem("mtg-sidebar-active-tab");
@@ -45,6 +50,10 @@ export default function Dashboard() {
   useEffect(() => {
     localStorage.setItem(SIDEBAR_FILTERS_STORAGE_KEY, serializeFilters(sidebarFilters));
   }, [sidebarFilters]);
+
+  useEffect(() => {
+    setShowSearchTakeover(false);
+  }, [activeDeck?.id]);
 
   const setTileSize = (s: TileSizeKey) => {
     setTileSizeState(s);
@@ -86,6 +95,8 @@ export default function Dashboard() {
         onOpenSettings={openSettings}
         showSettings={showSettings}
         onCloseSettings={() => setShowSettings(false)}
+        onGoHome={() => setActiveDeckId(null)}
+        isOnHomeScreen={!activeDeck}
       />
 
       <input
@@ -103,6 +114,12 @@ export default function Dashboard() {
             onTabChange={setSettingsTab}
             onClose={() => setShowSettings(false)}
           />
+        ) : !activeDeck ? (
+          <HomeScreen
+            decks={decks}
+            onDeckSelect={(id) => { setActiveDeckId(id); handleTabChange("decks"); }}
+            onCreateDeck={(format) => { createNewDeck(format); handleTabChange("decks"); }}
+          />
         ) : (
           <>
             <div className={activeTab === "search" ? "flex-1 flex flex-col overflow-hidden" : "hidden"}>
@@ -113,6 +130,8 @@ export default function Dashboard() {
                 sidebarFilters={sidebarFilters}
                 tileSize={tileSize}
                 onTileSizeChange={setTileSize}
+                showSearchTakeover={showSearchTakeover}
+                onDismissTakeover={() => setShowSearchTakeover(false)}
               />
             </div>
             <div className={activeTab === "decks" ? "flex-1 overflow-hidden p-4" : "hidden"}>
@@ -122,6 +141,10 @@ export default function Dashboard() {
                 cancelImport={cancelImport}
                 tileSize={tileSize}
                 onTileSizeChange={setTileSize}
+                onAddFirstCard={() => {
+                  handleTabChange("search");
+                  setShowSearchTakeover(true);
+                }}
               />
             </div>
           </>

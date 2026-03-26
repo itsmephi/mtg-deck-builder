@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, Layers, PanelRightOpen, Settings } from "lucide-react";
+import { Search, Layers, PanelRightOpen, Settings, Home } from "lucide-react";
 import { APP_VERSION } from "@/config/version";
 import SidebarRail from "./SidebarRail";
 import SidebarSearchTab from "./SidebarSearchTab";
@@ -21,9 +21,11 @@ interface Props {
   onOpenSettings: (tab: "preferences" | "whatsnew" | "about" | "support") => void;
   showSettings?: boolean;
   onCloseSettings?: () => void;
+  onGoHome: () => void;
+  isOnHomeScreen: boolean;
 }
 
-export default function Sidebar({ onImport, onExport, isImporting, activeTab, onTabChange, activeChipId, onChipSelect, sidebarFilters, onFiltersChange, onOpenSettings, onCloseSettings }: Props) {
+export default function Sidebar({ onImport, onExport, isImporting, activeTab, onTabChange, activeChipId, onChipSelect, sidebarFilters, onFiltersChange, onOpenSettings, onCloseSettings, onGoHome, isOnHomeScreen }: Props) {
   const [collapsed, setCollapsed] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
 
@@ -73,7 +75,7 @@ export default function Sidebar({ onImport, onExport, isImporting, activeTab, on
       }
     >
       {isCollapsed ? (
-        <SidebarRail expandTo={expandTo} activeTab={activeTab} onOpenSettings={onOpenSettings} />
+        <SidebarRail expandTo={expandTo} activeTab={activeTab} onOpenSettings={onOpenSettings} onGoHome={onGoHome} isOnHomeScreen={isOnHomeScreen} />
       ) : (
         <div className="flex flex-col h-full min-w-0">
           {/* Tab bar */}
@@ -140,13 +142,31 @@ export default function Sidebar({ onImport, onExport, isImporting, activeTab, on
 
           {/* Footer */}
           <div className="mt-auto border-t border-line-subtle shrink-0">
-            <div className="flex items-center px-3 py-2">
+            <div className="flex items-center gap-2 px-3 py-2">
+
+              {/* Home icon */}
+              <button
+                onClick={isOnHomeScreen ? undefined : onGoHome}
+                className={`
+                  w-7 h-7 rounded-md flex items-center justify-center transition-colors
+                  ${isOnHomeScreen
+                    ? "text-content-disabled cursor-default"
+                    : "text-content-muted hover:text-content-primary hover:bg-surface-raised"
+                  }
+                `}
+                title="Home"
+              >
+                <Home className="w-3.5 h-3.5" />
+              </button>
+
+              {/* Version badge */}
               <button
                 onClick={() => onOpenSettings("whatsnew")}
                 className="flex items-center gap-1.5 px-2 py-0.5 border rounded-full text-[9px] font-bold uppercase tracking-wider transition-colors bg-blue-500/10 border-blue-500/20 text-blue-400 hover:bg-blue-500/20"
               >
                 v{APP_VERSION}
               </button>
+
             </div>
           </div>
         </div>

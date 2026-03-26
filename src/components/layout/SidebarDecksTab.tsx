@@ -277,18 +277,26 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
 
         {/* + New Deck — opens FormatPicker */}
         <div className="relative">
-          <button
+          <div
             onClick={(e) => {
               const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
               const dir = (window.innerHeight - rect.bottom) > rect.top ? "down" : "up";
               setNewDeckPickerDir(dir);
               setNewDeckPickerOpen(!newDeckPickerOpen);
             }}
-            className="flex items-center gap-2 w-full px-2 py-1.5 mt-1 text-xs text-content-muted hover:text-content-primary hover:bg-neutral-800/50 rounded-lg transition-colors"
+            className="
+              mx-2 my-1
+              border border-dashed border-line-default rounded-md
+              flex items-center justify-center gap-1.5
+              py-1.5 cursor-pointer
+              text-content-faint
+              hover:border-input-edge-focus hover:text-content-muted
+              transition-colors
+            "
           >
-            <Plus className="w-3.5 h-3.5" />
-            New Deck
-          </button>
+            <Plus className="w-3 h-3" />
+            <span className="text-[10px]">New Deck</span>
+          </div>
           {newDeckPickerOpen && (
             <div
               ref={newDeckPickerRef}

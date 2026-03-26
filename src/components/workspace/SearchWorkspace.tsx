@@ -8,6 +8,7 @@ import { ScryfallCard } from "@/types";
 import { Deck } from "@/types";
 import { useDeckManager } from "@/hooks/useDeckManager";
 import SearchBar from "./SearchBar";
+import SearchTakeover from "./SearchTakeover";
 import VisualCard from "./VisualCard";
 import CardModal from "@/components/layout/CardModal";
 import { FilterState, buildSidebarFilterSyntax } from "@/components/layout/FilterPanel";
@@ -21,6 +22,8 @@ interface SearchWorkspaceProps {
   sidebarFilters: FilterState;
   tileSize: TileSizeKey;
   onTileSizeChange: (stop: TileSizeKey) => void;
+  showSearchTakeover?: boolean;
+  onDismissTakeover?: () => void;
 }
 
 const SORT_ORDER_MAP: Record<string, string> = {
@@ -47,7 +50,7 @@ function buildFilterSyntax(activeDeck: Deck | undefined, filterActive: boolean):
   return syntax;
 }
 
-export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivateChip, sidebarFilters, tileSize, onTileSizeChange }: SearchWorkspaceProps) {
+export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivateChip, sidebarFilters, tileSize, onTileSizeChange, showSearchTakeover, onDismissTakeover }: SearchWorkspaceProps) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<ScryfallCard[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -280,6 +283,25 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
 
   const showEmpty = !isLoading && !scryfallQuery.trim();
   const showNoResults = !isLoading && !!scryfallQuery.trim() && results.length === 0;
+
+  function handleTakeoverSearch(value: string) {
+    setQuery(value);
+    onDismissTakeover?.();
+  }
+
+  function handleTakeoverTag(tag: string) {
+    setQuery(tag);
+    onDismissTakeover?.();
+  }
+
+  if (showSearchTakeover) {
+    return (
+      <SearchTakeover
+        onSearch={handleTakeoverSearch}
+        onTagSelect={handleTakeoverTag}
+      />
+    );
+  }
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
