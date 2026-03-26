@@ -2,6 +2,43 @@
 
 ---
 
+## v1.14.0-pre — Search Filter Defaults
+Status: APPROVED ✅
+
+### Plan Review
+| File | Changes |
+|------|---------|
+| `src/components/layout/FilterPanel.tsx` | `DEFAULT_FILTERS`: `anyPrice: true`, `yearMin: 1993`; `filtersAreDefault()` helper exported; conditional "Reset to defaults" button at bottom of panel |
+| `src/components/workspace/SearchWorkspace.tsx` | `filterActive` per-deck localStorage (`mtg-search-filter-active-{deckId}`); default `false`; deck switches re-read per-deck key; written on toggle |
+| `CLAUDE.md` | Added `mtg-search-filter-active-{deckId}` to UI state persistence keys |
+
+### QA Checklist
+- [x] Open app fresh (no saved filter state) — format badge in search bar is OFF by default
+- [x] Search returns broad results with badge off (no format/legality filter applied)
+- [x] Toggle format badge ON — badge activates, results narrow to format legality
+- [x] Switch to a different deck — badge stays ON (saved state persisted)
+- [x] Refresh the page — badge is still ON after reload
+- [x] Clear `mtg-search-filter-active` from localStorage, reload — badge is OFF again
+- [x] Open Filter panel — Price Range shows "Any" active by default
+- [x] Open Filter panel — Release Year shows "All" preset active (1993–2026)
+- [x] Sidebar filter panel — "Reset to defaults" button is NOT visible when filters are at default
+- [x] Change a filter (e.g. deselect a rarity) — "Reset to defaults" button appears
+- [x] Click "Reset to defaults" — all filters return to defaults, button disappears
+- [x] Switch decks with no saved `mtg-search-filter-active` key — badge resets to OFF on deck switch
+- [x] Switch decks with `mtg-search-filter-active = true` in localStorage — badge stays ON after deck switch
+
+### Session Summary
+
+**What shipped:**
+
+- **`src/components/layout/FilterPanel.tsx`** — `DEFAULT_FILTERS` updated: `anyPrice: true` (was `false`), `yearMin: 1993` (was `CURRENT_YEAR - 4`); `filtersAreDefault()` helper exported; "Reset to defaults" button renders at bottom of panel only when any filter differs from defaults
+- **`src/components/workspace/SearchWorkspace.tsx`** — Format badge (`filterActive`) now uses per-deck localStorage key `mtg-search-filter-active-{deckId}`; default `false` when no key exists; written on every toggle; deck switches re-read the incoming deck's key (new decks = no key = OFF, existing decks = respect saved value)
+- **`CLAUDE.md`** — `mtg-search-filter-active-{deckId}` added to UI state persistence keys
+
+**Fix mid-QA:** Initial implementation used a single global key `mtg-search-filter-active`; switching to a new deck read the global key and inherited the previous deck's badge state. Switched to per-deck keys to isolate state per deck.
+
+---
+
 ## v1.13.0 — Commander Eligibility Fixes + Vehicle/Spacecraft Support
 Status: APPROVED ✅
 

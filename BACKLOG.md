@@ -49,7 +49,7 @@
 - [ ] **enhancement** | Price context — add some framing around deck value (budget/mid/premium tier label or comparison)
 - [x] **chore** | App title tag and meta — update page title from "MTG Deck Builder" to TheBrewLab *(closed v1.12.4)*
 - [ ] **feature** | Quick-add card by name from deck view — add a card without switching to search tab; inline name input or dedicated quick-add button ⚠️ needs design
-- [ ] **enhancement** | Default search year range should be "All" — year filter defaults to last 5 years; change default to All and update year fields to reflect
+- [x] **enhancement** | Default search year range should be "All" — year filter defaults to last 5 years; change default to All and update year fields to reflect *(closed pre-v1.14.0)*
 - [ ] **enhancement** | Bulk mark all cards as owned — quick action to set owned qty on all cards at once ⚠️ needs design
 - [ ] **enhancement** | Font size tokens — type feels small; establish font-size CSS custom properties (similar to color token system) for consistent scaling
 - [ ] **chore** | Explore MCP filesystem connection — investigate whether Claude Chat can write files directly to local repo via MCP, eliminating manual download step ⚠️ needs research

@@ -89,7 +89,7 @@ src/
 - 4-copy rule exemptions: check type_line for "Basic Land" and oracle_text for "A deck can have any number"
 - Qty 0: card stays in deck, grays out, excluded from total count and to-buy cost
 - 4-copy rule is a soft warning (highlight) not a hard cap
-- UI state persistence keys: mtg-view-mode, mtg-group-by-type, mtg-active-deck, mtg-deck-view-mode, mtg-sort-preference, mtg-show-thumbnail, mtg-sidebar-collapsed, mtg-sidebar-active-tab, mtg-tile-size (values: "xs"|"s"|"m"|"l"|"xl", default "m"), mtg-sidebar-filters (serialized FilterState — price, anyPrice, rarities, types, colors, yearMin, yearMax)
+- UI state persistence keys: mtg-view-mode, mtg-group-by-type, mtg-active-deck, mtg-deck-view-mode, mtg-sort-preference, mtg-show-thumbnail, mtg-sidebar-collapsed, mtg-sidebar-active-tab, mtg-tile-size (values: "xs"|"s"|"m"|"l"|"xl", default "m"), mtg-sidebar-filters (serialized FilterState — price, anyPrice, rarities, types, colors, yearMin, yearMax), mtg-search-filter-active-{deckId} (boolean string "true"/"false"; per-deck key; absent = default false; written on first user toggle for that deck)
 - Sideboard: enabled per-deck as sideboard?: DeckCard[] — undefined = no sideboard, [] = enabled but empty
 - deckViewMode lives in useDeckManager context
 - `format` and `commanderId` persisted as part of deck data in `mtg_builder_decks` localStorage
