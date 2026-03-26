@@ -47,7 +47,7 @@ For straightforward bug fixes and small enhancements, `/plan` → PROCEED → bu
 ---
 
 ## Active Milestone
-→ v1.14.0 (5 items: CardModal fwd/back nav, Submit a Bug button, search format badge, set abbreviation click, artist name click)
+→ v1.14.0 (6 items: CardModal fwd/back nav, Submit a Bug button, search format badge auto-match, set abbreviation click, artist name click, sort direction toggle)
 
 ---
 
