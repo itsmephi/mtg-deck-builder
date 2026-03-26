@@ -1,8 +1,15 @@
-export const APP_VERSION = "1.12.4";
+export const APP_VERSION = "1.12.5";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.12.5": [
+    "Bug fix: home button now works from the settings overlay — clicking navigates home and closes settings in both expanded and collapsed sidebar states",
+    "Bug fix: home button no longer shows prohibition cursor when settings is open on the home screen — disabled state now only applies when actually viewing the home screen without settings",
+    "Bug fix: home screen deck cover cards now show correct total card count (sum of quantities) instead of unique entry count",
+    "Bug fix: clicking a deck name or sideboard icon in the Decks tab while settings is open now closes settings and navigates directly to the deck",
+    "Settings overlay contract added to project notes: any navigation action (tab, deck, home) must call onCloseSettings to prevent the settings view from persisting silently",
+  ],
   "1.12.4": [
     "Home screen: app loads to a welcome screen instead of an empty workspace on first visit or after navigating home — shows heading, rotating tagline, deck cover cards, and a ghost deck card to create a new deck",
     "Rotating taglines: 13 taglines chosen at random per session (sessionStorage-backed) — same tagline shown on refresh, new one each session",

@@ -10,7 +10,7 @@ import GhostDeckCard from "./GhostDeckCard";
 interface Deck {
   id: string;
   name: string;
-  cards: unknown[];
+  cards: { quantity: number }[];
   format?: string;
 }
 

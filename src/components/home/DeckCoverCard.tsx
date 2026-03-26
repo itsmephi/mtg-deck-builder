@@ -1,7 +1,7 @@
 interface Deck {
   id: string;
   name: string;
-  cards: unknown[];
+  cards: { quantity: number }[];
   format?: string;
 }
 
@@ -43,7 +43,7 @@ export default function DeckCoverCard({ deck, onClick }: DeckCoverCardProps) {
           {deck.name || "Untitled"}
         </span>
         <span className="text-[9px] text-content-muted">
-          {deck.cards.length} cards
+          {deck.cards.reduce((sum, c) => sum + c.quantity, 0)} cards
         </span>
       </div>
     </div>

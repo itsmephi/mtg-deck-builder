@@ -95,8 +95,8 @@ export default function Dashboard() {
         onOpenSettings={openSettings}
         showSettings={showSettings}
         onCloseSettings={() => setShowSettings(false)}
-        onGoHome={() => setActiveDeckId(null)}
-        isOnHomeScreen={!activeDeck}
+        onGoHome={() => { setActiveDeckId(null); setShowSettings(false); }}
+        isOnHomeScreen={!activeDeck && !showSettings}
       />
 
       <input

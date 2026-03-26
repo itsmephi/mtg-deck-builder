@@ -11,6 +11,7 @@ interface Props {
   onImport: () => void;
   onExport: () => void;
   isImporting: boolean;
+  onCloseSettings?: () => void;
 }
 
 interface ConfirmDialogState {
@@ -19,7 +20,7 @@ interface ConfirmDialogState {
   targetFormat: DeckFormat;
 }
 
-export default function SidebarDecksTab({ onImport, onExport, isImporting }: Props) {
+export default function SidebarDecksTab({ onImport, onExport, isImporting, onCloseSettings }: Props) {
   const {
     decks,
     activeDeck,
@@ -150,6 +151,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
                     setActiveDeckId(deck.id);
                     setDeckViewMode("main");
                   }
+                  onCloseSettings?.();
                 }}
                 className={`flex-1 text-left text-xs truncate transition-colors min-w-0 ${
                   isActive ? "text-content-primary" : "text-content-tertiary hover:text-content-primary"
@@ -210,6 +212,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting }: Pro
                   if (!isActive) setActiveDeckId(deck.id);
                   if (!hasSideboard) enableSideboard(deck.id);
                   setDeckViewMode("sideboard");
+                  onCloseSettings?.();
                 }}
                 disabled={isCommander}
                 title={

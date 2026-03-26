@@ -136,6 +136,7 @@ export default function Sidebar({ onImport, onExport, isImporting, activeTab, on
                 onImport={onImport}
                 onExport={onExport}
                 isImporting={isImporting}
+                onCloseSettings={onCloseSettings}
               />
             )}
           </div>
