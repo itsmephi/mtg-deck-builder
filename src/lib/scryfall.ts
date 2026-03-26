@@ -39,17 +39,32 @@ export async function getTopCards(): Promise<ScryfallCard[]> {
 
 export async function getCardPrintings(
   cardName: string,
+  oracleId: string,
 ): Promise<ScryfallCard[]> {
   try {
-    // Use exact name match to find all printings, including reversible cards
-    // The !"name" syntax matches the full name exactly
-    const res = await fetch(
-      `${SCRYFALL_BASE}/cards/search?order=released&q=!"${encodeURIComponent(cardName)}"&unique=prints`,
-      { headers: HEADERS },
-    );
-    if (!res.ok) return [];
-    const data = await res.json();
-    return data.data || [];
+    // Check if this is a double-faced/split card
+    const isDFC = cardName.includes(' // ');
+
+    if (isDFC) {
+      // DFC: search by front face name to get all printings (oracle_id misses single-face reprintings)
+      const frontFaceName = cardName.split(' // ')[0];
+      const res = await fetch(
+        `${SCRYFALL_BASE}/cards/search?order=released&q=!"${encodeURIComponent(frontFaceName)}"&unique=prints`,
+        { headers: HEADERS },
+      );
+      if (!res.ok) return [];
+      const data = await res.json();
+      return data.data || [];
+    } else {
+      // Normal card: oracle_id is reliable and faster
+      const res = await fetch(
+        `${SCRYFALL_BASE}/cards/search?order=released&q=oracleid:${oracleId}&unique=prints`,
+        { headers: HEADERS },
+      );
+      if (!res.ok) return [];
+      const data = await res.json();
+      return data.data || [];
+    }
   } catch (e) {
     console.error("getCardPrintings failed:", e);
     return [];

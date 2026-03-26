@@ -65,7 +65,7 @@ export default function CardModal({
         const data = await getCardRulings(previewCard.id);
         setRulings(data);
       } else if (view === "prints" && variants.length === 0) {
-        const data = await getCardPrintings(previewCard.name);
+        const data = await getCardPrintings(previewCard.name, previewCard.oracle_id);
         setVariants(data);
       }
       setLoading(false);
@@ -439,9 +439,9 @@ export default function CardModal({
                     )}
                   </section>
                 </div>
-              ) : loading && variants.length === 0 ? (
-                <div className="flex justify-center p-12">
-                  <div className="w-5 h-5 border-2 border-neutral-600 border-t-tertiary rounded-full animate-spin" />
+              ) : loading ? (
+                <div className="flex justify-center items-center h-48">
+                  <div className="w-6 h-6 border-2 border-neutral-600 border-t-blue-400 rounded-full animate-spin" />
                 </div>
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">

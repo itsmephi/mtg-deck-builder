@@ -144,6 +144,7 @@ export default function VisualCard({
   const eligible = isEligibleCommander(card);
   const isVehicleOrSpacecraft = isVehicleOrSpacecraftCommander(card);
   const [showCrownTooltip, setShowCrownTooltip] = useState(false);
+  const crownTooltipTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Qty pill color (priority: warning > fully owned > neutral)
   const isFullyOwnedForPill = card.quantity > 0 && card.ownedQty >= card.quantity;
@@ -362,8 +363,16 @@ export default function VisualCard({
         ) : (
           <div
             className="absolute -top-3.5 -left-3.5 z-20"
-            onMouseEnter={() => setShowCrownTooltip(true)}
-            onMouseLeave={() => setShowCrownTooltip(false)}
+            onMouseEnter={() => {
+              if (crownTooltipTimeout.current) {
+                clearTimeout(crownTooltipTimeout.current);
+                crownTooltipTimeout.current = null;
+              }
+              setShowCrownTooltip(true);
+            }}
+            onMouseLeave={() => {
+              crownTooltipTimeout.current = setTimeout(() => setShowCrownTooltip(false), 150);
+            }}
           >
             <button
               onClick={(e) => { e.stopPropagation(); if (eligible) onSetCommander(card.id); }}
@@ -380,7 +389,18 @@ export default function VisualCard({
 
             {/* Interactive tooltip — eligible cards only */}
             {showCrownTooltip && eligible && (
-              <div className="absolute left-1/2 -translate-x-1/2 top-full mt-1 px-2 py-1 bg-neutral-900 border border-neutral-700 rounded text-[10px] text-neutral-200 whitespace-nowrap z-30 flex items-center gap-1.5">
+              <div
+                className="absolute left-1/2 -translate-x-1/2 top-full mt-1 px-2 py-1 bg-neutral-900 border border-neutral-700 rounded text-[10px] text-neutral-200 whitespace-nowrap z-30 flex items-center gap-1.5"
+                onMouseEnter={() => {
+                  if (crownTooltipTimeout.current) {
+                    clearTimeout(crownTooltipTimeout.current);
+                    crownTooltipTimeout.current = null;
+                  }
+                }}
+                onMouseLeave={() => {
+                  crownTooltipTimeout.current = setTimeout(() => setShowCrownTooltip(false), 150);
+                }}
+              >
                 <span>Set as Commander</span>
                 {isVehicleOrSpacecraft && (
                   <a

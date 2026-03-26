@@ -118,6 +118,7 @@ export default function ListCardTable({
 
   // Crown tooltip hover state for list view
   const [hoveredCrownId, setHoveredCrownId] = useState<string | null>(null);
+  const crownTooltipTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Inline quantity editing state
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -408,8 +409,16 @@ export default function ListCardTable({
                 ) : (
                   <div
                     className="relative"
-                    onMouseEnter={() => setHoveredCrownId(card.id)}
-                    onMouseLeave={() => setHoveredCrownId(null)}
+                    onMouseEnter={() => {
+                      if (crownTooltipTimeout.current) {
+                        clearTimeout(crownTooltipTimeout.current);
+                        crownTooltipTimeout.current = null;
+                      }
+                      setHoveredCrownId(card.id);
+                    }}
+                    onMouseLeave={() => {
+                      crownTooltipTimeout.current = setTimeout(() => setHoveredCrownId(null), 150);
+                    }}
                   >
                     <button
                       onClick={() => eligibleCommander && onSetCommander(card.id)}
@@ -421,7 +430,18 @@ export default function ListCardTable({
 
                     {/* Interactive tooltip — eligible cards only */}
                     {hoveredCrownId === card.id && eligibleCommander && (
-                      <div className="absolute left-full ml-1.5 top-1/2 -translate-y-1/2 px-2 py-1 bg-neutral-900 border border-neutral-700 rounded text-[10px] text-neutral-200 whitespace-nowrap z-30 flex items-center gap-1.5">
+                      <div
+                        className="absolute left-full ml-1.5 top-1/2 -translate-y-1/2 px-2 py-1 bg-neutral-900 border border-neutral-700 rounded text-[10px] text-neutral-200 whitespace-nowrap z-30 flex items-center gap-1.5"
+                        onMouseEnter={() => {
+                          if (crownTooltipTimeout.current) {
+                            clearTimeout(crownTooltipTimeout.current);
+                            crownTooltipTimeout.current = null;
+                          }
+                        }}
+                        onMouseLeave={() => {
+                          crownTooltipTimeout.current = setTimeout(() => setHoveredCrownId(null), 150);
+                        }}
+                      >
                         <span>Set as Commander</span>
                         {isVehicleOrSpacecraft && (
                           <a
