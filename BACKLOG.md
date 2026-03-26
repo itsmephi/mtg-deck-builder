@@ -24,6 +24,8 @@
 <!-- Triaged items not yet assigned to a milestone. New captures land here. -->
 
 - [ ] **feature** | New app name — Phi & Thurgood to brainstorm (#15) ⚠️ needs design
+- [ ] **feature** | Home screen deck covers — support custom deck cover art/images; DeckCoverCard is placeholder-ready with gradient tints for v1 ⚠️ needs design
+- [ ] **feature** | Home screen as persistent hub — recent activity, deck stats, quick-resume last deck ⚠️ needs design
 - [ ] **feature** | Custom card sorting by drag and drop (#16)
 - [ ] **feature** | Partner commander support — allow 2 commanders for Partner and Friends Forever (Best Friends) pairs; deferred from v1.4.0
 - [ ] **feature** | Move cards between boards or decks (#62) ↑ priority
@@ -45,11 +47,11 @@
 - [ ] **feature** | Favorite/star decks — starred decks float to top or appear in a dedicated section ⚠️ needs design
 - [ ] **chore** | Architecture review for public scaling — phased roadmap including mobile/tablet touch support
 - [ ] **chore** | Open source repo and apply for Vercel open source/supporter tier
-- [ ] **feature** | Empty/cold-start state — no deck exists: show welcome screen with CTA to create first deck, format picker, and brief one-liner about what the app does ⚠️ needs design
+- [x] **feature** | Empty/cold-start state — no deck exists: show welcome screen with CTA to create first deck, format picker, and brief one-liner about what the app does *(closed v1.12.4)*
 - [ ] **enhancement** | Onboarding hint layer — first-time user tips: create a deck before adding cards, how to switch tabs, how to add cards ⚠️ needs design
 - [ ] **enhancement** | Undo for destructive actions — toast with Undo for card delete and deck delete
 - [ ] **enhancement** | Price context — add some framing around deck value (budget/mid/premium tier label or comparison)
-- [ ] **chore** | App title tag and meta — update page title from "MTG Deck Builder" to TheBrewLab
+- [x] **chore** | App title tag and meta — update page title from "MTG Deck Builder" to TheBrewLab *(closed v1.12.4)*
 
 ---
 

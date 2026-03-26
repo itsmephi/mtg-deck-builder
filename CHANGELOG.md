@@ -5,6 +5,32 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.12.4] — Home Screen & Empty State
+
+### Added
+- **Home screen** (`HomeScreen.tsx`): app opens to a welcome screen on first visit or after navigating home — heading "What are you brewing?", rotating tagline, deck cover cards, and a ghost deck card for creating a new deck
+- **Rotating taglines**: 13 taglines in `src/config/taglines.ts`, chosen randomly per session via `useHomeTagline` hook (sessionStorage-backed — same tagline on refresh, new one per session)
+- **Deck cover cards** (`DeckCoverCard.tsx`): each saved deck appears as a card tile with a deterministic gradient tint derived from the deck name; click to open directly
+- **Ghost deck card** (`GhostDeckCard.tsx`): dashed card tile on the home screen opens the FormatPicker to create a new deck
+- **Ghost card in empty workspace**: empty deck shows a dashed card-shaped ghost tile in the grid at current tile size — click triggers the search takeover
+- **Search takeover** (`SearchTakeover.tsx`): empty-deck-aware search entry point — heading "What are you building with?", autofocused input field, quick-tag buttons (Ramp, Removal, Card Draw, Wipes, Tokens, Creatures, Burn, Lands); opens when ghost card is clicked; dismisses on query submit or tag select, firing the search immediately
+- **Home icon** in expanded sidebar footer (left of version badge) and collapsed rail (below Settings icon) — dimmed/non-interactive when already on home screen
+
+### Changed
+- **Sidebar "New Deck"**: text button replaced with a dashed ghost slot (`border-dashed border-line-default`); same FormatPicker behaviour, quieter visual presence
+- **Page title**: browser tab title updated from "MTG Deck Builder" to "TheBrewLab"
+- **`useDeckManager`**: removed auto-create on first load and last-deck delete — both now set `activeDeck` to null, routing to the home screen instead of a blank Untitled deck
+
+### Technical
+- `src/config/taglines.ts` — 13 tagline strings, editable
+- `src/hooks/useHomeTagline.ts` — sessionStorage-backed random tagline hook
+- `src/components/home/` — new directory: `HomeScreen.tsx`, `DeckCoverCard.tsx`, `GhostDeckCard.tsx`
+- `src/components/workspace/SearchTakeover.tsx` — new search entry component
+- `page.tsx` — `!activeDeck` routing condition gates home screen vs workspace; `showSearchTakeover` state wired through to `SearchWorkspace`
+- `Sidebar.tsx` + `SidebarRail.tsx` — `onGoHome` / `isOnHomeScreen` props forwarded from `page.tsx`
+
+---
+
 ## [1.12.3] — Hotfix: The Brew Lab Rename
 
 ### Fixed
