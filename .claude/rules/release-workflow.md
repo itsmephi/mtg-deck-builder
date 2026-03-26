@@ -39,13 +39,44 @@ globs:
 
 5. **GitHub issues** — before building, confirm every Active Milestone item has a GitHub issue number. If any are missing, create the issue(s) and update BACKLOG.md with the number(s) first.
 
-6. Claude Code executes:
-   - **Small releases (quick wins)** — build everything in one pass, then pause
-   - **Large releases** — pause and output testing checklist after each feature before proceeding
+6. Claude Code executes prompts in order. After completing ALL prompts (or after each major feature for large releases), proceed to the QA checkpoint.
 
-7. Claude Code writes testing checklist to REVIEW.md and pauses. Phi tests, checks off items, adds emerging issues.
+7. **QA Checkpoint** — Claude Code MUST write the QA checklist to REVIEW.md before pausing for testing. This is not optional.
 
-8. Phi types APPROVED in Claude Code.
+   **REVIEW.md format after prompts complete:**
+   ```markdown
+   # REVIEW.md — MTG Deck Builder Session Journal
+
+   ---
+
+   ## vX.X.X — [Short Description]
+   Status: IN PROGRESS
+
+   ### Plan Review
+   | File | Changes |
+   |------|---------|
+   | `src/path/file.tsx` | One-line summary |
+   | ... | ... |
+
+   ### QA Checklist
+   - [ ] Test case 1 — expected behavior
+   - [ ] Test case 2 — expected behavior
+   - [ ] ...
+
+   ### QA Notes
+   _(Phi adds inline comments here during testing)_
+
+   ---
+
+   ## How This File Works
+   ...
+   ```
+
+   After writing the QA checklist to REVIEW.md, Claude Code says: "QA checklist written to REVIEW.md. Ready for testing."
+
+   **Do NOT** output the checklist only to terminal. REVIEW.md is the source of truth for QA.
+
+8. Phi tests, checks off items in REVIEW.md, adds notes for any issues found. When complete, Phi types APPROVED in Claude Code.
 
 9. Before writing the session summary, update the REVIEW.md status header from IN PROGRESS to APPROVED ✅. Then Claude Code writes session summary to REVIEW.md and commits:
    - `vX.X.X - description - Closes #N, Closes #N`
