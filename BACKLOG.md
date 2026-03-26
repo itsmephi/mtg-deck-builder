@@ -52,6 +52,12 @@
 - [ ] **enhancement** | Undo for destructive actions — toast with Undo for card delete and deck delete
 - [ ] **enhancement** | Price context — add some framing around deck value (budget/mid/premium tier label or comparison)
 - [x] **chore** | App title tag and meta — update page title from "MTG Deck Builder" to TheBrewLab *(closed v1.12.4)*
+- [ ] **feature** | Quick-add card by name from deck view — add a card without switching to search tab; inline name input or dedicated quick-add button ⚠️ needs design
+- [ ] **enhancement** | Default search year range should be "All" — year filter defaults to last 5 years; change default to All and update year fields to reflect
+- [ ] **enhancement** | Commander eligibility: expand to Spacecraft and Vehicle type lines — currently requires Legendary Creature; Spacecraft/Vehicle subtypes should also qualify
+- [ ] **enhancement** | Bulk mark all cards as owned — quick action to set owned qty on all cards at once ⚠️ needs design
+- [ ] **enhancement** | Font size tokens — type feels small; establish font-size CSS custom properties (similar to color token system) for consistent scaling
+- [ ] **bug** | Secret Lair cards cannot be set as commander — eligibility check fails for Secret Lair printings; likely a type_line or oracle_text mismatch
 
 ---
 
