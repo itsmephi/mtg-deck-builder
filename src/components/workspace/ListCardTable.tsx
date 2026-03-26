@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { X } from "lucide-react";
 import { DeckCard, ScryfallCard } from "@/types";
-import { DeckFormat, getFormatRules, getCardWarnings, isEligibleCommander } from "@/lib/formatRules";
+import { DeckFormat, getFormatRules, getCardWarnings, isEligibleCommander, isVehicleOrSpacecraftCommander } from "@/lib/formatRules";
 
 const COLOR_ORDER_L = ["W", "U", "B", "R", "G"];
 
@@ -116,6 +116,9 @@ export default function ListCardTable({
   // Row hover state for tint brightening
   const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
 
+  // Crown tooltip hover state for list view
+  const [hoveredCrownId, setHoveredCrownId] = useState<string | null>(null);
+
   // Inline quantity editing state
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
@@ -214,6 +217,7 @@ export default function ListCardTable({
     const isThisCommander = isCommanderFormat && card.id === commanderId;
     const warnings = getCardWarnings(card, format, commanderIdentity);
     const eligibleCommander = isEligibleCommander(card);
+    const isVehicleOrSpacecraft = isVehicleOrSpacecraftCommander(card);
 
     // Row background — commander row uses normal card color tint (no special yellow)
     let rowBg: string;
@@ -402,17 +406,37 @@ export default function ListCardTable({
                     <CrownFilled className="text-yellow-400 w-3.5 h-3.5" />
                   </button>
                 ) : (
-                  <button
-                    onClick={() => eligibleCommander && onSetCommander(card.id)}
-                    title={
-                      !eligibleCommander
-                        ? "Must be Legendary to set as Commander"
-                        : "Set as Commander"
-                    }
-                    className={`opacity-0 group-hover:opacity-100 shrink-0 transition-opacity ${eligibleCommander ? "cursor-pointer" : "cursor-not-allowed"}`}
+                  <div
+                    className="relative"
+                    onMouseEnter={() => setHoveredCrownId(card.id)}
+                    onMouseLeave={() => setHoveredCrownId(null)}
                   >
-                    <CrownOutline className={`w-3.5 h-3.5 ${eligibleCommander ? "text-content-faint hover:text-yellow-400" : "text-content-faint"}`} />
-                  </button>
+                    <button
+                      onClick={() => eligibleCommander && onSetCommander(card.id)}
+                      title={!eligibleCommander ? "Must be Legendary to set as Commander" : undefined}
+                      className={`opacity-0 group-hover:opacity-100 shrink-0 transition-opacity ${eligibleCommander ? "cursor-pointer" : "cursor-not-allowed"}`}
+                    >
+                      <CrownOutline className={`w-3.5 h-3.5 ${eligibleCommander ? "text-content-faint hover:text-yellow-400" : "text-content-faint"}`} />
+                    </button>
+
+                    {/* Interactive tooltip — eligible cards only */}
+                    {hoveredCrownId === card.id && eligibleCommander && (
+                      <div className="absolute left-full ml-1.5 top-1/2 -translate-y-1/2 px-2 py-1 bg-neutral-900 border border-neutral-700 rounded text-[10px] text-neutral-200 whitespace-nowrap z-30 flex items-center gap-1.5">
+                        <span>Set as Commander</span>
+                        {isVehicleOrSpacecraft && (
+                          <a
+                            href="https://magic.wizards.com/en/news/feature/edge-of-eternities-mechanics"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-blue-400 hover:text-blue-300 hover:underline"
+                          >
+                            ⓘ
+                          </a>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 )
               )}
 

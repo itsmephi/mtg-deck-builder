@@ -1,7 +1,7 @@
 import { Minus, Plus, X } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { DeckCard, ScryfallCard } from '@/types';
-import { DeckFormat, getCardWarnings, isEligibleCommander } from '@/lib/formatRules';
+import { DeckFormat, getCardWarnings, isEligibleCommander, isVehicleOrSpacecraftCommander } from '@/lib/formatRules';
 
 interface VisualCardProps {
   card: DeckCard;
@@ -142,6 +142,8 @@ export default function VisualCard({
     : "text-content-primary";
 
   const eligible = isEligibleCommander(card);
+  const isVehicleOrSpacecraft = isVehicleOrSpacecraftCommander(card);
+  const [showCrownTooltip, setShowCrownTooltip] = useState(false);
 
   // Qty pill color (priority: warning > fully owned > neutral)
   const isFullyOwnedForPill = card.quantity > 0 && card.ownedQty >= card.quantity;
@@ -358,18 +360,43 @@ export default function VisualCard({
             </svg>
           </button>
         ) : (
-          <button
-            onClick={(e) => { e.stopPropagation(); if (eligible) onSetCommander(card.id); }}
-            title={eligible ? "Set as Commander" : "Must be Legendary"}
-            className={`absolute -top-3.5 -left-3.5 z-20 w-7 h-7 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 border border-neutral-600 bg-neutral-900/70 shadow-md transition-all duration-150 ${eligible ? "hover:bg-yellow-500/20 hover:border-yellow-400 hover:scale-110 cursor-pointer group/crown" : "cursor-not-allowed"}`}
+          <div
+            className="absolute -top-3.5 -left-3.5 z-20"
+            onMouseEnter={() => setShowCrownTooltip(true)}
+            onMouseLeave={() => setShowCrownTooltip(false)}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24">
-              <path
-                d="M3 18h18v2H3v-2zm0-2l3-8 4 3 2-6 2 6 4-3 3 8H3z"
-                className={eligible ? "fill-[#737373] group-hover/crown:fill-[#eab308] transition-colors" : "fill-[#737373]"}
-              />
-            </svg>
-          </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); if (eligible) onSetCommander(card.id); }}
+              title={!eligible ? "Must be Legendary" : undefined}
+              className={`w-7 h-7 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 border border-neutral-600 bg-neutral-900/70 shadow-md transition-all duration-150 ${eligible ? "hover:bg-yellow-500/20 hover:border-yellow-400 hover:scale-110 cursor-pointer group/crown" : "cursor-not-allowed"}`}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24">
+                <path
+                  d="M3 18h18v2H3v-2zm0-2l3-8 4 3 2-6 2 6 4-3 3 8H3z"
+                  className={eligible ? "fill-[#737373] group-hover/crown:fill-[#eab308] transition-colors" : "fill-[#737373]"}
+                />
+              </svg>
+            </button>
+
+            {/* Interactive tooltip — eligible cards only */}
+            {showCrownTooltip && eligible && (
+              <div className="absolute left-1/2 -translate-x-1/2 top-full mt-1 px-2 py-1 bg-neutral-900 border border-neutral-700 rounded text-[10px] text-neutral-200 whitespace-nowrap z-30 flex items-center gap-1.5">
+                <span>Set as Commander</span>
+                {isVehicleOrSpacecraft && (
+                  <a
+                    href="https://magic.wizards.com/en/news/feature/edge-of-eternities-mechanics"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="text-blue-400 hover:text-blue-300 hover:underline"
+                    title="Learn about Vehicle/Spacecraft commanders"
+                  >
+                    ⓘ
+                  </a>
+                )}
+              </div>
+            )}
+          </div>
         )
       )}
 
