@@ -2,6 +2,24 @@
 
 ---
 
+## v1.12.5 — Hotfix: Home Screen & Settings Navigation
+Status: APPROVED ✅
+
+### Session Summary
+
+**What shipped:**
+
+- **`src/app/page.tsx`** — `onGoHome` now calls both `setActiveDeckId(null)` and `setShowSettings(false)`; `isOnHomeScreen` changed from `!activeDeck` to `!activeDeck && !showSettings` so home button stays active when settings overlays the home screen
+- **`src/components/home/DeckCoverCard.tsx`** — `cards: unknown[]` → `cards: { quantity: number }[]`; card count now `.reduce((sum, c) => sum + c.quantity, 0)`
+- **`src/components/home/HomeScreen.tsx`** — same `Deck.cards` type update for TypeScript alignment with `DeckCoverCard`
+- **`src/components/layout/SidebarDecksTab.tsx`** — added `onCloseSettings?: () => void` prop; called after deck name click and sideboard icon click
+- **`src/components/layout/Sidebar.tsx`** — passes `onCloseSettings` down to `SidebarDecksTab`
+- **`CLAUDE.md`** — settings overlay contract added to Key Technical Notes
+
+**Root cause note:** `showSettings` is an overlay guard (`showSettings ? <SettingsView> : ...`) — it takes priority over all routing conditions. Any navigation action that doesn't explicitly call `setShowSettings(false)` leaves settings open silently.
+
+---
+
 ## v1.12.4 — Home Screen & Empty State
 Status: APPROVED ✅
 

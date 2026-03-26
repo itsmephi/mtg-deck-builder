@@ -3,7 +3,7 @@ Authors: Phi & Thurgood Nguyen
 Stack: Next.js + TypeScript + Tailwind CSS
 Deployed: Vercel | Repo: GitHub (itsmephi/mtg-deck-builder)
 IDE: VS Code (Windows, primary) · Zed on Steam Deck (Linux, secondary)
-Current Version: v1.12.4 — see CHANGELOG.md for full history
+Current Version: v1.12.5 — see CHANGELOG.md for full history
 
 ---
 
@@ -79,6 +79,7 @@ src/
 - $0.00 rescue: check !prices.usd || prices.usd === "0.00" — both cases need rescue
 - handleAddCard is async — rescue happens before updateActiveDeck
 - lastAddedId in context: set by Sidebar on add, cleared by Workspace after scroll+highlight
+- Settings overlay contract: any action that navigates away (tab click, deck name click, home button) MUST call `onCloseSettings?.()` — `showSettings` is not auto-cleared by routing; failures here cause the settings view to persist silently. Design checklist item: "does this navigation action need to close settings?"
 - setCardRef(id) curried helper for card refs — inline { if(el) } causes parse errors
 - duplicate ))} bug: caused by stacked .map() closings — always verify only one per map
 - TCGPlayer format: "1 Memnite [BRO]" — Card Kingdom: name only

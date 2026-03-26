@@ -5,6 +5,21 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.12.5] — Hotfix: Home Screen & Settings Navigation
+
+### Fixed
+- **Home button from settings (prohibition cursor)**: `isOnHomeScreen` was `!activeDeck` — when settings is open over the home screen, `activeDeck` is null so the button was disabled. Now `isOnHomeScreen = !activeDeck && !showSettings`, so the button stays active when settings is the overlay.
+- **Home button from settings (does nothing)**: `onGoHome` only called `setActiveDeckId(null)` without clearing `showSettings`. Settings view persisted because `showSettings ? <SettingsView>` guards before the `!activeDeck` routing check. `onGoHome` now also calls `setShowSettings(false)`.
+- **Deck cover card count**: card count on home screen showed unique entry count (`cards.length`) instead of total quantity. Now sums `card.quantity` across all entries.
+- **Deck click doesn't close settings**: clicking a deck name or the sideboard icon in the Decks tab while settings is open now calls `onCloseSettings` — settings closes and the deck view renders immediately without requiring a manual tab click first.
+
+### Technical
+- `DeckCoverCard` and `HomeScreen` local `Deck` interface: `cards` narrowed from `unknown[]` to `{ quantity: number }[]`
+- `SidebarDecksTab` receives `onCloseSettings?: () => void` from `Sidebar` and calls it on deck selection and sideboard activation
+- Settings overlay contract documented in CLAUDE.md Key Technical Notes
+
+---
+
 ## [1.12.4] — Home Screen & Empty State
 
 ### Added
