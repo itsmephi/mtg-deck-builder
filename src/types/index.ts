@@ -33,6 +33,8 @@ export interface ScryfallCard {
   mana_cost?: string;
   cmc?: number;
   color_identity?: string[];
+  power?: string;
+  toughness?: string;
   released_at?: string;
 }
 

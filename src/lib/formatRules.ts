@@ -123,8 +123,32 @@ export function getCardWarnings(
 }
 
 export function isEligibleCommander(card: DeckCard): boolean {
-  return (
-    ((card.type_line?.includes("Legendary") && card.type_line?.includes("Creature")) ?? false) ||
-    (card.oracle_text?.includes("can be your commander") ?? false)
-  );
+  // Get type_line and oracle_text, checking card_faces as fallback for reversible cards
+  const typeLine = card.type_line ?? card.card_faces?.[0]?.type_line ?? '';
+  const oracleText = card.oracle_text ?? card.card_faces?.[0]?.oracle_text ?? '';
+
+  const isLegendary = typeLine.includes("Legendary");
+
+  // Traditional: Legendary Creature
+  const isLegendaryCreature = isLegendary && typeLine.includes("Creature");
+
+  // Explicit commander text (e.g., Grist, the Hunger Tide)
+  const hasCommanderText = oracleText.includes("can be your commander");
+
+  // July 2025 rule: Legendary Vehicle or Spacecraft with P/T
+  const isLegendaryVehicle = isLegendary && typeLine.includes("Vehicle");
+  const isLegendarySpacecraft = isLegendary && typeLine.includes("Spacecraft");
+  const hasPowerToughness = card.power !== undefined && card.toughness !== undefined;
+  const isEligibleArtifact = (isLegendaryVehicle || isLegendarySpacecraft) && hasPowerToughness;
+
+  return isLegendaryCreature || hasCommanderText || isEligibleArtifact;
+}
+
+export function isVehicleOrSpacecraftCommander(card: DeckCard): boolean {
+  const typeLine = card.type_line ?? card.card_faces?.[0]?.type_line ?? '';
+  const isLegendary = typeLine.includes("Legendary");
+  const isVehicle = typeLine.includes("Vehicle");
+  const isSpacecraft = typeLine.includes("Spacecraft");
+  const hasPT = card.power !== undefined && card.toughness !== undefined;
+  return isLegendary && (isVehicle || isSpacecraft) && hasPT;
 }
