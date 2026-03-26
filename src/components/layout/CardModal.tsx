@@ -65,7 +65,7 @@ export default function CardModal({
         const data = await getCardRulings(previewCard.id);
         setRulings(data);
       } else if (view === "prints" && variants.length === 0) {
-        const data = await getCardPrintings(previewCard.oracle_id);
+        const data = await getCardPrintings(previewCard.name);
         setVariants(data);
       }
       setLoading(false);

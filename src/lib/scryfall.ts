@@ -38,11 +38,13 @@ export async function getTopCards(): Promise<ScryfallCard[]> {
 }
 
 export async function getCardPrintings(
-  oracleId: string,
+  cardName: string,
 ): Promise<ScryfallCard[]> {
   try {
+    // Use exact name match to find all printings, including reversible cards
+    // The !"name" syntax matches the full name exactly
     const res = await fetch(
-      `${SCRYFALL_BASE}/cards/search?order=released&q=oracleid:${oracleId}&unique=prints`,
+      `${SCRYFALL_BASE}/cards/search?order=released&q=!"${encodeURIComponent(cardName)}"&unique=prints`,
       { headers: HEADERS },
     );
     if (!res.ok) return [];
