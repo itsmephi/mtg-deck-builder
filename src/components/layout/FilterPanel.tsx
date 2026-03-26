@@ -20,11 +20,11 @@ export interface FilterState {
 export const DEFAULT_FILTERS: FilterState = {
   priceMin: 0,
   priceMax: 100,
-  anyPrice: false,
+  anyPrice: true,
   rarities: new Set(["common", "uncommon", "rare", "mythic"]),
   types: new Set(["creature", "instant", "sorcery", "enchantment", "artifact", "land", "planeswalker"]),
   colors: new Set(["W", "U", "B", "R", "G", "C"]),
-  yearMin: DEFAULT_YEAR_MIN,
+  yearMin: 1993,
   yearMax: DEFAULT_YEAR_MAX,
 };
 
@@ -91,6 +91,23 @@ export function buildSidebarFilterSyntax(filters: FilterState): string {
   if (filters.yearMax < CURRENT_YEAR) parts.push(`year<=${filters.yearMax}`);
 
   return parts.join(" ");
+}
+
+export function filtersAreDefault(f: FilterState): boolean {
+  const d = DEFAULT_FILTERS;
+  return (
+    f.anyPrice === d.anyPrice &&
+    f.priceMin === d.priceMin &&
+    f.priceMax === d.priceMax &&
+    f.yearMin === d.yearMin &&
+    f.yearMax === d.yearMax &&
+    f.rarities.size === d.rarities.size &&
+    [...f.rarities].every((r) => d.rarities.has(r)) &&
+    f.types.size === d.types.size &&
+    [...f.types].every((t) => d.types.has(t)) &&
+    f.colors.size === d.colors.size &&
+    [...f.colors].every((c) => d.colors.has(c))
+  );
 }
 
 function toggle<T>(set: Set<T>, value: T): Set<T> {
@@ -422,6 +439,17 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
           ))}
         </div>
       </div>
+      {/* Reset to defaults */}
+      {!filtersAreDefault(filters) && (
+        <div className="pt-1">
+          <button
+            onClick={() => onFiltersChange(DEFAULT_FILTERS)}
+            className="w-full px-2 py-1 rounded text-[10px] border border-line-default bg-surface-raised text-content-muted hover:text-content-secondary hover:border-line-hover transition-colors"
+          >
+            Reset to defaults
+          </button>
+        </div>
+      )}
     </div>
   );
 }

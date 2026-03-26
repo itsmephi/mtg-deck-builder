@@ -55,7 +55,13 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
   const [results, setResults] = useState<ScryfallCard[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedCard, setSelectedCard] = useState<ScryfallCard | null>(null);
-  const [filterActive, setFilterActive] = useState(true);
+  const FILTER_ACTIVE_KEY_PREFIX = "mtg-search-filter-active";
+  const readFilterActive = (deckId?: string) => {
+    const key = deckId ? `${FILTER_ACTIVE_KEY_PREFIX}-${deckId}` : FILTER_ACTIVE_KEY_PREFIX;
+    const stored = localStorage.getItem(key);
+    return stored === null ? false : stored === "true";
+  };
+  const [filterActive, setFilterActive] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showAutocomplete, setShowAutocomplete] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -117,6 +123,12 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
     [activeDeck?.cards]
   );
 
+  // Initialize filterActive from localStorage on mount
+  useEffect(() => {
+    setFilterActive(readFilterActive(activeDeck?.id));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Focus input when tab becomes active
   useEffect(() => {
     if (isActive) {
@@ -126,8 +138,9 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
 
   // Reset filter and clear results when active deck changes
   useEffect(() => {
-    setFilterActive(true);
+    setFilterActive(readFilterActive(activeDeck?.id));
     setResults([]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeDeck?.id]);
 
   // Debounced search — fires when scryfallQuery changes
@@ -195,8 +208,13 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
   );
 
   const handleToggleFilter = useCallback(() => {
-    setFilterActive((f) => !f);
-  }, []);
+    setFilterActive((f) => {
+      const next = !f;
+      const key = activeDeck?.id ? `${FILTER_ACTIVE_KEY_PREFIX}-${activeDeck.id}` : FILTER_ACTIVE_KEY_PREFIX;
+      localStorage.setItem(key, String(next));
+      return next;
+    });
+  }, [activeDeck?.id]);
 
   const handleAutocompleteSelect = useCallback((name: string) => {
     setQuery(name);
