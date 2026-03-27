@@ -5,13 +5,11 @@
 ---
 
 ## Active Milestone
-<!-- Items promoted from Pipeline for the current release. Cleared after release ships. -->
 
-### v1.14.0 — CardModal & Search Polish
-- [x] **enhancement** | CardModal search view: forward/back navigation buttons to mimic deck card modal behavior (#77) *(closed v1.14.0)*
-- [x] **enhancement** | CardModal: show set abbreviation; clicking it searches that set in search view (#80) *(closed v1.14.0)*
-- [x] **enhancement** | CardModal: clicking artist name triggers artist search in search view (#81) *(closed v1.14.0)*
-- [x] **enhancement** | Search: sort direction toggle — asc/desc button outside the sort dropdown, mirroring deck view for UX consistency *(closed v1.14.0)*
+### v1.15.0 — Bug Fixes + Deck Backup
+- [ ] **bug** | **[high]** | Art swap loses commander status — swapping art clears `commanderId` even when the same card stays commander (#83)
+- [ ] **bug** | **[high]** | Marking a card as commander autoscrolls to that card (#84)
+- [ ] **feature** | **[high]** | Backup decks — export/restore deck data as a local backup file; fallback before cloud sync is implemented (#85) ⚠️ needs design
 
 ---
 
@@ -19,12 +17,10 @@
 <!-- Triaged items not yet assigned to a milestone. New captures land here. -->
 <!-- Priority format: **[high]** · **[med]** · **[low]** — set during triage, updated each session -->
 
-- [ ] **enhancement** | **[high]** | Settings Hub: "Submit a Bug" button/link in Support tab (#78)
-- [ ] **enhancement** | **[high]** | Search: auto-match format badge to active deck's format (#79)
-- [ ] **feature** | **[high]** | Move cards between boards or decks (#62)
-- [ ] **enhancement** | **[high]** | Import/export format compatibility — support MTGGoldfish format (e.g. `1 Ashling, the Limitless <borderless> [ECC] (F)`) and confirm cross-compatibility with TCGPlayer and Card Kingdom import
+- [ ] **enhancement** | **[high]** | Settings Hub: "Submit a Bug" button/link in Support tab (#78) — blocked: needs email address first
+- [ ] **feature** | **[low]** | Move cards between boards or decks (#62)
+- [ ] **enhancement** | **[low]** | Import/export format compatibility — support MTGGoldfish format (e.g. `1 Ashling, the Limitless <borderless> [ECC] (F)`) and confirm cross-compatibility with TCGPlayer and Card Kingdom import
 - [ ] **enhancement** | **[med]** | Search: list view toggle for search results — grid/list toggle in search toolbar, list view mirrors sidebar search list but wider ⚠️ needs design
-- [ ] **enhancement** | **[med]** | Search: filter badge color per format — Commander gold, Standard blue, Freeform gray (needs design to avoid confusion with active/inactive states)
 - [ ] **enhancement** | **[med]** | Search: highlight newly added cards on deck view switch — when returning to deck view after adding cards from search, briefly highlight or scroll to new cards ⚠️ needs design
 - [ ] **enhancement** | **[med]** | Search view: back button to return to previous context ⚠️ needs design
 - [ ] **enhancement** | **[med]** | Undo for destructive actions — toast with Undo for card delete and deck delete
@@ -43,6 +39,7 @@
 - [ ] **enhancement** | **[med]** | Price context — add some framing around deck value (budget/mid/premium tier label or comparison)
 - [ ] **enhancement** | **[med]** | Onboarding hint layer — first-time user tips: create a deck before adding cards, how to switch tabs, how to add cards ⚠️ needs design
 - [ ] **enhancement** | **[med]** | Font size tokens — type feels small; establish font-size CSS custom properties (similar to color token system) for consistent scaling
+- [ ] **enhancement** | **[med]** | CardModal art swap: option to confirm swap or add as new card instead ⚠️ needs design
 - [ ] **enhancement** | **[low]** | Search by foil — filter search results to foil printings only
 - [ ] **enhancement** | **[low]** | Search: spelling correction — suggest corrected card name on typo / no-results
 - [ ] **enhancement** | **[low]** | Margin parity between search and deck views — search is edge-to-edge, deck has p-4 outer + p-4 scroll container; future design pass to unify outer padding
@@ -50,13 +47,9 @@
 - [ ] **chore** | **[low]** | Architecture review for public scaling — phased roadmap including mobile/tablet touch support
 - [ ] **chore** | **[low]** | Open source repo and apply for Vercel open source/supporter tier
 - [ ] **chore** | **[low]** | Explore MCP filesystem connection — investigate whether Claude Chat can write files directly to local repo via MCP, eliminating manual download step ⚠️ needs research
-- [ ] **enhancement** | Copy card name to clipboard — one-click copy button on card tiles or modal
-- [ ] **feature** | Backup decks — export/restore deck data as a local backup file; fallback before cloud sync is implemented
-- [ ] **enhancement** | CardModal art swap: option to confirm swap or add as new card instead
-- [ ] **workflow** | Organize /docs folder and update workflow documentation accordingly
-- [ ] **bug** | Search progress circle not animating — spinner appears but doesn't spin during search
-- [ ] **bug** | Art swap loses commander status — swapping art clears `commanderId` even when the same card stays commander
-- [ ] **chore** | Research Secret Lair set names — investigate whether Secret Lair drops use set-specific codes or names in Scryfall (e.g. for set search and badge matching)
+- [ ] **enhancement** | **[low]** | Copy card name to clipboard — one-click copy button on card tiles or modal
+- [ ] **workflow** | **[low]** | Organize /docs folder and update workflow documentation accordingly
+- [ ] **chore** | **[low]** | Research Secret Lair set names — investigate whether Secret Lair drops use set-specific codes or names in Scryfall (e.g. for set search and badge matching)
 
 ---
 

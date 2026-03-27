@@ -47,7 +47,7 @@ For straightforward bug fixes and small enhancements, `/plan` → PROCEED → bu
 ---
 
 ## Active Milestone
-→ v1.15.0 (carry-forward: #78 Submit a Bug button, #79 search format badge auto-match)
+→ v1.15.0 — Bug fixes (#83 art swap commander, #84 commander autoscroll) + Deck Backup (#85, needs design)
 
 ---
 
