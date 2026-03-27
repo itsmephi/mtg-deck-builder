@@ -13,6 +13,9 @@ This command runs only after APPROVED has been given for the current release.
    - `git checkout main`
    - `git merge $ARGUMENTS`
    - `git push`
-4. Report success or any merge conflicts
+4. Delete the working branch (local and remote):
+   - `git branch -d $ARGUMENTS`
+   - `git push origin --delete $ARGUMENTS`
+5. Report success or any merge conflicts
 
 Usage: `/commit-release vX.X.X`

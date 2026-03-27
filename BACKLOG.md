@@ -1,5 +1,5 @@
 # BACKLOG.md — MTG Deck Builder
-<!-- Permanent backlog. Items live here from capture through completion. -->
+<!-- Permanent backlog. Closed items live in CHANGELOG.md only — no duplication here. -->
 <!-- See .claude/rules/backlog-and-capture.md for full lifecycle rules. -->
 
 ---
@@ -80,25 +80,5 @@
 - [ ] **feature** | Search pillars — curated search modes for brewing, discovery, beginner deck building ⚠️ needs design
 - [ ] **feature** | Deck building via photo capture — scan physical cards with camera to add to deck
 - [ ] **feature** | Commander brackets support — tag cards with bracket ratings (e.g. Game Changer) per EDH bracket system ⚠️ needs design
-
----
-
-## Closed (Recent)
-<!-- Keep last 2 releases; archive older entries to CHANGELOG.md -->
-
-### v1.14.0
-- [x] **enhancement** | CardModal search view: forward/back navigation buttons (#77) *(closed v1.14.0)*
-- [x] **enhancement** | CardModal: show set abbreviation; clicking it searches that set (#80) *(closed v1.14.0)*
-- [x] **enhancement** | CardModal: clicking artist name triggers artist search (#81) *(closed v1.14.0)*
-- [x] **enhancement** | Search: sort direction toggle *(closed v1.14.0)*
-- [x] **enhancement** | Default search year range "All", price Any, format badge off by default, per-deck badge persistence, Reset to defaults button *(closed v1.14.0)*
-
-### v1.13.0
-- [x] **bug** | Reversible card commander eligibility — Secret Lair display commanders fail isEligibleCommander check due to type_line in card_faces *(closed v1.13.0)*
-- [x] **bug** | Variant picker empty after art swap — oracle_id lookup fails for reversible cards; switching to name-based lookup *(closed v1.13.0)*
-- [x] **enhancement** | Vehicle/Spacecraft commander support — July 2025 rules update allowing legendary Vehicles/Spacecraft with P/T as commanders *(closed v1.13.0)*
-- [x] **chore** | Extend ScryfallCard type with power/toughness fields *(closed v1.13.0)*
-
-
 
 ---
