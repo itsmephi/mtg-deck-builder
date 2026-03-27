@@ -26,6 +26,7 @@ interface SearchWorkspaceProps {
   onDismissTakeover?: () => void;
   triggerSearch?: string | null;
   onTriggerSearchConsumed?: () => void;
+  showToast: (message: string) => void;
 }
 
 const SORT_ORDER_MAP: Record<string, string> = {
@@ -51,7 +52,7 @@ function buildFilterSyntax(activeDeck: Deck | undefined, filterActive: boolean):
   return syntax;
 }
 
-export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivateChip, sidebarFilters, tileSize, onTileSizeChange, showSearchTakeover, onDismissTakeover, triggerSearch, onTriggerSearchConsumed }: SearchWorkspaceProps) {
+export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivateChip, sidebarFilters, tileSize, onTileSizeChange, showSearchTakeover, onDismissTakeover, triggerSearch, onTriggerSearchConsumed, showToast }: SearchWorkspaceProps) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<ScryfallCard[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -65,7 +66,6 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
   const [filterActive, setFilterActive] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showAutocomplete, setShowAutocomplete] = useState(false);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
   const SORT_DIR_KEY = "mtg-search-sort-direction";
   const [sortOrder, setSortOrder] = useState("price");
   const [sortDir, setSortDirState] = useState<"asc" | "desc">("desc");
@@ -75,7 +75,6 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
   };
   const [setMatch, setSetMatch] = useState<{ query: string; code: string; name: string } | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const suppressAutocompleteRef = useRef(false);
 
   const { activeDeck, updateActiveDeck, setLastAddedId, deckViewMode } = useDeckManager();
@@ -258,12 +257,6 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
     setQuery(value);
     if (activeChipQuery !== null) onDeactivateChip();
   }, [activeChipQuery, onDeactivateChip]);
-
-  const showToast = useCallback((message: string) => {
-    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
-    setToastMessage(message);
-    toastTimerRef.current = setTimeout(() => setToastMessage(null), 2000);
-  }, []);
 
   const handleAdd = useCallback(
     async (card: ScryfallCard) => {
@@ -504,12 +497,6 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
         );
       })()}
 
-      {/* Toast notification */}
-      {toastMessage && (
-        <div className="fixed bottom-4 right-4 z-50 px-3 py-2 bg-surface-raised border border-line-default rounded-lg text-xs text-content-heading shadow-lg max-w-xs">
-          {toastMessage}
-        </div>
-      )}
     </div>
   );
 }

@@ -11,6 +11,18 @@ import { Deck, DeckCard } from "@/types";
 import { DeckFormat } from "@/lib/formatRules";
 
 const STORAGE_KEY = "mtg_builder_decks";
+
+function migrateDecks(rawDecks: any[]): Deck[] {
+  return rawDecks.map((deck: any) => ({
+    ...deck,
+    format: deck.format ?? "freeform",
+    commanderId: deck.commanderId ?? undefined,
+    cards: deck.cards.map((card: any) => {
+      if (card.ownedQty !== undefined) return card;
+      return { ...card, ownedQty: card.isOwned ? card.quantity : 0 };
+    }),
+  }));
+}
 const SORT_PREF_KEY = "mtg-sort-preference";
 const ACTIVE_DECK_KEY = "mtg-active-deck";
 const DECK_VIEW_MODE_KEY = "mtg-deck-view-mode";
@@ -41,6 +53,7 @@ interface DeckContextType {
   setShowThumbnail: (val: boolean) => void;
   lastAddedId: string | null;
   setLastAddedId: (id: string | null) => void;
+  replaceAllDecks: (newDecks: Deck[]) => void;
   sortBy: SortBy;
   setSortBy: (by: SortBy) => void;
   sortDir: SortDir;
@@ -70,15 +83,7 @@ export function DeckProvider({ children }: { children: ReactNode }) {
       try {
         const parsedDecks = JSON.parse(stored);
         if (Array.isArray(parsedDecks) && parsedDecks.length > 0) {
-          const migratedDecks = parsedDecks.map((deck: any) => ({
-            ...deck,
-            format: deck.format ?? "freeform",
-            commanderId: deck.commanderId ?? undefined,
-            cards: deck.cards.map((card: any) => {
-              if (card.ownedQty !== undefined) return card;
-              return { ...card, ownedQty: card.isOwned ? card.quantity : 0 };
-            }),
-          }));
+          const migratedDecks = migrateDecks(parsedDecks);
           setDecks(migratedDecks);
           const restoredId =
             storedActiveId && migratedDecks.find((d: Deck) => d.id === storedActiveId)
@@ -291,6 +296,17 @@ export function DeckProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const replaceAllDecks = (newDecks: Deck[]) => {
+    const migrated = migrateDecks(newDecks);
+    setDecks(migrated);
+    if (migrated.length > 0) {
+      setActiveDeckIdState(migrated[0].id);
+    } else {
+      setActiveDeckIdState(null);
+    }
+    setDeckViewMode("main");
+  };
+
   const deleteSideboardForFormat = (deckId: string) => {
     setDecks((currentDecks) =>
       currentDecks.map((deck) =>
@@ -326,6 +342,7 @@ export function DeckProvider({ children }: { children: ReactNode }) {
         setShowThumbnail,
         lastAddedId,
         setLastAddedId,
+        replaceAllDecks,
         sortBy,
         setSortBy,
         sortDir,

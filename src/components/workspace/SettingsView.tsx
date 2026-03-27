@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { ChevronLeft, Coffee } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ChevronLeft, Coffee, Download, Upload } from "lucide-react";
 import { APP_VERSION, CHANGELOG } from "@/config/version";
 import { useDeckManager } from "@/hooks/useDeckManager";
+import { Deck } from "@/types";
 
 type SettingsTab = "preferences" | "whatsnew" | "about" | "support";
 
@@ -11,6 +12,7 @@ interface Props {
   activeTab: SettingsTab;
   onTabChange: (tab: SettingsTab) => void;
   onClose: () => void;
+  showToast: (message: string) => void;
 }
 
 const TABS: { id: SettingsTab; label: string }[] = [
@@ -22,15 +24,24 @@ const TABS: { id: SettingsTab; label: string }[] = [
 
 // ─── Preferences ─────────────────────────────────────────────────────────────
 
-function PreferencesTab() {
-  const { showThumbnail, setShowThumbnail } = useDeckManager();
-  const [activeTheme, setActiveTheme] = useState<"warm-stone" | "zed-dark">(
-    "warm-stone",
-  );
+interface PreferencesTabProps {
+  showToast: (message: string) => void;
+  onClose: () => void;
+}
+
+function PreferencesTab({ showToast, onClose }: PreferencesTabProps) {
+  const { showThumbnail, setShowThumbnail, decks, replaceAllDecks } = useDeckManager();
+  const [activeTheme, setActiveTheme] = useState<"warm-stone" | "zed-dark">("warm-stone");
+  const [lastBackup, setLastBackup] = useState<string | null>(null);
+  const [backupError, setBackupError] = useState<string | null>(null);
+  const [restoreData, setRestoreData] = useState<{ decks: Deck[]; exportedAt: string } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem("mtg-theme");
     setActiveTheme(stored === "zed-dark" ? "zed-dark" : "warm-stone");
+    const storedBackup = localStorage.getItem("mtg-last-backup");
+    setLastBackup(storedBackup);
   }, []);
 
   const handleThemeSelect = (theme: "warm-stone" | "zed-dark") => {
@@ -41,6 +52,84 @@ function PreferencesTab() {
     } else {
       delete document.documentElement.dataset.theme;
       localStorage.removeItem("mtg-theme");
+    }
+  };
+
+  const handleBackup = () => {
+    setBackupError(null);
+    const backup = {
+      app: "thebrewlab",
+      version: APP_VERSION,
+      exportedAt: new Date().toISOString(),
+      decks,
+    };
+    const json = JSON.stringify(backup, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const dateStr = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD
+    a.href = url;
+    a.download = `thebrewlab-backup-${dateStr}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    const now = new Date().toISOString();
+    localStorage.setItem("mtg-last-backup", now);
+    setLastBackup(now);
+    showToast(`Backed up ${decks.length} deck${decks.length !== 1 ? "s" : ""}`);
+  };
+
+  const handleRestoreClick = () => {
+    setBackupError(null);
+    fileInputRef.current?.click();
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    // Reset input so the same file can be re-selected after an error
+    e.target.value = "";
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      try {
+        const parsed = JSON.parse(evt.target?.result as string);
+        if (parsed.app !== "thebrewlab") {
+          setBackupError("This doesn't look like a TheBrewLab backup file.");
+          return;
+        }
+        if (!Array.isArray(parsed.decks)) {
+          setBackupError("This doesn't look like a TheBrewLab backup file.");
+          return;
+        }
+        if (parsed.decks.length === 0) {
+          setBackupError("This backup contains no decks.");
+          return;
+        }
+        setRestoreData({ decks: parsed.decks, exportedAt: parsed.exportedAt });
+      } catch {
+        setBackupError("Couldn't read this file. Make sure it's a valid backup.");
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const handleConfirmRestore = () => {
+    if (!restoreData) return;
+    replaceAllDecks(restoreData.decks);
+    setRestoreData(null);
+    onClose();
+    showToast(`Restored ${restoreData.decks.length} deck${restoreData.decks.length !== 1 ? "s" : ""}`);
+  };
+
+  const formatBackupDate = (iso: string) => {
+    const d = new Date(iso);
+    return `${d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })} at ${d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}`;
+  };
+
+  const formatRestoreDate = (iso: string) => {
+    try {
+      return new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+    } catch {
+      return "unknown date";
     }
   };
 
@@ -113,6 +202,45 @@ function PreferencesTab() {
         </div>
       </div>
 
+      {/* Deck Backup */}
+      <div className="py-3 border-b border-line-subtle">
+        <p className="text-sm text-content-heading">Deck Backup</p>
+        <p className="text-xs text-content-muted mt-0.5">
+          Back up all your decks to a file, or restore from a previous backup. Great for switching devices.
+        </p>
+        <div className="flex flex-wrap gap-3 mt-3">
+          <button
+            onClick={handleBackup}
+            disabled={decks.length === 0}
+            title={decks.length === 0 ? "No decks to back up" : undefined}
+            className={`flex items-center gap-1.5 px-4 py-2 bg-surface-raised hover:bg-surface-overlay border border-line-default rounded-lg text-xs text-content-secondary hover:text-content-primary transition-colors ${decks.length === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
+          >
+            <Download className="w-3.5 h-3.5" />
+            Backup All Decks
+          </button>
+          <button
+            onClick={handleRestoreClick}
+            className="flex items-center gap-1.5 px-4 py-2 bg-surface-raised hover:bg-surface-overlay border border-line-default rounded-lg text-xs text-content-secondary hover:text-content-primary transition-colors"
+          >
+            <Upload className="w-3.5 h-3.5" />
+            Restore from Backup
+          </button>
+        </div>
+        {backupError && (
+          <p className="text-xs text-red-400 mt-2">{backupError}</p>
+        )}
+        <p className="text-[10px] text-content-faint mt-2">
+          {lastBackup ? `Last backup: ${formatBackupDate(lastBackup)}` : "No backups yet"}
+        </p>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".json"
+          onChange={handleFileSelect}
+          className="hidden"
+        />
+      </div>
+
       {/* Future placeholder */}
       <div className="border border-dashed border-line-default rounded-lg p-6 text-center mt-6">
         <p className="text-xs text-content-disabled">
@@ -122,6 +250,57 @@ function PreferencesTab() {
           Animations · Token Gallery · Display density
         </p>
       </div>
+
+      {/* Restore confirmation modal */}
+      {restoreData && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
+          onClick={() => setRestoreData(null)}
+          onKeyDown={(e) => { if (e.key === "Escape") setRestoreData(null); }}
+          tabIndex={-1}
+        >
+          <div
+            className="bg-surface-base border border-line-default rounded-xl shadow-2xl p-6 max-w-sm mx-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="text-lg font-bold text-content-heading mb-3">Restore from Backup?</h2>
+            <p className="text-sm text-content-secondary leading-relaxed">
+              {decks.length > 0 ? (
+                <>
+                  This will replace your current{" "}
+                  <span className="font-semibold text-content-heading">{decks.length} deck{decks.length !== 1 ? "s" : ""}</span>{" "}
+                  with{" "}
+                  <span className="font-semibold text-content-heading">{restoreData.decks.length} deck{restoreData.decks.length !== 1 ? "s" : ""}</span>{" "}
+                  from the backup made on{" "}
+                  <span className="font-semibold text-content-heading">{formatRestoreDate(restoreData.exportedAt)}</span>.
+                </>
+              ) : (
+                <>
+                  This will add{" "}
+                  <span className="font-semibold text-content-heading">{restoreData.decks.length} deck{restoreData.decks.length !== 1 ? "s" : ""}</span>{" "}
+                  from the backup made on{" "}
+                  <span className="font-semibold text-content-heading">{formatRestoreDate(restoreData.exportedAt)}</span>.
+                </>
+              )}
+            </p>
+            <p className="text-sm text-content-muted mt-2">This can&apos;t be undone.</p>
+            <div className="flex justify-end gap-3 mt-5">
+              <button
+                onClick={() => setRestoreData(null)}
+                className="px-4 py-2 rounded-lg text-sm text-content-secondary hover:text-content-primary hover:bg-surface-raised transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmRestore}
+                className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-500 transition-colors"
+              >
+                Restore
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -321,6 +500,7 @@ export default function SettingsView({
   activeTab,
   onTabChange,
   onClose,
+  showToast,
 }: Props) {
   // Escape key closes settings
   useEffect(() => {
@@ -378,7 +558,7 @@ export default function SettingsView({
       {/* Scrollable body */}
       <div className="flex-1 overflow-y-auto p-5 md:p-7">
         <div className="max-w-[560px] mx-auto">
-          {activeTab === "preferences" && <PreferencesTab />}
+          {activeTab === "preferences" && <PreferencesTab showToast={showToast} onClose={onClose} />}
           {activeTab === "whatsnew" && <WhatsNewTab />}
           {activeTab === "about" && <AboutTab />}
           {activeTab === "support" && <SupportTab />}

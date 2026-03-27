@@ -94,6 +94,24 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
   const [hoveredCardList, setHoveredCardList] = useState<ScryfallCard | null>(null);
   const mousePosRef = useRef({ x: 0, y: 0 });
   const tooltipRef = useRef<HTMLDivElement>(null);
+  const prevCommanderRef = useRef<{ deckId: string | undefined; commanderId: string | undefined } | null>(null);
+
+  // Scroll to top when a new commander is assigned within the same deck
+  useEffect(() => {
+    const cur = { deckId: activeDeck?.id, commanderId: activeDeck?.commanderId };
+    if (prevCommanderRef.current === null) {
+      prevCommanderRef.current = cur;
+      return;
+    }
+    if (
+      cur.deckId === prevCommanderRef.current.deckId &&
+      cur.commanderId &&
+      cur.commanderId !== prevCommanderRef.current.commanderId
+    ) {
+      scrollContainerRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    prevCommanderRef.current = cur;
+  }, [activeDeck?.commanderId, activeDeck?.id]);
 
   // Confirmation dialog for sideboard → commander format switch (triggered from toolbar)
   const [confirmDialog, setConfirmDialog] = useState<ConfirmDialogState | null>(null);
@@ -595,6 +613,9 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
                         : c,
                     ),
                   }));
+                  if (activeDeck?.commanderId === oldId) {
+                    setCommanderId(newCard.id);
+                  }
                 }
                 setSelectedCard({
                   ...newCard,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import Sidebar from "@/components/layout/Sidebar";
 import Workspace from "@/components/workspace/Workspace";
 import SearchWorkspace from "@/components/workspace/SearchWorkspace";
@@ -24,9 +24,17 @@ export default function Dashboard() {
   const { activeDeck, decks, setActiveDeckId, createNewDeck } = useDeckManager();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"search" | "decks">("search");
   const [showSettings, setShowSettings] = useState(false);
   const [settingsTab, setSettingsTab] = useState<"preferences" | "whatsnew" | "about" | "support">("preferences");
+
+  const showToast = useCallback((message: string) => {
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    setToastMessage(message);
+    toastTimerRef.current = setTimeout(() => setToastMessage(null), 2000);
+  }, []);
 
   const openSettings = (tab: "preferences" | "whatsnew" | "about" | "support") => {
     setSettingsTab(tab);
@@ -114,6 +122,7 @@ export default function Dashboard() {
             activeTab={settingsTab}
             onTabChange={setSettingsTab}
             onClose={() => setShowSettings(false)}
+            showToast={showToast}
           />
         ) : !activeDeck ? (
           <HomeScreen
@@ -135,6 +144,7 @@ export default function Dashboard() {
                 onDismissTakeover={() => setShowSearchTakeover(false)}
                 triggerSearch={pendingSearch}
                 onTriggerSearchConsumed={() => setPendingSearch(null)}
+                showToast={showToast}
               />
             </div>
             <div className={activeTab === "decks" ? "flex-1 overflow-hidden p-4" : "hidden"}>
@@ -157,6 +167,12 @@ export default function Dashboard() {
           </>
         )}
       </main>
+
+      {toastMessage && (
+        <div className="fixed bottom-4 right-4 z-50 px-3 py-2 bg-surface-raised border border-line-default rounded-lg text-xs text-content-heading shadow-lg max-w-xs">
+          {toastMessage}
+        </div>
+      )}
     </div>
   );
 }

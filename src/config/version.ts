@@ -1,8 +1,15 @@
-export const APP_VERSION = "1.14.0";
+export const APP_VERSION = "1.15.0";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.15.0": [
+    "Bug fix: art swap no longer clears commander designation — when a card set as commander has its art swapped, commanderId now updates to the new printing's id instead of dangling to the old one",
+    "Bug fix: marking a card as commander no longer autoscrolls — crown button blur prevents browser focus-scroll when the card pins to position 0 in the sorted list",
+    "Feature: Deck Backup — Settings Hub › Preferences › Deck Backup; 'Backup All Decks' downloads a full-fidelity .json file of all decks; 'Restore from Backup' replaces the current deck list with decks from a backup file; restore shows a confirmation modal with current vs. backup deck counts and backup date; inline error states for invalid or empty backup files",
+    "Feature: app-wide toast — toast notification lifted from SearchWorkspace to page.tsx so it shows over all views (Settings, Home, Search, Deck); backup and restore actions show confirmation toasts",
+    "Chore: workflow updated — spec-only workflow replaces prompt-file workflow; Claude Chat produces a single spec file; Claude Code reads and implements directly",
+  ],
   "1.14.0": [
     "Enhancement: CardModal fwd/back navigation in search context — Prev/Next chevron buttons navigate through the current results array; buttons hide when ≤1 result; keyboard arrow keys supported",
     "Enhancement: set code in CardModal Product Details is now clickable — blue text, underline on hover; clicking searches e:{setCode} and switches to search view from either context",
