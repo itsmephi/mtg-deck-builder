@@ -50,6 +50,13 @@
 - [ ] **chore** | **[low]** | Architecture review for public scaling — phased roadmap including mobile/tablet touch support
 - [ ] **chore** | **[low]** | Open source repo and apply for Vercel open source/supporter tier
 - [ ] **chore** | **[low]** | Explore MCP filesystem connection — investigate whether Claude Chat can write files directly to local repo via MCP, eliminating manual download step ⚠️ needs research
+- [ ] **enhancement** | Copy card name to clipboard — one-click copy button on card tiles or modal
+- [ ] **feature** | Backup decks — export/restore deck data as a local backup file; fallback before cloud sync is implemented
+- [ ] **enhancement** | CardModal art swap: option to confirm swap or add as new card instead
+- [ ] **workflow** | Organize /docs folder and update workflow documentation accordingly
+- [ ] **bug** | Search progress circle not animating — spinner appears but doesn't spin during search
+- [ ] **bug** | Art swap loses commander status — swapping art clears `commanderId` even when the same card stays commander
+- [ ] **chore** | Research Secret Lair set names — investigate whether Secret Lair drops use set-specific codes or names in Scryfall (e.g. for set search and badge matching)
 
 ---
 
