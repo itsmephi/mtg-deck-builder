@@ -1,7 +1,6 @@
 ---
 description: Run the post-APPROVED commit, merge, and push sequence for a release
 allowed-tools: Bash(git *)
-disable-model-invocation: true
 ---
 
 This command runs only after APPROVED has been given for the current release.

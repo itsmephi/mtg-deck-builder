@@ -24,14 +24,13 @@ globs:
 3. `git checkout -b vX.X.X`
    > WIP commits stay on the branch — never merge to main until APPROVED.
 
-### Prompt Handoff Protocol
+### WIP Commit Policy
 
-- After each Claude Code prompt is complete and QA-tested, run: `git add -A && git commit -m "WIP: vX.X.X — [last completed prompt summary]"` then `git push`
-- This WIP commit is a safe handoff point — development can continue on a different machine after `git pull`
+WIP commits are manual and on-demand. Use one when pausing mid-release: switching machines, stopping before QA, or hitting context limits. Just say "WIP commit and push" to pause. If completing the release in a single session, go straight to QA — no WIP commit needed between prompts.
+
 - Every prompt must leave the app in a stable state: all existing features work, no known regressions
 - If QA surfaces 2+ bugs after a prompt, the next prompt is a dedicated fix prompt (not bundled with feature work)
 - If QA surfaces exactly 1 minor bug, it may be carried forward at the top of the next feature prompt
-- The branch accumulates WIP commits throughout the milestone; only `/commit-release` squashes/merges to main
 
 4. **Plan Review** — Before writing the new plan review table, clear all content from REVIEW.md except the "How This File Works" section at the bottom. Each release starts with a fresh REVIEW.md — previous session history should already be archived in CHANGELOG.md. Then Claude Code outputs every file it plans to touch and a one-line summary of changes per file, writes this to REVIEW.md, and waits for PROCEED before executing.
 
