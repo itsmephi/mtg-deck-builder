@@ -382,12 +382,12 @@ export default function CardModal({
                         {onSearchQuery ? (
                           <button
                             onClick={() => { onSearchQuery(`e:${previewCard.set}`); onClose(); }}
-                            className="text-content-secondary hover:underline cursor-pointer uppercase"
+                            className="text-blue-400 hover:underline cursor-pointer uppercase"
                           >
                             {previewCard.set}
                           </button>
                         ) : (
-                          <span className="text-content-secondary uppercase">{previewCard.set}</span>
+                          <span className="text-blue-400 uppercase">{previewCard.set}</span>
                         )}
                       </p>
                       <p>

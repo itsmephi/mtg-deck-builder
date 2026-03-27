@@ -76,6 +76,7 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
   const [setMatch, setSetMatch] = useState<{ query: string; code: string; name: string } | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const suppressAutocompleteRef = useRef(false);
 
   const { activeDeck, updateActiveDeck, setLastAddedId, deckViewMode } = useDeckManager();
 
@@ -172,6 +173,10 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
 
   // Autocomplete — fires on every query change, no debounce
   useEffect(() => {
+    if (suppressAutocompleteRef.current) {
+      suppressAutocompleteRef.current = false;
+      return;
+    }
     if (query.length < 2) {
       setSuggestions([]);
       setShowAutocomplete(false);
@@ -213,6 +218,7 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
   // Consume external search trigger (from set/artist click in deck context)
   useEffect(() => {
     if (!triggerSearch) return;
+    suppressAutocompleteRef.current = true;
     setQuery(triggerSearch);
     setSuggestions([]);
     setShowAutocomplete(false);
@@ -441,7 +447,7 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
       <div className="flex-1 overflow-y-auto">
         {isLoading && (
           <div className="flex justify-center p-12">
-            <div className="w-5 h-5 border-2 border-line-default border-t-tertiary rounded-full animate-spin" />
+            <div className="w-5 h-5 border-2 border-line-default border-t-blue-400 rounded-full animate-spin" />
           </div>
         )}
 
@@ -493,7 +499,7 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
             onAddToDeck={async (card) => { await handleAdd(card); }}
             onNext={hasNext ? () => setSelectedCard(results[idx + 1]) : undefined}
             onPrev={hasPrev ? () => setSelectedCard(results[idx - 1]) : undefined}
-            onSearchQuery={(q) => { setQuery(q); setSelectedCard(null); }}
+            onSearchQuery={(q) => { suppressAutocompleteRef.current = true; setQuery(q); setSelectedCard(null); setSuggestions([]); setShowAutocomplete(false); }}
           />
         );
       })()}

@@ -1,8 +1,17 @@
-export const APP_VERSION = "1.13.0";
+export const APP_VERSION = "1.14.0";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.14.0": [
+    "Enhancement: CardModal fwd/back navigation in search context — Prev/Next chevron buttons navigate through the current results array; buttons hide when ≤1 result; keyboard arrow keys supported",
+    "Enhancement: set code in CardModal Product Details is now clickable — blue text, underline on hover; clicking searches e:{setCode} and switches to search view from either context",
+    "Enhancement: artist name in CardModal Product Details is now clickable — blue text, underline on hover; clicking searches a:\"artist name\" and switches to search view from either context; row hidden when no artist field is present",
+    "Enhancement: sort direction toggle added to search toolbar — asc/desc arrow button mirrors deck view pattern; persists to localStorage (mtg-search-sort-direction); disabled at Relevance sort",
+    "Filter defaults (pre-release): Price Any, Release Year All, format badge off by default; per-deck badge persistence (mtg-search-filter-active-{deckId}); Reset to defaults button in sidebar filter panel appears when any filter differs from defaults",
+    "Bug fix: search loading spinner was invisible — border-t-tertiary is an unmapped token resolving to transparent; fixed to border-t-blue-400 (same fix as CardModal spinner in v1.13.0)",
+    "Bug fix: autocomplete dropdown no longer opens when navigating via set/artist click — programmatic query changes set a suppressAutocompleteRef flag to skip the autocomplete effect for that cycle",
+  ],
   "1.13.0": [
     "Bug fix: reversible card commander eligibility — Secret Lair display commanders (e.g. Atraxa, Praetors' Voice) failed the isEligibleCommander check because their type_line lives in card_faces[0] rather than the root; now falls back to card_faces[0].type_line and card_faces[0].oracle_text",
     "Bug fix: Swap Art variant picker was empty for reversible/Secret Lair cards — oracle_id lookup fails for these layouts; now uses name-based exact search (Scryfall !'name' syntax) for DFCs and oracle_id for standard cards",
