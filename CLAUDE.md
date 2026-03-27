@@ -3,7 +3,7 @@ Authors: Phi & Thurgood Nguyen
 Stack: Next.js + TypeScript + Tailwind CSS
 Deployed: Vercel | Repo: GitHub (itsmephi/mtg-deck-builder)
 IDE: VS Code (Windows, primary) · Zed on Steam Deck (Linux, secondary)
-Current Version: v1.14.0 — see CHANGELOG.md for full history
+Current Version: v1.15.0 — see CHANGELOG.md for full history
 
 ---
 
@@ -16,7 +16,7 @@ Current Version: v1.14.0 — see CHANGELOG.md for full history
 | REVIEW.md | Claude Code only | All three |
 | CHANGELOG.md | Claude Code only | All three |
 
-Claude Chat never drafts, generates, or edits these files directly. Claude Chat designs and produces Claude Code prompts. Claude Code owns all file changes.
+Claude Chat never drafts, generates, or edits these files directly. Claude Chat designs and produces spec files. Claude Code reads specs directly and implements. Claude Code owns all file changes.
 
 Process documentation lives in `.claude/rules/` — Claude Code loads these on demand:
 - `release-workflow.md` — full release steps, carry-forward rules
@@ -38,7 +38,7 @@ Process documentation lives in `.claude/rules/` — Claude Code loads these on d
 - Any `/plan` output that flags ⚠️ (5+ files or new components)
 - Workflow process changes
 
-**Claude Chat deliverable format:** spec and prompts must always be separate files. Spec = one reference doc committed to `docs/`. Each Claude Code prompt = its own standalone paste-ready `.md` file. Never combine spec + prompts into a single document.
+**Claude Chat deliverable format:** a single design spec file committed to `docs/`. Claude Code reads the spec directly and implements — no separate prompt files.
 
 Triage and milestone planning now run in Claude Code via `/triage`. After triage, take promoted items to Claude Chat for design if they need it.
 
@@ -47,7 +47,7 @@ For straightforward bug fixes and small enhancements, `/plan` → PROCEED → bu
 ---
 
 ## Active Milestone
-→ v1.15.0 — Bug fixes (#83 art swap commander, #84 commander autoscroll) + Deck Backup (#85, needs design)
+→ v1.16.0 — Card Management (quick-add, drag-and-drop sort, unified qty/owned, bulk-owned, partner commanders)
 
 ---
 
@@ -89,7 +89,7 @@ src/
 - 4-copy rule exemptions: check type_line for "Basic Land" and oracle_text for "A deck can have any number"
 - Qty 0: card stays in deck, grays out, excluded from total count and to-buy cost
 - 4-copy rule is a soft warning (highlight) not a hard cap
-- UI state persistence keys: mtg-view-mode, mtg-group-by-type, mtg-active-deck, mtg-deck-view-mode, mtg-sort-preference, mtg-show-thumbnail, mtg-sidebar-collapsed, mtg-sidebar-active-tab, mtg-tile-size (values: "xs"|"s"|"m"|"l"|"xl", default "m"), mtg-sidebar-filters (serialized FilterState — price, anyPrice, rarities, types, colors, yearMin, yearMax), mtg-search-filter-active-{deckId} (boolean string "true"/"false"; per-deck key; absent = default false; written on first user toggle for that deck)
+- UI state persistence keys: mtg-view-mode, mtg-group-by-type, mtg-active-deck, mtg-deck-view-mode, mtg-sort-preference, mtg-show-thumbnail, mtg-sidebar-collapsed, mtg-sidebar-active-tab, mtg-tile-size (values: "xs"|"s"|"m"|"l"|"xl", default "m"), mtg-sidebar-filters (serialized FilterState — price, anyPrice, rarities, types, colors, yearMin, yearMax), mtg-search-filter-active-{deckId} (boolean string "true"/"false"; per-deck key; absent = default false; written on first user toggle for that deck), mtg-last-backup (ISO 8601 string — timestamp of most recent deck backup; read by Preferences tab to display "Last backup: ..." line)
 - Sideboard: enabled per-deck as sideboard?: DeckCard[] — undefined = no sideboard, [] = enabled but empty
 - deckViewMode lives in useDeckManager context
 - `format` and `commanderId` persisted as part of deck data in `mtg_builder_decks` localStorage

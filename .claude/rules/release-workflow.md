@@ -12,14 +12,13 @@ globs:
    - Ask all requirements questions
    - Walk through the design checklist (see `.claude/rules/design-checklist.md`)
    - Present full spec for review
-   - Get explicit sign-off before moving to the next feature
-   - Only generate the Claude Code prompt after ALL features are signed off
-   - Present the Claude Code prompt as a downloadable `.md` file (never `.docx`)
+   - Get explicit sign-off before moving to implementation
 
-2. Claude Chat generates the Claude Code prompt as a downloadable markdown file — must include:
-   - A CHANGELOG outline based on the design spec (Claude Code fills in accurately based on what was actually built)
-   - What to update in CLAUDE.md (version bump, milestone changes)
-   - What to update in BACKLOG.md (status changes, new items)
+2. **Phi downloads the spec and saves to `docs/`.** Claude Code commits the spec, then reads it and implements:
+   ```bash
+   git add docs/vX.X.X-*-spec.md
+   git commit -m "docs: add vX.X.X spec"
+   ```
 
 3. `git checkout -b vX.X.X`
    > WIP commits stay on the branch — never merge to main until APPROVED.
@@ -89,36 +88,26 @@ WIP commits are manual and on-demand. Use one when pausing mid-release: switchin
 
 ---
 
-## Prompt File Workflow
+## Spec File Workflow
 
-Claude Chat produces spec and prompt files for implementation. Here's how they flow:
+Claude Chat produces a design spec for implementation. Here's how it flows:
 
 ### File locations
 - **Spec files** → `docs/vX.X.X-description-spec.md` (committed, permanent reference)
-- **Prompt files** → `docs/prompts/vX.X.X-prompt-N-description.md` (uncommitted, deleted after release)
 
 ### Workflow steps
 
-1. **Claude Chat** generates spec + prompt files
-2. **Phi** downloads and saves to repo:
-   - Spec → `docs/`
-   - Prompts → `docs/prompts/`
-3. **Claude Code** commits spec only:
+1. **Claude Chat** generates the design spec
+2. **Phi** downloads and saves to `docs/`
+3. **Claude Code** commits spec:
    ```bash
    git add docs/vX.X.X-*-spec.md
    git commit -m "docs: add vX.X.X spec"
    ```
-4. **Claude Code** reads and executes prompts in order (prompts stay uncommitted)
-5. **After `/commit-release vX.X.X`**, Claude Code deletes prompt files:
-   ```bash
-   rm docs/prompts/vX.X.X-*.md
-   ```
-   (No commit needed — they were never committed)
+4. **Claude Code** reads spec and implements directly
 
-### Naming conventions
+### Naming convention
 - Spec: `vX.X.X-short-description-spec.md`
-- Prompts: `vX.X.X-prompt-1-short-description.md`, `vX.X.X-prompt-2-...`, etc.
-- Prompt numbers indicate execution order
 
 ---
 

@@ -2,7 +2,7 @@
 
 A reference for Phi and Thurgood on how we build, ship, and maintain this project using Claude Chat and Claude Code.
 
-Last updated: v1.2.1
+Last updated: v1.15.0
 
 ---
 
@@ -10,7 +10,7 @@ Last updated: v1.2.1
 
 **Claude Code** is where building happens. It reads the codebase, edits files, runs commands, and commits to git. We use it in the terminal (VS Code on Windows, Zed on Steam Deck) and via the web app on mobile.
 
-**Claude Chat** is where design and planning happen. It doesn't touch code or files directly — it produces design specs, prototypes, and Claude Code prompts. It also handles triage and milestone planning.
+**Claude Chat** is where design and planning happen. It doesn't touch code or files directly — it produces design specs and prototypes. Claude Code reads specs directly and implements.
 
 **GitHub** is the read-only dashboard. Issues and milestones are created automatically by Claude Code on commit. We don't create issues manually — everything starts in the backlog.
 
@@ -126,7 +126,7 @@ Everything lives in `BACKLOG.md`. It's the single source of truth for planned wo
 
 ### Design approach by complexity:
 - **Simple** (color change, text fix, single behavior): Skip prototype. `/plan` or quick spec.
-- **Medium** (new behavior on existing component): Design spec in Claude Chat. Walk through checklist. Generate Claude Code prompt.
+- **Medium** (new behavior on existing component): Design spec in Claude Chat. Walk through checklist. Claude Code implements from spec.
 - **Complex** (new component, modal, multi-interaction feature): **Prototype first** in Claude Chat. React to it, iterate, then produce the design spec as the implementation reference. Say "prototype this first" to set the right mode.
 
 ---
@@ -137,7 +137,7 @@ The full sequence for a planned release:
 
 1. **Triage** — Run `/triage` in Claude Code. Review the Pipeline, promote items to the active milestone, defer or discard the rest.
 2. **Design** — For each feature, walk through design in Claude Chat. For complex features, prototype first. Sign off on each before moving to the next.
-3. **Prompt** — Claude Chat generates the Claude Code prompt as a `.md` file.
+3. **Spec** — Claude Chat generates the design spec as a `.md` file. Phi downloads to `docs/`. Claude Code commits the spec, then reads and implements directly.
 4. **Branch** — `git checkout -b vX.X.X`
 5. **Plan Review** — Claude Code writes a plan table to REVIEW.md. Review it.
    - ≤5 files, no new components → PROCEED directly
@@ -162,7 +162,7 @@ The full sequence for a planned release:
 - **Design before build.** No building until design is signed off.
 - **Root cause before fix.** Diagnose intended behavior before writing any fix.
 - **One machine at a time.** Git commit is the handoff between Windows and Steam Deck. Always pull before starting, push after finishing.
-- **Claude Chat doesn't touch files.** It designs and produces prompts. Claude Code owns all file changes.
+- **Claude Chat doesn't touch files.** It designs and produces specs. Claude Code reads specs and owns all file changes.
 - **Carry-forwards are for one-liners only.** If a carry-forward needs new design decisions mid-QA, it becomes a separate hot-fix version. Mid-QA scope additions are always a separate version.
 
 ---
