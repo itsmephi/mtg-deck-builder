@@ -5,6 +5,31 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.14.0] — CardModal & Search Polish
+
+### Added
+- **CardModal fwd/back navigation** (#77): Prev/Next chevron buttons in search context navigate through the current results array; buttons hide when ≤1 result; keyboard arrow keys still work
+- **Set code click** (#80): Set abbreviation in CardModal Product Details is clickable (blue, underline on hover); fires `e:{setCode}` search; works from both deck and search contexts; modal closes on click
+- **Artist name click** (#81): Artist name in Product Details is clickable; fires `a:"artist name"` search; works from both deck and search contexts; row hidden when no artist field is present
+- **Sort direction toggle**: asc/desc arrow button next to sort dropdown in search toolbar; mirrors deck view pattern; persists to `localStorage` (`mtg-search-sort-direction`); disabled at Relevance
+
+### Also Shipped (pre-release polish)
+- Search filter defaults: Price Any, Release Year All, format badge off by default
+- Per-deck format badge persistence (`mtg-search-filter-active-{deckId}`) — new decks default OFF; existing decks respect saved preference; deck switches re-read per-deck key
+- "Reset to defaults" button in sidebar filter panel — appears only when filters differ from defaults
+
+### Fixed
+- **Search loading spinner invisible**: `border-t-tertiary` is an unmapped token resolving to transparent; fixed to `border-t-blue-400` (same root cause as the CardModal spinner fix in v1.13.0)
+- **Autocomplete dropdown opening on programmatic searches**: clicking set/artist set the query via state, triggering the autocomplete effect; suppressed with `suppressAutocompleteRef` flag for one cycle
+
+### Technical
+- `CardModal` — `onSearchQuery?: (query: string) => void` prop; clickable set/artist conditionally rendered when prop is present
+- `SearchWorkspace` — `triggerSearch`/`onTriggerSearchConsumed` props for cross-context search triggers; `suppressAutocompleteRef` for autocomplete suppression; `SORT_ORDER_MAP` collapsed `price_asc`/`price_desc` into `price` + `dir:` clause
+- `Workspace` — `onSearchQuery` prop threaded to CardModal
+- `page.tsx` — `pendingSearch` state bridges deck-context set/artist clicks to SearchWorkspace query
+
+---
+
 ## [1.13.0] — Commander Eligibility Fixes + Vehicle/Spacecraft Support
 
 ### Fixed

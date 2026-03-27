@@ -2,104 +2,48 @@
 
 ---
 
-## v1.14.0-pre — Search Filter Defaults
+## v1.14.0 — CardModal & Search Polish
 Status: APPROVED ✅
 
 ### Plan Review
 | File | Changes |
 |------|---------|
-| `src/components/layout/FilterPanel.tsx` | `DEFAULT_FILTERS`: `anyPrice: true`, `yearMin: 1993`; `filtersAreDefault()` helper exported; conditional "Reset to defaults" button at bottom of panel |
-| `src/components/workspace/SearchWorkspace.tsx` | `filterActive` per-deck localStorage (`mtg-search-filter-active-{deckId}`); default `false`; deck switches re-read per-deck key; written on toggle |
-| `CLAUDE.md` | Added `mtg-search-filter-active-{deckId}` to UI state persistence keys |
+| `src/components/layout/CardModal.tsx` | Add `onSearchQuery` prop; make artist name clickable (search `a:"name"`); add clickable set code row to Product Details (search `e:code`) |
+| `src/components/workspace/SearchWorkspace.tsx` | Wire `onNext`/`onPrev` for results array nav; add `triggerSearch`/`onTriggerSearchConsumed` props; pass `onSearchQuery` to CardModal; add `sortDir` state + localStorage; update sort map; add asc/desc toggle button |
+| `src/components/workspace/Workspace.tsx` | Add `onSearchQuery` prop; thread to CardModal |
+| `src/app/page.tsx` | Add `pendingSearch` state; wire `onSearchQuery → Workspace` and `triggerSearch → SearchWorkspace` |
 
 ### QA Checklist
-- [x] Open app fresh (no saved filter state) — format badge in search bar is OFF by default
-- [x] Search returns broad results with badge off (no format/legality filter applied)
-- [x] Toggle format badge ON — badge activates, results narrow to format legality
-- [x] Switch to a different deck — badge stays ON (saved state persisted)
-- [x] Refresh the page — badge is still ON after reload
-- [x] Clear `mtg-search-filter-active` from localStorage, reload — badge is OFF again
-- [x] Open Filter panel — Price Range shows "Any" active by default
-- [x] Open Filter panel — Release Year shows "All" preset active (1993–2026)
-- [x] Sidebar filter panel — "Reset to defaults" button is NOT visible when filters are at default
-- [x] Change a filter (e.g. deselect a rarity) — "Reset to defaults" button appears
-- [x] Click "Reset to defaults" — all filters return to defaults, button disappears
-- [x] Switch decks with no saved `mtg-search-filter-active` key — badge resets to OFF on deck switch
-- [x] Switch decks with `mtg-search-filter-active = true` in localStorage — badge stays ON after deck switch
+- [x] Search results: open a card modal — Prev/Next chevrons appear when results exist
+- [x] Search results modal: Next navigates to next card in results; Prev to previous
+- [x] First result: no Prev button; last result: no Next button
+- [x] Single search result: neither Prev nor Next appears
+- [x] Keyboard arrow left/right navigates modal while in search context
+- [x] CardModal Product Details: set code is shown as a clickable element with hover affordance
+- [x] Click set code from search context — modal closes, query updates to `e:{setCode}`, results update
+- [x] Click set code from deck context — modal closes, switches to search tab, results show for that set
+- [x] CardModal Product Details: artist name is clickable with hover affordance (when artist present)
+- [x] Click artist from search context — modal closes, query updates to `a:"artist name"`, results update
+- [x] Click artist from deck context — modal closes, switches to search tab, results show for that artist
+- [x] Sort direction toggle button appears in search toolbar (arrow up/down icon)
+- [x] Default sort direction is desc; toggle switches to asc
+- [x] Sort direction persists across page reloads (localStorage `mtg-search-sort-direction`)
+- [x] Sort direction toggle is disabled/muted when sort is "Relevance"
+- [x] Results re-run when sort direction changes
 
 ### Session Summary
 
 **What shipped:**
 
-- **`src/components/layout/FilterPanel.tsx`** — `DEFAULT_FILTERS` updated: `anyPrice: true` (was `false`), `yearMin: 1993` (was `CURRENT_YEAR - 4`); `filtersAreDefault()` helper exported; "Reset to defaults" button renders at bottom of panel only when any filter differs from defaults
-- **`src/components/workspace/SearchWorkspace.tsx`** — Format badge (`filterActive`) now uses per-deck localStorage key `mtg-search-filter-active-{deckId}`; default `false` when no key exists; written on every toggle; deck switches re-read the incoming deck's key (new decks = no key = OFF, existing decks = respect saved value)
-- **`CLAUDE.md`** — `mtg-search-filter-active-{deckId}` added to UI state persistence keys
+- **`src/components/layout/CardModal.tsx`** — `onSearchQuery?: (query: string) => void` prop added; artist row now conditional (hidden when no artist field); artist name and set code both rendered as clickable buttons when `onSearchQuery` is present — blue text, underline on hover, `onClose()` called alongside the query; non-clickable fallback kept for deck context without wiring
+- **`src/components/workspace/SearchWorkspace.tsx`** — `triggerSearch`/`onTriggerSearchConsumed` props for cross-context search trigger; `suppressAutocompleteRef` prevents autocomplete from opening on programmatic query sets; `onNext`/`onPrev` wired to `results[]` index for CardModal nav; `sortDir` state (`"asc"` | `"desc"`) from localStorage `mtg-search-sort-direction` (default `"desc"`); asc/desc toggle button matching WorkspaceToolbar pattern; `SORT_ORDER_MAP` collapsed `price_asc`/`price_desc` into single `price` + direction clause; search loading spinner fixed `border-t-tertiary` → `border-t-blue-400`
+- **`src/components/workspace/Workspace.tsx`** — `onSearchQuery` prop added and threaded to CardModal
+- **`src/app/page.tsx`** — `pendingSearch` state; `onSearchQuery` wired to Workspace (sets pending + switches tab); `triggerSearch`/`onTriggerSearchConsumed` wired to SearchWorkspace
+- **`src/config/version.ts`** — bumped to `1.14.0`; v1.14.0 changelog entry added
 
-**Fix mid-QA:** Initial implementation used a single global key `mtg-search-filter-active`; switching to a new deck read the global key and inherited the previous deck's badge state. Switched to per-deck keys to isolate state per deck.
+**Carry-forward fixes (mid-QA):** search spinner unmapped token; autocomplete opening on programmatic set/artist searches
 
----
-
-## v1.13.0 — Commander Eligibility Fixes + Vehicle/Spacecraft Support
-Status: APPROVED ✅
-
-### Session Summary
-
-**What shipped (4 prompts):**
-
-- **`src/types/index.ts`** — `ScryfallCard` extended with `power?: string` and `toughness?: string` fields, placed after `color_identity` and before `released_at`
-- **`src/lib/formatRules.ts`** — `isEligibleCommander` rewritten: falls back to `card_faces[0]` for reversible cards; adds Vehicle/Spacecraft + P/T path for July 2025 rules; `isVehicleOrSpacecraftCommander` helper exported
-- **`src/lib/scryfall.ts`** — `getCardPrintings` signature changed to `(cardName: string, oracleId: string)`; DFCs (name contains ` // `) use front-face exact name search; standard cards use `oracleid:` query
-- **`src/components/layout/CardModal.tsx`** — `getCardPrintings` call updated to pass both `previewCard.name` and `previewCard.oracle_id`; loading spinner condition changed from `loading && variants.length === 0` to `loading`; spinner class fixed from invisible `border-t-tertiary` to `border-t-blue-400`
-- **`src/components/workspace/VisualCard.tsx`** — `isVehicleOrSpacecraftCommander` imported; `isVehicleOrSpacecraft` computed per card; `showCrownTooltip` state + `crownTooltipTimeout` ref added; non-commander crown wrapped in hover container with 150ms dismiss delay; interactive tooltip div replaces `title` attribute; ⓘ link conditionally rendered for Vehicle/Spacecraft
-- **`src/components/workspace/ListCardTable.tsx`** — same pattern as VisualCard; `hoveredCrownId` state + `crownTooltipTimeout` ref added; tooltip renders to the right of the crown icon; same 150ms dismiss delay
-
-**Closed from backlog:** reversible card eligibility bug · variant picker empty bug · Vehicle/Spacecraft commander enhancement · ScryfallCard power/toughness chore
-
----
-
-## v1.12.5 — Hotfix: Home Screen & Settings Navigation
-Status: APPROVED ✅
-
-### Session Summary
-
-**What shipped:**
-
-- **`src/app/page.tsx`** — `onGoHome` now calls both `setActiveDeckId(null)` and `setShowSettings(false)`; `isOnHomeScreen` changed from `!activeDeck` to `!activeDeck && !showSettings` so home button stays active when settings overlays the home screen
-- **`src/components/home/DeckCoverCard.tsx`** — `cards: unknown[]` → `cards: { quantity: number }[]`; card count now `.reduce((sum, c) => sum + c.quantity, 0)`
-- **`src/components/home/HomeScreen.tsx`** — same `Deck.cards` type update for TypeScript alignment with `DeckCoverCard`
-- **`src/components/layout/SidebarDecksTab.tsx`** — added `onCloseSettings?: () => void` prop; called after deck name click and sideboard icon click
-- **`src/components/layout/Sidebar.tsx`** — passes `onCloseSettings` down to `SidebarDecksTab`
-- **`CLAUDE.md`** — settings overlay contract added to Key Technical Notes
-
-**Root cause note:** `showSettings` is an overlay guard (`showSettings ? <SettingsView> : ...`) — it takes priority over all routing conditions. Any navigation action that doesn't explicitly call `setShowSettings(false)` leaves settings open silently.
-
----
-
-## v1.12.4 — Home Screen & Empty State
-Status: APPROVED ✅
-
-### Session Summary
-
-**What shipped (5 prompts):**
-
-- **`src/hooks/useDeckManager.tsx`** — removed auto-create on first load and last-deck delete; `setActiveDeckId` updated to accept `string | null`; `activeDeckId = null` routes to home screen
-- **`src/app/page.tsx`** — `!activeDeck` routing condition added between settings and tab views; `showSearchTakeover` state wired to `SearchWorkspace` and `Workspace`; `onGoHome` / `isOnHomeScreen` forwarded to `Sidebar`; `createNewDeck` destructured for `HomeScreen.onCreateDeck`
-- **`src/components/home/HomeScreen.tsx`** — full home screen: heading, rotating tagline, deck cover cards, ghost deck card, FormatPicker dropdown
-- **`src/components/home/DeckCoverCard.tsx`** — deck cover tile with deterministic gradient tint from deck name hash; shows name + card count
-- **`src/components/home/GhostDeckCard.tsx`** — dashed ghost tile with Plus icon; opens FormatPicker on click
-- **`src/hooks/useHomeTagline.ts`** — sessionStorage-backed random tagline hook (one per session)
-- **`src/config/taglines.ts`** — 13 rotating taglines
-- **`src/components/workspace/Workspace.tsx`** — removed auto-create `useEffect`; ghost card rendered in empty deck grid (`sortedCards.length === 0 && deckViewMode !== "sideboard"`); `onAddFirstCard` prop triggers search takeover
-- **`src/components/workspace/SearchWorkspace.tsx`** — `showSearchTakeover` / `onDismissTakeover` props added; `SearchTakeover` rendered in place of normal UI when active
-- **`src/components/workspace/SearchTakeover.tsx`** — heading, autofocused input (Enter fires search), quick-tag pills; dismisses and fires query on selection
-- **`src/components/layout/SidebarDecksTab.tsx`** — "New Deck" text button replaced with dashed ghost slot; same FormatPicker behaviour
-- **`src/components/layout/Sidebar.tsx`** — Home icon added to expanded footer; `onGoHome` / `isOnHomeScreen` props; forwarded to `SidebarRail`
-- **`src/components/layout/SidebarRail.tsx`** — Home icon added below Settings; dimmed + `cursor-not-allowed` when on home screen; tooltip hidden when active
-- **`src/app/layout.tsx`** — page title updated to "TheBrewLab"
-
-**Closed from backlog:** `feature | Empty/cold-start state` · `chore | App title tag updated to TheBrewLab`
-
-**New Pipeline items:** Home screen deck covers (custom art) · Home screen as persistent hub
+**Items not in this spec (carry to v1.15.0):** #78 Submit a Bug button · #79 auto-match format badge
 
 ---
 

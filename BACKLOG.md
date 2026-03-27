@@ -8,18 +8,18 @@
 <!-- Items promoted from Pipeline for the current release. Cleared after release ships. -->
 
 ### v1.14.0 — CardModal & Search Polish
-- [ ] **enhancement** | CardModal search view: forward/back navigation buttons to mimic deck card modal behavior (#77)
-- [ ] **enhancement** | Settings Hub: "Submit a Bug" button/link in Support tab (#78)
-- [ ] **enhancement** | Search: auto-match format badge to active deck's format (#79)
-- [ ] **enhancement** | CardModal: show set abbreviation; clicking it searches that set in search view (#80)
-- [ ] **enhancement** | CardModal: clicking artist name triggers artist search in search view (#81)
-- [ ] **enhancement** | Search: sort direction toggle — asc/desc button outside the sort dropdown, mirroring deck view for UX consistency
+- [x] **enhancement** | CardModal search view: forward/back navigation buttons to mimic deck card modal behavior (#77) *(closed v1.14.0)*
+- [x] **enhancement** | CardModal: show set abbreviation; clicking it searches that set in search view (#80) *(closed v1.14.0)*
+- [x] **enhancement** | CardModal: clicking artist name triggers artist search in search view (#81) *(closed v1.14.0)*
+- [x] **enhancement** | Search: sort direction toggle — asc/desc button outside the sort dropdown, mirroring deck view for UX consistency *(closed v1.14.0)*
 
 ---
 
 ## Pipeline
 <!-- Triaged items not yet assigned to a milestone. New captures land here. -->
 
+- [ ] **enhancement** | Settings Hub: "Submit a Bug" button/link in Support tab (#78)
+- [ ] **enhancement** | Search: auto-match format badge to active deck's format (#79)
 - [ ] **feature** | New app name — Phi & Thurgood to brainstorm (#15) ⚠️ needs design
 - [ ] **feature** | Home screen deck covers — support custom deck cover art/images; DeckCoverCard is placeholder-ready with gradient tints for v1 ⚠️ needs design
 - [ ] **feature** | Home screen as persistent hub — recent activity, deck stats, quick-resume last deck ⚠️ needs design
@@ -77,11 +77,14 @@
 ---
 
 ## Closed (Recent)
-<!-- Keep last 2 releases (v1.12.x + v1.13.x); archive older entries to CHANGELOG.md -->
+<!-- Keep last 2 releases; archive older entries to CHANGELOG.md -->
 
-### pre-v1.14.0
-- [x] **enhancement** | Default search year range should be "All" *(closed pre-v1.14.0)*
-- [x] **enhancement** | Search filter defaults — anyPrice true, format badge off by default, per-deck badge persistence, Reset to defaults button *(closed pre-v1.14.0)*
+### v1.14.0
+- [x] **enhancement** | CardModal search view: forward/back navigation buttons (#77) *(closed v1.14.0)*
+- [x] **enhancement** | CardModal: show set abbreviation; clicking it searches that set (#80) *(closed v1.14.0)*
+- [x] **enhancement** | CardModal: clicking artist name triggers artist search (#81) *(closed v1.14.0)*
+- [x] **enhancement** | Search: sort direction toggle *(closed v1.14.0)*
+- [x] **enhancement** | Default search year range "All", price Any, format badge off by default, per-deck badge persistence, Reset to defaults button *(closed v1.14.0)*
 
 ### v1.13.0
 - [x] **bug** | Reversible card commander eligibility — Secret Lair display commanders fail isEligibleCommander check due to type_line in card_faces *(closed v1.13.0)*
@@ -89,9 +92,6 @@
 - [x] **enhancement** | Vehicle/Spacecraft commander support — July 2025 rules update allowing legendary Vehicles/Spacecraft with P/T as commanders *(closed v1.13.0)*
 - [x] **chore** | Extend ScryfallCard type with power/toughness fields *(closed v1.13.0)*
 
-### v1.12.4
-- [x] **feature** | Empty/cold-start state — welcome screen with CTA, format picker, home screen routing *(closed v1.12.4)*
-- [x] **chore** | App title tag and meta — page title updated to TheBrewLab *(closed v1.12.4)*
 
 
 ---
