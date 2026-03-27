@@ -17,39 +17,39 @@
 
 ## Pipeline
 <!-- Triaged items not yet assigned to a milestone. New captures land here. -->
+<!-- Priority format: **[high]** · **[med]** · **[low]** — set during triage, updated each session -->
 
-- [ ] **enhancement** | Settings Hub: "Submit a Bug" button/link in Support tab (#78)
-- [ ] **enhancement** | Search: auto-match format badge to active deck's format (#79)
-- [ ] **feature** | New app name — Phi & Thurgood to brainstorm (#15) ⚠️ needs design
-- [ ] **feature** | Home screen deck covers — support custom deck cover art/images; DeckCoverCard is placeholder-ready with gradient tints for v1 ⚠️ needs design
-- [ ] **feature** | Home screen as persistent hub — recent activity, deck stats, quick-resume last deck ⚠️ needs design
-- [ ] **feature** | Custom card sorting by drag and drop (#16)
-- [ ] **feature** | Partner commander support — allow 2 commanders for Partner and Friends Forever (Best Friends) pairs; deferred from v1.4.0
-- [ ] **feature** | Move cards between boards or decks (#62) ↑ priority
-- [ ] **enhancement** | Simulator modal has no view mode toggle — consider adding compact list view inside modal for larger decks; would also make pin-from-list interaction more prominent
-- [ ] **enhancement** | Card price display missing from persistent grid tile — deferred from v1.3.0 design, needs design decision ⚠️ needs design
-- [ ] **enhancement** | Combine qty and owned fields into a single elegant input — two separate fields is redundant UX; design a unified interaction ⚠️ needs design (target pre-v2.0)
-- [ ] **enhancement** | Import/export format compatibility — support MTGGoldfish format (e.g. `1 Ashling, the Limitless <borderless> [ECC] (F)`) and confirm cross-compatibility with TCGPlayer and Card Kingdom import
-- [ ] **enhancement** | Import modal — add "Paste from clipboard" button as an alternative to typing/pasting manually ⚠️ needs design
-- [ ] **enhancement** | Search: list view toggle for search results — grid/list toggle in search toolbar, list view mirrors sidebar search list but wider ⚠️ needs design
-- [ ] **enhancement** | Search: filter badge color per format — Commander gold, Standard blue, Freeform gray (needs design to avoid confusion with active/inactive states)
-- [ ] **enhancement** | Search: highlight newly added cards on deck view switch — when returning to deck view after adding cards from search, briefly highlight or scroll to new cards ⚠️ needs design
-- [ ] **enhancement** | Active deck / sideboard indicator — show which board is active beyond just the toggle button ⚠️ needs design
-
-- [ ] **enhancement** | Search by foil — filter search results to foil printings only
-- [ ] **enhancement** | Search: spelling correction — suggest corrected card name on typo / no-results
-- [ ] **enhancement** | Margin parity between search and deck views — search is edge-to-edge, deck has p-4 outer + p-4 scroll container; future design pass to unify outer padding
-- [ ] **enhancement** | Search view: back button to return to previous context ⚠️ needs design
-- [ ] **feature** | Favorite/star decks — starred decks float to top or appear in a dedicated section ⚠️ needs design
-- [ ] **chore** | Architecture review for public scaling — phased roadmap including mobile/tablet touch support
-- [ ] **chore** | Open source repo and apply for Vercel open source/supporter tier
-- [ ] **enhancement** | Onboarding hint layer — first-time user tips: create a deck before adding cards, how to switch tabs, how to add cards ⚠️ needs design
-- [ ] **enhancement** | Undo for destructive actions — toast with Undo for card delete and deck delete
-- [ ] **enhancement** | Price context — add some framing around deck value (budget/mid/premium tier label or comparison)
-- [ ] **feature** | Quick-add card by name from deck view — add a card without switching to search tab; inline name input or dedicated quick-add button ⚠️ needs design
-- [ ] **enhancement** | Bulk mark all cards as owned — quick action to set owned qty on all cards at once ⚠️ needs design
-- [ ] **enhancement** | Font size tokens — type feels small; establish font-size CSS custom properties (similar to color token system) for consistent scaling
-- [ ] **chore** | Explore MCP filesystem connection — investigate whether Claude Chat can write files directly to local repo via MCP, eliminating manual download step ⚠️ needs research
+- [ ] **enhancement** | **[high]** | Settings Hub: "Submit a Bug" button/link in Support tab (#78)
+- [ ] **enhancement** | **[high]** | Search: auto-match format badge to active deck's format (#79)
+- [ ] **feature** | **[high]** | Move cards between boards or decks (#62)
+- [ ] **enhancement** | **[high]** | Import/export format compatibility — support MTGGoldfish format (e.g. `1 Ashling, the Limitless <borderless> [ECC] (F)`) and confirm cross-compatibility with TCGPlayer and Card Kingdom import
+- [ ] **enhancement** | **[med]** | Search: list view toggle for search results — grid/list toggle in search toolbar, list view mirrors sidebar search list but wider ⚠️ needs design
+- [ ] **enhancement** | **[med]** | Search: filter badge color per format — Commander gold, Standard blue, Freeform gray (needs design to avoid confusion with active/inactive states)
+- [ ] **enhancement** | **[med]** | Search: highlight newly added cards on deck view switch — when returning to deck view after adding cards from search, briefly highlight or scroll to new cards ⚠️ needs design
+- [ ] **enhancement** | **[med]** | Search view: back button to return to previous context ⚠️ needs design
+- [ ] **enhancement** | **[med]** | Undo for destructive actions — toast with Undo for card delete and deck delete
+- [ ] **feature** | **[med]** | Quick-add card by name from deck view — add a card without switching to search tab; inline name input or dedicated quick-add button ⚠️ needs design
+- [ ] **feature** | **[med]** | Home screen as persistent hub — recent activity, deck stats, quick-resume last deck ⚠️ needs design
+- [ ] **feature** | **[med]** | Home screen deck covers — support custom deck cover art/images; DeckCoverCard is placeholder-ready with gradient tints for v1 ⚠️ needs design
+- [ ] **feature** | **[med]** | Custom card sorting by drag and drop (#16) ⚠️ needs design
+- [ ] **enhancement** | **[med]** | Combine qty and owned fields into a single elegant input — two separate fields is redundant UX; design a unified interaction ⚠️ needs design (target pre-v2.0)
+- [ ] **enhancement** | **[med]** | Import modal — add "Paste from clipboard" button as an alternative to typing/pasting manually
+- [ ] **enhancement** | **[med]** | Active deck / sideboard indicator — show which board is active beyond just the toggle button ⚠️ needs design
+- [ ] **enhancement** | **[med]** | Simulator modal has no view mode toggle — consider adding compact list view inside modal for larger decks; would also make pin-from-list interaction more prominent
+- [ ] **enhancement** | **[med]** | Bulk mark all cards as owned — quick action to set owned qty on all cards at once ⚠️ needs design
+- [ ] **feature** | **[med]** | Favorite/star decks — starred decks float to top or appear in a dedicated section ⚠️ needs design
+- [ ] **enhancement** | **[med]** | Card price display missing from persistent grid tile — deferred from v1.3.0 design, needs design decision ⚠️ needs design
+- [ ] **feature** | **[med]** | Partner commander support — allow 2 commanders for Partner and Friends Forever (Best Friends) pairs; deferred from v1.4.0
+- [ ] **enhancement** | **[med]** | Price context — add some framing around deck value (budget/mid/premium tier label or comparison)
+- [ ] **enhancement** | **[med]** | Onboarding hint layer — first-time user tips: create a deck before adding cards, how to switch tabs, how to add cards ⚠️ needs design
+- [ ] **enhancement** | **[med]** | Font size tokens — type feels small; establish font-size CSS custom properties (similar to color token system) for consistent scaling
+- [ ] **enhancement** | **[low]** | Search by foil — filter search results to foil printings only
+- [ ] **enhancement** | **[low]** | Search: spelling correction — suggest corrected card name on typo / no-results
+- [ ] **enhancement** | **[low]** | Margin parity between search and deck views — search is edge-to-edge, deck has p-4 outer + p-4 scroll container; future design pass to unify outer padding
+- [ ] **feature** | **[low]** | New app name — Phi & Thurgood to brainstorm (#15) ⚠️ needs design
+- [ ] **chore** | **[low]** | Architecture review for public scaling — phased roadmap including mobile/tablet touch support
+- [ ] **chore** | **[low]** | Open source repo and apply for Vercel open source/supporter tier
+- [ ] **chore** | **[low]** | Explore MCP filesystem connection — investigate whether Claude Chat can write files directly to local repo via MCP, eliminating manual download step ⚠️ needs research
 
 ---
 
