@@ -6,21 +6,20 @@
 
 ## Active Milestone
 
-### v1.16.0 — Card Management (remaining items)
+### v1.18.0 — Card Management
 - [ ] **enhancement** | Combine qty and owned fields into a single elegant input — two separate fields is redundant UX; design a unified interaction ⚠️ needs design
-- [ ] **enhancement** | mark all cards as owned on the card view — quick action to set owned qty value of the card as owned. eg qty=4, checking this will set owned=4 ⚠️ needs design
+- [ ] **enhancement** | Mark all cards as owned — quick action to set owned qty = deck qty for all cards in the deck ⚠️ needs design
 
-### v1.17.0 — Search & Deck Polish
+### v1.19.0 — Search & Deck Polish
 - [ ] **enhancement** | Search: list view toggle for search results — grid/list toggle in search toolbar, list view mirrors sidebar search list but wider ⚠️ needs design
 - [ ] **enhancement** | Search: highlight newly added cards on deck view switch — when returning to deck view after adding cards from search, briefly highlight or scroll to new cards ⚠️ needs design
 - [ ] **enhancement** | Copy card name to clipboard — click card name in modal to copy ⚠️ needs design
 - [ ] **enhancement** | Undo for destructive actions — toast with Undo for card delete and deck delete
-- [ ] **enhancement** | Card price display missing from persistent grid tile — deferred from v1.3.0 design ⚠️ needs design
 - [ ] **enhancement** | CardModal art swap: option to confirm swap or add as new card instead ⚠️ needs design
 
-### v1.18.0 — Home & Onboarding
+### v1.20.0 — Home & Onboarding
 - [ ] **feature** | Home screen as persistent hub — recent activity, deck stats, quick-resume last deck ⚠️ needs design
-- [ ] **feature** | Home screen deck covers — support custom deck cover art/images; DeckCoverCard is placeholder-ready with gradient tints for v1 ⚠️ needs design
+- [ ] **feature** | Home screen deck covers — support custom deck cover art/images; Possibly use Scryfall art crops; DeckCoverCard is placeholder-ready with gradient tints for v1 ⚠️ needs design
 - [ ] **feature** | Favorite/star decks — starred decks float to top or appear in a dedicated section ⚠️ needs design
 - [ ] **feature** | New app name — Phi & Thurgood to brainstorm (#15) ⚠️ needs design
 

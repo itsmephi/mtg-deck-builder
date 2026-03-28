@@ -5,6 +5,21 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.17.0] — Price Badge on Card Tiles
+
+### Enhanced
+- **Always-visible price badge**: both deck grid and search grid now show a persistent price pill in the bottom-right corner of every card tile — no hover required; fades out when the slide-up overlay is active
+- **Tile-size scaling**: badge font size and padding scale across all five tile sizes (XS 9px → XL 13px) matching the card art proportions
+- **No-price fallback**: cards without USD pricing show `—` at reduced opacity instead of hiding the badge
+- **Deck overlay unified**: hover overlay in deck mode now shows card name and type line above qty controls — consistent with the search overlay
+- **Search overlay simplified**: price line removed from search hover overlay (redundant with persistent badge)
+
+### Technical
+- `VisualCard`: new `tileSize?: TileSizeKey` prop; `PRICE_BADGE_SIZES` lookup table maps each stop to font/padding/position values; price pill uses inline styles for sub-pixel positioning outside the `overflow:hidden` clip boundary
+- `Workspace.tsx` and `SearchWorkspace.tsx` both pass `tileSize` down to `VisualCard`
+
+---
+
 ## [1.16.0] — Partner Commander Support
 
 ### Added
