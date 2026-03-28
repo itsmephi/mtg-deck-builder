@@ -47,7 +47,7 @@ For straightforward bug fixes and small enhancements, `/plan` → PROCEED → bu
 ---
 
 ## Active Milestone
-→ v1.16.0 — Card Management (quick-add, drag-and-drop sort, unified qty/owned, bulk-owned, partner commanders)
+→ v1.16.0 — Card Management (unified qty/owned input, mark-all-owned)
 
 ---
 
