@@ -33,7 +33,14 @@ WIP commits are manual and on-demand. Use one when pausing mid-release: switchin
 
 4. **Plan Review** — Before writing the new plan review table, clear all content from REVIEW.md except the "How This File Works" section at the bottom. Each release starts with a fresh REVIEW.md — previous session history should already be archived in CHANGELOG.md. Then Claude Code outputs every file it plans to touch and a one-line summary of changes per file, writes this to REVIEW.md, and waits for PROCEED before executing.
 
-   **Complexity check:** If the plan review table lists more than 5 files or introduces a new component, sync REVIEW.md to Claude Chat for a cross-check before typing PROCEED. For standard releases (≤5 files, no new components), Phi reviews the plan directly and types PROCEED without the Claude Chat round-trip.
+   **Complexity tiers:**
+
+   | Files touched | New component? | Action |
+   |---|---|---|
+   | ≤3 | No | Skip plan review — go straight to building |
+   | 4–7 | No | Phi skims the plan in REVIEW.md and types PROCEED |
+   | 8+ | — | Sync REVIEW.md to Claude Chat for cross-check before PROCEED |
+   | Any | Yes | Sync REVIEW.md to Claude Chat for cross-check before PROCEED |
 
 5. **GitHub issues** — before building, confirm every Active Milestone item has a GitHub issue number. If any are missing, create the issue(s) and update BACKLOG.md with the number(s) first.
 
