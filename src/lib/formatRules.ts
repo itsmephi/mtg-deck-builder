@@ -144,6 +144,97 @@ export function isEligibleCommander(card: DeckCard): boolean {
   return isLegendaryCreature || hasCommanderText || isEligibleArtifact;
 }
 
+// --- Partner Detection & Validation ---
+
+export type PartnerType = 'partner' | 'partner-with' | 'friends-forever' | null;
+
+export function getPartnerType(card: DeckCard): PartnerType {
+  const keywords = card.keywords;
+  const oracleText = card.oracle_text ?? card.card_faces?.[0]?.oracle_text ?? '';
+
+  if (keywords && keywords.length > 0) {
+    const kw = keywords.map((k) => k.toLowerCase());
+    if (kw.includes('friends forever')) return 'friends-forever';
+    if (kw.includes('partner')) {
+      // Distinguish "Partner with X" from generic Partner
+      if (/Partner with /i.test(oracleText)) return 'partner-with';
+      return 'partner';
+    }
+    return null;
+  }
+
+  // Fallback to oracle text for cards stored before keywords were typed
+  if (/friends forever/i.test(oracleText)) return 'friends-forever';
+  if (/Partner with /i.test(oracleText)) return 'partner-with';
+  if (/\bPartner\b(?!\s+with\b)/i.test(oracleText)) return 'partner';
+  return null;
+}
+
+export function getPartnerWithName(card: DeckCard): string | null {
+  const oracleText = card.oracle_text ?? card.card_faces?.[0]?.oracle_text ?? '';
+  const match = oracleText.match(/Partner with ([^\n(.]+)/i);
+  return match ? match[1].trim() : null;
+}
+
+export function hasPartnerAbility(card: DeckCard): boolean {
+  return getPartnerType(card) !== null;
+}
+
+export function canPartnerWith(
+  cardA: DeckCard,
+  cardB: DeckCard,
+): { valid: boolean; warning?: string } {
+  const typeA = getPartnerType(cardA);
+  const typeB = getPartnerType(cardB);
+
+  if (typeA === null && typeB === null) {
+    return { valid: false, warning: "Neither commander has a partner ability" };
+  }
+  if (typeA === null) {
+    return { valid: false, warning: `${cardA.name} doesn't have a partner ability` };
+  }
+  if (typeB === null) {
+    return { valid: false, warning: `${cardB.name} doesn't have a partner ability` };
+  }
+
+  // Both generic partner
+  if (typeA === 'partner' && typeB === 'partner') return { valid: true };
+
+  // Both friends-forever
+  if (typeA === 'friends-forever' && typeB === 'friends-forever') return { valid: true };
+
+  // partner ↔ friends-forever: incompatible
+  if (
+    (typeA === 'partner' || typeA === 'friends-forever') &&
+    (typeB === 'partner' || typeB === 'friends-forever') &&
+    typeA !== typeB
+  ) {
+    return { valid: false, warning: "Partner and Friends Forever are incompatible" };
+  }
+
+  // cardA is partner-with: valid if cardB is the named partner
+  if (typeA === 'partner-with') {
+    const expectedName = getPartnerWithName(cardA);
+    if (expectedName && cardB.name === expectedName) return { valid: true };
+    return {
+      valid: false,
+      warning: `${cardA.name} can only partner with ${expectedName ?? 'its named partner'}`,
+    };
+  }
+
+  // cardB is partner-with: valid if cardA is the named partner
+  if (typeB === 'partner-with') {
+    const expectedName = getPartnerWithName(cardB);
+    if (expectedName && cardA.name === expectedName) return { valid: true };
+    return {
+      valid: false,
+      warning: `${cardB.name} can only partner with ${expectedName ?? 'its named partner'}`,
+    };
+  }
+
+  return { valid: false, warning: "Incompatible partner abilities" };
+}
+
 export function isVehicleOrSpacecraftCommander(card: DeckCard): boolean {
   const typeLine = card.type_line ?? card.card_faces?.[0]?.type_line ?? '';
   const isLegendary = typeLine.includes("Legendary");

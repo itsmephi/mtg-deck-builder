@@ -17,7 +17,7 @@ export function useDeckImportExport() {
     cards: DeckCard[];
     sideboard?: DeckCard[];
     format: DeckFormat;
-    commanderId?: string;
+    commanderIds?: string[];
   } | null>(null);
 
   useEffect(() => {
@@ -28,7 +28,7 @@ export function useDeckImportExport() {
         cards: pendingNewDeckData.cards,
         sideboard: pendingNewDeckData.sideboard,
         format: pendingNewDeckData.format,
-        commanderId: pendingNewDeckData.commanderId,
+        commanderIds: pendingNewDeckData.commanderIds,
       }));
       setPendingNewDeckData(null);
       setIsImporting(false);
@@ -57,14 +57,16 @@ export function useDeckImportExport() {
         `// Format: ${activeDeck.format === "standard" ? "Standard" : "Commander"}\n` +
         content;
     }
-    if (activeDeck.format === "commander" && activeDeck.commanderId) {
-      const commander = activeDeck.cards.find(
-        (c) => c.id === activeDeck.commanderId,
-      );
-      if (commander) {
+    if (activeDeck.format === "commander" && activeDeck.commanderIds?.length) {
+      const commanderLines = activeDeck.commanderIds
+        .map((id) => activeDeck.cards.find((c) => c.id === id))
+        .filter(Boolean)
+        .map((c) => `// Commander: ${c!.name}`)
+        .join("\n");
+      if (commanderLines) {
         content = content.replace(
           /^(\/\/ Format:.*)$/m,
-          `$1\n// Commander: ${commander.name}`,
+          `$1\n${commanderLines}`,
         );
       }
     }
@@ -113,13 +115,13 @@ export function useDeckImportExport() {
 
     // Parse format headers from comment lines
     let importFormat: DeckFormat = "freeform";
-    let commanderName: string | undefined;
+    const commanderNames: string[] = [];
 
     for (const line of lines) {
       if (line.startsWith("// Format: Standard")) importFormat = "standard";
       else if (line.startsWith("// Format: Commander")) importFormat = "commander";
       else if (line.startsWith("// Commander: "))
-        commanderName = line.replace("// Commander: ", "").trim();
+        commanderNames.push(line.replace("// Commander: ", "").trim());
     }
 
     // Split lines into main deck and sideboard sections
@@ -247,15 +249,17 @@ export function useDeckImportExport() {
 
     if (mode === "new") {
       const uniqueName = getUniqueDeckName(filename);
-      const commanderId = commanderName
-        ? fetchedDeckCards.find((c) => c.name === commanderName)?.id
+      const commanderIds = commanderNames.length
+        ? commanderNames
+            .map((name) => fetchedDeckCards.find((c) => c.name === name)?.id)
+            .filter(Boolean) as string[]
         : undefined;
       setPendingNewDeckData({
         name: uniqueName,
         cards: fetchedDeckCards,
         sideboard: fetchedSideboardCards.length > 0 ? fetchedSideboardCards : undefined,
         format: importFormat,
-        commanderId,
+        commanderIds: commanderIds?.length ? commanderIds : undefined,
       });
       createNewDeck(importFormat);
     } else {

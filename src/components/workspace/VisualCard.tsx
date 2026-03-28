@@ -1,7 +1,16 @@
 import { Minus, Plus, X } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { DeckCard, ScryfallCard } from '@/types';
-import { DeckFormat, getCardWarnings, isEligibleCommander, isVehicleOrSpacecraftCommander } from '@/lib/formatRules';
+import { DeckFormat, getCardWarnings, isEligibleCommander, isVehicleOrSpacecraftCommander, hasPartnerAbility } from '@/lib/formatRules';
+import { TileSizeKey } from '@/config/gridConfig';
+
+const PRICE_BADGE_SIZES: Record<TileSizeKey, { fontSize: string; padding: string; bottom: string; right: string; borderRadius: string }> = {
+  xs: { fontSize: '9px',  padding: '2px 4px', bottom: '-6px', right: '-3px', borderRadius: '5px' },
+  s:  { fontSize: '10px', padding: '2px 6px', bottom: '-6px', right: '-3px', borderRadius: '6px' },
+  m:  { fontSize: '11px', padding: '3px 7px', bottom: '-7px', right: '-4px', borderRadius: '7px' },
+  l:  { fontSize: '12px', padding: '3px 8px', bottom: '-7px', right: '-4px', borderRadius: '7px' },
+  xl: { fontSize: '13px', padding: '4px 9px', bottom: '-7px', right: '-4px', borderRadius: '7px' },
+};
 
 interface VisualCardProps {
   card: DeckCard;
@@ -14,13 +23,19 @@ interface VisualCardProps {
   extraQty?: number;
   // Commander/format props
   format?: DeckFormat;
-  commanderId?: string;
+  commanderIds?: string[];
   commanderIdentity?: string[];
-  onSetCommander?: (id: string | undefined) => void;
+  partnerValidation?: { valid: boolean; warning?: string };
+  existingCommanderHasPartner?: boolean;
+  onAddCommander?: (id: string) => void;
+  onRemoveCommander?: (id: string) => void;
+  onReplaceCommander?: (slot: 0 | 1, id: string) => void;
   // Search mode props
   mode?: "deck" | "search";
   inDeck?: boolean;
   onAdd?: (card: ScryfallCard) => void;
+  // Tile size for price badge scaling
+  tileSize?: TileSizeKey;
 }
 
 export default function VisualCard({
@@ -32,17 +47,24 @@ export default function VisualCard({
   onRemove = () => {},
   extraQty = 0,
   format = "freeform",
-  commanderId,
+  commanderIds,
   commanderIdentity,
-  onSetCommander,
+  partnerValidation,
+  existingCommanderHasPartner = false,
+  onAddCommander,
+  onRemoveCommander,
+  onReplaceCommander,
   mode = "deck",
   inDeck = false,
   onAdd,
+  tileSize = "m",
 }: VisualCardProps) {
+  const badgeSize = PRICE_BADGE_SIZES[tileSize];
+
   // Search mode — simplified tile with "+ Add to Deck" overlay
   if (mode === "search") {
     const imgSrc = card.card_faces?.[0].image_uris?.normal || card.image_uris?.normal;
-    const price = card.prices?.usd ? `$${card.prices.usd}` : "—";
+    const price = card.prices?.usd ? `$${card.prices.usd}` : null;
     return (
       <div
         className="relative group rounded-xl cursor-pointer aspect-[2.5/3.5]"
@@ -61,7 +83,6 @@ export default function VisualCard({
             <span className="text-[10px] text-content-tertiary truncate w-full text-center">
               {card.type_line}
             </span>
-            <span className="text-[10px] text-content-tertiary">{price}</span>
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -77,6 +98,30 @@ export default function VisualCard({
         {inDeck && (
           <div title="Already in deck" className="absolute top-1.5 left-1.5 z-20 w-2 h-2 rounded-full bg-green-500 ring-2 ring-neutral-950" />
         )}
+        {/* Price pill — bottom-right corner, fades on hover */}
+        <div
+          className="absolute z-[22] group-hover:opacity-0 group-hover:pointer-events-none transition-opacity duration-150"
+          style={{
+            bottom: badgeSize.bottom,
+            right: badgeSize.right,
+            background: 'rgba(0,0,0,0.82)',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+            color: price ? '#e5e5e5' : undefined,
+            opacity: price ? undefined : 0.45,
+            fontSize: badgeSize.fontSize,
+            fontWeight: 600,
+            fontVariantNumeric: 'tabular-nums',
+            padding: badgeSize.padding,
+            borderRadius: badgeSize.borderRadius,
+            lineHeight: 1.2,
+            whiteSpace: 'nowrap',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.5)',
+            border: '1px solid rgba(255,255,255,0.08)',
+          }}
+        >
+          {price ?? '—'}
+        </div>
       </div>
     );
   }
@@ -87,7 +132,12 @@ export default function VisualCard({
   const atCopyLimit = combinedQty === 4 && !isExempt;
   const overCopyLimit = combinedQty >= 5 && !isExempt;
 
-  const isCommander = format === "commander" && card.id === commanderId;
+  const isCommander1 = format === "commander" && card.id === commanderIds?.[0];
+  const isCommander2 = format === "commander" && card.id === commanderIds?.[1];
+  const isCommander = isCommander1 || isCommander2;
+  const commanderCount = commanderIds?.length ?? 0;
+  const cardHasPartner = hasPartnerAbility(card);
+  const partnerInvalid = isCommander2 && partnerValidation?.valid === false;
   const warnings = getCardWarnings(card, format, commanderIdentity);
 
   // Inline qty editing
@@ -152,7 +202,10 @@ export default function VisualCard({
     ? "bg-red-900 text-red-400"
     : isFullyOwnedForPill
     ? "bg-green-800 text-green-400"
-    : "bg-surface-base text-content-tertiary";
+    : "";
+  const pillNeutralStyle = !warnings.length && !isFullyOwnedForPill
+    ? { background: "rgba(0,0,0,0.82)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", color: "#e5e5e5" } as React.CSSProperties
+    : undefined;
 
   return (
     <div
@@ -184,6 +237,13 @@ export default function VisualCard({
           className="absolute bottom-0 left-0 right-0 bg-black/75 backdrop-blur-sm px-2 py-3 translate-y-full group-hover:translate-y-0 transition-transform duration-200 ease-out z-20 flex flex-col items-center gap-2.5"
           onClick={(e) => e.stopPropagation()}
         >
+        {/* Card name + type */}
+        <span className="text-xs font-semibold text-content-primary text-center leading-tight line-clamp-2 w-full">
+          {card.name}
+        </span>
+        <span className="text-[10px] text-content-tertiary truncate w-full text-center -mt-1.5">
+          {card.type_line}
+        </span>
         {/* Warning bar — top of overlay, grid view only */}
         {warnings.length > 0 && (
           <div
@@ -349,18 +409,23 @@ export default function VisualCard({
       </div>
 
       {/* Crown badge — top-left, commander format only */}
-      {format === "commander" && onSetCommander && (
+      {format === "commander" && (onAddCommander || onRemoveCommander || onReplaceCommander) && (
         isCommander ? (
+          // Active commander badge
           <button
-            onClick={(e) => { e.stopPropagation(); onSetCommander(undefined); }}
-            title="Remove as Commander"
-            className="absolute -top-3.5 -left-3.5 z-20 w-7 h-7 rounded-full bg-yellow-500 shadow-md flex items-center justify-center hover:scale-110 transition-transform"
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemoveCommander?.(card.id);
+            }}
+            title={partnerInvalid ? partnerValidation?.warning : isCommander2 ? "Partner ✓ — click to remove" : "Commander ✓ — click to remove"}
+            className={`absolute -top-3.5 -left-3.5 z-20 w-7 h-7 rounded-full shadow-md flex items-center justify-center hover:scale-110 transition-transform ${partnerInvalid ? "bg-red-500" : "bg-yellow-500"}`}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
               <path d="M3 18h18v2H3v-2zm0-2l3-8 4 3 2-6 2 6 4-3 3 8H3z" />
             </svg>
           </button>
         ) : (
+          // Non-commander hover crown
           <div
             className="absolute -top-3.5 -left-3.5 z-20"
             onMouseEnter={() => {
@@ -374,56 +439,121 @@ export default function VisualCard({
               crownTooltipTimeout.current = setTimeout(() => setShowCrownTooltip(false), 150);
             }}
           >
-            <button
-              onClick={(e) => { e.stopPropagation(); if (eligible) onSetCommander(card.id); }}
-              title={!eligible ? "Must be Legendary" : undefined}
-              className={`w-7 h-7 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 border border-neutral-600 bg-neutral-900/70 shadow-md transition-all duration-150 ${eligible ? "hover:bg-yellow-500/20 hover:border-yellow-400 hover:scale-110 cursor-pointer group/crown" : "cursor-not-allowed"}`}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24">
-                <path
-                  d="M3 18h18v2H3v-2zm0-2l3-8 4 3 2-6 2 6 4-3 3 8H3z"
-                  className={eligible ? "fill-[#737373] group-hover/crown:fill-[#eab308] transition-colors" : "fill-[#737373]"}
-                />
-              </svg>
-            </button>
+            {(() => {
+              // Determine crown label and action based on state machine
+              let crownLabel = "Set as Commander";
+              let crownAction: (() => void) | null = null;
+              let canAct = eligible;
 
-            {/* Interactive tooltip — eligible cards only */}
-            {showCrownTooltip && eligible && (
-              <div
-                className="absolute left-1/2 -translate-x-1/2 top-full mt-1 px-2 py-1 bg-neutral-900 border border-neutral-700 rounded text-[10px] text-neutral-200 whitespace-nowrap z-30 flex items-center gap-1.5"
-                onMouseEnter={() => {
-                  if (crownTooltipTimeout.current) {
-                    clearTimeout(crownTooltipTimeout.current);
-                    crownTooltipTimeout.current = null;
-                  }
-                }}
-                onMouseLeave={() => {
-                  crownTooltipTimeout.current = setTimeout(() => setShowCrownTooltip(false), 150);
-                }}
-              >
-                <span>Set as Commander</span>
-                {isVehicleOrSpacecraft && (
-                  <a
-                    href="https://magic.wizards.com/en/news/feature/edge-of-eternities-mechanics"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={(e) => e.stopPropagation()}
-                    className="text-blue-400 hover:text-blue-300 hover:underline"
-                    title="Learn about Vehicle/Spacecraft commanders"
+              if (commanderCount === 0) {
+                crownLabel = "Set as Commander";
+                crownAction = eligible ? () => onAddCommander?.(card.id) : null;
+              } else if (commanderCount === 1) {
+                if (cardHasPartner && existingCommanderHasPartner) {
+                  crownLabel = "Set as Partner";
+                  crownAction = () => onAddCommander?.(card.id);
+                  canAct = true;
+                } else {
+                  crownLabel = "Set as Commander";
+                  crownAction = eligible ? () => onReplaceCommander?.(0, card.id) : null;
+                }
+              } else {
+                // commanderCount === 2
+                if (cardHasPartner) {
+                  crownLabel = "Set as Partner";
+                  crownAction = () => onReplaceCommander?.(1, card.id);
+                  canAct = true;
+                } else {
+                  crownLabel = "Set as Commander";
+                  crownAction = eligible ? () => onReplaceCommander?.(0, card.id) : null;
+                }
+              }
+
+              return (
+                <>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); if (canAct && crownAction) crownAction(); }}
+                    title={!eligible && commanderCount === 0 ? "Must be Legendary" : undefined}
+                    className={`w-7 h-7 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 border border-neutral-600 bg-neutral-900/70 shadow-md transition-all duration-150 ${canAct ? "hover:bg-yellow-500/20 hover:border-yellow-400 hover:scale-110 cursor-pointer group/crown" : "cursor-not-allowed"}`}
                   >
-                    ⓘ
-                  </a>
-                )}
-              </div>
-            )}
+                    <svg width="16" height="16" viewBox="0 0 24 24">
+                      <path
+                        d="M3 18h18v2H3v-2zm0-2l3-8 4 3 2-6 2 6 4-3 3 8H3z"
+                        className={canAct ? "fill-[#737373] group-hover/crown:fill-[#eab308] transition-colors" : "fill-[#737373]"}
+                      />
+                    </svg>
+                  </button>
+
+                  {/* Interactive tooltip — actionable cards only */}
+                  {showCrownTooltip && canAct && (
+                    <div
+                      className="absolute left-1/2 -translate-x-1/2 top-full mt-1 px-2 py-1 bg-neutral-900 border border-neutral-700 rounded text-[10px] text-neutral-200 whitespace-nowrap z-30 flex items-center gap-1.5"
+                      onMouseEnter={() => {
+                        if (crownTooltipTimeout.current) {
+                          clearTimeout(crownTooltipTimeout.current);
+                          crownTooltipTimeout.current = null;
+                        }
+                      }}
+                      onMouseLeave={() => {
+                        crownTooltipTimeout.current = setTimeout(() => setShowCrownTooltip(false), 150);
+                      }}
+                    >
+                      <span>{crownLabel}</span>
+                      {isVehicleOrSpacecraft && crownLabel === "Set as Commander" && (
+                        <a
+                          href="https://magic.wizards.com/en/news/feature/edge-of-eternities-mechanics"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="text-blue-400 hover:text-blue-300 hover:underline"
+                          title="Learn about Vehicle/Spacecraft commanders"
+                        >
+                          ⓘ
+                        </a>
+                      )}
+                    </div>
+                  )}
+                </>
+              );
+            })()}
           </div>
         )
       )}
 
       {/* Qty pill — bottom center, straddling edge */}
-      <div className={`absolute -bottom-2 left-1/2 -translate-x-1/2 z-20 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold tabular-nums shadow-md group-hover:opacity-0 group-hover:pointer-events-none transition-opacity duration-150 ${pillColorClass}`}>
+      <div className={`absolute -bottom-2 left-1/2 -translate-x-1/2 z-20 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold tabular-nums shadow-md group-hover:opacity-0 group-hover:pointer-events-none transition-opacity duration-150 ${pillColorClass}`} style={pillNeutralStyle}>
         {card.quantity}
       </div>
+
+      {/* Price pill — bottom-right corner, fades on hover */}
+      {(() => {
+        const price = card.prices?.usd ? `$${card.prices.usd}` : null;
+        return (
+          <div
+            className="absolute z-[22] group-hover:opacity-0 group-hover:pointer-events-none transition-opacity duration-150"
+            style={{
+              bottom: badgeSize.bottom,
+              right: badgeSize.right,
+              background: 'rgba(0,0,0,0.82)',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
+              color: '#e5e5e5',
+              opacity: price ? undefined : 0.45,
+              fontSize: badgeSize.fontSize,
+              fontWeight: 600,
+              fontVariantNumeric: 'tabular-nums',
+              padding: badgeSize.padding,
+              borderRadius: badgeSize.borderRadius,
+              lineHeight: 1.2,
+              whiteSpace: 'nowrap',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.5)',
+              border: '1px solid rgba(255,255,255,0.08)',
+            }}
+          >
+            {price ?? '—'}
+          </div>
+        );
+      })()}
 
     </div>
   );

@@ -43,10 +43,13 @@ function buildFilterSyntax(activeDeck: Deck | undefined, filterActive: boolean):
   if (!format || format === "freeform") return "";
 
   let syntax = `legal:${format}`;
-  if (format === "commander" && activeDeck.commanderId) {
-    const commander = activeDeck.cards.find((c) => c.id === activeDeck.commanderId);
-    if (commander?.color_identity?.length) {
-      syntax += ` id<=${commander.color_identity.join("")}`;
+  if (format === "commander" && activeDeck.commanderIds?.length) {
+    const commanders = activeDeck.commanderIds
+      .map((id) => activeDeck.cards.find((c) => c.id === id))
+      .filter(Boolean);
+    const combined = [...new Set(commanders.flatMap((c) => c!.color_identity ?? []))];
+    if (combined.length) {
+      syntax += ` id<=${combined.join("")}`;
     }
   }
   return syntax;
@@ -112,17 +115,15 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
     return parts.filter(Boolean).join(" ").trim();
   }, [filterSyntax, activeChipQuery, parsed, sidebarFilterSyntax, setMatch, sortOrder, sortDir]);
 
-  // Derived: filter badge data
+  // Derived: filter badge data (combined identity from all commanders)
   const filterBadge = useMemo(() => {
     if (!activeDeck) return null;
     const format = activeDeck.format;
-    const commander = activeDeck.commanderId
-      ? activeDeck.cards.find((c) => c.id === activeDeck.commanderId)
-      : null;
-    const manaColors =
-      format === "commander" && commander?.color_identity?.length
-        ? commander.color_identity
-        : undefined;
+    const commanders = (activeDeck.commanderIds ?? [])
+      .map((id) => activeDeck.cards.find((c) => c.id === id))
+      .filter(Boolean);
+    const combined = [...new Set(commanders.flatMap((c) => c!.color_identity ?? []))];
+    const manaColors = format === "commander" && combined.length ? combined : undefined;
     const label = format.charAt(0).toUpperCase() + format.slice(1);
     return { label, manaColors, active: filterActive };
   }, [activeDeck, filterActive]);
@@ -474,6 +475,7 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
                 inDeck={deckCardNames.has(card.name)}
                 onAdd={handleAdd}
                 onSelect={setSelectedCard}
+                tileSize={tileSize}
               />
             ))}
           </div>

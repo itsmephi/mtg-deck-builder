@@ -36,6 +36,7 @@ export interface ScryfallCard {
   power?: string;
   toughness?: string;
   released_at?: string;
+  keywords?: string[];
 }
 
 export interface DeckCard extends ScryfallCard {
@@ -49,5 +50,5 @@ export interface Deck {
   cards: DeckCard[];
   sideboard?: DeckCard[];
   format: "freeform" | "standard" | "commander";
-  commanderId?: string;
+  commanderIds?: string[];
 }

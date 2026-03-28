@@ -16,14 +16,14 @@ interface SampleHandModalProps {
   deck: DeckCard[];
   onClose: () => void;
   format?: DeckFormat;
-  commanderId?: string;
+  commanderIds?: string[];
 }
 
 export default function SampleHandModal({
   deck,
   onClose,
   format = "freeform",
-  commanderId,
+  commanderIds,
 }: SampleHandModalProps) {
   const [hand, setHand] = useState<DeckCard[]>([]);
   const [library, setLibrary] = useState<DeckCard[]>([]);
@@ -41,9 +41,9 @@ export default function SampleHandModal({
 
   const totalCards = deck.reduce((s, c) => s + c.quantity, 0);
 
-  // Commander is excluded from library — sits in command zone
+  // All commanders excluded from library — sit in command zone
   const libraryCards = deck.filter(
-    (c) => !(format === "commander" && c.id === commanderId)
+    (c) => !(format === "commander" && commanderIds?.includes(c.id))
   );
 
   const shuffleAndDraw = () => {

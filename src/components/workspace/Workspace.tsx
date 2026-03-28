@@ -11,7 +11,7 @@ import ListCardTable from "./ListCardTable";
 import ImportModal from "./ImportModal";
 import WorkspaceToolbar from "./WorkspaceToolbar";
 import { ScryfallCard, DeckCard } from "@/types";
-import { DeckFormat, getFormatRules } from "@/lib/formatRules";
+import { DeckFormat, getFormatRules, canPartnerWith, hasPartnerAbility } from "@/lib/formatRules";
 import { backfillColorIdentity } from "@/lib/scryfall";
 import { TILE_SIZE_STOPS, TileSizeKey } from "@/config/gridConfig";
 
@@ -66,7 +66,10 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
     setSortBy,
     sortDir,
     setSortDir,
-    setCommanderId,
+    setCommanderIds,
+    addCommander,
+    removeCommander,
+    replaceCommander,
     setDeckFormat,
     mergeSideboardIntoDeck,
     deleteSideboardForFormat,
@@ -94,24 +97,23 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
   const [hoveredCardList, setHoveredCardList] = useState<ScryfallCard | null>(null);
   const mousePosRef = useRef({ x: 0, y: 0 });
   const tooltipRef = useRef<HTMLDivElement>(null);
-  const prevCommanderRef = useRef<{ deckId: string | undefined; commanderId: string | undefined } | null>(null);
+  const prevCommanderRef = useRef<{ deckId: string | undefined; commanderIds: string[] | undefined } | null>(null);
 
   // Scroll to top when a new commander is assigned within the same deck
   useEffect(() => {
-    const cur = { deckId: activeDeck?.id, commanderId: activeDeck?.commanderId };
+    const cur = { deckId: activeDeck?.id, commanderIds: activeDeck?.commanderIds };
     if (prevCommanderRef.current === null) {
       prevCommanderRef.current = cur;
       return;
     }
-    if (
-      cur.deckId === prevCommanderRef.current.deckId &&
-      cur.commanderId &&
-      cur.commanderId !== prevCommanderRef.current.commanderId
-    ) {
+    const prevIds = prevCommanderRef.current.commanderIds ?? [];
+    const curIds = cur.commanderIds ?? [];
+    const newCommanderAdded = curIds.some((id) => !prevIds.includes(id));
+    if (cur.deckId === prevCommanderRef.current.deckId && newCommanderAdded) {
       scrollContainerRef.current?.scrollTo({ top: 0, behavior: "smooth" });
     }
     prevCommanderRef.current = cur;
-  }, [activeDeck?.commanderId, activeDeck?.id]);
+  }, [activeDeck?.commanderIds, activeDeck?.id]);
 
   // Confirmation dialog for sideboard → commander format switch (triggered from toolbar)
   const [confirmDialog, setConfirmDialog] = useState<ConfirmDialogState | null>(null);
@@ -173,13 +175,30 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
   const format = activeDeck?.format ?? "freeform";
   const rules = getFormatRules(format);
 
-  // Commander identity computed from designated commander card
-  const commanderCard = useMemo(() => {
-    if (!activeDeck?.commanderId) return null;
-    return activeDeck.cards.find((c) => c.id === activeDeck.commanderId) ?? null;
+  // Commander cards and combined identity
+  const commanderIds = activeDeck?.commanderIds;
+  const commanderCards = useMemo(() => {
+    if (!activeDeck?.commanderIds?.length) return [];
+    return activeDeck.commanderIds
+      .map((id) => activeDeck.cards.find((c) => c.id === id))
+      .filter(Boolean) as import("@/types").DeckCard[];
   }, [activeDeck]);
 
-  const commanderIdentity = commanderCard?.color_identity;
+  const commanderIdentity = useMemo(() => {
+    if (!commanderCards.length) return undefined;
+    const combined = [...new Set(commanderCards.flatMap((c) => c.color_identity ?? []))];
+    return combined.length > 0 ? combined : undefined;
+  }, [commanderCards]);
+
+  const partnerValidation = useMemo(() => {
+    if (commanderCards.length !== 2) return undefined;
+    return canPartnerWith(commanderCards[0], commanderCards[1]);
+  }, [commanderCards]);
+
+  const existingCommanderHasPartner = useMemo(() => {
+    if (!commanderCards.length) return false;
+    return hasPartnerAbility(commanderCards[0]);
+  }, [commanderCards]);
 
   const sortedCards = useMemo(() => {
     if (!activeDeck) return [];
@@ -201,17 +220,17 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
       });
     }
 
-    // Commander pinning — always first in main view
-    if (
-      format === "commander" &&
-      activeDeck.commanderId &&
-      deckViewMode === "main"
-    ) {
-      const cmdIdx = cards.findIndex((c) => c.id === activeDeck.commanderId);
-      if (cmdIdx > 0) {
-        const [cmd] = cards.splice(cmdIdx, 1);
-        cards.unshift(cmd);
+    // Commander pinning — pin all commanders to top in main view
+    if (format === "commander" && activeDeck.commanderIds?.length && deckViewMode === "main") {
+      const ids = activeDeck.commanderIds;
+      const pinned: typeof cards = [];
+      const remaining: typeof cards = [];
+      for (const c of cards) {
+        if (ids.includes(c.id)) pinned.push(c);
+        else remaining.push(c);
       }
+      pinned.sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id));
+      cards.splice(0, cards.length, ...pinned, ...remaining);
     }
 
     return cards;
@@ -246,7 +265,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
 
   const groupCardsByType = (cards: DeckCard[]) => {
     const showCommanderGroup =
-      format === "commander" && !!activeDeck.commanderId && deckViewMode === "main";
+      format === "commander" && !!activeDeck.commanderIds?.length && deckViewMode === "main";
     const groups: Record<string, DeckCard[]> = {
       ...(showCommanderGroup ? { Commander: [] } : {}),
       Creatures: [],
@@ -258,7 +277,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
       Other: [],
     };
     cards.forEach((card) => {
-      if (showCommanderGroup && card.id === activeDeck.commanderId) {
+      if (showCommanderGroup && activeDeck.commanderIds!.includes(card.id)) {
         groups["Commander"].push(card);
         return;
       }
@@ -297,10 +316,15 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
   };
 
   const removeCard = (cardId: string) => {
-    updateActiveDeck((deck) => ({
-      ...deck,
-      cards: deck.cards.filter((c) => c.id !== cardId),
-    }));
+    updateActiveDeck((deck) => {
+      const newCards = deck.cards.filter((c) => c.id !== cardId);
+      const newCommanderIds = deck.commanderIds?.filter((id) => id !== cardId);
+      return {
+        ...deck,
+        cards: newCards,
+        commanderIds: newCommanderIds?.length ? newCommanderIds : undefined,
+      };
+    });
   };
 
   // Sideboard card actions
@@ -399,19 +423,23 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
 
   const commanderProps = {
     format,
-    commanderId: activeDeck.commanderId,
+    commanderIds: activeDeck.commanderIds,
     commanderIdentity,
-    onSetCommander: setCommanderId,
+    partnerValidation,
+    existingCommanderHasPartner,
+    onAddCommander: addCommander,
+    onRemoveCommander: removeCommander,
+    onReplaceCommander: replaceCommander,
   };
 
   const groupedCards = groupCardsByType(sortedCards);
 
-  const isPinnedCommander = (card: DeckCard, index: number) =>
-    format === "commander" &&
-    activeDeck.commanderId &&
-    card.id === activeDeck.commanderId &&
-    index === 0 &&
-    deckViewMode === "main";
+  const isPinnedCommander = (card: DeckCard, index: number) => {
+    if (format !== "commander" || !activeDeck.commanderIds?.length || deckViewMode !== "main") return false;
+    if (!activeDeck.commanderIds.includes(card.id)) return false;
+    // Divider after the last pinned commander
+    return index === activeDeck.commanderIds.length - 1;
+  };
 
   return (
     <div className="w-full h-full flex flex-col relative text-sm bg-surface-base">
@@ -490,6 +518,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
                               {...cardActionProps}
                               {...commanderProps}
                               extraQty={otherPoolQtyMap.get(card.name.toLowerCase()) ?? 0}
+                              tileSize={tileSize}
                             />
                           </div>
                         ))}
@@ -526,6 +555,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
                     {...cardActionProps}
                     {...commanderProps}
                     extraQty={otherPoolQtyMap.get(card.name.toLowerCase()) ?? 0}
+                    tileSize={tileSize}
                   />
                 </div>
                 {/* Divider after pinned commander */}
@@ -613,8 +643,8 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
                         : c,
                     ),
                   }));
-                  if (activeDeck?.commanderId === oldId) {
-                    setCommanderId(newCard.id);
+                  if (activeDeck?.commanderIds?.includes(oldId)) {
+                    setCommanderIds(activeDeck.commanderIds.map((id) => id === oldId ? newCard.id : id));
                   }
                 }
                 setSelectedCard({
@@ -644,7 +674,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
           deck={activeDeck.cards}
           onClose={() => setIsSampleHandOpen(false)}
           format={format}
-          commanderId={activeDeck.commanderId}
+          commanderIds={activeDeck.commanderIds}
         />
       )}
 

@@ -1,3 +1,8 @@
+---
+description: Branch workflow — auto-branch, WIP commits, cleanup
+alwaysApply: true
+---
+
 # Branch Workflow
 
 ## Never Work on Main

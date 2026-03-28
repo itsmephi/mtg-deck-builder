@@ -13,15 +13,21 @@ import { DeckFormat } from "@/lib/formatRules";
 const STORAGE_KEY = "mtg_builder_decks";
 
 function migrateDecks(rawDecks: any[]): Deck[] {
-  return rawDecks.map((deck: any) => ({
-    ...deck,
-    format: deck.format ?? "freeform",
-    commanderId: deck.commanderId ?? undefined,
-    cards: deck.cards.map((card: any) => {
-      if (card.ownedQty !== undefined) return card;
-      return { ...card, ownedQty: card.isOwned ? card.quantity : 0 };
-    }),
-  }));
+  return rawDecks.map((deck: any) => {
+    // Migrate commanderId (singular) → commanderIds (array)
+    const commanderIds: string[] | undefined =
+      deck.commanderIds ??
+      (deck.commanderId ? [deck.commanderId] : undefined);
+    return {
+      ...deck,
+      format: deck.format ?? "freeform",
+      commanderIds,
+      cards: deck.cards.map((card: any) => {
+        if (card.ownedQty !== undefined) return card;
+        return { ...card, ownedQty: card.isOwned ? card.quantity : 0 };
+      }),
+    };
+  });
 }
 const SORT_PREF_KEY = "mtg-sort-preference";
 const ACTIVE_DECK_KEY = "mtg-active-deck";
@@ -42,7 +48,10 @@ interface DeckContextType {
   enableSideboard: (deckId: string) => void;
   deleteSideboard: (deckId: string) => void;
   setDeckFormat: (deckId: string, format: DeckFormat) => void;
-  setCommanderId: (cardId: string | undefined) => void;
+  setCommanderIds: (ids: string[] | undefined) => void;
+  addCommander: (cardId: string) => void;
+  removeCommander: (cardId: string) => void;
+  replaceCommander: (slot: 0 | 1, cardId: string) => void;
   mergeSideboardIntoDeck: (deckId: string) => void;
   deleteSideboardForFormat: (deckId: string) => void;
   activeSideboardCards: DeckCard[];
@@ -255,20 +264,52 @@ export function DeckProvider({ children }: { children: ReactNode }) {
       currentDecks.map((deck) => {
         if (deck.id !== deckId) return deck;
         const update: Partial<Deck> = { format };
-        // Switching away from commander clears the commanderId
+        // Switching away from commander clears commanderIds
         if (deck.format === "commander" && format !== "commander") {
-          update.commanderId = undefined;
+          update.commanderIds = undefined;
         }
         return { ...deck, ...update };
       }),
     );
   };
 
-  const setCommanderId = (cardId: string | undefined) => {
+  const setCommanderIds = (ids: string[] | undefined) => {
     setDecks((currentDecks) =>
       currentDecks.map((deck) =>
-        deck.id === activeDeckId ? { ...deck, commanderId: cardId } : deck,
+        deck.id === activeDeckId ? { ...deck, commanderIds: ids } : deck,
       ),
+    );
+  };
+
+  const addCommander = (cardId: string) => {
+    setDecks((currentDecks) =>
+      currentDecks.map((deck) => {
+        if (deck.id !== activeDeckId) return deck;
+        const current = deck.commanderIds ?? [];
+        if (current.length >= 2 || current.includes(cardId)) return deck;
+        return { ...deck, commanderIds: [...current, cardId] };
+      }),
+    );
+  };
+
+  const removeCommander = (cardId: string) => {
+    setDecks((currentDecks) =>
+      currentDecks.map((deck) => {
+        if (deck.id !== activeDeckId) return deck;
+        const filtered = (deck.commanderIds ?? []).filter((id) => id !== cardId);
+        return { ...deck, commanderIds: filtered.length > 0 ? filtered : undefined };
+      }),
+    );
+  };
+
+  const replaceCommander = (slot: 0 | 1, cardId: string) => {
+    setDecks((currentDecks) =>
+      currentDecks.map((deck) => {
+        if (deck.id !== activeDeckId) return deck;
+        const current = [...(deck.commanderIds ?? [])];
+        current[slot] = cardId;
+        return { ...deck, commanderIds: current };
+      }),
     );
   };
 
@@ -331,7 +372,10 @@ export function DeckProvider({ children }: { children: ReactNode }) {
         enableSideboard,
         deleteSideboard,
         setDeckFormat,
-        setCommanderId,
+        setCommanderIds,
+        addCommander,
+        removeCommander,
+        replaceCommander,
         mergeSideboardIntoDeck,
         deleteSideboardForFormat,
         activeSideboardCards,

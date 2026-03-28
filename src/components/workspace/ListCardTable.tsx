@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { X } from "lucide-react";
 import { DeckCard, ScryfallCard } from "@/types";
-import { DeckFormat, getFormatRules, getCardWarnings, isEligibleCommander, isVehicleOrSpacecraftCommander } from "@/lib/formatRules";
+import { DeckFormat, getFormatRules, getCardWarnings, isEligibleCommander, isVehicleOrSpacecraftCommander, hasPartnerAbility } from "@/lib/formatRules";
 
 const COLOR_ORDER_L = ["W", "U", "B", "R", "G"];
 
@@ -85,9 +85,13 @@ interface ListCardTableProps {
   isGrouped?: boolean;
   // Commander/format props
   format?: DeckFormat;
-  commanderId?: string;
+  commanderIds?: string[];
   commanderIdentity?: string[];
-  onSetCommander?: (id: string | undefined) => void;
+  partnerValidation?: { valid: boolean; warning?: string };
+  existingCommanderHasPartner?: boolean;
+  onAddCommander?: (id: string) => void;
+  onRemoveCommander?: (id: string) => void;
+  onReplaceCommander?: (slot: 0 | 1, id: string) => void;
 }
 
 export default function ListCardTable({
@@ -107,9 +111,13 @@ export default function ListCardTable({
   sortBy,
   isGrouped,
   format = "freeform",
-  commanderId,
+  commanderIds,
   commanderIdentity,
-  onSetCommander,
+  partnerValidation,
+  existingCommanderHasPartner = false,
+  onAddCommander,
+  onRemoveCommander,
+  onReplaceCommander,
 }: ListCardTableProps) {
   const rules = getFormatRules(format);
 
@@ -179,13 +187,22 @@ export default function ListCardTable({
 
   const isCommanderFormat = format === "commander";
   const COLUMN_COUNT = 7;
+  const commanderCount = commanderIds?.length ?? 0;
 
-  // Separate out pinned commander (first card if it's the commander)
-  const pinnedCommander =
-    isCommanderFormat && commanderId && cards.length > 0 && cards[0].id === commanderId
-      ? cards[0]
-      : null;
-  const bodyCards = pinnedCommander ? cards.slice(1) : cards;
+  // Separate out pinned commanders (leading cards that are commanders)
+  const pinnedCommanders: DeckCard[] = [];
+  let pinnedEnd = 0;
+  if (isCommanderFormat && commanderIds?.length) {
+    for (let i = 0; i < Math.min(commanderIds.length, cards.length); i++) {
+      if (commanderIds.includes(cards[i].id)) {
+        pinnedCommanders.push(cards[i]);
+        pinnedEnd++;
+      } else {
+        break;
+      }
+    }
+  }
+  const bodyCards = pinnedEnd > 0 ? cards.slice(pinnedEnd) : cards;
 
   const renderRow = (card: DeckCard, index: number, fromPinned = false) => {
     const showGroupSpacer =
@@ -215,7 +232,11 @@ export default function ListCardTable({
     const overCopyLimit = combinedQty >= rules.softWarnThreshold && !isExempt;
     const showCopyBadge = atCopyLimit || overCopyLimit;
 
-    const isThisCommander = isCommanderFormat && card.id === commanderId;
+    const isCommander1 = isCommanderFormat && card.id === commanderIds?.[0];
+    const isCommander2 = isCommanderFormat && card.id === commanderIds?.[1];
+    const isThisCommander = isCommander1 || isCommander2;
+    const partnerInvalid = isCommander2 && partnerValidation?.valid === false;
+    const cardHasPartner = hasPartnerAbility(card);
     const warnings = getCardWarnings(card, format, commanderIdentity);
     const eligibleCommander = isEligibleCommander(card);
     const isVehicleOrSpacecraft = isVehicleOrSpacecraftCommander(card);
@@ -397,16 +418,18 @@ export default function ListCardTable({
           >
             <div className="flex items-center gap-1 min-w-0">
               {/* Crown icon — commander format only */}
-              {isCommanderFormat && onSetCommander && (
+              {isCommanderFormat && (onAddCommander || onRemoveCommander || onReplaceCommander) && (
                 isThisCommander ? (
+                  // Active commander/partner badge
                   <button
-                    onClick={() => onSetCommander(undefined)}
-                    title="Remove commander designation"
+                    onClick={() => onRemoveCommander?.(card.id)}
+                    title={partnerInvalid ? partnerValidation?.warning : isCommander2 ? "Partner ✓ — click to remove" : "Commander ✓ — click to remove"}
                     className="shrink-0 cursor-pointer"
                   >
-                    <CrownFilled className="text-yellow-400 w-3.5 h-3.5" />
+                    <CrownFilled className={`w-3.5 h-3.5 ${partnerInvalid ? "text-red-400" : "text-yellow-400"}`} />
                   </button>
                 ) : (
+                  // Non-commander hover crown with state machine
                   <div
                     className="relative"
                     onMouseEnter={() => {
@@ -420,44 +443,87 @@ export default function ListCardTable({
                       crownTooltipTimeout.current = setTimeout(() => setHoveredCrownId(null), 150);
                     }}
                   >
-                    <button
-                      onClick={() => eligibleCommander && onSetCommander(card.id)}
-                      title={!eligibleCommander ? "Must be Legendary to set as Commander" : undefined}
-                      className={`opacity-0 group-hover:opacity-100 shrink-0 transition-opacity ${eligibleCommander ? "cursor-pointer" : "cursor-not-allowed"}`}
-                    >
-                      <CrownOutline className={`w-3.5 h-3.5 ${eligibleCommander ? "text-content-faint hover:text-yellow-400" : "text-content-faint"}`} />
-                    </button>
+                    {(() => {
+                      let crownLabel = "Set as Commander";
+                      let crownAction: (() => void) | null = null;
+                      let canAct = eligibleCommander;
 
-                    {/* Interactive tooltip — eligible cards only */}
-                    {hoveredCrownId === card.id && eligibleCommander && (
-                      <div
-                        className="absolute left-full ml-1.5 top-1/2 -translate-y-1/2 px-2 py-1 bg-neutral-900 border border-neutral-700 rounded text-[10px] text-neutral-200 whitespace-nowrap z-30 flex items-center gap-1.5"
-                        onMouseEnter={() => {
-                          if (crownTooltipTimeout.current) {
-                            clearTimeout(crownTooltipTimeout.current);
-                            crownTooltipTimeout.current = null;
-                          }
-                        }}
-                        onMouseLeave={() => {
-                          crownTooltipTimeout.current = setTimeout(() => setHoveredCrownId(null), 150);
-                        }}
-                      >
-                        <span>Set as Commander</span>
-                        {isVehicleOrSpacecraft && (
-                          <a
-                            href="https://magic.wizards.com/en/news/feature/edge-of-eternities-mechanics"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            className="text-blue-400 hover:text-blue-300 hover:underline"
+                      if (commanderCount === 0) {
+                        crownLabel = "Set as Commander";
+                        crownAction = eligibleCommander ? () => onAddCommander?.(card.id) : null;
+                      } else if (commanderCount === 1) {
+                        if (cardHasPartner && existingCommanderHasPartner) {
+                          crownLabel = "Set as Partner";
+                          crownAction = () => onAddCommander?.(card.id);
+                          canAct = true;
+                        } else {
+                          crownLabel = "Set as Commander";
+                          crownAction = eligibleCommander ? () => onReplaceCommander?.(0, card.id) : null;
+                        }
+                      } else {
+                        if (cardHasPartner) {
+                          crownLabel = "Set as Partner";
+                          crownAction = () => onReplaceCommander?.(1, card.id);
+                          canAct = true;
+                        } else {
+                          crownLabel = "Set as Commander";
+                          crownAction = eligibleCommander ? () => onReplaceCommander?.(0, card.id) : null;
+                        }
+                      }
+
+                      return (
+                        <>
+                          <button
+                            onClick={() => canAct && crownAction?.()}
+                            title={!eligibleCommander && commanderCount === 0 ? "Must be Legendary to set as Commander" : undefined}
+                            className={`opacity-0 group-hover:opacity-100 shrink-0 transition-opacity ${canAct ? "cursor-pointer" : "cursor-not-allowed"}`}
                           >
-                            ⓘ
-                          </a>
-                        )}
-                      </div>
-                    )}
+                            <CrownOutline className={`w-3.5 h-3.5 ${canAct ? "text-content-faint hover:text-yellow-400" : "text-content-faint"}`} />
+                          </button>
+
+                          {hoveredCrownId === card.id && canAct && (
+                            <div
+                              className="absolute left-full ml-1.5 top-1/2 -translate-y-1/2 px-2 py-1 bg-neutral-900 border border-neutral-700 rounded text-[10px] text-neutral-200 whitespace-nowrap z-30 flex items-center gap-1.5"
+                              onMouseEnter={() => {
+                                if (crownTooltipTimeout.current) {
+                                  clearTimeout(crownTooltipTimeout.current);
+                                  crownTooltipTimeout.current = null;
+                                }
+                              }}
+                              onMouseLeave={() => {
+                                crownTooltipTimeout.current = setTimeout(() => setHoveredCrownId(null), 150);
+                              }}
+                            >
+                              <span>{crownLabel}</span>
+                              {isVehicleOrSpacecraft && crownLabel === "Set as Commander" && (
+                                <a
+                                  href="https://magic.wizards.com/en/news/feature/edge-of-eternities-mechanics"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="text-blue-400 hover:text-blue-300 hover:underline"
+                                >
+                                  ⓘ
+                                </a>
+                              )}
+                            </div>
+                          )}
+                        </>
+                      );
+                    })()}
                   </div>
                 )
+              )}
+
+              {/* Amber warning badge for invalid partner pairing */}
+              {partnerInvalid && (
+                <span title={partnerValidation?.warning} className="shrink-0">
+                  <svg width="14" height="14" viewBox="0 0 24 24" className="ml-0.5">
+                    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" fill="#f59e0b" stroke="none" />
+                    <path d="M12 9v4" stroke="white" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+                    <circle cx="12" cy="17" r="1" fill="white" />
+                  </svg>
+                </span>
               )}
 
               {/* Card name */}
@@ -539,10 +605,10 @@ export default function ListCardTable({
           </thead>
         )}
         <tbody>
-          {/* Pinned commander row */}
-          {pinnedCommander && (
+          {/* Pinned commander rows */}
+          {pinnedCommanders.length > 0 && (
             <>
-              {renderRow(pinnedCommander, 0, true)}
+              {pinnedCommanders.map((cmd, i) => renderRow(cmd, i, true))}
               <tr aria-hidden>
                 <td colSpan={COLUMN_COUNT} className="p-0 bg-transparent">
                   <div className="h-3" />

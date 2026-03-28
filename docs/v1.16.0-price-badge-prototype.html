@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TheBrewLab — Price Badge v3: Corner Straddle</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0a0a0c;
+    color: #e5e5e5;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    padding: 32px;
+    min-height: 100vh;
+  }
+  h1 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+  .subtitle { font-size: 12px; color: #737373; margin-bottom: 28px; }
+
+  .row-label {
+    font-size: 10px; font-weight: 600; color: #525252;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 12px; margin-top: 32px;
+  }
+  .row-label:first-of-type { margin-top: 0; }
+
+  .row { display: flex; gap: 20px; align-items: end; padding-bottom: 16px; flex-wrap: wrap; }
+
+  /* === CARD TILE === */
+  .card-tile {
+    position: relative;
+    aspect-ratio: 2.5 / 3.5;
+    border-radius: 12px;
+    overflow: visible;
+    cursor: pointer;
+  }
+  .card-inner {
+    position: absolute; inset: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #1a1a1e;
+  }
+  .card-inner img {
+    width: 100%; height: 100%;
+    object-fit: cover; display: block;
+  }
+
+  /* === PRICE PILL — CORNER STRADDLE === */
+  .price-pill {
+    position: absolute;
+    bottom: -7px; right: -4px;
+    background: rgba(0,0,0,0.82);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #e5e5e5;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    padding: 3px 7px;
+    border-radius: 7px;
+    line-height: 1.2;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.08);
+    z-index: 22;
+  }
+  .price-pill.no-price { opacity: 0.45; }
+
+  /* === QTY PILL === */
+  .qty-pill {
+    position: absolute;
+    bottom: -8px; left: 50%;
+    transform: translateX(-50%);
+    border-radius: 50%;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 20;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  }
+  .qty-pill.green { background: #166534; color: #4ade80; }
+  .qty-pill.neutral { background: #171717; color: #a3a3a3; }
+
+  /* === SIZE CLASSES === */
+  .tile-xs { width: 80px; }
+  .tile-xs .price-pill { font-size: 9px; padding: 2px 4px; bottom: -6px; right: -3px; border-radius: 5px; }
+  .tile-xs .qty-pill { width: 18px; height: 18px; font-size: 9px; bottom: -6px; }
+
+  .tile-s { width: 115px; }
+  .tile-s .price-pill { font-size: 10px; padding: 2px 6px; bottom: -6px; right: -3px; border-radius: 6px; }
+  .tile-s .qty-pill { width: 20px; height: 20px; font-size: 10px; bottom: -7px; }
+
+  .tile-m { width: 155px; }
+  .tile-m .price-pill { font-size: 11px; }
+  .tile-m .qty-pill { width: 24px; height: 24px; font-size: 11px; }
+
+  .tile-l { width: 210px; }
+  .tile-l .price-pill { font-size: 12px; padding: 3px 8px; }
+  .tile-l .qty-pill { width: 24px; height: 24px; font-size: 11px; }
+
+  .tile-xl { width: 270px; }
+  .tile-xl .price-pill { font-size: 13px; padding: 4px 9px; }
+  .tile-xl .qty-pill { width: 26px; height: 26px; font-size: 12px; }
+
+  .size-label {
+    font-size: 9px; color: #404040;
+    text-align: center; margin-top: 14px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Price Badge v3 — Corner Straddle</h1>
+<p class="subtitle">Price pill pushed to bottom-right corner, straddling the card's rounded edge. Clears qty pill at all sizes.</p>
+
+<div class="row-label">All tile sizes — $1.29</div>
+<div class="row">
+  <div>
+    <div class="card-tile tile-xs">
+      <div class="card-inner"><img src="https://cards.scryfall.io/art_crop/front/f/2/f29ba16f-c8fb-42fe-aabf-87089cb214a7.jpg?1673147399" alt="Lightning Bolt"></div>
+      <div class="qty-pill green">4</div>
+      <div class="price-pill">$1.29</div>
+    </div>
+    <div class="size-label">XS</div>
+  </div>
+  <div>
+    <div class="card-tile tile-s">
+      <div class="card-inner"><img src="https://cards.scryfall.io/art_crop/front/f/2/f29ba16f-c8fb-42fe-aabf-87089cb214a7.jpg?1673147399" alt="Lightning Bolt"></div>
+      <div class="qty-pill green">4</div>
+      <div class="price-pill">$1.29</div>
+    </div>
+    <div class="size-label">S</div>
+  </div>
+  <div>
+    <div class="card-tile tile-m">
+      <div class="card-inner"><img src="https://cards.scryfall.io/art_crop/front/f/2/f29ba16f-c8fb-42fe-aabf-87089cb214a7.jpg?1673147399" alt="Lightning Bolt"></div>
+      <div class="qty-pill green">4</div>
+      <div class="price-pill">$1.29</div>
+    </div>
+    <div class="size-label">M</div>
+  </div>
+  <div>
+    <div class="card-tile tile-l">
+      <div class="card-inner"><img src="https://cards.scryfall.io/art_crop/front/f/2/f29ba16f-c8fb-42fe-aabf-87089cb214a7.jpg?1673147399" alt="Lightning Bolt"></div>
+      <div class="qty-pill green">4</div>
+      <div class="price-pill">$1.29</div>
+    </div>
+    <div class="size-label">L</div>
+  </div>
+  <div>
+    <div class="card-tile tile-xl">
+      <div class="card-inner"><img src="https://cards.scryfall.io/art_crop/front/f/2/f29ba16f-c8fb-42fe-aabf-87089cb214a7.jpg?1673147399" alt="Lightning Bolt"></div>
+      <div class="qty-pill green">4</div>
+      <div class="price-pill">$1.29</div>
+    </div>
+    <div class="size-label">XL</div>
+  </div>
+</div>
+
+<div class="row-label">Wide price — $155</div>
+<div class="row">
+  <div>
+    <div class="card-tile tile-xs">
+      <div class="card-inner"><img src="https://cards.scryfall.io/art_crop/front/4/d/4d960186-4559-4af0-bd22-63baa15f8939.jpg?1599709515" alt="Mana Crypt"></div>
+      <div class="qty-pill green">1</div>
+      <div class="price-pill">$155</div>
+    </div>
+    <div class="size-label">XS</div>
+  </div>
+  <div>
+    <div class="card-tile tile-m">
+      <div class="card-inner"><img src="https://cards.scryfall.io/art_crop/front/4/d/4d960186-4559-4af0-bd22-63baa15f8939.jpg?1599709515" alt="Mana Crypt"></div>
+      <div class="qty-pill green">1</div>
+      <div class="price-pill">$155</div>
+    </div>
+    <div class="size-label">M</div>
+  </div>
+  <div>
+    <div class="card-tile tile-l">
+      <div class="card-inner"><img src="https://cards.scryfall.io/art_crop/front/4/d/4d960186-4559-4af0-bd22-63baa15f8939.jpg?1599709515" alt="Mana Crypt"></div>
+      <div class="qty-pill green">1</div>
+      <div class="price-pill">$155</div>
+    </div>
+    <div class="size-label">L</div>
+  </div>
+</div>
+
+<div class="row-label">No price — dash</div>
+<div class="row">
+  <div>
+    <div class="card-tile tile-m">
+      <div class="card-inner"><img src="https://cards.scryfall.io/art_crop/front/b/e/beaf4e3a-2498-4f22-851a-3bba1026a892.jpg?1689998273" alt="Sol Ring"></div>
+      <div class="qty-pill neutral">1</div>
+      <div class="price-pill no-price">—</div>
+    </div>
+    <div class="size-label">M</div>
+  </div>
+  <div>
+    <div class="card-tile tile-l">
+      <div class="card-inner"><img src="https://cards.scryfall.io/art_crop/front/b/e/beaf4e3a-2498-4f22-851a-3bba1026a892.jpg?1689998273" alt="Sol Ring"></div>
+      <div class="qty-pill neutral">1</div>
+      <div class="price-pill no-price">—</div>
+    </div>
+    <div class="size-label">L</div>
+  </div>
+</div>
+
+<div class="row-label">Search mode — no qty pill, just price</div>
+<div class="row">
+  <div>
+    <div class="card-tile tile-m">
+      <div class="card-inner"><img src="https://cards.scryfall.io/art_crop/front/d/6/d6914dba-0d27-4055-ac34-b3571b6b55f2.jpg?1600698439" alt="Rhystic Study"></div>
+      <div class="price-pill">$8.75</div>
+    </div>
+    <div class="size-label">M — search</div>
+  </div>
+  <div>
+    <div class="card-tile tile-l">
+      <div class="card-inner"><img src="https://cards.scryfall.io/art_crop/front/d/6/d6914dba-0d27-4055-ac34-b3571b6b55f2.jpg?1600698439" alt="Rhystic Study"></div>
+      <div class="price-pill">$8.75</div>
+    </div>
+    <div class="size-label">L — search</div>
+  </div>
+</div>
+
+</body>
+</html>

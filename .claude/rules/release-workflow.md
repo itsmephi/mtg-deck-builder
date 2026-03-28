@@ -37,7 +37,7 @@ WIP commits are manual and on-demand. Use one when pausing mid-release: switchin
 
    | Files touched | New component? | Action |
    |---|---|---|
-   | ≤3 | No | Skip plan review — go straight to building |
+   | ≤3 | No | Auto-proceed — output plan summary to terminal only, no PROCEED gate, no REVIEW.md write |
    | 4–7 | No | Phi skims the plan in REVIEW.md and types PROCEED |
    | 8+ | — | Sync REVIEW.md to Claude Chat for cross-check before PROCEED |
    | Any | Yes | Sync REVIEW.md to Claude Chat for cross-check before PROCEED |
@@ -85,6 +85,7 @@ WIP commits are manual and on-demand. Use one when pausing mid-release: switchin
 
 9. Before writing the session summary, update the REVIEW.md status header from IN PROGRESS to APPROVED ✅. Then Claude Code writes session summary to REVIEW.md and commits:
    - `vX.X.X - description - Closes #N, Closes #N`
+   - Review `docs/ARCHITECTURE.md` — update the component tree, state ownership, localStorage keys, or pattern notes if anything changed this release. Update the `<!-- Last updated: vX.X.X -->` header at the top.
    - `git add CLAUDE.md CHANGELOG.md REVIEW.md BACKLOG.md && git commit -m "update CLAUDE.md, CHANGELOG.md, REVIEW.md, and BACKLOG.md post vX.X.X"`
 
 10. `git checkout main && git merge vX.X.X && git push` — Claude Code handles this after APPROVED.

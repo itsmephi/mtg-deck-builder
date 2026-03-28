@@ -1,8 +1,26 @@
-export const APP_VERSION = "1.15.0";
+export const APP_VERSION = "1.17.1";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.17.1": [
+    "Enhancement: Price badge always visible on card tiles — both deck and search grid views show a persistent bottom-right price pill at all tile sizes (XS–XL); fades out on hover when overlay slides up",
+    "Enhancement: Deck grid hover overlay now shows card name and type line above qty controls — matches search overlay for consistency",
+    "Enhancement: Search grid hover overlay simplified — price line removed (redundant with persistent badge)",
+  ],
+  "1.16.0": [
+    "Feature: Partner Commander support — Commander decks now support two commanders when both cards have compatible partner abilities (generic Partner, Partner With [name], or Friends Forever)",
+    "Data model: commanderId replaced with commanderIds array (max 2); localStorage migration converts existing single-commander decks automatically",
+    "Partner detection: getPartnerType() checks Scryfall keywords array first, falls back to oracle_text parsing for cards stored before this release",
+    "Partner validation: canPartnerWith() validates all partner type combinations — Partner+Partner, Friends Forever+Friends Forever, Partner With [named partner]; incompatible pairings show a soft warning (red crown) without blocking",
+    "Crown state machine: crown tooltip shows 'Set as Partner' when both the existing commander and hovered card have any partner ability; shows 'Set as Commander' (replace) otherwise",
+    "Red crown: invalid partner pairings show a red crown badge on the second commander slot in both grid and list view; tooltip shows the specific incompatibility reason",
+    "Commander pinning: both commanders pin to the top of the card grid and list view; divider appears below both, not between them",
+    "Color identity: search filter and color identity warnings use the union of all commanders' color_identity arrays",
+    "Sample Hand Simulator: all commanders excluded from library; library count reflects both exclusions",
+    "Import/Export: exports two '// Commander:' lines for partner pairs; imports handle multiple '// Commander:' lines for backward compatibility",
+    "Chore: ScryfallCard type extended with optional keywords?: string[] — already returned by Scryfall, now typed",
+  ],
   "1.15.0": [
     "Bug fix: art swap no longer clears commander designation — when a card set as commander has its art swapped, commanderId now updates to the new printing's id instead of dangling to the old one",
     "Bug fix: marking a card as commander no longer autoscrolls — crown button blur prevents browser focus-scroll when the card pins to position 0 in the sorted list",
