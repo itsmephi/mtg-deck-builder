@@ -5,7 +5,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-## [1.17.0] — Price Badge on Card Tiles
+## [1.17.1] — Price Badge on Card Tiles
 
 ### Enhanced
 - **Always-visible price badge**: both deck grid and search grid now show a persistent price pill in the bottom-right corner of every card tile — no hover required; fades out when the slide-up overlay is active
