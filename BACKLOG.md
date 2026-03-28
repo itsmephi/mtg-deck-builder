@@ -6,13 +6,11 @@
 
 ## Active Milestone
 
-### v1.16.0 — Card Management
+### v1.16.0 — Card Management (remaining items)
 - [ ] **feature** | Quick-add card by name from deck view — add a card without switching to search tab; inline name input or dedicated quick-add button ⚠️ needs design
 - [ ] **feature** | Custom card sorting by drag and drop (#16) ⚠️ needs design
 - [ ] **enhancement** | Combine qty and owned fields into a single elegant input — two separate fields is redundant UX; design a unified interaction ⚠️ needs design
 - [ ] **enhancement** | Bulk mark all cards as owned — quick action to set owned qty on all cards at once ⚠️ needs design
-- [ ] **feature** | Partner commander support — allow 2 commanders for Partner and Friends Forever (Best Friends) pairs; deferred from v1.4.0
-
 ### v1.17.0 — Search & Deck Polish
 - [ ] **enhancement** | Search: list view toggle for search results — grid/list toggle in search toolbar, list view mirrors sidebar search list but wider ⚠️ needs design
 - [ ] **enhancement** | Search: back button to return to previous context ⚠️ needs design
@@ -36,6 +34,8 @@
 ## Pipeline
 <!-- New captures land here. Items with no clear milestone yet. -->
 
+- [ ] **feature** | Choose a Background commander support — allow Background enchantment as second commander for cards with "Choose a Background" keyword ⚠️ needs design
+- [ ] **feature** | Doctor's Companion commander support — allow pairing with Time Lord Doctor creatures ⚠️ needs design
 - [ ] **enhancement** | **[high]** | Settings Hub: "Submit a Bug" button/link in Support tab (#78) — blocked: needs email address first
 - [ ] **enhancement** | **[med]** | Simulator modal has no view mode toggle — consider adding compact list view inside modal for larger decks; would also make pin-from-list interaction more prominent
 - [ ] **enhancement** | **[med]** | Price context — add some framing around deck value (budget/mid/premium tier label or comparison)

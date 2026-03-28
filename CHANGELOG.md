@@ -5,6 +5,32 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.16.0] — Partner Commander Support
+
+### Added
+- **Partner Commander support**: Commander decks now support two commanders when both cards have compatible partner abilities — generic Partner, Partner With [named card], or Friends Forever
+- **Partner detection**: `getPartnerType(card)` checks Scryfall `keywords` array first, falls back to `oracle_text` parsing for cards stored before this release; handles all three partner types
+- **Partner validation**: `canPartnerWith(a, b)` validates all combinations — Partner+Partner ✓, Friends Forever+Friends Forever ✓, Partner With [name] + named partner ✓; incompatible pairings show a soft warning without blocking
+- **Crown state machine**: crown tooltip context-sensitive — "Set as Commander" (replace) or "Set as Partner" (add as second slot) based on whether both the existing commander and hovered card have any partner ability
+- **Red crown**: invalid partner pairings show a red crown badge on commander slot 2 in grid view (`bg-red-500`) and a red crown icon + amber `!` in list view; tooltip shows the specific incompatibility reason
+- **Commander 1 always yellow**: only the partner (slot 2) can show red; slot 0 is always yellow
+
+### Enhanced
+- **Commander pinning**: both commanders pin to the top of card grid and list view; divider appears below both
+- **Type grouping**: both commanders route to the "Commander" group when Group by Type is enabled
+- **Color identity**: union of all commanders' color_identity arrays used for warnings and search filter `id<=` clause
+- **Sample Hand Simulator**: all commanders excluded from library; library count reflects both exclusions
+- **Import/Export**: exports two `// Commander:` lines for partner pairs; imports handle multiple `// Commander:` lines; backward compatible with single-commander files
+- **Art swap**: swapping a commander's art correctly updates its entry in commanderIds
+
+### Technical
+- `Deck.commanderIds?: string[]` replaces `commanderId?: string` (max 2 entries); localStorage migration converts existing single-commander decks automatically on load
+- `ScryfallCard.keywords?: string[]` added — Scryfall already returns this field, now typed
+- `useDeckManager`: `setCommanderIds`, `addCommander`, `removeCommander`, `replaceCommander` replace `setCommanderId`; `removeCard` clears the card's commanderIds entry
+- Partner helpers in `formatRules.ts`: `PartnerType`, `getPartnerType`, `getPartnerWithName`, `hasPartnerAbility`, `canPartnerWith`
+
+---
+
 ## [1.14.0] — CardModal & Search Polish
 
 ### Added

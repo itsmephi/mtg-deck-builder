@@ -3,7 +3,7 @@ Authors: Phi & Thurgood Nguyen
 Stack: Next.js + TypeScript + Tailwind CSS
 Deployed: Vercel | Repo: GitHub (itsmephi/mtg-deck-builder)
 IDE: VS Code (Windows, primary) · Zed on Steam Deck (Linux, secondary)
-Current Version: v1.15.0 — see CHANGELOG.md for full history
+Current Version: v1.16.0 — see CHANGELOG.md for full history
 
 ---
 
@@ -92,9 +92,12 @@ src/
 - UI state persistence keys: mtg-view-mode, mtg-group-by-type, mtg-active-deck, mtg-deck-view-mode, mtg-sort-preference, mtg-show-thumbnail, mtg-sidebar-collapsed, mtg-sidebar-active-tab, mtg-tile-size (values: "xs"|"s"|"m"|"l"|"xl", default "m"), mtg-sidebar-filters (serialized FilterState — price, anyPrice, rarities, types, colors, yearMin, yearMax), mtg-search-filter-active-{deckId} (boolean string "true"/"false"; per-deck key; absent = default false; written on first user toggle for that deck), mtg-last-backup (ISO 8601 string — timestamp of most recent deck backup; read by Preferences tab to display "Last backup: ..." line)
 - Sideboard: enabled per-deck as sideboard?: DeckCard[] — undefined = no sideboard, [] = enabled but empty
 - deckViewMode lives in useDeckManager context
-- `format` and `commanderId` persisted as part of deck data in `mtg_builder_decks` localStorage
-- `commanderId` references `DeckCard.id` — dangling refs (card removed) treated as "no commander"
-- Color identity check: `cardIdentity.every(c => commanderIdentity.includes(c))`
+- `format` and `commanderIds` persisted as part of deck data in `mtg_builder_decks` localStorage
+- `commanderIds` is an array of max 2 `DeckCard.id` strings — supports partner commanders; dangling refs (card removed) treated as "no commander"
+- Partner detection: `getPartnerType(card)` checks `keywords` array first, falls back to `oracle_text`; types: `'partner' | 'partner-with' | 'friends-forever' | null`
+- Partner validation: `canPartnerWith(a, b)` returns `{ valid, warning? }` — soft warning only, never blocks designation
+- Color identity: union of all commanders' `color_identity` arrays — `[...new Set(commanderCards.flatMap(c => c.color_identity ?? []))]`
+- Crown state machine: "Set as Partner" only when both existing commander and hovered card have any partner ability; otherwise "Set as Commander" (replace)
 - Copy limit exemptions unchanged: Basic Land + "any number" oracle text
 - Commander eligibility: `type_line` contains "Legendary" OR `oracle_text` contains "can be your commander" — soft check only
 - Format rules: `getFormatRules(format)` is the single source of truth for all format-specific behavior
@@ -111,7 +114,7 @@ src/
 - `anyPrice: boolean` in FilterState: when true, `buildSidebarFilterSyntax` skips all price clauses; slider/inputs dim via `opacity-30 pointer-events-none`
 - `yearMin`/`yearMax` in FilterState: default last 5 years (CURRENT_YEAR-4 to CURRENT_YEAR); year syntax only injected when `yearMin > 1993` or `yearMax < CURRENT_YEAR`; presets: "This Year" (currentYear–currentYear), "Last 5 Yrs" (default), "All" (1993–currentYear); `released_at?: string` on `ScryfallCard` (ISO date "YYYY-MM-DD") — displayed in CardModal Product Details
 - `isEligibleCommander`: requires `type_line` contains "Legendary" AND "Creature", OR `oracle_text` contains "can be your commander", OR `type_line` contains "Legendary" AND ("Vehicle" OR "Spacecraft") AND card has `power`/`toughness` defined; falls back to `card_faces[0]` for reversible cards where root `type_line`/`oracle_text` may be absent
-- `groupCardsByType` in Workspace: prepends `Commander` group when `format === "commander" && commanderId && deckViewMode === "main"`; commander card is routed there instead of its type bucket
+- `groupCardsByType` in Workspace: prepends `Commander` group when `format === "commander" && commanderIds?.length && deckViewMode === "main"`; all commander cards routed there instead of their type bucket
 - Design token system: 25 semantic CSS custom properties; dual palette — Warm Stone default (`:root`), Zed Dark alt (`[data-theme="zed-dark"]`). Registered via `@theme inline` as Tailwind utilities. Token categories: `surface-base/raised/overlay/backdrop/panel/panel-raised/deep/hover` → `bg-surface-*`; `input-surface/edge/edge-focus/value/placeholder` → `bg-input-surface`, `border-input-edge/edge-focus`, `text-input-value/placeholder`; `content-primary/heading/secondary/tertiary/muted/faint/disabled` → `text-content-*`; `line-default/subtle/panel/focus/hover` → `border-line-*`. Depth model: Warm Stone sidebar RAISED (panel lighter than base), Zed Dark sidebar RECESSED (panel darker than base) — same token names, theme handles difference. Theme switching: `document.documentElement.dataset.theme = 'zed-dark'` / `delete document.documentElement.dataset.theme` — UI toggle in Settings Hub → Preferences tab; persists to `localStorage` key `mtg-theme`; initialized via inline `<script>` in `layout.tsx` `<head>` to prevent flash. NOT tokenized: opacity variants (e.g. `bg-neutral-800/50`), accent colors, `text-neutral-100`. All other flagged mid-tones resolved: `text-neutral-700` → `text-content-disabled`, `bg-neutral-950` → `bg-surface-deep`, `hover:bg-neutral-600` → `hover:bg-surface-hover`, `border-neutral-600` → `border-line-hover`, `focus-within:border-neutral-600` → `focus-within:border-input-edge-focus`. Naming rule: `@theme inline` generates `[property-prefix]-[color-name]` — color name must not repeat the property prefix (e.g. `--color-text-*` would generate `text-text-*`; `--color-border-*` would generate `border-border-*`).
 
 ---
