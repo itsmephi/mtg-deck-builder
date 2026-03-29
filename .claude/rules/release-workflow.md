@@ -88,6 +88,10 @@ WIP commits are manual and on-demand. Use one when pausing mid-release: switchin
    - Review `docs/ARCHITECTURE.md` — update the component tree, state ownership, localStorage keys, or pattern notes if anything changed this release. Update the `<!-- Last updated: vX.X.X -->` header at the top.
    - `git add CLAUDE.md CHANGELOG.md REVIEW.md BACKLOG.md && git commit -m "update CLAUDE.md, CHANGELOG.md, REVIEW.md, and BACKLOG.md post vX.X.X"`
 
+   **File read efficiency (post-APPROVE):** Use Grep to find version strings and section headings before reading. Never read full files when only a section is needed:
+   - `CHANGELOG.md` — read only the top 10 lines to confirm format; never the full history
+   - `CLAUDE.md` / `REVIEW.md` / `BACKLOG.md` — Grep for the target line first, then `Read` with `offset`/`limit` (±10 lines)
+
 10. `git checkout main && git merge vX.X.X && git push` — Claude Code handles this after APPROVED.
 
 11. Vercel auto-deploys.
