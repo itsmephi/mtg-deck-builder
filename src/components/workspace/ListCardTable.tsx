@@ -73,6 +73,7 @@ interface ListCardTableProps {
   onUpdateQuantity: (id: string, delta: number) => void;
   onSetQuantity: (id: string, qty: number) => void;
   onUpdateOwnedQty: (id: string, qty: number) => void;
+  onToggleIsOwned: (id: string) => void;
   onRemove: (id: string) => void;
   onSelect: (card: ScryfallCard) => void;
   onHoverStart: (card: ScryfallCard) => void;
@@ -100,6 +101,7 @@ export default function ListCardTable({
   onUpdateQuantity,
   onSetQuantity,
   onUpdateOwnedQty,
+  onToggleIsOwned,
   onRemove,
   onSelect,
   onHoverStart,
@@ -123,6 +125,9 @@ export default function ListCardTable({
 
   // Row hover state for tint brightening
   const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
+
+  // Toggle button hover state for ownership visual feedback
+  const [toggleHoverId, setToggleHoverId] = useState<string | null>(null);
 
   // Crown tooltip hover state for list view
   const [hoveredCrownId, setHoveredCrownId] = useState<string | null>(null);
@@ -213,8 +218,8 @@ export default function ListCardTable({
       index > 0 &&
       getGroupKey(bodyCards[index - 1], sortBy) !== getGroupKey(card, sortBy);
 
-    const isFullyOwned = card.quantity > 0 && card.ownedQty >= card.quantity;
-    const ownershipRatio = card.quantity > 0 ? Math.min(card.ownedQty / card.quantity, 1) : 0;
+    const isFullyOwned = card.isOwned && card.quantity > 0 && card.ownedQty >= card.quantity;
+    const ownershipRatio = card.isOwned && card.quantity > 0 ? Math.min(card.ownedQty / card.quantity, 1) : 0;
     const cellOpacity = card.quantity === 0 ? 0.3 : 1 - ownershipRatio * 0.6;
     const cellGrayscale = card.quantity === 0 ? "grayscale" : "";
     const nameColor = card.quantity === 0
@@ -251,7 +256,7 @@ export default function ListCardTable({
       rowBg = getRowTint(card);
     }
 
-    const qtyButtonBase = "w-5 h-5 rounded-full bg-surface-raised text-content-tertiary hover:bg-surface-overlay hover:text-content-primary flex items-center justify-center transition-colors";
+    const qtyButtonBase = "w-5 h-5 rounded-full bg-surface-raised text-content-tertiary hover:bg-surface-overlay hover:text-white flex items-center justify-center transition-colors";
     const qtyButtonClass = isThisCommander
       ? qtyButtonBase
       : `${qtyButtonBase} opacity-0 group-hover:opacity-100`;
@@ -276,16 +281,128 @@ export default function ListCardTable({
           className={`border-b border-neutral-800/40 transition-colors group ${highlightedId === card.id ? "bg-yellow-400/10 outline outline-1 outline-yellow-400/50" : ""}`}
           style={highlightedId !== card.id ? { backgroundColor: rowBg } : undefined}
         >
-          {/* Qty — [− qty +] */}
-          <td className={`px-2 py-1 w-24 ${cellGrayscale}`} style={{ opacity: cellOpacity }}>
-            <div className="flex items-center gap-1.5">
+          {/* Owned toggle — circle ✓ button, 3 states matching grid badge */}
+          <td className="px-2 py-1 w-10">
+            <div className="flex items-center justify-center">
+              {(() => {
+                const isPartial = card.isOwned && card.ownedQty > 0 && card.ownedQty < card.quantity;
+                const isFull = card.isOwned && card.ownedQty >= card.quantity;
+                const isHovered = toggleHoverId === card.id;
+
+                let bg: string, border: string, color: string;
+                if (!card.isOwned) {
+                  bg = isHovered ? 'rgba(22,101,52,0.15)' : 'transparent';
+                  border = isHovered ? 'rgba(74,222,128,0.5)' : 'rgba(255,255,255,0.12)';
+                  color = isHovered ? '#4ade80' : '#737373';
+                } else if (isHovered) {
+                  // Owned (any) + hover → red warning
+                  bg = 'rgba(153,27,27,0.85)';
+                  border = 'rgba(239,68,68,0.6)';
+                  color = '#f87171';
+                } else if (isFull) {
+                  bg = 'rgba(74,222,128,0.85)';
+                  border = 'transparent';
+                  color = '#fff';
+                } else {
+                  // Partial
+                  bg = 'rgba(22,101,52,0.85)';
+                  border = 'rgba(74,222,128,0.5)';
+                  color = '#fff';
+                }
+
+                return (
+                  <button
+                    onClick={() => onToggleIsOwned(card.id)}
+                    onMouseEnter={() => setToggleHoverId(card.id)}
+                    onMouseLeave={() => setToggleHoverId(null)}
+                    title={card.isOwned ? "Unmark as owned" : "Mark as owned"}
+                    style={{
+                      width: '20px',
+                      height: '20px',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      border: `1px solid ${border}`,
+                      background: bg,
+                      color,
+                      cursor: 'pointer',
+                      transition: 'all 0.15s',
+                      fontSize: '10px',
+                      fontWeight: 700,
+                      flexShrink: 0,
+                    }}
+                    className={card.isOwned ? '' : 'opacity-0 group-hover:opacity-100'}
+                  >
+                    ✓
+                  </button>
+                );
+              })()}
+            </div>
+          </td>
+
+          {/* Qty — [− owned X +] / [− qty Y +], steppers on row hover */}
+          <td className={`px-2 py-1 w-40 ${cellGrayscale}`} style={{ opacity: cellOpacity }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              {/* Owned sub-group */}
+              <button
+                onClick={() => onUpdateOwnedQty(card.id, Math.max(0, card.ownedQty - 1))}
+                className="w-4 h-4 rounded-full bg-surface-raised text-content-tertiary hover:bg-surface-overlay hover:text-white flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100"
+                style={{ flexShrink: 0 }}
+              >
+                <svg width="6" height="6" viewBox="0 0 8 2" fill="currentColor"><rect x="0" y="0" width="8" height="2" /></svg>
+              </button>
+
+              {editingOwnedId === card.id ? (
+                <input
+                  type="text"
+                  value={ownedEditValue}
+                  onChange={(e) => setOwnedEditValue(e.target.value)}
+                  onFocus={(e) => e.target.select()}
+                  onBlur={() => {
+                    if (isOwnedEscaping.current) { isOwnedEscaping.current = false; return; }
+                    commitOwnedEdit(card);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") { e.preventDefault(); commitOwnedEdit(card); }
+                    if (e.key === "Escape") { isOwnedEscaping.current = true; setEditingOwnedId(null); }
+                  }}
+                  className="w-5 text-center text-[10px] font-medium bg-surface-raised border border-blue-500 rounded text-green-400 focus:outline-none"
+                  autoFocus
+                />
+              ) : (
+                <span
+                  onClick={() => startOwnedEdit(card)}
+                  className={`w-5 text-center text-[10px] tabular-nums cursor-pointer hover:underline ${
+                    !card.isOwned || card.ownedQty === 0
+                      ? 'text-content-disabled'
+                      : isFullyOwned
+                      ? 'text-green-400'
+                      : 'text-content-tertiary'
+                  }`}
+                >
+                  {card.ownedQty}
+                </span>
+              )}
+
+              <button
+                onClick={() => onUpdateOwnedQty(card.id, card.ownedQty + 1)}
+                className="w-4 h-4 rounded-full bg-surface-raised text-content-tertiary hover:bg-surface-overlay hover:text-white flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100"
+                style={{ flexShrink: 0 }}
+              >
+                <svg width="6" height="6" viewBox="0 0 8 8" fill="currentColor"><rect x="3" y="0" width="2" height="8" /><rect x="0" y="3" width="8" height="2" /></svg>
+              </button>
+
+              {/* Slash separator */}
+              <span className="text-[10px] text-content-muted mx-0.5" style={{ userSelect: 'none' }}>/</span>
+
+              {/* Qty sub-group */}
               <button
                 onClick={() => onUpdateQuantity(card.id, -1)}
                 className={qtyButtonClass}
+                style={{ flexShrink: 0 }}
               >
-                <svg width="8" height="8" viewBox="0 0 8 2" fill="currentColor">
-                  <rect x="0" y="0" width="8" height="2" />
-                </svg>
+                <svg width="6" height="6" viewBox="0 0 8 2" fill="currentColor"><rect x="0" y="0" width="8" height="2" /></svg>
               </button>
 
               {editingId === card.id ? (
@@ -295,21 +412,12 @@ export default function ListCardTable({
                   onChange={(e) => setEditValue(e.target.value)}
                   onFocus={(e) => e.target.select()}
                   onBlur={() => {
-                    if (isEscaping.current) {
-                      isEscaping.current = false;
-                      return;
-                    }
+                    if (isEscaping.current) { isEscaping.current = false; return; }
                     commitEdit(card);
                   }}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      commitEdit(card);
-                    }
-                    if (e.key === "Escape") {
-                      isEscaping.current = true;
-                      setEditingId(null);
-                    }
+                    if (e.key === "Enter") { e.preventDefault(); commitEdit(card); }
+                    if (e.key === "Escape") { isEscaping.current = true; setEditingId(null); }
                   }}
                   className="w-6 text-center text-xs font-medium bg-surface-raised border border-blue-500 rounded text-content-heading focus:outline-none"
                   autoFocus
@@ -338,75 +446,9 @@ export default function ListCardTable({
               <button
                 onClick={() => onUpdateQuantity(card.id, 1)}
                 className={qtyButtonClass}
+                style={{ flexShrink: 0 }}
               >
-                <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor">
-                  <rect x="3" y="0" width="2" height="8" />
-                  <rect x="0" y="3" width="8" height="2" />
-                </svg>
-              </button>
-            </div>
-          </td>
-
-          {/* Owned — [− X/Y +] inline-editable */}
-          <td className="py-1 w-20">
-            <div className="px-2 flex items-center gap-1.5">
-              <button
-                onClick={() => onUpdateOwnedQty(card.id, Math.max(0, card.ownedQty - 1))}
-                className={`w-5 h-5 rounded-full bg-surface-raised text-content-tertiary hover:bg-surface-overlay hover:text-content-primary flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100`}
-              >
-                <svg width="8" height="8" viewBox="0 0 8 2" fill="currentColor">
-                  <rect x="0" y="0" width="8" height="2" />
-                </svg>
-              </button>
-
-              {editingOwnedId === card.id ? (
-                <div className="flex items-center gap-0.5">
-                  <input
-                    type="text"
-                    value={ownedEditValue}
-                    onChange={(e) => setOwnedEditValue(e.target.value)}
-                    onFocus={(e) => e.target.select()}
-                    onBlur={() => {
-                      if (isOwnedEscaping.current) {
-                        isOwnedEscaping.current = false;
-                        return;
-                      }
-                      commitOwnedEdit(card);
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        commitOwnedEdit(card);
-                      }
-                      if (e.key === "Escape") {
-                        isOwnedEscaping.current = true;
-                        setEditingOwnedId(null);
-                      }
-                    }}
-                    className="w-5 text-center text-[10px] font-medium bg-surface-raised border border-blue-500 rounded text-green-400 focus:outline-none"
-                    autoFocus
-                  />
-                  <span className={`text-[10px] tabular-nums ${isFullyOwned ? "text-green-400" : "text-content-tertiary"}`}>
-                    /{card.quantity}
-                  </span>
-                </div>
-              ) : (
-                <span
-                  onClick={() => startOwnedEdit(card)}
-                  className={`text-[10px] tabular-nums cursor-pointer hover:underline ${isFullyOwned ? "text-green-400" : "text-content-tertiary"}`}
-                >
-                  {card.ownedQty}/{card.quantity}
-                </span>
-              )}
-
-              <button
-                onClick={() => onUpdateOwnedQty(card.id, card.ownedQty + 1)}
-                className={`w-5 h-5 rounded-full bg-surface-raised text-content-tertiary hover:bg-surface-overlay hover:text-content-primary flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100`}
-              >
-                <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor">
-                  <rect x="3" y="0" width="2" height="8" />
-                  <rect x="0" y="3" width="8" height="2" />
-                </svg>
+                <svg width="6" height="6" viewBox="0 0 8 8" fill="currentColor"><rect x="3" y="0" width="2" height="8" /><rect x="0" y="3" width="8" height="2" /></svg>
               </button>
             </div>
           </td>
@@ -567,7 +609,7 @@ export default function ListCardTable({
 
           {/* Price */}
           <td
-            className={`px-2 py-1 text-right text-[10px] tabular-nums w-20 ${isFullyOwned ? "text-green-500/50" : "text-content-tertiary"} ${cellGrayscale}`}
+            className={`px-2 py-1 text-right text-[10px] tabular-nums w-20 text-content-tertiary ${cellGrayscale}`}
             style={{ opacity: cellOpacity }}
           >
             {card.prices.usd ? `$${card.prices.usd}` : "N/A"}
@@ -594,8 +636,8 @@ export default function ListCardTable({
         {showHeader && (
           <thead className="bg-surface-base text-[10px] text-content-muted border-b border-line-subtle uppercase tracking-wider">
             <tr>
-              <th className="px-2 py-1.5 w-24">Qty</th>
-              <th className="py-1.5 w-20">Owned</th>
+              <th className="px-2 py-1.5 w-10"></th>
+              <th className="px-2 py-1.5 w-40">Qty</th>
               <th className="px-2 py-1.5 min-w-0">Name</th>
               <th className="px-2 py-1.5 w-48">Type</th>
               <th className="px-2 py-1.5 w-24">Mana</th>

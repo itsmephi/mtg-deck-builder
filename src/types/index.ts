@@ -42,6 +42,7 @@ export interface ScryfallCard {
 export interface DeckCard extends ScryfallCard {
   quantity: number;
   ownedQty: number;
+  isOwned: boolean;
 }
 
 export interface Deck {

@@ -36,7 +36,7 @@ export function useDeckStats(activeDeck: Deck | null, format?: DeckFormat) {
       (sum, card) =>
         sum +
         parseFloat(card.prices.usd || "0") *
-          Math.max(0, card.quantity - card.ownedQty),
+          Math.max(0, card.quantity - (card.isOwned ? card.ownedQty : 0)),
       0,
     ) ?? 0;
 
@@ -46,7 +46,7 @@ export function useDeckStats(activeDeck: Deck | null, format?: DeckFormat) {
           (sum, card) =>
             sum +
             parseFloat(card.prices.usd || "0") *
-              Math.max(0, card.quantity - card.ownedQty),
+              Math.max(0, card.quantity - (card.isOwned ? card.ownedQty : 0)),
           0,
         )
       : 0;
@@ -59,7 +59,7 @@ export function useDeckStats(activeDeck: Deck | null, format?: DeckFormat) {
   const buyOnTCGPlayer = () => {
     if (!activeDeck) return;
     const list = activeDeck.cards
-      .map((c) => ({ ...c, buyQty: c.quantity - c.ownedQty }))
+      .map((c) => ({ ...c, buyQty: c.quantity - (c.isOwned ? c.ownedQty : 0) }))
       .filter((c) => c.buyQty > 0)
       .map(
         (c) =>
@@ -75,7 +75,7 @@ export function useDeckStats(activeDeck: Deck | null, format?: DeckFormat) {
   const buyOnCardKingdom = () => {
     if (!activeDeck) return;
     const list = activeDeck.cards
-      .map((c) => ({ ...c, buyQty: c.quantity - c.ownedQty }))
+      .map((c) => ({ ...c, buyQty: c.quantity - (c.isOwned ? c.ownedQty : 0) }))
       .filter((c) => c.buyQty > 0)
       .map((c) => `${c.buyQty} ${c.name}`)
       .join("\n");

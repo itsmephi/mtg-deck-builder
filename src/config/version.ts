@@ -1,8 +1,15 @@
-export const APP_VERSION = "1.17.1";
+export const APP_VERSION = "1.18.0";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.18.0": [
+    "Enhancement: Unified qty/owned input — deck grid overlay replaces separate qty stepper + owned counter rows with a single '− owned + / − qty +' number row; each group's steppers reveal on hover (progressive disclosure)",
+    "Enhancement: Qty/owned badge redesign — persistent bottom-center badge now encodes ownership state via color (dark neutral = not owned; dark + green border = partial; solid green = fully owned); badge animates to overlay-top on card hover and becomes a ✓ toggle button (mark/unmark as owned)",
+    "Enhancement: isOwned field — new boolean on DeckCard; toggleIsOwned action handles first-activation (sets ownedQty = quantity), deactivation (retains ownedQty), and re-activation; migration backfills isOwned from ownedQty for existing decks",
+    "Enhancement: List view column restructure — Owned column (circle ✓ toggle) + Qty column (X / Y with step buttons on row hover); owned controls dim and disable when isOwned = false",
+    "Enhancement: Price badge — deck grid tile price badge stays visible when overlay is open (no longer fades); color is green when fully owned, muted otherwise",
+  ],
   "1.17.1": [
     "Enhancement: Price badge always visible on card tiles — both deck and search grid views show a persistent bottom-right price pill at all tile sizes (XS–XL); fades out on hover when overlay slides up",
     "Enhancement: Deck grid hover overlay now shows card name and type line above qty controls — matches search overlay for consistency",

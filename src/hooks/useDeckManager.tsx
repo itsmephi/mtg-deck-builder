@@ -23,8 +23,15 @@ function migrateDecks(rawDecks: any[]): Deck[] {
       format: deck.format ?? "freeform",
       commanderIds,
       cards: deck.cards.map((card: any) => {
-        if (card.ownedQty !== undefined) return card;
-        return { ...card, ownedQty: card.isOwned ? card.quantity : 0 };
+        // Legacy migration: boolean isOwned → ownedQty (pre-v1.0.6)
+        const ownedQty = card.ownedQty !== undefined
+          ? card.ownedQty
+          : (card.isOwned ? card.quantity : 0);
+        // v1.18.0: backfill isOwned from ownedQty
+        const isOwned = typeof card.isOwned === 'boolean'
+          ? card.isOwned
+          : ownedQty > 0;
+        return { ...card, ownedQty, isOwned };
       }),
     };
   });
@@ -43,6 +50,7 @@ interface DeckContextType {
   setActiveDeckId: (id: string | null) => void;
   updateActiveDeck: (updater: (deck: Deck) => Deck) => void;
   updateOwnedQty: (cardId: string, qty: number) => void;
+  toggleIsOwned: (cardId: string) => void;
   createNewDeck: (format?: DeckFormat) => void;
   deleteDeck: (id: string) => void;
   enableSideboard: (deckId: string) => void;
@@ -194,14 +202,38 @@ export function DeckProvider({ children }: { children: ReactNode }) {
         deck.id === activeDeckId
           ? {
               ...deck,
-              cards: deck.cards.map((c) =>
-                c.id === cardId
-                  ? { ...c, ownedQty: Math.max(0, qty) }
-                  : c,
-              ),
+              cards: deck.cards.map((c) => {
+                if (c.id !== cardId) return c;
+                const newQty = Math.max(0, qty);
+                return { ...c, ownedQty: newQty, isOwned: newQty > 0 };
+              }),
             }
           : deck,
       ),
+    );
+  };
+
+  const toggleIsOwned = (cardId: string) => {
+    setDecks((currentDecks) =>
+      currentDecks.map((deck) => {
+        if (deck.id !== activeDeckId) return deck;
+        return {
+          ...deck,
+          cards: deck.cards.map((c) => {
+            if (c.id !== cardId) return c;
+            if (c.isOwned) {
+              // Deactivation: retain ownedQty so re-activation restores prior count
+              return { ...c, isOwned: false };
+            } else if (c.ownedQty === 0) {
+              // First activation: fill to quantity
+              return { ...c, isOwned: true, ownedQty: c.quantity };
+            } else {
+              // Re-activation: retain existing ownedQty
+              return { ...c, isOwned: true };
+            }
+          }),
+        };
+      }),
     );
   };
 
@@ -367,6 +399,7 @@ export function DeckProvider({ children }: { children: ReactNode }) {
         setActiveDeckId,
         updateActiveDeck,
         updateOwnedQty,
+        toggleIsOwned,
         createNewDeck,
         deleteDeck,
         enableSideboard,

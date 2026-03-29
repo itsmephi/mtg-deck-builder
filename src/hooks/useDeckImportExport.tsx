@@ -224,10 +224,12 @@ export function useDeckImportExport() {
                   }
                 }
 
+                const ownedQty = parsed?.ownedQty ?? 0;
                 fetched.push({
                   ...cardToUse,
                   quantity,
-                  ownedQty: parsed?.ownedQty ?? 0,
+                  ownedQty,
+                  isOwned: ownedQty > 0,
                 });
               },
             );

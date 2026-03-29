@@ -290,7 +290,7 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
           }
           return {
             ...deck,
-            sideboard: [...deck.sideboard!, { ...cardToAdd, quantity: 1, ownedQty: 0 }],
+            sideboard: [...deck.sideboard!, { ...cardToAdd, quantity: 1, ownedQty: 0, isOwned: false }],
           };
         });
         const qtyLabel = newQty > 1 ? ` (×${newQty})` : "";
@@ -309,7 +309,7 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
           }
           return {
             ...deck,
-            cards: [...deck.cards, { ...cardToAdd, quantity: 1, ownedQty: 0 }],
+            cards: [...deck.cards, { ...cardToAdd, quantity: 1, ownedQty: 0, isOwned: false }],
           };
         });
         const qtyLabel = newQty > 1 ? ` (×${newQty})` : "";
@@ -470,7 +470,7 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
             {results.map((card) => (
               <VisualCard
                 key={card.id}
-                card={{ ...card, quantity: 1, ownedQty: 0 }}
+                card={{ ...card, quantity: 1, ownedQty: 0, isOwned: false }}
                 mode="search"
                 inDeck={deckCardNames.has(card.name)}
                 onAdd={handleAdd}

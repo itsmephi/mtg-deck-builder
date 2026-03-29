@@ -56,6 +56,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
     activeDeck,
     updateActiveDeck,
     updateOwnedQty,
+    toggleIsOwned,
     deckViewMode,
     setDeckViewMode,
     isMounted,
@@ -358,9 +359,23 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
   const updateSideboardOwnedQty = (cardId: string, qty: number) => {
     updateActiveDeck((deck) => ({
       ...deck,
-      sideboard: deck.sideboard?.map((c) =>
-        c.id === cardId ? { ...c, ownedQty: Math.max(0, qty) } : c,
-      ),
+      sideboard: deck.sideboard?.map((c) => {
+        if (c.id !== cardId) return c;
+        const newQty = Math.max(0, qty);
+        return { ...c, ownedQty: newQty, isOwned: newQty > 0 };
+      }),
+    }));
+  };
+
+  const toggleSideboardIsOwned = (cardId: string) => {
+    updateActiveDeck((deck) => ({
+      ...deck,
+      sideboard: deck.sideboard?.map((c) => {
+        if (c.id !== cardId) return c;
+        if (c.isOwned) return { ...c, isOwned: false };
+        if (c.ownedQty === 0) return { ...c, isOwned: true, ownedQty: c.quantity };
+        return { ...c, isOwned: true };
+      }),
     }));
   };
 
@@ -403,6 +418,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
         onUpdateQuantity: updateSideboardQuantity,
         onSetQuantity: setSideboardQuantity,
         onUpdateOwnedQty: updateSideboardOwnedQty,
+        onToggleIsOwned: toggleSideboardIsOwned,
         onRemove: removeSideboardCard,
         onSelect: setSelectedCard,
       }
@@ -410,6 +426,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
         onUpdateQuantity: updateQuantity,
         onSetQuantity: setQuantity,
         onUpdateOwnedQty: updateOwnedQty,
+        onToggleIsOwned: toggleIsOwned,
         onRemove: removeCard,
         onSelect: setSelectedCard,
       };
