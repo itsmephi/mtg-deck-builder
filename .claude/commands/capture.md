@@ -12,8 +12,8 @@ Parse the input from $ARGUMENTS:
 - Multiple items can be separated by semicolons or newlines — add each as a separate line
 
 Steps:
-1. Read BACKLOG.md
-2. Find the `## Pipeline` section
+1. Grep BACKLOG.md for `## Pipeline` to get its line number, then read from that line to end of file. Do not read the full file.
+2. Confirm the `## Pipeline` section is located
 3. Append new line(s) at the end of the Pipeline section (before the next `---` or `##` heading):
    `- [ ] **label** | description`
 4. Save the file

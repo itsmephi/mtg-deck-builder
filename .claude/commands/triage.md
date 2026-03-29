@@ -6,8 +6,8 @@ allowed-tools: Read, Write, Edit, Bash(git *)
 Triage the BACKLOG.md Pipeline.
 
 Steps:
-1. Read BACKLOG.md in full
-2. Read CLAUDE.md for current version, active milestone, and project context
+1. Read BACKLOG.md with `limit: 30` from line 1 (Active Milestone), then Grep for `## Pipeline` to get its line number and read from there to end. Never read the full file in one call.
+2. Grep CLAUDE.md for `Active Milestone` and `Current Version`, then read ±5 lines around each match.
 3. For every item in the `## Pipeline` section, present a table with columns:
    - **#** (issue number if assigned, or "—")
    - **Item** (short description)
