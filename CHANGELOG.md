@@ -5,6 +5,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.19.1] — Rail Tab Switch Without Expand
+
+### Enhanced
+- **Collapsed sidebar rail**: Search and Decks icon buttons now switch the workspace tab without expanding the sidebar — only the expand arrow and background click open the full panel
+
+---
+
 ## [1.18.0] — Unified Qty/Owned Input
 
 ### Added

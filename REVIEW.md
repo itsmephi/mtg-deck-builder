@@ -2,6 +2,31 @@
 
 ---
 
+## v1.19.1 — Rail Tab Switch Without Expand
+Status: APPROVED ✅
+
+### Plan Review
+
+| File | Changes |
+|------|---------|
+| `src/components/layout/SidebarRail.tsx` | Add `onTabChange` prop; wire Search and Decks buttons to call it instead of `expandTo` |
+| `src/components/layout/Sidebar.tsx` | Pass `onTabChange` through to `SidebarRail` |
+
+### QA Checklist
+
+- [x] Collapse sidebar → click Search icon in rail → workspace switches to Search tab, sidebar stays collapsed
+- [x] Collapse sidebar → click Decks icon in rail → workspace switches to Deck view, sidebar stays collapsed
+- [x] Collapse sidebar → click PanelLeftOpen (expand arrow) → sidebar expands to current active tab as before
+- [x] Collapse sidebar → click rail background → sidebar expands as before
+- [x] Sidebar expanded — Search/Decks tab buttons work normally (unaffected)
+- [x] Refresh after collapsing — collapsed state persists; Search/Decks rail buttons still only switch tabs
+
+### Session Summary
+
+Detached the rail's Search and Decks buttons from the expand-sidebar action. Previously both buttons called `expandTo(tab)`, which expanded the sidebar and switched the tab. Now they call `onTabChange(tab)` directly — switching the workspace view without opening the panel. The expand arrow and background click retain the full expand behavior. This lets users quickly jump between Search and Deck views while keeping the sidebar collapsed.
+
+---
+
 ## v1.18.0 — Unified Qty/Owned Input
 Status: APPROVED ✅
 
