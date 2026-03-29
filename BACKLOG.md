@@ -35,6 +35,11 @@
 - [ ] **feature** | Custom card sorting by drag and drop (#16) ⚠️ needs design
 - [ ] **enhancement** | Search: back button to return to previous context ⚠️ needs design
 - [ ] **enhancement** | Import modal — add "Paste from clipboard" button as an alternative to typing/pasting manually
+- [ ] **chore** | Component header comments — add a one-line comment at the top of key components describing what they do, for Phi's orientation
+- [ ] **bug** | Price "N/A" fallback — cards showing N/A have a TCGPlayer price; fallback should attempt a lookup or show a more accurate placeholder
+- [ ] **enhancement** | Deck cycling from collapsed rail — clean way to switch between decks without expanding the sidebar ⚠️ needs design
+- [ ] **enhancement** | Tile size affects list view — zooming/tile size changes should scale list view row density or font size, not just grid
+- [ ] **bug** | Quick-search chips broken on first search — chips fail to apply correctly when used before any manual search has been run
 
 ---
 
