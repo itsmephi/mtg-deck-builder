@@ -1,9 +1,9 @@
-export const APP_VERSION = "1.19.1";
+export const APP_VERSION = "1.18.1";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
-  "1.19.1": [
+  "1.18.1": [
     "Enhancement: Collapsed sidebar rail — Search and Decks icon buttons now switch the workspace tab without expanding the sidebar; only the expand arrow and background click still open the full panel",
   ],
   "1.18.0": [

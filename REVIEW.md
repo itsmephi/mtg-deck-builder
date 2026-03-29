@@ -2,7 +2,7 @@
 
 ---
 
-## v1.19.1 — Rail Tab Switch Without Expand
+## v1.18.1 — Rail Tab Switch Without Expand
 Status: APPROVED ✅
 
 ### Plan Review
