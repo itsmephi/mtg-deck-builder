@@ -128,6 +128,42 @@ Run through this in full before marking a spec ready for implementation.
 
 ---
 
+## Prototype Governance
+
+### When to build a prototype
+
+Build one when the spec has unvalidated design decisions, complex animations, or new interaction patterns that need visual proof before implementation. Do not build one for straightforward behavior changes — a well-written spec is sufficient.
+
+### Format
+
+HTML + CSS only. No React, no Tailwind, no framework code. Prototypes are for validating visual targets and interaction feel — Claude Code implements in React/Tailwind independently and does not copy prototype code.
+
+### Annotation convention
+
+Every value Claude Code will need must be marked with an `IMPL:` comment. This allows Claude Code to Grep for all key values in a single call instead of reading the full file.
+
+```css
+/* IMPL: badge-bottom: calc(40% - 14px) — badge center sits on overlay top edge */
+/* IMPL: overlay-height: 40% — used for badge position calc */
+/* IMPL: animation: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) — badge slide-up */
+/* IMPL: badge-not-owned-bg: rgba(30, 28, 24, 0.95) */
+/* IMPL: badge-fully-owned-bg: rgba(74, 222, 128, 0.85) */
+```
+
+Label every annotated value clearly — what it controls and why it was chosen.
+
+### Prototype-to-spec handoff rule
+
+Every `IMPL:` value validated in the prototype must be explicitly carried into the spec with a concrete value. No "may need adjustment" notes in the spec — if the prototype settled it, the spec states it. Claude Code reads the spec as its source of truth, not the prototype.
+
+### What prototypes are not
+
+- Not a spec replacement — the spec still covers all behavior, states, and edge cases
+- Not production code — Claude Code does not copy or adapt prototype markup
+- Not a substitute for the design checklist — run the checklist against the spec, not the prototype
+
+---
+
 ## Final Sign-Off Gate
 
 Before submitting a spec for implementation, Claude Chat must run this:
