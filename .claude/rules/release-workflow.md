@@ -44,7 +44,13 @@ WIP commits are manual and on-demand. Use one when pausing mid-release: switchin
 
 5. **GitHub issues** — before building, confirm every Active Milestone item has a GitHub issue number. If any are missing, create the issue(s) and update BACKLOG.md with the number(s) first.
 
-6. Claude Code executes prompts in order. After completing ALL prompts (or after each major feature for large releases), proceed to the QA checkpoint.
+6. **File read efficiency (all phases):** Grep before reading. Never read a file in full when only a section is needed.
+   - Source files: Grep for the function/component name, then `Read` with `offset`/`limit` (±20 lines). Full read only when genuinely needed (first-time orientation, file-wide refactor).
+   - `BACKLOG.md`: Active Milestone is always at the top — `limit: 30` from line 1 covers it; never read the full file during plan or build.
+   - `CHANGELOG.md`: `limit: 10` to confirm format/current version — never read full history.
+   - `CLAUDE.md` / `REVIEW.md`: Grep for the target heading, then `Read` with `offset`/`limit` (±10 lines).
+
+7. Claude Code executes prompts in order. After completing ALL prompts (or after each major feature for large releases), proceed to the QA checkpoint.
 
 7. **QA Checkpoint** — Claude Code MUST write the QA checklist to REVIEW.md before pausing for testing. This is not optional.
 

@@ -40,6 +40,8 @@ Process documentation lives in `.claude/rules/` — Claude Code loads these on d
 
 **Claude Chat deliverable format:** a single design spec file committed to `docs/`. Claude Code reads the spec directly and implements — no separate prompt files.
 
+**Spec content rule:** Specs must be design-dense and pattern-reference-lean. Include: behavior (what the user sees/does), new state or types (only if introducing new data shapes), and non-obvious edge cases. Omit: existing patterns Claude Code can read from the repo, file structure descriptions, touch points (Claude Code finds these via Grep during `/plan`), and React/framework basics. A good spec describes *decisions* — not *how to code them*.
+
 Triage and milestone planning now run in Claude Code via `/triage`. After triage, take promoted items to Claude Chat for design if they need it.
 
 For straightforward bug fixes and small enhancements, `/plan` → PROCEED → build → QA → APPROVED → `/commit-release` can run entirely in Claude Code.

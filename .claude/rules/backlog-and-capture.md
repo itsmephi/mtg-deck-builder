@@ -66,7 +66,7 @@ Flags can combine: `-> promote -> high`
 
 ## Triage (via /triage)
 
-1. Claude Code reads **Pipeline only** (new/unflagged items) + any flagged items elsewhere
+1. Claude Code reads **Pipeline only** (new/unflagged items) + any flagged items elsewhere. Use targeted reads: Active Milestone is always near the top — `Read` with `limit: 30` from line 1 covers it. Grep for flagged items (`->`). Never read the full file.
 2. Applies all `->` flags automatically
 3. For unflagged Pipeline items, suggests milestone placement
 4. Presents summary table — Phi confirms or overrides
