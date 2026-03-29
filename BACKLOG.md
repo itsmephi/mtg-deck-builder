@@ -7,7 +7,6 @@
 ## Active Milestone
 
 ### v1.18.0 — Card Management
-- [ ] **enhancement** | Combine qty and owned fields into a single elegant input — two separate fields is redundant UX; design a unified interaction ⚠️ needs design
 - [ ] **enhancement** | Mark all cards as owned — quick action to set owned qty = deck qty for all cards in the deck ⚠️ needs design
 
 ### v1.19.0 — Search & Deck Polish

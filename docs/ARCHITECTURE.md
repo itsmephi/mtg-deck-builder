@@ -1,4 +1,4 @@
-<!-- Updated by Claude Code after each release. Last updated: v1.17.0 -->
+<!-- Updated by Claude Code after each release. Last updated: v1.18.0 -->
 
 # MTG Deck Builder — Architecture Reference
 
@@ -35,8 +35,8 @@ Living reference for file structure, state ownership, and key technical patterns
 |---|---|
 | `Workspace.tsx` | Active deck view; renders grid or list, sorts/groups cards, handles format-change dialog, triggers color identity backfill on Commander switch |
 | `WorkspaceToolbar.tsx` | Two-row toolbar above deck (row 1: name + format badge; row 2: stats + view controls + sort) |
-| `VisualCard.tsx` | Single grid tile; always-visible price badge (bottom-right, scales XS–XL); hover overlay with card name, type, qty controls, ownership counter, commander crown badge, warning indicator; `tileSize` prop drives badge sizing |
-| `ListCardTable.tsx` | Table view; column order: Qty, Owned, Name, Type, Mana, Price, ×; `table-fixed` prevents horizontal overflow |
+| `VisualCard.tsx` | Single grid tile; always-visible price badge (bottom-right, scales XS–XL); ownership badge at bottom-center animates to overlay-top on hover and becomes ✓ toggle (neutral/partial-green/full-green/warning-red); unified `[− owned +] / [− qty +]` row with progressive disclosure steppers; `tileSize` prop drives price badge sizing |
+| `ListCardTable.tsx` | Table view; column order: Owned (circle ✓ toggle) | Qty (X/Y steppers) | Name | Type | Mana | Price | ×; `table-fixed` prevents horizontal overflow |
 | `ImportModal.tsx` | Resolves a pending import into current deck or new deck |
 | `SearchWorkspace.tsx` | Search tab main area; assembles Scryfall query from format filter + NLP chip/query + sidebar filter syntax; owns autocomplete, set-match detection |
 | `SearchBar.tsx` | Search input with removable NLP token chips and autocomplete dropdown |
@@ -72,7 +72,7 @@ Living reference for file structure, state ownership, and key technical patterns
 
 | File | Responsibility |
 |---|---|
-| `index.ts` | `ScryfallCard`, `DeckCard` (extends ScryfallCard with `quantity`, `ownedQty`), `Deck` |
+| `index.ts` | `ScryfallCard`, `DeckCard` (extends ScryfallCard with `quantity`, `ownedQty`, `isOwned`), `Deck` |
 
 ---
 

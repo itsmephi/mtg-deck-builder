@@ -2,45 +2,125 @@
 
 ---
 
-## v1.17.1 — Partner Commander + Price Badge
+## v1.18.0 — Unified Qty/Owned Input
 Status: APPROVED ✅
 
 ### Plan Review
 
 | File | Changes |
 |------|---------|
-| `src/types/index.ts` | `commanderId` replaced with `commanderIds: string[]`; localStorage migration for existing single-commander decks |
-| `src/lib/formatRules.ts` | `getPartnerType()`, `canPartnerWith()` added; color identity updated to union of all commanders |
-| `src/hooks/useDeckManager.tsx` | Multi-commander state management; partner validation; commander pinning logic |
-| `src/hooks/useDeckImportExport.tsx` | Export two `// Commander:` lines for partner pairs; import handles multiple commander lines |
-| `src/components/layout/SampleHandModal.tsx` | All commanders excluded from library; library count reflects both exclusions |
-| `src/components/workspace/ListCardTable.tsx` | Red crown badge for invalid partner pairing (slot 2); both commanders pin to top |
-| `src/components/workspace/VisualCard.tsx` | Partner crown state machine (Set as Commander / Set as Partner); red crown for invalid pairs; `tileSize` prop + `PRICE_BADGE_SIZES` scale map; persistent price pill badge (bottom-right); deck overlay shows name + type above qty controls; search overlay drops price line |
-| `src/components/workspace/Workspace.tsx` | Pass `tileSize` to both VisualCard render sites |
-| `src/components/workspace/SearchWorkspace.tsx` | Pass `tileSize` to VisualCard in search results |
-| `src/config/version.ts` | Bump to `1.17.1`; add v1.17.1 and v1.16.0 changelog entries |
-| `.claude/rules/branch-workflow.md` | Added frontmatter (description, alwaysApply) |
-| `.claude/rules/release-workflow.md` | Clarified ≤3-file auto-proceed rule; added ARCHITECTURE.md review step |
+| `src/types/index.ts` | Add `isOwned: boolean` to `DeckCard` interface |
+| `src/hooks/useDeckManager.tsx` | `migrateDecks()` backfills `isOwned` from `ownedQty`; add `toggleIsOwned(cardId)` action; `updateOwnedQty` auto-sets `isOwned` based on new qty |
+| `src/components/workspace/VisualCard.tsx` | Unified overlay number row; qty badge at-rest + checkmark states; badge animates to overlay-top via measured height; stepper hover rollover; owned controls always enabled |
+| `src/components/workspace/ListCardTable.tsx` | Owned toggle column + qty X/Y column; owned controls always enabled; stepper hover rollover; price always neutral |
+| `src/components/workspace/Workspace.tsx` | Wire `toggleIsOwned` + `toggleSideboardIsOwned`; sideboard `updateOwnedQty` also auto-sets `isOwned` |
+| `src/components/workspace/SearchWorkspace.tsx` | Add `isOwned: false` to new card construction sites |
+| `src/hooks/useDeckImportExport.tsx` | Add `isOwned` backfill on import |
+| `src/config/version.ts` | Bump to `1.18.0`; add changelog entry |
+
+### QA Checklist (Initial + Patch)
+
+**Migration (existing decks)**
+- [x] Open app with a deck that already has `ownedQty > 0` cards — appear with green state
+- [x] Cards with `ownedQty = 0` appear with neutral state
+
+**Grid view — badge at rest**
+- [x] Not owned: dark neutral badge, white qty number
+- [x] Partially owned: solid dark green bg, white number, green border
+- [x] Fully owned: solid green bg, white number
+
+**Grid view — badge on card hover**
+- [x] Badge slides up and straddles overlay top edge (dynamically measured)
+- [x] Badge swaps to ✓ checkmark on hover
+- [x] Not-owned: muted dark ✓; badge hover → solid green bg + green ✓
+- [x] Fully-owned: solid green ✓; badge hover → solid red bg + red ✓
+- [x] Partially-owned: solid green bg ✓; badge hover → solid red bg + red ✓
+- [x] Clicking ✓ toggles owned (activates: fill qty; deactivates: clear to 0)
+- [x] Badge click does NOT open modal
+
+**Grid view — overlay unified number row**
+- [x] Steppers reveal on group hover; fade out when not hovering
+- [x] Owned controls always enabled (no isOwned gate) — increment from 0 auto-activates
+- [x] Decrement owned to 0 auto-deactivates (ownedQty=0 → isOwned=false)
+- [x] Stepper buttons have hover rollover (brighter border, white text, subtle fill)
+- [x] Owned number: dark gray when 0; muted when partial; green when fully owned
+- [x] Qty number: white normally; red when over copy limit
+- [x] Inline click-to-edit works for both numbers
+
+**Grid view — price badge**
+- [x] Price badge stays visible when overlay is open
+- [x] Price badge always neutral (white/muted)
+
+**List view — Owned column**
+- [x] Column order: Owned (toggle) | Qty (X/Y) | Name | Type | Mana | Price | ×
+- [x] Not-owned toggle: invisible at rest, appears on row hover
+- [x] Owned toggle: always visible green
+- [x] Clicking toggle marks/unmarks correctly
+
+**List view — Qty column**
+- [x] At rest: `ownedQty / quantity` numbers + slash
+- [x] Row hover: owned + qty steppers appear
+- [x] Owned controls always enabled; increment from 0 auto-activates
+- [x] Stepper buttons have hover rollover
+- [x] Over-copy-limit tooltip works
+- [x] Price cell always neutral
+
+**General**
+- [x] No console errors on load
+- [x] Sideboard toggle works
+
+### QA Notes (Round 2 — patch issues)
+- perfect implementation
+- toggling owned resets back to qty when owned counter is higher or lower than qty. eg 5/4 -> owned toggle -> 4/4; owned counter should be retained regardless of state; it should only reset to qty on first toggle
+- straddling looks good but encroaches on the title and type
+- list view column title clips together. qty label should be right above the x/y column
+- list view owned doesn't have same visual states as grid view
+
+### Carry-Forward Fixes Applied
+
+| File | Fix |
+|------|-----|
+| `src/hooks/useDeckManager.tsx` | `toggleIsOwned` retains `ownedQty` on deactivation; only fills to qty on first activation (ownedQty=0) |
+| `src/components/workspace/Workspace.tsx` | `toggleSideboardIsOwned` same retain logic |
+| `src/components/workspace/VisualCard.tsx` | Overlay padding `py-2.5` → `pt-3.5 pb-2.5` so badge straddle stays within padding area |
+| `src/components/workspace/ListCardTable.tsx` | Owned column `<th>` emptied (no clipping); toggle has 3 states matching grid (not-owned/partial/full + hover red) |
+
+### QA Checklist (Carry-Forward)
+
+**Toggle retain behavior**
+- [ ] Card at 5/4: toggle off → badge shows 0 state (not owned), counter retains 4 (verify on re-toggle: comes back as 4/4)
+- [ ] Card at 0 owned: toggle on → fills to full qty
+- [ ] Card at 2/4 (partial): toggle off → not owned; toggle on → returns to 2/4
+
+**Grid overlay padding**
+- [ ] Badge straddles overlay top edge without encroaching on card name or type text
+
+**List view headers**
+- [ ] Owned column header is blank (no clipping text)
+- [ ] Qty header sits directly above the X/Y column
+
+**List view toggle states**
+- [ ] Not owned (at rest): transparent/hidden
+- [ ] Not owned (row hover): faint green hint appears
+- [ ] Partially owned: dark green bg, green border, white ✓ — always visible
+- [ ] Fully owned: solid green bg, white ✓ — always visible
+- [ ] Owned + hover: red warning bg/border/✓
+
+### QA Notes (Round 3 — carry-forward)
+- badge on static state doesn't turn red for the exceeding limit rules
+- marking unowned should still dim out the counter and update the totals
+- cases where violations occurred and we have owned cards — green shade and red text conflict on badge
 
 ### Session Summary
 
-**What shipped (v1.16.0 — Partner Commander):**
+**Core feature:** Added `isOwned: boolean` to `DeckCard`. Replaced separate qty stepper + owned counter rows in the grid overlay with a unified `[− owned +] / [− qty +]` number row (progressive disclosure, steppers reveal on group hover). Redesigned the qty badge: rests at bottom-center with ownership-aware color (neutral/partial-green/full-green); animates to overlay-top on card hover and becomes a ✓ ownership toggle. Restructured list view columns to Owned (circle toggle) | Qty (X/Y steppers) | Name | Type | Mana | Price | ×.
 
-- **`src/types/index.ts`** — `commanderId: string | null` replaced with `commanderIds: string[]` (max 2); localStorage migration converts existing single-commander decks on load
-- **`src/lib/formatRules.ts`** — `getPartnerType(card)` detects Partner, Partner With [name], Friends Forever via Scryfall `keywords` array (falls back to `oracle_text`); `canPartnerWith(a, b)` validates all pairing combinations
-- **`src/hooks/useDeckManager.tsx`** — Multi-commander add/remove, partner validation, color identity computed as union of all commanders
-- **`src/hooks/useDeckImportExport.tsx`** — Import/export handles multiple `// Commander:` lines; backward compatible with single-commander files
-- **`src/components/layout/SampleHandModal.tsx`** — All commanders excluded from library; library count updated
-- **`src/components/workspace/ListCardTable.tsx`** — Red crown + amber `!` for invalid partner in list view; both commanders pin to top with divider below both
-- **`src/components/workspace/VisualCard.tsx`** — Crown state machine: "Set as Commander" (replace) or "Set as Partner" (add to slot 2) based on partner ability detection; red crown badge (`bg-red-500`) for incompatible pairings
-
-**What shipped (v1.17.1 — Price Badge):**
-
-- **`src/components/workspace/VisualCard.tsx`** — `PRICE_BADGE_SIZES` lookup table (XS→XL font/padding/position); price pill outside `overflow:hidden` at bottom-right with `z-[22]`, `backdrop-filter: blur(8px)`, `opacity-0` on group-hover; deck overlay updated with card name (`text-xs font-semibold`) and type line (`text-[10px]`) above qty controls; search overlay price `<span>` removed
-- **`src/components/workspace/Workspace.tsx`** — `tileSize={tileSize}` passed to both VisualCard sites
-- **`src/components/workspace/SearchWorkspace.tsx`** — `tileSize={tileSize}` passed to VisualCard in search results
-- **`src/config/version.ts`** — Bumped to `1.17.1`; v1.17.1 and v1.16.0 changelog entries added
-- **`CLAUDE.md`** — Version bumped to v1.17.1; Active Milestone updated to v1.18.0
+**Carry-forward fixes (3 rounds of QA):**
+- `toggleIsOwned` now retains `ownedQty` on deactivation; only fills to qty on first activation (ownedQty=0); re-activation restores prior count
+- Overlay top padding increased (`pt-3.5`) so badge straddle doesn't encroach on card name/type
+- List column header emptied (no overflow text); toggle has 3 states matching grid badge
+- `ownedNumColor` dims when `isOwned=false`; `ownershipRatio` gates on `isOwned`; `useDeckStats` `remainingCost` and buy-list functions use `isOwned ? ownedQty : 0`
+- Warning state (format violations, over copy limit) overrides badge to neutral dark bg + red border + red text — no green/red conflict when card is both owned and invalid
 
 ---
 

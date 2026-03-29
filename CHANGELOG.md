@@ -5,6 +5,28 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.18.0] — Unified Qty/Owned Input
+
+### Added
+- **`isOwned` flag on DeckCard**: boolean tracks whether ownership is actively being counted for a card; separate from `ownedQty` (which retains its value when toggled off for easy re-activation)
+- **Ownership toggle badge**: qty badge at bottom-center of grid tiles now animates to overlay-top on card hover and becomes a ✓ toggle — click to mark/unmark owned; badge colors reflect state (neutral / partial-green / full-green / warning-red)
+- **Unified overlay number row**: single `[− owned +] / [− qty +]` row replaces separate stepper rows; each group's buttons reveal on hover (progressive disclosure); owned controls always enabled (incrementing from 0 auto-activates ownership)
+- **List view ownership column**: circle ✓ toggle with 3 states (not-owned hidden at rest, partial dark-green, full solid-green); hover on any owned state → red warning for easy unmark
+
+### Enhanced
+- **Toggle retain behavior**: toggling owned off retains `ownedQty` so re-activation restores the prior count; only first-time activation (qty=0) fills to deck quantity
+- **Warning badge**: grid tile badge shows neutral dark bg + red border + red number when any format violation exists (copy limit exceeded, commander color identity, singleton rule) — resolves green/red conflict when card is both owned and invalid
+- **Remaining cost accuracy**: `useDeckStats` `remainingCost` and TCGPlayer/CardKingdom buy lists now use `isOwned ? ownedQty : 0` — toggling off ownership correctly restores the card's full cost to the "remaining to buy" total
+- **Owned counter dimming**: when `isOwned=false`, the ownedQty number in the overlay and list view shows as disabled/dim even if the value is non-zero internally
+
+### Technical
+- `DeckCard.isOwned: boolean` added to `src/types/index.ts`
+- `migrateDecks()` backfills `isOwned` from `ownedQty > 0` for existing decks; `isOwned: false` added to all new card construction sites in `SearchWorkspace.tsx` and `useDeckImportExport.tsx`
+- `toggleIsOwned(cardId)` action in `useDeckManager`; `toggleSideboardIsOwned` mirrors the same logic in `Workspace.tsx`
+- `updateOwnedQty` auto-sets `isOwned = newQty > 0` so stepper/inline-edit paths don't require a separate toggle
+
+---
+
 ## [1.17.1] — Price Badge on Card Tiles
 
 ### Enhanced
