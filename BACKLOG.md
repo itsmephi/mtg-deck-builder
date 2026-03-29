@@ -7,7 +7,6 @@
 ## Active Milestone
 
 ### v1.18.0 — Card Management
-- [ ] **enhancement** | Mark all cards as owned — quick action to set owned qty = deck qty for all cards in the deck ⚠️ needs design
 
 ### v1.19.0 — Search & Deck Polish
 - [ ] **enhancement** | Search: list view toggle for search results — grid/list toggle in search toolbar, list view mirrors sidebar search list but wider ⚠️ needs design
