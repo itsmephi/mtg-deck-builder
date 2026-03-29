@@ -66,7 +66,7 @@ Labels: bug · feature · enhancement · chore · high · med · low
 - REVIEW.md: live session journal. Never committed mid-session. Committed at session end alongside CLAUDE.md, CHANGELOG.md, BACKLOG.md.
 - Plan Review: Claude Code outputs plan table to REVIEW.md before touching files, waits for PROCEED.
 - One active machine per Claude Code session — git commit is the handoff. Always git pull before starting, git push after.
-- Claude Code allowedTools whitelist: Bash(git *) and Bash(npm *). Intentional.
+- Claude Code allowedTools: Read, Edit, Write, Glob, Grep, Bash(git *), Bash(npm *) — all auto-approved, no prompt gates during implementation.
 - Never prepend cd to git or npm commands — already in the project root.
 - Design before build, always. No prompt generation until design is fully signed off.
 - Safe handoff: every Claude Code prompt must leave the app in a stable, testable state. No prompt should introduce known regressions that require the next prompt to fix. Only `/commit-release` merges to main.
