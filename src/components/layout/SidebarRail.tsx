@@ -8,6 +8,7 @@ import { DeckFormat } from "@/lib/formatRules";
 
 interface Props {
   expandTo: (tab: "search" | "decks") => void;
+  onTabChange: (tab: "search" | "decks") => void;
   activeTab: "search" | "decks";
   onOpenSettings: (tab: "preferences" | "whatsnew" | "about" | "support") => void;
   onGoHome: () => void;
@@ -22,7 +23,7 @@ function RailTooltip({ label }: { label: string }) {
   );
 }
 
-export default function SidebarRail({ expandTo, activeTab, onOpenSettings, onGoHome, isOnHomeScreen }: Props) {
+export default function SidebarRail({ expandTo, onTabChange, activeTab, onOpenSettings, onGoHome, isOnHomeScreen }: Props) {
   const { createNewDeck, setDeckViewMode } = useDeckManager();
   const [railPickerOpen, setRailPickerOpen] = useState(false);
   const railPickerRef = useRef<HTMLDivElement>(null);
@@ -81,7 +82,7 @@ export default function SidebarRail({ expandTo, activeTab, onOpenSettings, onGoH
       {/* Search */}
       <div className="group relative flex items-center">
         <button
-          onClick={(e) => { e.stopPropagation(); expandTo("search"); }}
+          onClick={(e) => { e.stopPropagation(); onTabChange("search"); }}
           className="w-9 h-9 rounded-full flex items-center justify-center text-content-muted hover:text-content-primary hover:bg-surface-raised transition-colors"
         >
           <Search className="w-4 h-4" />
@@ -92,7 +93,7 @@ export default function SidebarRail({ expandTo, activeTab, onOpenSettings, onGoH
       {/* Decks */}
       <div className="group relative flex items-center">
         <button
-          onClick={(e) => { e.stopPropagation(); expandTo("decks"); }}
+          onClick={(e) => { e.stopPropagation(); onTabChange("decks"); }}
           className="w-9 h-9 rounded-full flex items-center justify-center text-content-muted hover:text-content-primary hover:bg-surface-raised transition-colors"
         >
           <Layers className="w-4 h-4" />

@@ -75,7 +75,7 @@ export default function Sidebar({ onImport, onExport, isImporting, activeTab, on
       }
     >
       {isCollapsed ? (
-        <SidebarRail expandTo={expandTo} activeTab={activeTab} onOpenSettings={onOpenSettings} onGoHome={onGoHome} isOnHomeScreen={isOnHomeScreen} />
+        <SidebarRail expandTo={expandTo} onTabChange={onTabChange} activeTab={activeTab} onOpenSettings={onOpenSettings} onGoHome={onGoHome} isOnHomeScreen={isOnHomeScreen} />
       ) : (
         <div className="flex flex-col h-full min-w-0">
           {/* Tab bar */}

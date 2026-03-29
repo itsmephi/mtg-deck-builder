@@ -1,8 +1,11 @@
-export const APP_VERSION = "1.18.0";
+export const APP_VERSION = "1.19.1";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.19.1": [
+    "Enhancement: Collapsed sidebar rail — Search and Decks icon buttons now switch the workspace tab without expanding the sidebar; only the expand arrow and background click still open the full panel",
+  ],
   "1.18.0": [
     "Enhancement: Unified qty/owned input — deck grid overlay replaces separate qty stepper + owned counter rows with a single '− owned + / − qty +' number row; each group's steppers reveal on hover (progressive disclosure)",
     "Enhancement: Qty/owned badge redesign — persistent bottom-center badge now encodes ownership state via color (dark neutral = not owned; dark + green border = partial; solid green = fully owned); badge animates to overlay-top on card hover and becomes a ✓ toggle button (mark/unmark as owned)",
