@@ -30,5 +30,15 @@ Any spec touching row or cell backgrounds must explicitly address:
 - Hover state coexistence
 - Layering with existing styles
 
+## Multi-State & Cross-Feature Checklist
+Run these for any feature that introduces new visual states or touches shared UI elements:
+
+- [ ] **Intersection states:** For every new visual state on a shared element (badge, row, cell), define what the element looks like when this new state AND each existing state (warning, violation, error, disabled) are active simultaneously. Define precedence explicitly — which state wins?
+- [ ] **Cross-view state parity:** If this feature appears in grid, list, and/or modal — write out the full state table for EACH view. "Same as grid" is not sufficient. Every view gets its own explicit table.
+- [ ] **Visual consequence chain:** For each state change, list ALL visual effects — not just the interactive controls, but also: number/text colors, stat totals, derived values, other panels that read from this state.
+- [ ] **"What's NOT changing" cross-check:** For each item declared out of scope, ask: does the new feature visually or behaviorally overlap with it? If yes, move it into scope and spec the interaction.
+- [ ] **Unvalidated design decisions:** Any decision that could reasonably go either way (locked vs. always-enabled, color A vs. color B) must be flagged for prototype validation before the spec is finalized — not left to QA discovery.
+- [ ] **State transition table for non-obvious toggles:** Any toggle with more than two outcomes (first activation / deactivation / re-activation) must be expressed as a table, not prose. Prose is easy to misread during implementation.
+
 ## Bug Spec Rule
 For bug specs where the issue title describes unwanted behavior, Claude Chat must explicitly confirm intended behavior before writing the spec — never assume the fix direction from the title alone.
