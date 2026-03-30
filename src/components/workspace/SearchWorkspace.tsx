@@ -10,6 +10,7 @@ import { useDeckManager } from "@/hooks/useDeckManager";
 import SearchBar from "./SearchBar";
 import SearchTakeover from "./SearchTakeover";
 import VisualCard from "./VisualCard";
+import SearchListTable from "./SearchListTable";
 import CardModal from "@/components/layout/CardModal";
 import { FilterState, buildSidebarFilterSyntax } from "@/components/layout/FilterPanel";
 import TileSizeSlider from "./TileSizeSlider";
@@ -80,7 +81,14 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
   const searchInputRef = useRef<HTMLInputElement>(null);
   const suppressAutocompleteRef = useRef(false);
 
-  const { activeDeck, updateActiveDeck, setLastAddedId, deckViewMode } = useDeckManager();
+  const { activeDeck, updateActiveDeck, setLastAddedId, deckViewMode, showThumbnail } = useDeckManager();
+
+  const VIEW_MODE_KEY = "mtg-search-view-mode";
+  const [viewMode, setViewModeState] = useState<"grid" | "list">("grid");
+  const setViewMode = (mode: "grid" | "list") => {
+    setViewModeState(mode);
+    localStorage.setItem(VIEW_MODE_KEY, mode);
+  };
 
   // Derived: parse the raw query into tokens + scryfall syntax
   const parsed = useMemo(() => parseSearchQuery(query), [query]);
@@ -134,11 +142,13 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
     [activeDeck?.cards]
   );
 
-  // Initialize filterActive and sortDir from localStorage on mount
+  // Initialize filterActive, sortDir, and viewMode from localStorage on mount
   useEffect(() => {
     setFilterActive(readFilterActive(activeDeck?.id));
     const storedDir = localStorage.getItem(SORT_DIR_KEY);
     if (storedDir === "asc" || storedDir === "desc") setSortDirState(storedDir);
+    const storedView = localStorage.getItem(VIEW_MODE_KEY);
+    if (storedView === "grid" || storedView === "list") setViewModeState(storedView);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -417,18 +427,29 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
                   </span>
                 </div>
               </div>
-              <TileSizeSlider activeStop={tileSize} onChangeStop={onTileSizeChange} />
+              <div className={viewMode === "list" ? "opacity-30 pointer-events-none" : ""}>
+                <TileSizeSlider activeStop={tileSize} onChangeStop={onTileSizeChange} />
+              </div>
               <div className="w-px self-stretch bg-surface-raised mx-0.5" />
               <button
-                className="h-full px-2 flex items-center justify-center rounded-md bg-surface-raised text-content-primary border border-neutral-700/50 transition-all"
+                onClick={() => setViewMode("grid")}
+                className={`h-full px-2 flex items-center justify-center rounded-md border transition-all ${
+                  viewMode === "grid"
+                    ? "bg-surface-raised text-content-primary border-neutral-700/50"
+                    : "text-content-tertiary border-transparent hover:text-content-primary"
+                }`}
                 title="Grid view"
               >
                 <LayoutGrid className="w-3.5 h-3.5" />
               </button>
               <button
-                className="h-full px-2 flex items-center justify-center rounded-md text-content-disabled border border-transparent cursor-not-allowed"
-                title="List view (coming soon)"
-                disabled
+                onClick={() => setViewMode("list")}
+                className={`h-full px-2 flex items-center justify-center rounded-md border transition-all ${
+                  viewMode === "list"
+                    ? "bg-surface-raised text-content-primary border-neutral-700/50"
+                    : "text-content-tertiary border-transparent hover:text-content-primary"
+                }`}
+                title="List view"
               >
                 <List className="w-3.5 h-3.5" />
               </button>
@@ -457,7 +478,17 @@ export default function SearchWorkspace({ isActive, activeChipQuery, onDeactivat
           </div>
         )}
 
-        {!isLoading && results.length > 0 && (
+        {!isLoading && results.length > 0 && viewMode === "list" && (
+          <SearchListTable
+            cards={results}
+            deckCardNames={deckCardNames}
+            onAdd={handleAdd}
+            onSelect={setSelectedCard}
+            showThumbnail={showThumbnail}
+          />
+        )}
+
+        {!isLoading && results.length > 0 && viewMode === "grid" && (
           <div
             className="p-3.5"
             style={{
