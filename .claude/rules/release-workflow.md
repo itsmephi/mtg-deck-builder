@@ -42,6 +42,8 @@ WIP commits are manual and on-demand. Use one when pausing mid-release: switchin
    | 8+ | — | Sync REVIEW.md to Claude Chat for cross-check before PROCEED |
    | Any | Yes | Sync REVIEW.md to Claude Chat for cross-check before PROCEED |
 
+   **Exception — Claude Chat spec provided:** If a spec file from Claude Chat exists in `docs/` for this feature, the design review is already complete. The PROCEED gate is waived regardless of complexity tier — do not ask for a second Claude Chat sync. Phi typing PROCEED (or saying "implement") is sufficient.
+
 5. **GitHub issues** — before building, confirm every Active Milestone item has a GitHub issue number. If any are missing, create the issue(s) and update BACKLOG.md with the number(s) first.
 
 6. **File read efficiency (all phases):** Grep before reading. Never read a file in full when only a section is needed.

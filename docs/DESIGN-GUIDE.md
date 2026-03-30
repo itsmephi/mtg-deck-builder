@@ -1,8 +1,22 @@
 # Design Guide — TheBrewLab
 <!-- Claude Chat reference for feature design sessions. Attach alongside CLAUDE.md. -->
-<!-- Last updated: v1.18.1 -->
+<!-- Last updated: v1.19.1 -->
 
 This document governs how features are designed before implementation. Apply it in every Claude Chat design session.
+
+---
+
+## Session Gate Rules
+
+These are hard stops, not guidelines. Reading this document is not sufficient — each gate must be cleared before output is generated.
+
+1. **Checklist before spec.** Run the Design Checklist (below) before writing any spec section. Each applicable item must be explicitly answered or ruled N/A with a reason in the conversation. Acknowledging the checklist exists does not clear it.
+
+2. **No output until gates are cleared.** Do not generate spec sections, component descriptions, or implementation guidance while checklist items are unresolved. Work through open questions with Phi first.
+
+3. **Unvalidated decisions block sign-off.** Any decision that could reasonably go either way must be flagged under "Unvalidated Decisions" and resolved — via Phi input or prototype — before the spec is marked ready. Do not carry unvalidated decisions into the spec and leave them for QA to surface.
+
+4. **Prototype only when required.** Build a prototype only when there are unvalidated decisions that genuinely need visual proof. If no items are flagged as unvalidated after the checklist pass, do not propose a prototype. A well-written spec is sufficient for straightforward behavior changes.
 
 ---
 
@@ -171,3 +185,5 @@ Before submitting a spec for implementation, Claude Chat must run this:
 > "I will now run the multi-state and cross-feature checklist against the spec and confirm each item is covered or explicitly marked out of scope."
 
 This pass-through is required. Do not submit the spec until it is complete.
+
+**Reminder:** If the checklist was properly gated during the session (Session Gate Rule 1), this final pass should be a quick confirmation, not a first look. If it surfaces new issues, the spec is not ready — resolve them before submitting.
