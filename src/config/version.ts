@@ -1,8 +1,11 @@
-export const APP_VERSION = "1.18.1";
+export const APP_VERSION = "1.19.0";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.19.0": [
+    "Enhancement: Search list view — grid/list toggle in the search toolbar renders results as a color-tinted table with dedicated 'Own' indicator column, mana symbols, hover-reveal add button, and cursor-follow card thumbnail; view choice persists across sessions",
+  ],
   "1.18.1": [
     "Enhancement: Collapsed sidebar rail — Search and Decks icon buttons now switch the workspace tab without expanding the sidebar; only the expand arrow and background click still open the full panel",
   ],
