@@ -5,6 +5,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.19.1] — Search List View Fixes
+
+### Fixed
+- **Hydration mismatch warning**: added `suppressHydrationWarning` to `<html>` in `layout.tsx` — pre-hydration theme script sets `data-theme` before React hydrates, causing an expected but noisy mismatch
+- **Own column spacing**: widened Own column (`w-5 px-1` → `w-8 px-2`) so the green dot and Name text read as clearly separate columns
+
+---
+
 ## [1.19.0] — Search List View
 
 ### Added
