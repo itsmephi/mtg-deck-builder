@@ -1,4 +1,4 @@
-<!-- Updated by Claude Code after each release. Last updated: v1.18.0 -->
+<!-- Updated by Claude Code after each release. Last updated: v1.19.0 -->
 
 # MTG Deck Builder — Architecture Reference
 
@@ -38,7 +38,8 @@ Living reference for file structure, state ownership, and key technical patterns
 | `VisualCard.tsx` | Single grid tile; always-visible price badge (bottom-right, scales XS–XL); ownership badge at bottom-center animates to overlay-top on hover and becomes ✓ toggle (neutral/partial-green/full-green/warning-red); unified `[− owned +] / [− qty +]` row with progressive disclosure steppers; `tileSize` prop drives price badge sizing |
 | `ListCardTable.tsx` | Table view; column order: Owned (circle ✓ toggle) | Qty (X/Y steppers) | Name | Type | Mana | Price | ×; `table-fixed` prevents horizontal overflow |
 | `ImportModal.tsx` | Resolves a pending import into current deck or new deck |
-| `SearchWorkspace.tsx` | Search tab main area; assembles Scryfall query from format filter + NLP chip/query + sidebar filter syntax; owns autocomplete, set-match detection |
+| `SearchWorkspace.tsx` | Search tab main area; assembles Scryfall query from format filter + NLP chip/query + sidebar filter syntax; owns autocomplete, set-match detection, grid/list `viewMode` (persisted to `mtg-search-view-mode`) |
+| `SearchListTable.tsx` | List view for search results; color-tinted rows, hover-reveal + add button, "Own" column (green dot), mana symbols, cursor-follow thumbnail |
 | `SearchBar.tsx` | Search input with removable NLP token chips and autocomplete dropdown |
 | `TileSizeSlider.tsx` | Tile size snap slider popover (XS / S / M / L / XL) |
 | `SearchTakeover.tsx` | Empty-deck-aware search overlay with autofocus and quick-tag buttons |
@@ -118,6 +119,7 @@ All deck data lives here. Persists to `localStorage` via `useEffect` watchers ga
 | `mtg-tile-size` | `"xs" \| "s" \| "m" \| "l" \| "xl"` | `page.tsx` / `gridConfig` |
 | `mtg-search-filter-active-{deckId}` | `"true" \| "false"` — per-deck key; absent = false | `SearchWorkspace` |
 | `mtg-search-sort-direction` | `"asc" \| "desc"` | `SearchWorkspace` |
+| `mtg-search-view-mode` | `"grid" \| "list"` | `SearchWorkspace` |
 | `mtg-theme` | `"zed-dark"` or absent (Warm Stone) | `SettingsView` / `layout.tsx` |
 | `mtg-last-backup` | ISO 8601 timestamp of last backup | `SettingsView` |
 

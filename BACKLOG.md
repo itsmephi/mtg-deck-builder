@@ -9,7 +9,6 @@
 ### v1.18.0 — Card Management
 
 ### v1.19.0 — Search & Deck Polish
-- [ ] **enhancement** | Search: list view toggle for search results — grid/list toggle in search toolbar, list view mirrors sidebar search list but wider ⚠️ needs design
 - [ ] **enhancement** | Search: highlight newly added cards on deck view switch — when returning to deck view after adding cards from search, briefly highlight or scroll to new cards ⚠️ needs design
 - [ ] **enhancement** | Copy card name to clipboard — click card name in modal to copy ⚠️ needs design
 - [ ] **enhancement** | Undo for destructive actions — toast with Undo for card delete and deck delete

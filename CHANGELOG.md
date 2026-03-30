@@ -5,6 +5,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.19.0] — Search List View
+
+### Added
+- **Search list view toggle**: grid/list view buttons in search toolbar; list view renders results as a color-tinted table (`SearchListTable`) with dedicated "Own" column (green dot), mana symbol rendering, hover-reveal + add button with tooltip, and cursor-follow thumbnail (controlled by Show Thumbnail preference)
+- **`mtg-search-view-mode` localStorage key**: persists grid/list choice across sessions
+- **`TileSizeSlider` disables in list mode**: visually dimmed with `opacity-30` and `pointer-events-none`
+
+---
+
 ## [1.18.1] — Rail Tab Switch Without Expand
 
 ### Enhanced
