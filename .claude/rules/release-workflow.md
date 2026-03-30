@@ -89,10 +89,17 @@ WIP commits are manual and on-demand. Use one when pausing mid-release: switchin
 
 8. Phi tests, checks off items in REVIEW.md, adds notes for any issues found. When complete, Phi types APPROVED in Claude Code.
 
-9. Before writing the session summary, update the REVIEW.md status header from IN PROGRESS to APPROVED ✅. Then Claude Code writes session summary to REVIEW.md and commits:
+9. Before writing the session summary, update the REVIEW.md status header from IN PROGRESS to APPROVED ✅. Then Claude Code writes session summary to REVIEW.md and commits in this order:
+
+   **Step A — commit source files first** (if not already committed via WIP commits):
+   - Run `git status --short` to identify any uncommitted `src/` or `docs/` changes
+   - If any exist: `git add src/ docs/vX.X.X-*-spec.md && git commit -m "feat: vX.X.X description - Closes #N"`
+   - Source must be committed before session files. Never batch source + session files in one commit.
+
+   **Step B — update and commit session files:**
    - `vX.X.X - description - Closes #N, Closes #N`
    - Review `docs/ARCHITECTURE.md` — update the component tree, state ownership, localStorage keys, or pattern notes if anything changed this release. Update the `<!-- Last updated: vX.X.X -->` header at the top.
-   - `git add CLAUDE.md CHANGELOG.md REVIEW.md BACKLOG.md && git commit -m "update CLAUDE.md, CHANGELOG.md, REVIEW.md, and BACKLOG.md post vX.X.X"`
+   - `git add CLAUDE.md CHANGELOG.md REVIEW.md BACKLOG.md docs/ARCHITECTURE.md && git commit -m "update CLAUDE.md, CHANGELOG.md, REVIEW.md, and BACKLOG.md post vX.X.X"`
 
    **File read efficiency (post-APPROVE):** Use Grep to find version strings and section headings before reading. Never read full files when only a section is needed:
    - `CHANGELOG.md` — read only the top 10 lines to confirm format; never the full history
