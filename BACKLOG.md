@@ -11,8 +11,8 @@
 ### v1.19.0 — Search & Deck Polish
 - [ ] **enhancement** | Search: highlight newly added cards on deck view switch — when returning to deck view after adding cards from search, briefly highlight or scroll to new cards ⚠️ needs design
 - [ ] **enhancement** | Copy card name to clipboard — click card name in modal to copy ⚠️ needs design
-- [ ] **enhancement** | Undo for destructive actions — toast with Undo for card delete and deck delete
-- [ ] **enhancement** | CardModal art swap: option to confirm swap or add as new card instead ⚠️ needs design
+- [ ] **enhancement** | Undo for destructive actions — toast with Undo for card delete and deck delete -> 2.0
+- [ ] **enhancement** | CardModal art swap: option to confirm swap or add as new card instead ⚠️ needs design ->v2.0
 
 ### v1.20.0 — Home & Onboarding
 - [ ] **feature** | Home screen as persistent hub — recent activity, deck stats, quick-resume last deck ⚠️ needs design
@@ -39,6 +39,8 @@
 - [ ] **enhancement** | Deck cycling from collapsed rail — clean way to switch between decks without expanding the sidebar ⚠️ needs design
 - [ ] **enhancement** | Tile size affects list view — zooming/tile size changes should scale list view row density or font size, not just grid
 - [ ] **bug** | Quick-search chips broken on first search — chips fail to apply correctly when used before any manual search has been run
+- [ ] The card "opt" should be the first in the search
+- [ ] Adding a art swap variant from search to deck doesn't actually add that variant properly
 
 ---
 
