@@ -42,6 +42,9 @@
 - [ ] prices on the card should be color coded depending on price from low to high. white, green, gold, purple
 - [ ] Rethink search or add a card with Claude Chat
 - [ ] figure out how to remove the mtg server on 3000
+• prices on the card should be color coded depending on price from low to high. white, green, gold, purple
+• Rethink search or add a card with Claude Chat
+• figure out how to remove the mtg server on 3000
 
 ---
 
