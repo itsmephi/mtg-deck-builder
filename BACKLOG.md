@@ -39,7 +39,7 @@
 - [ ] **enhancement** | Deck cycling from collapsed rail — clean way to switch between decks without expanding the sidebar ⚠️ needs design
 - [ ] **enhancement** | Tile size affects list view — zooming/tile size changes should scale list view row density or font size, not just grid
 - [ ] **bug** | Quick-search chips broken on first search — chips fail to apply correctly when used before any manual search has been run
-- [ ] • prices on the card should be color coded depending on price from low to high. white, green, gold, purple
+- [ ] prices on the card should be color coded depending on price from low to high. white, green, gold, purple
 - [ ] Rethink search or add a card with Claude Chat
 - [ ] figure out how to remove the mtg server on 3000
 
