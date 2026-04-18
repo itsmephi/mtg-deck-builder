@@ -106,6 +106,31 @@ export async function backfillColorIdentity(cards: DeckCard[]): Promise<DeckCard
   );
 }
 
+// Throws on network error (unlike searchCards which swallows errors) — used by TCGPlayer drop pipeline
+export async function searchCardsForDrop(query: string): Promise<ScryfallCard[]> {
+  if (!query) return [];
+  const res = await fetch(
+    `${SCRYFALL_BASE}/cards/search?q=${encodeURIComponent(query)}`,
+    { headers: HEADERS },
+  );
+  if (!res.ok) return [];
+  const data = await res.json();
+  return data.data || [];
+}
+
+export async function lookupCardFuzzy(name: string): Promise<ScryfallCard | null> {
+  try {
+    const res = await fetch(
+      `${SCRYFALL_BASE}/cards/named?fuzzy=${encodeURIComponent(name)}`,
+      { headers: HEADERS },
+    );
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
 export async function autocompleteCards(query: string): Promise<string[]> {
   if (query.length < 2) return [];
   try {

@@ -7,7 +7,7 @@ import {
   useContext,
   ReactNode,
 } from "react";
-import { Deck, DeckCard } from "@/types";
+import { Deck, DeckCard, ScryfallCard } from "@/types";
 import { DeckFormat } from "@/lib/formatRules";
 
 const STORAGE_KEY = "mtg_builder_decks";
@@ -75,6 +75,9 @@ interface DeckContextType {
   setSortBy: (by: SortBy) => void;
   sortDir: SortDir;
   setSortDir: (dir: SortDir) => void;
+  createNamedDeck: (name: string, format?: DeckFormat) => string;
+  addCardToSpecificDeck: (deckId: string, card: ScryfallCard, pool: "main" | "sideboard") => void;
+  removeCardFromDeckById: (deckId: string, cardId: string, pool: "main" | "sideboard", decrementOnly: boolean) => void;
 }
 
 const DeckContext = createContext<DeckContextType | null>(null);
@@ -252,6 +255,62 @@ export function DeckProvider({ children }: { children: ReactNode }) {
     setActiveDeckIdState(newId);
   };
 
+  const createNamedDeck = (name: string, format: DeckFormat = "freeform"): string => {
+    const newId = crypto.randomUUID();
+    setDecks((prev) => {
+      const existingNames = prev.map((d) => d.name || "");
+      let finalName = name;
+      let n = 2;
+      while (existingNames.includes(finalName)) {
+        finalName = `${name} ${n}`;
+        n++;
+      }
+      return [...prev, { id: newId, name: finalName, cards: [], format }];
+    });
+    setActiveDeckIdState(newId);
+    return newId;
+  };
+
+  const addCardToSpecificDeck = (deckId: string, card: ScryfallCard, pool: "main" | "sideboard") => {
+    setDecks((currentDecks) =>
+      currentDecks.map((deck) => {
+        if (deck.id !== deckId) return deck;
+        if (pool === "sideboard" && deck.sideboard !== undefined) {
+          const existing = deck.sideboard.find((c) => c.id === card.id);
+          if (existing) {
+            return { ...deck, sideboard: deck.sideboard.map((c) => c.id === card.id ? { ...c, quantity: c.quantity + 1 } : c) };
+          }
+          return { ...deck, sideboard: [...deck.sideboard, { ...card, quantity: 1, ownedQty: 0, isOwned: false }] };
+        } else {
+          const existing = deck.cards.find((c) => c.id === card.id);
+          if (existing) {
+            return { ...deck, cards: deck.cards.map((c) => c.id === card.id ? { ...c, quantity: c.quantity + 1 } : c) };
+          }
+          return { ...deck, cards: [...deck.cards, { ...card, quantity: 1, ownedQty: 0, isOwned: false }] };
+        }
+      })
+    );
+  };
+
+  const removeCardFromDeckById = (deckId: string, cardId: string, pool: "main" | "sideboard", decrementOnly: boolean) => {
+    setDecks((currentDecks) =>
+      currentDecks.map((deck) => {
+        if (deck.id !== deckId) return deck;
+        if (pool === "sideboard" && deck.sideboard !== undefined) {
+          if (decrementOnly) {
+            return { ...deck, sideboard: deck.sideboard.map((c) => c.id === cardId ? { ...c, quantity: c.quantity - 1 } : c) };
+          }
+          return { ...deck, sideboard: deck.sideboard.filter((c) => c.id !== cardId) };
+        } else {
+          if (decrementOnly) {
+            return { ...deck, cards: deck.cards.map((c) => c.id === cardId ? { ...c, quantity: c.quantity - 1 } : c) };
+          }
+          return { ...deck, cards: deck.cards.filter((c) => c.id !== cardId) };
+        }
+      })
+    );
+  };
+
   const deleteDeck = (id: string) => {
     setDecks((prev) => {
       const filtered = prev.filter((d) => d.id !== id);
@@ -424,6 +483,9 @@ export function DeckProvider({ children }: { children: ReactNode }) {
         setSortBy,
         sortDir,
         setSortDir,
+        createNamedDeck,
+        addCardToSpecificDeck,
+        removeCardFromDeckById,
       }}
     >
       {children}
