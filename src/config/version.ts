@@ -1,8 +1,13 @@
-export const APP_VERSION = "1.19.1";
+export const APP_VERSION = "1.19.2";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.19.2": [
+    "Feature: Tab drop — drag any TCGPlayer product page URL from the address bar onto the app to add the card instantly; works from deck view, search, home screen, settings, or with a modal open",
+    "Feature: Drop overlay — full-viewport overlay appears on drag-enter to signal the active drop zone",
+    "Feature: Undo toast — 4-second toast with inline Undo button after a successful drop-add; reverses the add or deletes an auto-created deck if dropped onto the Home screen",
+  ],
   "1.19.1": [
     "Fix: hydration mismatch warning resolved — pre-hydration theme script no longer triggers a React console error on load",
     "Fix: Own column spacing in search list view — green dot and card name now read as clearly separate columns",
