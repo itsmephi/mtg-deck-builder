@@ -5,6 +5,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.19.2] — Tab Drop
+
+### Added
+- **TCGPlayer tab drop**: drag the address bar URL of any TCGPlayer product page onto the app to add the card instantly — works from any view (deck, search, home screen, settings, modal open)
+- **Drop overlay**: full-viewport overlay appears on drag-enter to signal the drop zone; disappears on drop or drag-leave
+- **Undo toast**: 4-second bottom-center toast with inline Undo button after a successful drop-add; Undo reverses the add (or deletes auto-created deck if dropped onto Home screen)
+- **Auto-deck creation**: dropping onto the Home screen (no active deck) creates a new deck named `"{Card Name} Deck"` and sets it active
+- **Set-aware resolution**: TCGPlayer set slug detected via `lookupSetCode` for a set-specific Scryfall printing; falls back to default printing when unrecognized
+- **Treatment-suffix stripping**: variant suffixes in TCGPlayer slugs (`borderless`, `foil`, `showcase`, `extended art`, etc.) are stripped before name resolution so they don't corrupt the card name search
+- **Fuzzy name fallback**: uses Scryfall's `/cards/named?fuzzy=` endpoint as a final fallback when exact name search returns nothing, handling article differences and minor name discrepancies
+
+---
+
 ## [1.19.1] — Search List View Fixes
 
 ### Fixed

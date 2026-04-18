@@ -1,4 +1,4 @@
-<!-- Updated by Claude Code after each release. Last updated: v1.19.0 -->
+<!-- Updated by Claude Code after each release. Last updated: v1.19.2 -->
 
 # MTG Deck Builder — Architecture Reference
 
@@ -28,6 +28,7 @@ Living reference for file structure, state ownership, and key technical patterns
 | `FormatPicker.tsx` | Popover format selector (Freeform / Standard / Commander); opens downward or upward based on available space |
 | `CategoryChips.tsx` | Format-aware quick-search chips (Ramp, Removal, Card Draw, etc.) shown in search tab |
 | `FilterPanel.tsx` | Sidebar filter controls (price, rarity, type, color, year); exports `FilterState`, `DEFAULT_FILTERS`, `buildSidebarFilterSyntax()`, `serializeFilters()`, `deserializeFilters()`, `SIDEBAR_FILTERS_STORAGE_KEY` |
+| `DropOverlay.tsx` | Full-viewport fixed overlay (`z-[9999]`); shown during URL drag-enter; pointer-events-none so it doesn't block the drag |
 
 ### `src/components/workspace/`
 
@@ -102,7 +103,8 @@ All deck data lives here. Persists to `localStorage` via `useEffect` watchers ga
 | `sidebarFilters` | `FilterState` — persists to `mtg-sidebar-filters` |
 | `tileSize` | `TileSizeKey` — persists to `mtg-tile-size`; shared by both grids |
 | `activeChipId` / `activeChipQuery` | Active category chip |
-| `toastMessage` | 2-second auto-dismiss toast |
+| `toastMessage` / `toastAction` | Toast message + optional inline action (e.g. Undo); 2s plain, 4s undo variant |
+| `isDragActive` / `dragDepthRef` | Drop overlay visibility; depth counter prevents flicker on child element drag-leave |
 | `pendingSearch` | Triggers a search in SearchWorkspace from Workspace (e.g. clicking a set code in CardModal) |
 
 ### localStorage Keys

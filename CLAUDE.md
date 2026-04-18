@@ -3,7 +3,7 @@ Authors: Phi & Thurgood Nguyen
 Stack: Next.js + TypeScript + Tailwind CSS
 Deployed: Vercel | Repo: GitHub (itsmephi/mtg-deck-builder)
 IDE: Zed (Windows, primary) · Zed on Steam Deck (Linux, secondary)
-Current Version: v1.19.1 — see CHANGELOG.md for full history
+Current Version: v1.19.2 — see CHANGELOG.md for full history
 
 ---
 
@@ -49,7 +49,7 @@ For straightforward bug fixes and small enhancements, `/plan` → PROCEED → bu
 ---
 
 ## Active Milestone
-→ v1.19.1 — Search List View Fixes
+→ v1.19.2 — Tab Drop
 
 ---
 
