@@ -1,8 +1,11 @@
-export const APP_VERSION = "1.19.2";
+export const APP_VERSION = "1.19.3";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.19.3": [
+    "Chore: renamed app to \"Project Brew\" throughout — browser tab, Settings Hub header, About and Support tab copy, legal disclaimers, and backup filename (project-brew-backup-*.json); internal code name thebrewlab unchanged",
+  ],
   "1.19.2": [
     "Feature: Tab drop — drag any TCGPlayer product page URL from the address bar onto the app to add the card instantly; works from deck view, search, home screen, settings, or with a modal open",
     "Feature: Drop overlay — full-viewport overlay appears on drag-enter to signal the active drop zone",

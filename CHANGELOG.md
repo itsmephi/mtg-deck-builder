@@ -5,6 +5,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.19.3] — Project Brew Rename
+
+### Changed
+- **App name**: renamed throughout UI to "Project Brew" — browser tab title, Settings Hub header, About tab description, legal disclaimers (WotC Fan Content, Scryfall attribution), Support tab intro copy, and exported backup filename (`project-brew-backup-*.json`)
+- Internal code name (`thebrewlab`) and backup JSON validation identifier unchanged for backward compatibility
+
+---
+
 ## [1.19.2] — Tab Drop
 
 ### Added

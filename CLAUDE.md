@@ -1,9 +1,10 @@
 # MTG Deck Builder & Simulator — Source of Truth
+App name: **Project Brew** (outward-facing) · internal code name: thebrewlab
 Authors: Phi & Thurgood Nguyen
 Stack: Next.js + TypeScript + Tailwind CSS
 Deployed: Vercel | Repo: GitHub (itsmephi/mtg-deck-builder)
 IDE: Zed (Windows, primary) · Zed on Steam Deck (Linux, secondary)
-Current Version: v1.19.2 — see CHANGELOG.md for full history
+Current Version: v1.19.3 — see CHANGELOG.md for full history
 
 ---
 
