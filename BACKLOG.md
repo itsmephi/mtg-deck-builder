@@ -1,4 +1,4 @@
-# BACKLOG.md — TheBrewLab
+# BACKLOG.md — Project Brew
 <!-- Permanent backlog. Closed items live in CHANGELOG.md only — no duplication here. -->
 <!-- See .claude/rules/backlog-and-capture.md for workflow rules. -->
 

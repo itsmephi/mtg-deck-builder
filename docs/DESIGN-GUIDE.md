@@ -1,4 +1,4 @@
-# Design Guide — TheBrewLab
+# Design Guide — Project Brew
 <!-- Claude Chat reference for feature design sessions. Attach alongside CLAUDE.md. -->
 <!-- Last updated: v1.19.1 -->
 

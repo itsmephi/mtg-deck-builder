@@ -69,7 +69,7 @@ function PreferencesTab({ showToast, onClose }: PreferencesTabProps) {
     const a = document.createElement("a");
     const dateStr = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD
     a.href = url;
-    a.download = `thebrewlab-backup-${dateStr}.json`;
+    a.download = `project-brew-backup-${dateStr}.json`;
     a.click();
     URL.revokeObjectURL(url);
     const now = new Date().toISOString();
@@ -93,11 +93,11 @@ function PreferencesTab({ showToast, onClose }: PreferencesTabProps) {
       try {
         const parsed = JSON.parse(evt.target?.result as string);
         if (parsed.app !== "thebrewlab") {
-          setBackupError("This doesn't look like a TheBrewLab backup file.");
+          setBackupError("This doesn't look like a Project Brew backup file.");
           return;
         }
         if (!Array.isArray(parsed.decks)) {
-          setBackupError("This doesn't look like a TheBrewLab backup file.");
+          setBackupError("This doesn't look like a Project Brew backup file.");
           return;
         }
         if (parsed.decks.length === 0) {
@@ -366,7 +366,7 @@ function AboutTab() {
   return (
     <div>
       <p className="text-sm text-content-heading leading-relaxed mb-5">
-        The Brew Lab is a minimal, visual deck builder and goldfish simulator
+        Project Brew is a minimal, visual deck builder and goldfish simulator
         for Magic: The Gathering. A father-son project for teaching, learning,
         and experimentation built for players who love the craft of brewing.
       </p>
@@ -415,12 +415,12 @@ function AboutTab() {
         Legal
       </p>
       <p className="text-[10px] text-content-disabled leading-relaxed mb-3">
-        The Brew Lab is unofficial Fan Content permitted under the Fan Content
+        Project Brew is unofficial Fan Content permitted under the Fan Content
         Policy. Not approved/endorsed by Wizards. Portions of the materials used
         are property of Wizards of the Coast. ©Wizards of the Coast LLC.
       </p>
       <p className="text-[10px] text-content-disabled leading-relaxed mb-3">
-        Card data and images provided by Scryfall. The Brew Lab is not produced
+        Card data and images provided by Scryfall. Project Brew is not produced
         by or endorsed by Scryfall.
       </p>
       <p className="text-[10px] text-content-disabled leading-relaxed mb-3">
@@ -436,7 +436,7 @@ function SupportTab() {
   return (
     <div>
       <p className="text-sm text-content-muted leading-relaxed mb-5">
-        The Brew Lab is free and open source. Here&apos;s how to connect and
+        Project Brew is free and open source. Here&apos;s how to connect and
         contribute.
       </p>
 
@@ -524,7 +524,7 @@ export default function SettingsView({
               <ChevronLeft className="w-5 h-5" />
             </button>
             <h1 className="text-xl font-extrabold text-content-primary tracking-tight">
-              The Brew Lab
+              Project Brew
             </h1>
             <span className="ml-auto inline-flex items-center px-2 py-0.5 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[9px] font-bold uppercase tracking-wider rounded-full shrink-0">
               v{APP_VERSION}

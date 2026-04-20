@@ -6,7 +6,7 @@ import { DeckProvider } from '@/hooks/useDeckManager';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'TheBrewLab',
+  title: 'Project Brew',
   description: 'Minimalist MTG Deck Builder',
 };
 
