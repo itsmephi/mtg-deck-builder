@@ -4,7 +4,7 @@ Personal MTG deck builder, designed for Thurgood (13) and shared with anyone who
 
 Authors: Phi & Thurgood Nguyen.
 
-**Current Version: v1.19.3**
+**Current Version: v1.20.0**
 
 > **v1.20.0 is a foundation reset, not a feature release.** See `docs/PRODUCT.md` and `docs/DECISIONS.md` for the new strategic direction. The hybrid rebuild strategy (keep the engine, rebuild the surface) governs all upcoming work.
 
