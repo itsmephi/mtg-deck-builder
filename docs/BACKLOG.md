@@ -1,29 +1,16 @@
-# BACKLOG.md — Project Brew
-<!-- Permanent backlog. Closed items live in CHANGELOG.md only — no duplication here. -->
-<!-- See .claude/rules/backlog-and-capture.md for workflow rules. -->
+# Backlog — Project Brew
+
+<!-- 
+  Shared ownership: Claude Code adds + triages, Phi adds between sessions.
+  Claude.ai notes items via specs or prompts — does not edit this file directly.
+  Triage: Claude Code proposes when inbox has new items, Phi approves.
+  Format: - [type] Description  (types: bug, feature, enhancement, chore)
+-->
 
 ---
 
-## Active Milestone
-
-### v1.18.0 — Card Management
-
-### v1.19.0 — Search & Deck Polish
-- [ ] **enhancement** | Search: highlight newly added cards on deck view switch — when returning to deck view after adding cards from search, briefly highlight or scroll to new cards ⚠️ needs design
-- [ ] **enhancement** | Copy card name to clipboard — click card name in modal to copy ⚠️ needs design
-- [ ] **enhancement** | Undo for destructive actions — toast with Undo for card delete and deck delete
-- [ ] **enhancement** | CardModal art swap: option to confirm swap or add as new card instead ⚠️ needs design
-
-### v1.20.0 — Home & Onboarding
-- [ ] **feature** | Home screen as persistent hub — recent activity, deck stats, quick-resume last deck ⚠️ needs design
-- [ ] **feature** | Home screen deck covers — support custom deck cover art/images; Possibly use Scryfall art crops; DeckCoverCard is placeholder-ready with gradient tints for v1 ⚠️ needs design
-- [ ] **feature** | Favorite/star decks — starred decks float to top or appear in a dedicated section ⚠️ needs design
-- [ ] **feature** | New app name — Phi & Thurgood to brainstorm (#15) ⚠️ needs design
-
----
-
-## Pipeline
-<!-- New captures land here. Items with no clear milestone yet. -->
+## Inbox
+<!-- New items land here. Triage promotes to Triaged or Parked. -->
 
 - [ ] **enhancement** | **[high]** | Settings Hub: "Submit a Bug" button/link in Support tab (#78) — blocked: needs email address first
 - [ ] **enhancement** | **[high]** | Font size tokens — type feels small; establish font-size CSS custom properties (similar to color token system) for consistent scaling
@@ -48,8 +35,27 @@
 
 ---
 
-## v2.0 Deferred
-<!-- Items explicitly pushed to v2.0 -->
+## Triaged
+<!-- Reviewed items with a version target. -->
+
+### v1.20.0 — Home & Onboarding
+- [ ] **feature** | Home screen as persistent hub — recent activity, deck stats, quick-resume last deck ⚠️ needs design
+- [ ] **feature** | Home screen deck covers — support custom deck cover art/images; Possibly use Scryfall art crops; DeckCoverCard is placeholder-ready with gradient tints for v1 ⚠️ needs design
+- [ ] **feature** | Favorite/star decks — starred decks float to top or appear in a dedicated section ⚠️ needs design
+- [ ] **feature** | New app name — Phi & Thurgood to brainstorm (#15) ⚠️ needs design
+
+### v1.19.x — Search & Deck Polish (carry-forwards)
+- [ ] **enhancement** | Search: highlight newly added cards on deck view switch — when returning to deck view after adding cards from search, briefly highlight or scroll to new cards ⚠️ needs design
+- [ ] **enhancement** | Copy card name to clipboard — click card name in modal to copy ⚠️ needs design
+- [ ] **enhancement** | Undo for destructive actions — toast with Undo for card delete and deck delete
+- [ ] **enhancement** | CardModal art swap: option to confirm swap or add as new card instead ⚠️ needs design
+
+---
+
+## Parked
+<!-- Deferred to a future phase or TBD. -->
+
+### v2.0 — Future Phase
 
 - [ ] **feature** | Choose a Background commander support — allow Background enchantment as second commander for cards with "Choose a Background" keyword ⚠️ needs design
 - [ ] **feature** | Doctor's Companion commander support — allow pairing with Time Lord Doctor creatures ⚠️ needs design
@@ -74,5 +80,6 @@
 - [ ] **feature** | Search pillars — curated search modes for brewing, discovery, beginner deck building ⚠️ needs design
 - [ ] **feature** | Deck building via photo capture — scan physical cards with camera to add to deck
 - [ ] **feature** | Commander brackets support — tag cards with bracket ratings (e.g. Game Changer) per EDH bracket system ⚠️ needs design
+- [ ] **feature** | Supabase migration — move from localStorage to synced backend → v2.0.0
 
 ---
