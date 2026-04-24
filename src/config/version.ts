@@ -1,6 +1,6 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.19.3";
+export const APP_VERSION = "1.20.0";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.

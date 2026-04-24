@@ -5,6 +5,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.20.0] — Foundation Reset
+
+### Changed
+- **Product direction**: rebuilt PRODUCT.md and DECISIONS.md with full strategic context — audience, principles, rebuild strategy, and decision log
+- **CLAUDE.md**: updated to reflect v1.20.0 direction; added engine-vs-surface rule and ownership clarification
+
+---
+
 ## [1.19.3] — Project Brew Rename
 
 ### Changed
