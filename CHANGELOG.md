@@ -5,6 +5,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.21.6] — 2-column search preview + tile hover actions
+
+### Changed
+- **Preview panel**: large card image column removed — info panel is now the left column with more horizontal space; art strip fills the rest
+- **Hover overlay on art tiles**: hovering any printing tile shows `+ Add` and `↔ Flip` (DFC cards only) buttons; clicking `+ Add` selects the tile and adds it to the deck
+- **Flip in FindByNameBar**: active tile in the printings strip updates to back-face art when flipped; info column shows back-face oracle text, flavor text, and artist
+
+---
+
 ## [1.21.5] — FindByNameBar focus polish
 
 ### Added

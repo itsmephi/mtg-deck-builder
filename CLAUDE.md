@@ -69,7 +69,7 @@ Default to direct work. Tier up only when the change earns it.
 
 ## Current Version
 
-`v1.21.5` — FindByNameBar focus polish (backdrop blur, wheel scroll, click-to-dismiss).
+`v1.21.6` — 2-column search preview + tile hover actions (add/flip on hover).
 
 ## Post-Version Checklist
 

@@ -221,10 +221,11 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
     registerDismissFn?.(clearAll);
   }, [registerDismissFn, clearAll]);
 
-  const handleAddCard = useCallback(async () => {
-    if (!selectedPrinting || !activeDeck) return;
+  const handleAddCard = useCallback(async (printingOverride?: ScryfallCard) => {
+    const target = printingOverride ?? selectedPrinting;
+    if (!target || !activeDeck) return;
 
-    let cardToAdd = selectedPrinting;
+    let cardToAdd = target;
 
     // Price rescue: if selected printing has no price, try order:usd fallback
     if (!cardToAdd.prices?.usd || cardToAdd.prices.usd === "0.00") {
@@ -338,29 +339,16 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
   }, [selectedPrinting, rules, format, commanderIdentity, activePool]);
 
   // Derived display values
-  const hasBackFace = !!(
-    selectedPrinting?.card_faces?.length &&
-    selectedPrinting.card_faces[1]?.image_uris &&
-    !selectedPrinting.type_line?.includes("Room")
-  );
+  const activeFace = flipFace ? selectedPrinting?.card_faces?.[1] : undefined;
 
-  const artImage = useMemo(() => {
-    if (!selectedPrinting) return undefined;
-    if (flipFace && selectedPrinting.card_faces?.[1]?.image_uris) {
-      return selectedPrinting.card_faces[1].image_uris.normal;
-    }
-    return selectedPrinting.image_uris?.normal ?? selectedPrinting.card_faces?.[0]?.image_uris?.normal;
-  }, [selectedPrinting, flipFace]);
-
-  const displayMana = selectedPrinting?.mana_cost ?? selectedPrinting?.card_faces?.[0]?.mana_cost;
-  const displayOracleText = selectedPrinting?.oracle_text ?? selectedPrinting?.card_faces?.[0]?.oracle_text;
+  const displayMana = activeFace?.mana_cost ?? selectedPrinting?.mana_cost ?? selectedPrinting?.card_faces?.[0]?.mana_cost;
+  const displayOracleText = activeFace?.oracle_text ?? selectedPrinting?.oracle_text ?? selectedPrinting?.card_faces?.[0]?.oracle_text;
   const priceStr = selectedPrinting?.prices?.usd ? `$${selectedPrinting.prices.usd}` : "Price unavailable";
   const rarityLabel = selectedPrinting?.rarity
     ? selectedPrinting.rarity[0].toUpperCase() + selectedPrinting.rarity.slice(1)
     : "";
-  const displayFlavorText = selectedPrinting?.flavor_text ?? selectedPrinting?.card_faces?.[0]?.flavor_text;
-  const displayArtist = selectedPrinting?.artist ?? selectedPrinting?.card_faces?.[0]?.artist;
-  const addLabel = deckViewMode === "sideboard" ? "+ Add to sideboard" : "+ Add to deck";
+  const displayFlavorText = activeFace?.flavor_text ?? selectedPrinting?.flavor_text ?? selectedPrinting?.card_faces?.[0]?.flavor_text;
+  const displayArtist = activeFace?.artist ?? selectedPrinting?.artist ?? selectedPrinting?.card_faces?.[0]?.artist;
 
   const retryAutocomplete = useCallback(() => {
     setAcError(false);
@@ -604,66 +592,23 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
         <div className="absolute left-3 right-3 top-full z-[100] bg-surface-panel border border-line-default rounded-lg shadow-xl overflow-y-auto" style={{ maxHeight: "80vh" }}>
           {isLoadingPreview || !selectedPrinting ? (
             <div className="flex gap-4 p-4">
-              <div
-                className="shrink-0 w-[220px] rounded-xl bg-surface-deep animate-pulse"
-                style={{ aspectRatio: "488/680" }}
-              />
-              <div className="flex-1 space-y-3 pt-1">
+              <div className="shrink-0 space-y-3 pt-1" style={{ width: 280 }}>
                 <div className="h-5 rounded-lg bg-surface-deep animate-pulse w-3/4" />
                 <div className="h-4 rounded-lg bg-surface-deep animate-pulse w-1/2" />
                 <div className="h-24 rounded-lg bg-surface-deep animate-pulse" />
                 <div className="h-4 rounded-lg bg-surface-deep animate-pulse w-2/3" />
               </div>
+              <div className="flex-1 flex gap-2">
+                {[0, 1, 2].map((i) => (
+                  <div key={i} className="h-40 w-[115px] rounded-lg bg-surface-deep animate-pulse shrink-0" />
+                ))}
+              </div>
             </div>
           ) : (
             <div className="p-4">
               <div className="flex">
-                {/* Left column: card art + buttons */}
-                <div className="shrink-0 flex flex-col pr-4" style={{ width: 220 }}>
-                  <div className="relative">
-                    {artImage ? (
-                      <img
-                        src={artImage}
-                        alt={selectedPrinting.name}
-                        className="w-full rounded-xl object-cover"
-                        style={{ aspectRatio: "488/680" }}
-                      />
-                    ) : (
-                      <div
-                        className="w-full rounded-xl bg-surface-deep flex items-center justify-center"
-                        style={{ aspectRatio: "488/680" }}
-                      >
-                        <span className="text-content-muted text-xs">No image</span>
-                      </div>
-                    )}
-                    {hasBackFace && (
-                      <button
-                        onClick={() => setFlipFace((f) => !f)}
-                        className="absolute bottom-2 right-2 p-1.5 bg-black/70 hover:bg-black/90 rounded-full text-white transition-colors"
-                        title="Flip card"
-                      >
-                        <RotateCw className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                  </div>
-                  <div className="flex gap-2 mt-2">
-                    <button
-                      onClick={handleAddCard}
-                      className="flex-1 py-2 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white transition-colors"
-                    >
-                      {addLabel}
-                    </button>
-                    <button
-                      onClick={handleCancel}
-                      className="px-3 py-2 rounded-lg text-xs font-medium border border-line-default text-content-muted hover:bg-surface-deep hover:text-content-primary transition-colors"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-
-                {/* Center column: card info */}
-                <div className="shrink-0 flex flex-col border-l border-line-subtle pl-4 pr-4" style={{ width: 280 }}>
+                {/* Left column: card info */}
+                <div className="shrink-0 flex flex-col pl-0 pr-4" style={{ width: 280 }}>
                   {/* Name + set name */}
                   <div className="mb-2">
                     <div className="flex items-start justify-between gap-2">
@@ -789,41 +734,82 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
                       >
                         <div className="w-1 shrink-0" />
                         {browseResults.map((p) => {
-                          const tileImg = p.image_uris?.normal ?? p.card_faces?.[0]?.image_uris?.normal;
                           const isSelected = p.id === selectedPrinting?.id;
+                          const tileHasBackFace = !!(p.card_faces?.length && p.card_faces[1]?.image_uris && !p.type_line?.includes("Room"));
+                          const frontImg = p.image_uris?.normal ?? p.card_faces?.[0]?.image_uris?.normal;
+                          const backImg = p.card_faces?.[1]?.image_uris?.normal;
                           return (
-                            <button
+                            <div
                               key={p.id}
                               onClick={() => {
                                 if (artDrag.current.moved) return;
                                 setSelectedPrinting(p);
                                 setFlipFace(false);
                               }}
-                              style={{ scrollSnapAlign: "start", flexShrink: 0 }}
-                              className={`relative h-full rounded-lg overflow-hidden transition-all ${
+                              style={{ scrollSnapAlign: "start", flexShrink: 0, ...(tileHasBackFace ? { perspective: "1000px" } : {}) }}
+                              className={`group relative h-full rounded-lg overflow-hidden transition-all cursor-pointer ${
                                 isSelected ? "" : "opacity-60 hover:opacity-100"
                               }`}
                             >
-                              {tileImg ? (
-                                <img
-                                  src={tileImg}
-                                  alt={p.name}
-                                  className="h-full w-auto"
-                                  draggable={false}
-                                  loading="lazy"
-                                />
+                              {tileHasBackFace ? (
+                                <div
+                                  className="relative h-full transition-all duration-700 ease-in-out"
+                                  style={{
+                                    transformStyle: "preserve-3d",
+                                    transform: (isSelected && flipFace) ? "rotateY(180deg)" : "rotateY(0deg)",
+                                    aspectRatio: "488/680",
+                                  }}
+                                >
+                                  <div className="absolute inset-0" style={{ backfaceVisibility: "hidden" }}>
+                                    {frontImg && <img src={frontImg} alt={p.name} className="h-full w-full object-cover" draggable={false} loading="lazy" />}
+                                  </div>
+                                  <div className="absolute inset-0" style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}>
+                                    {backImg && <img src={backImg} alt={`${p.name} (back)`} className="h-full w-full object-cover" draggable={false} loading="lazy" />}
+                                  </div>
+                                </div>
+                              ) : frontImg ? (
+                                <img src={frontImg} alt={p.name} className="h-full w-auto" draggable={false} loading="lazy" />
                               ) : (
                                 <div className="h-full w-16 bg-surface-deep flex items-center justify-center text-[8px] text-content-muted">
                                   {p.set.toUpperCase()}
                                 </div>
                               )}
+                              <div className="absolute inset-0 flex flex-col items-center justify-end gap-1.5 pb-3 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto">
+                                {tileHasBackFace && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (artDrag.current.moved) return;
+                                      const alreadySelected = p.id === selectedPrinting?.id;
+                                      setSelectedPrinting(p);
+                                      if (alreadySelected) setFlipFace((f) => !f);
+                                      else setFlipFace(true);
+                                    }}
+                                    className="px-3 py-1 rounded-full text-[11px] font-medium border border-white/30 bg-white/10 hover:bg-white/25 hover:border-white/60 active:bg-white/35 text-white transition-colors flex items-center gap-1"
+                                  >
+                                    <RotateCw className="w-3 h-3" /> Flip
+                                  </button>
+                                )}
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (artDrag.current.moved) return;
+                                    setSelectedPrinting(p);
+                                    setFlipFace(false);
+                                    handleAddCard(p);
+                                  }}
+                                  className="px-3 py-1 rounded-md text-[11px] font-semibold bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white transition-colors"
+                                >
+                                  + Add
+                                </button>
+                              </div>
                               {isSelected && (
                                 <div
                                   className="absolute inset-0 rounded-lg pointer-events-none"
                                   style={{ boxShadow: "inset 0 0 0 3px var(--color-line-focus)" }}
                                 />
                               )}
-                            </button>
+                            </div>
                           );
                         })}
                       </div>
@@ -846,41 +832,82 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
                       >
                         <div className="w-1 shrink-0" />
                         {printings.map((p) => {
-                          const tileImg = p.image_uris?.normal ?? p.card_faces?.[0]?.image_uris?.normal;
                           const isSelected = p.id === selectedPrinting?.id;
+                          const tileHasBackFace = !!(p.card_faces?.length && p.card_faces[1]?.image_uris && !p.type_line?.includes("Room"));
+                          const frontImg = p.image_uris?.normal ?? p.card_faces?.[0]?.image_uris?.normal;
+                          const backImg = p.card_faces?.[1]?.image_uris?.normal;
                           return (
-                            <button
+                            <div
                               key={p.id}
                               onClick={() => {
                                 if (artDrag.current.moved) return;
                                 setSelectedPrinting(p);
                                 setFlipFace(false);
                               }}
-                              style={{ scrollSnapAlign: "start", flexShrink: 0 }}
-                              className={`relative h-full rounded-lg overflow-hidden transition-all ${
+                              style={{ scrollSnapAlign: "start", flexShrink: 0, ...(tileHasBackFace ? { perspective: "1000px" } : {}) }}
+                              className={`group relative h-full rounded-lg overflow-hidden transition-all cursor-pointer ${
                                 isSelected ? "" : "opacity-60 hover:opacity-100"
                               }`}
                             >
-                              {tileImg ? (
-                                <img
-                                  src={tileImg}
-                                  alt={`${p.set_name} — ${p.set.toUpperCase()}`}
-                                  className="h-full w-auto"
-                                  draggable={false}
-                                  loading="lazy"
-                                />
+                              {tileHasBackFace ? (
+                                <div
+                                  className="relative h-full transition-all duration-700 ease-in-out"
+                                  style={{
+                                    transformStyle: "preserve-3d",
+                                    transform: (isSelected && flipFace) ? "rotateY(180deg)" : "rotateY(0deg)",
+                                    aspectRatio: "488/680",
+                                  }}
+                                >
+                                  <div className="absolute inset-0" style={{ backfaceVisibility: "hidden" }}>
+                                    {frontImg && <img src={frontImg} alt={`${p.set_name} — ${p.set.toUpperCase()}`} className="h-full w-full object-cover" draggable={false} loading="lazy" />}
+                                  </div>
+                                  <div className="absolute inset-0" style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}>
+                                    {backImg && <img src={backImg} alt={`${p.set_name} — ${p.set.toUpperCase()} (back)`} className="h-full w-full object-cover" draggable={false} loading="lazy" />}
+                                  </div>
+                                </div>
+                              ) : frontImg ? (
+                                <img src={frontImg} alt={`${p.set_name} — ${p.set.toUpperCase()}`} className="h-full w-auto" draggable={false} loading="lazy" />
                               ) : (
                                 <div className="h-full w-16 bg-surface-deep flex items-center justify-center text-[8px] text-content-muted">
                                   {p.set.toUpperCase()}
                                 </div>
                               )}
+                              <div className="absolute inset-0 flex flex-col items-center justify-end gap-1.5 pb-3 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto">
+                                {tileHasBackFace && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (artDrag.current.moved) return;
+                                      const alreadySelected = p.id === selectedPrinting?.id;
+                                      setSelectedPrinting(p);
+                                      if (alreadySelected) setFlipFace((f) => !f);
+                                      else setFlipFace(true);
+                                    }}
+                                    className="px-3 py-1 rounded-full text-[11px] font-medium border border-white/30 bg-white/10 hover:bg-white/25 hover:border-white/60 active:bg-white/35 text-white transition-colors flex items-center gap-1"
+                                  >
+                                    <RotateCw className="w-3 h-3" /> Flip
+                                  </button>
+                                )}
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (artDrag.current.moved) return;
+                                    setSelectedPrinting(p);
+                                    setFlipFace(false);
+                                    handleAddCard(p);
+                                  }}
+                                  className="px-3 py-1 rounded-md text-[11px] font-semibold bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white transition-colors"
+                                >
+                                  + Add
+                                </button>
+                              </div>
                               {isSelected && (
                                 <div
                                   className="absolute inset-0 rounded-lg pointer-events-none"
                                   style={{ boxShadow: "inset 0 0 0 3px var(--color-line-focus)" }}
                                 />
                               )}
-                            </button>
+                            </div>
                           );
                         })}
                       </div>

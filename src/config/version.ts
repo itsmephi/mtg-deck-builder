@@ -1,10 +1,15 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.21.5";
+export const APP_VERSION = "1.21.6";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.21.6": [
+    "Enhancement: search preview panel redesigned to 2 columns — large card image removed (redundant with active art tile); info panel is now the left column with more horizontal breathing room",
+    "Enhancement: art strip tiles now show a hover overlay with '+ Add' and '↔ Flip' (DFC only) buttons — hover any printing to add it directly or preview the back face; clicking + Add selects the tile and adds it",
+    "Enhancement: flip support added to FindByNameBar — active tile in the printings strip shows back-face art when flipped; info column updates to back-face oracle text, flavor text, and artist",
+  ],
   "1.21.5": [
     "Enhancement: workspace dims and blurs behind FindByNameBar when the autocomplete dropdown or preview panel is open — same backdrop treatment as CardModal; click the backdrop to dismiss",
     "Enhancement: mouse wheel scrolls the printings/browse strip horizontally when hovering over it — trackpad two-finger swipe unaffected",
