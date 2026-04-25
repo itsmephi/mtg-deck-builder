@@ -91,10 +91,12 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
   };
 
   const [selectedCard, setSelectedCard] = useState<ScryfallCard | null>(null);
+  const [isFindBarActive, setIsFindBarActive] = useState(false);
   const [isSampleHandOpen, setIsSampleHandOpen] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const findByNameFocusRef = useRef<(() => void) | null>(null);
   const findByNameSearchRef = useRef<((q: string) => void) | null>(null);
+  const findByNameDismissRef = useRef<(() => void) | null>(null);
   const cardRefs = useRef<Map<string, HTMLElement>>(new Map());
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
   const [hoveredCardList, setHoveredCardList] = useState<ScryfallCard | null>(null);
@@ -466,7 +468,15 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
         showToast={showToast}
         registerFocusFn={(fn) => { findByNameFocusRef.current = fn; }}
         registerSearchFn={(fn) => { findByNameSearchRef.current = fn; }}
+        registerDismissFn={(fn) => { findByNameDismissRef.current = fn; }}
+        onActiveChange={setIsFindBarActive}
       />
+      {isFindBarActive && (
+        <div
+          className="absolute inset-0 z-[55] bg-surface-backdrop backdrop-blur-sm"
+          onClick={() => findByNameDismissRef.current?.()}
+        />
+      )}
       <WorkspaceToolbar
         activeDeck={activeDeck}
         onUpdateDeckName={(name) => updateActiveDeck((d) => ({ ...d, name }))}

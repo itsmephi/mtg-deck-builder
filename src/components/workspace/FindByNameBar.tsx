@@ -11,6 +11,8 @@ interface FindByNameBarProps {
   showToast: (msg: string) => void;
   registerFocusFn?: (fn: () => void) => void;
   registerSearchFn?: (fn: (query: string) => void) => void;
+  registerDismissFn?: (fn: () => void) => void;
+  onActiveChange?: (active: boolean) => void;
 }
 
 function renderManaSymbols(manaCost: string | undefined): React.ReactNode {
@@ -57,7 +59,7 @@ function renderOracleText(text: string | undefined): React.ReactNode {
   );
 }
 
-export default function FindByNameBar({ showToast, registerFocusFn, registerSearchFn }: FindByNameBarProps) {
+export default function FindByNameBar({ showToast, registerFocusFn, registerSearchFn, registerDismissFn, onActiveChange }: FindByNameBarProps) {
   const { activeDeck, updateActiveDeck, deckViewMode, setLastAddedId } = useDeckManager();
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -95,6 +97,10 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
   useEffect(() => {
     registerFocusFn?.(() => inputRef.current?.focus());
   }, [registerFocusFn]);
+
+  useEffect(() => {
+    onActiveChange?.(showDropdown || showPreview);
+  }, [showDropdown, showPreview, onActiveChange]);
 
   // / or Cmd+K focuses the input from anywhere in the workspace
   useEffect(() => {
@@ -210,6 +216,10 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
     setIsLoadingBrowse(false);
     requestAnimationFrame(() => inputRef.current?.focus());
   }, []);
+
+  useEffect(() => {
+    registerDismissFn?.(clearAll);
+  }, [registerDismissFn, clearAll]);
 
   const handleAddCard = useCallback(async () => {
     if (!selectedPrinting || !activeDeck) return;
@@ -775,6 +785,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
                         onPointerUp={onArtPointerUp}
                         onPointerLeave={onArtPointerUp}
                         onDragStart={(e) => e.preventDefault()}
+                        onWheel={(e) => { if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) e.currentTarget.scrollLeft += e.deltaY; }}
                       >
                         <div className="w-1 shrink-0" />
                         {browseResults.map((p) => {
@@ -831,6 +842,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
                         onPointerUp={onArtPointerUp}
                         onPointerLeave={onArtPointerUp}
                         onDragStart={(e) => e.preventDefault()}
+                        onWheel={(e) => { if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) e.currentTarget.scrollLeft += e.deltaY; }}
                       >
                         <div className="w-1 shrink-0" />
                         {printings.map((p) => {
