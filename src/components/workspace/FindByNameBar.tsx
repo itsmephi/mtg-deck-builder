@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo } from "react";
 import { Search, X, RotateCw, AlertTriangle } from "lucide-react";
 import { autocompleteCards, searchCards, getCardPrintings } from "@/lib/scryfall";
 import { useDeckManager } from "@/hooks/useDeckManager";
 import { parseDroppedText } from "@/hooks/useDeckImportExport";
-import { ScryfallCard } from "@/types";
+import { ScryfallCard, DeckCard } from "@/types";
 import { getFormatRules } from "@/lib/formatRules";
 
 interface FindByNameBarProps {
@@ -14,6 +14,8 @@ interface FindByNameBarProps {
   registerSearchFn?: (fn: (query: string) => void) => void;
   registerDismissFn?: (fn: () => void) => void;
   registerCardPreviewFn?: (fn: (name: string, setCode?: string) => void) => void;
+  registerOpenWithCardFn?: (fn: (card: DeckCard) => void) => void;
+  onSwapArt?: (deckCard: DeckCard, newPrinting: ScryfallCard) => void;
   onActiveChange?: (active: boolean) => void;
 }
 
@@ -61,7 +63,7 @@ function renderOracleText(text: string | undefined): React.ReactNode {
   );
 }
 
-export default function FindByNameBar({ showToast, registerFocusFn, registerSearchFn, registerDismissFn, registerCardPreviewFn, onActiveChange }: FindByNameBarProps) {
+export default function FindByNameBar({ showToast, registerFocusFn, registerSearchFn, registerDismissFn, registerCardPreviewFn, registerOpenWithCardFn, onSwapArt, onActiveChange }: FindByNameBarProps) {
   const { activeDeck, updateActiveDeck, deckViewMode, setLastAddedId } = useDeckManager();
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -86,6 +88,9 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
   const [browseResults, setBrowseResults] = useState<ScryfallCard[]>([]);
   const [browseLabel, setBrowseLabel] = useState("");
   const [isLoadingBrowse, setIsLoadingBrowse] = useState(false);
+  const [entryMode, setEntryMode] = useState<"search" | "deck">("search");
+  const deckEntryCardRef = useRef<DeckCard | null>(null);
+  const scrollToPrintingIdRef = useRef<string | null>(null);
 
   // Detect e: and a: prefix queries — suppress normal autocomplete, show hint row
   const prefixHint = useMemo(() => {
@@ -198,6 +203,8 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
     setBrowseResults([]);
     setBrowseLabel("");
     setIsLoadingBrowse(false);
+    setEntryMode("search");
+    deckEntryCardRef.current = null;
     if (suggestions.length > 0 && query.length >= 2) {
       setShowDropdown(true);
     }
@@ -216,6 +223,8 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
     setBrowseResults([]);
     setBrowseLabel("");
     setIsLoadingBrowse(false);
+    setEntryMode("search");
+    deckEntryCardRef.current = null;
     requestAnimationFrame(() => inputRef.current?.focus());
   }, []);
 
@@ -492,6 +501,65 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
     registerCardPreviewFn?.(openExternalCardPreview);
   }, [registerCardPreviewFn, openExternalCardPreview]);
 
+  const openWithCard = useCallback(async (card: DeckCard) => {
+    setQuery(card.name);
+    setShowDropdown(false);
+    setShowPreview(true);
+    setIsLoadingPreview(true);
+    setFlipFace(false);
+    setSelectedPrinting(null);
+    setPrintings([]);
+    setBrowseResults([]);
+    setBrowseLabel("");
+    setEntryMode("deck");
+    deckEntryCardRef.current = card;
+
+    try {
+      const results = await searchCards(`!"${card.name}"`);
+      if (!results.length) {
+        setShowPreview(false);
+        setIsLoadingPreview(false);
+        showToast(`Couldn't find "${card.name}".`);
+        return;
+      }
+      const canonical = results[0];
+      const allPrintings = await getCardPrintings(canonical.name, canonical.oracle_id);
+      const available = allPrintings.length > 0 ? allPrintings : [canonical];
+      const match = available.find((p) => p.id === card.id) ?? available[0];
+      scrollToPrintingIdRef.current = match.id;
+      setSelectedPrinting(match);
+      setPrintings(available);
+    } catch {
+      setShowPreview(false);
+      setEntryMode("search");
+      deckEntryCardRef.current = null;
+      showToast("Could not fetch card data. Try again.");
+    } finally {
+      setIsLoadingPreview(false);
+    }
+  }, [showToast]);
+
+  useEffect(() => {
+    registerOpenWithCardFn?.(openWithCard);
+  }, [registerOpenWithCardFn, openWithCard]);
+
+  // Scroll art strip to active printing after deck-entry open.
+  // useLayoutEffect fires after React commits the DOM, before the browser paints —
+  // artStripRef and clientWidth are both valid with no async gap.
+  useLayoutEffect(() => {
+    const targetId = scrollToPrintingIdRef.current;
+    if (!targetId) return;
+    scrollToPrintingIdRef.current = null;
+    const strip = artStripRef.current;
+    if (!strip) return;
+    const idx = printings.findIndex((p) => p.id === targetId);
+    if (idx < 0) return;
+    // Strip height 318, card aspect ratio 488/680 → tile width ≈ 228px. gap-2 = 8px. w-1 spacer = 4px.
+    const tileW = 318 * 488 / 680;
+    const tileCenter = 4 + idx * (tileW + 8) + tileW / 2;
+    strip.scrollLeft = tileCenter - strip.clientWidth / 2;
+  }, [printings]);
+
   const onArtPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     const el = artStripRef.current;
     if (!el) return;
@@ -536,6 +604,8 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
               setBrowseResults([]);
               setBrowseLabel("");
               setIsLoadingBrowse(false);
+              setEntryMode("search");
+              deckEntryCardRef.current = null;
             }
           }}
           onFocus={() => {
@@ -753,7 +823,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
                 </div>
 
               {/* Right column: browse results (artist/set) or art variants */}
-              {(isLoadingBrowse || browseResults.length > 0 || printings.length > 1) && (
+              {(isLoadingBrowse || browseResults.length > 0 || printings.length > 0) && (
                 <div className="flex-1 min-w-0 flex flex-col border-l border-line-subtle pl-3">
                   {isLoadingBrowse ? (
                     <>
@@ -887,6 +957,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
                           return (
                             <div
                               key={p.id}
+                              data-printing-id={p.id}
                               onClick={() => {
                                 if (artDrag.current.moved) return;
                                 setSelectedPrinting(p);
@@ -914,7 +985,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
                                   </div>
                                 </div>
                               ) : frontImg ? (
-                                <img src={frontImg} alt={`${p.set_name} — ${p.set.toUpperCase()}`} className="h-full w-auto" draggable={false} loading="lazy" />
+                                <img src={frontImg} alt={`${p.set_name} — ${p.set.toUpperCase()}`} className="h-full w-auto" width={488} height={680} draggable={false} loading="lazy" />
                               ) : (
                                 <div className="h-full w-16 bg-surface-deep flex items-center justify-center text-[8px] text-content-muted">
                                   {p.set.toUpperCase()}
@@ -936,18 +1007,25 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
                                     <RotateCw className="w-3 h-3" /> Flip
                                   </button>
                                 )}
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (artDrag.current.moved) return;
-                                    setSelectedPrinting(p);
-                                    setFlipFace(false);
-                                    handleAddCard(p);
-                                  }}
-                                  className="px-3 py-1 rounded-md text-[11px] font-semibold bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white transition-colors"
-                                >
-                                  + Add
-                                </button>
+                                {!(entryMode === "deck" && p.id === deckEntryCardRef.current?.id) && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (artDrag.current.moved) return;
+                                      if (entryMode === "deck" && deckEntryCardRef.current) {
+                                        onSwapArt?.(deckEntryCardRef.current, p);
+                                        clearAll();
+                                      } else {
+                                        setSelectedPrinting(p);
+                                        setFlipFace(false);
+                                        handleAddCard(p);
+                                      }
+                                    }}
+                                    className="px-3 py-1 rounded-md text-[11px] font-semibold bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white transition-colors"
+                                  >
+                                    {entryMode === "deck" ? "Swap art" : "+ Add"}
+                                  </button>
+                                )}
                               </div>
                               {isSelected && (
                                 <div

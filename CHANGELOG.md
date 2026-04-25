@@ -5,6 +5,18 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.23.0] — Card modal replacement
+
+### Changed
+- **Clicking a deck card** now opens FindByNameBar preview with that card's current printing pre-selected in the art strip — CardModal is gone
+- **Art strip CTA**: shows `Swap art` in deck-entry mode (immediately updates the card's variant, no confirm step) and `+ Add` in search-entry mode
+- **Art strip scroll**: on deck-entry open, the strip scrolls to the card's current printing so Thurgood sees exactly where he is before browsing
+
+### Removed
+- **CardModal** — deleted; all entry paths rewired through FindByNameBar preview
+
+---
+
 ## [1.22.0] — Capture path
 
 ### Fixed

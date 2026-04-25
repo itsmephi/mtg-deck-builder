@@ -69,7 +69,7 @@ Default to direct work. Tier up only when the change earns it.
 
 ## Current Version
 
-`v1.22.0` — Capture path: TCGPlayer URL exact-variant resolution + text/paste capture.
+`v1.23.0` — Card modal replacement: clicking a deck card opens FindByNameBar preview with current printing pre-selected; "Swap art" replaces CardModal.
 
 ## Post-Version Checklist
 

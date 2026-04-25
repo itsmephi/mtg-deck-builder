@@ -1,10 +1,16 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.22.0";
+export const APP_VERSION = "1.23.0";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.23.0": [
+    "Feature: clicking a card in the deck opens FindByNameBar preview with that card's current printing pre-selected — no separate modal",
+    "Feature: art-strip hover button shows 'Swap art' (deck entry) vs '+ Add' (search entry); clicking swaps immediately with no confirm step",
+    "Feature: art strip scrolls to the card's current printing on deck-entry open",
+    "Removed: CardModal replaced entirely by FindByNameBar preview panel",
+  ],
   "1.22.0": [
     "Fix: dragging a TCGPlayer product URL now resolves the exact printing the URL points to — product ID extracted from URL and passed to Scryfall /cards/tcgplayer/:id; falls back to existing slug-based name resolution on 404",
     "Feature: paste or drag highlighted text anywhere into the app to capture a card or decklist — single card name opens FindByNameBar preview; multi-line decklist (2+ quantity lines) opens ImportModal; set code hints (e.g. [FIN]) pre-select the matching printing",

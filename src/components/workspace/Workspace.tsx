@@ -4,7 +4,6 @@ import React, { useState, useRef, useMemo, useEffect } from "react";
 import { useDeckManager } from "@/hooks/useDeckManager";
 import { useDeckStats } from "@/hooks/useDeckStats";
 
-import CardModal from "../layout/CardModal";
 import SampleHandModal from "../layout/SampleHandModal";
 import VisualCard from "./VisualCard";
 import ListCardTable from "./ListCardTable";
@@ -92,7 +91,6 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
     localStorage.setItem("mtg-group-by-type", String(g));
   };
 
-  const [selectedCard, setSelectedCard] = useState<ScryfallCard | null>(null);
   const [isFindBarActive, setIsFindBarActive] = useState(false);
   const [isSampleHandOpen, setIsSampleHandOpen] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -100,6 +98,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
   const findByNameSearchRef = useRef<((q: string) => void) | null>(null);
   const findByNameDismissRef = useRef<(() => void) | null>(null);
   const findByNameCardPreviewRef = useRef<((name: string, setCode?: string) => void) | null>(null);
+  const findByNameOpenWithCardRef = useRef<((card: DeckCard) => void) | null>(null);
   const cardRefs = useRef<Map<string, HTMLElement>>(new Map());
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
   const [hoveredCardList, setHoveredCardList] = useState<ScryfallCard | null>(null);
@@ -420,6 +419,53 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
     alignContent: "start",
   };
 
+  const handleSwapArt = (deckCard: DeckCard, newPrinting: ScryfallCard) => {
+    const oldId = deckCard.id;
+    if (newPrinting.id === oldId) return;
+    if (isSideboard) {
+      updateActiveDeck((deck) => {
+        const collision = deck.sideboard?.find((c) => c.id === newPrinting.id);
+        if (collision) {
+          return {
+            ...deck,
+            sideboard: deck.sideboard
+              ?.filter((c) => c.id !== oldId)
+              .map((c) => c.id === newPrinting.id ? { ...c, quantity: c.quantity + deckCard.quantity } : c),
+          };
+        }
+        return {
+          ...deck,
+          sideboard: deck.sideboard?.map((c) =>
+            c.id === oldId ? ({ ...newPrinting, quantity: c.quantity, ownedQty: c.ownedQty } as DeckCard) : c,
+          ),
+        };
+      });
+    } else {
+      updateActiveDeck((deck) => {
+        const collision = deck.cards.find((c) => c.id === newPrinting.id);
+        if (collision) {
+          return {
+            ...deck,
+            cards: deck.cards
+              .filter((c) => c.id !== oldId)
+              .map((c) => c.id === newPrinting.id ? { ...c, quantity: c.quantity + deckCard.quantity } : c),
+          };
+        }
+        return {
+          ...deck,
+          cards: deck.cards.map((c) =>
+            c.id === oldId ? ({ ...newPrinting, quantity: c.quantity, ownedQty: c.ownedQty } as DeckCard) : c,
+          ),
+        };
+      });
+      if (activeDeck?.commanderIds?.includes(oldId)) {
+        setCommanderIds(activeDeck.commanderIds.map((id) => id === oldId ? newPrinting.id : id));
+      }
+    }
+  };
+
+  const openWithCard = (card: ScryfallCard) => findByNameOpenWithCardRef.current?.(card as DeckCard);
+
   const cardActionProps = isSideboard
     ? {
         onUpdateQuantity: updateSideboardQuantity,
@@ -427,7 +473,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
         onUpdateOwnedQty: updateSideboardOwnedQty,
         onToggleIsOwned: toggleSideboardIsOwned,
         onRemove: removeSideboardCard,
-        onSelect: setSelectedCard,
+        onSelect: openWithCard,
       }
     : {
         onUpdateQuantity: updateQuantity,
@@ -435,7 +481,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
         onUpdateOwnedQty: updateOwnedQty,
         onToggleIsOwned: toggleIsOwned,
         onRemove: removeCard,
-        onSelect: setSelectedCard,
+        onSelect: openWithCard,
       };
 
   const listActionProps = {
@@ -476,6 +522,8 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
           findByNameCardPreviewRef.current = fn;
           registerCardPreviewFn?.(fn);
         }}
+        registerOpenWithCardFn={(fn) => { findByNameOpenWithCardRef.current = fn; }}
+        onSwapArt={handleSwapArt}
         onActiveChange={(active) => {
           setIsFindBarActive(active);
           onFindBarActiveChange?.(active);
@@ -646,71 +694,6 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
           />
         </div>
       )}
-
-      {selectedCard &&
-        (() => {
-          const currentIndex = sortedCards.findIndex(
-            (c) => c.id === selectedCard.id,
-          );
-          const hasNext =
-            currentIndex >= 0 && currentIndex < sortedCards.length - 1;
-          const hasPrev = currentIndex > 0;
-
-          return (
-            <CardModal
-              card={selectedCard}
-              onClose={() => setSelectedCard(null)}
-              onSearchQuery={(q) => { findByNameSearchRef.current?.(q); setSelectedCard(null); }}
-              onSwap={(oldId, newCard) => {
-                if (isSideboard) {
-                  updateActiveDeck((deck) => ({
-                    ...deck,
-                    sideboard: deck.sideboard?.map((c) =>
-                      c.id === oldId
-                        ? ({
-                            ...newCard,
-                            quantity: c.quantity,
-                            ownedQty: c.ownedQty,
-                          } as DeckCard)
-                        : c,
-                    ),
-                  }));
-                } else {
-                  updateActiveDeck((deck) => ({
-                    ...deck,
-                    cards: deck.cards.map((c) =>
-                      c.id === oldId
-                        ? ({
-                            ...newCard,
-                            quantity: c.quantity,
-                            ownedQty: c.ownedQty,
-                          } as DeckCard)
-                        : c,
-                    ),
-                  }));
-                  if (activeDeck?.commanderIds?.includes(oldId)) {
-                    setCommanderIds(activeDeck.commanderIds.map((id) => id === oldId ? newCard.id : id));
-                  }
-                }
-                setSelectedCard({
-                  ...newCard,
-                  quantity: (selectedCard as any).quantity,
-                  ownedQty: (selectedCard as any).ownedQty,
-                } as any);
-              }}
-              onNext={
-                hasNext
-                  ? () => setSelectedCard(sortedCards[currentIndex + 1])
-                  : undefined
-              }
-              onPrev={
-                hasPrev
-                  ? () => setSelectedCard(sortedCards[currentIndex - 1])
-                  : undefined
-              }
-            />
-          );
-        })()}
 
       {/* Goldfish Simulator always uses main deck only */}
       {isSampleHandOpen && (
