@@ -5,6 +5,34 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.21.4] — Prefix syntax in FindByNameBar
+
+### Added
+- **`a:` and `e:` prefix search**: typing `a:anna steinbauer` or `e:SLD` in the find-by-name bar suppresses name autocomplete and shows a single hint row — `Search artist "anna steinbauer" →` or `Search set SLD →`; clicking the row or pressing Enter fires the browse search; quotes around artist names are stripped automatically
+
+---
+
+## [1.21.3] — CardModal links to FindByNameBar browse
+
+### Changed
+- **CardModal artist/set links**: clicking artist or set in the CardModal Product Details now closes the modal and fires the corresponding browse search in FindByNameBar — same result as clicking those links in the preview panel
+
+---
+
+## [1.21.2] — Set Browse
+
+### Added
+- **Set browse in preview**: set code in the FindByNameBar Product Details section is now a tappable blue link — clicking it runs an `e:{setCode}` query and populates the right-column strip with all cards from that set; uses the same browse pattern as artist search
+
+---
+
+## [1.21.1] — Artist Search
+
+### Added
+- **Artist search in preview**: artist name in the FindByNameBar Product Details section is now a tappable blue link — clicking it runs an `a:"artist name"` query and populates the right-column strip with all cards by that artist; first result loads as the active card; the input bar updates to show the artist query
+
+---
+
 ## [1.21.0] — Search as Find-by-Name
 
 ### Changed

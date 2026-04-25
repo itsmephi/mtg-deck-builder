@@ -94,6 +94,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
   const [isSampleHandOpen, setIsSampleHandOpen] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const findByNameFocusRef = useRef<(() => void) | null>(null);
+  const findByNameSearchRef = useRef<((q: string) => void) | null>(null);
   const cardRefs = useRef<Map<string, HTMLElement>>(new Map());
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
   const [hoveredCardList, setHoveredCardList] = useState<ScryfallCard | null>(null);
@@ -464,6 +465,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
       <FindByNameBar
         showToast={showToast}
         registerFocusFn={(fn) => { findByNameFocusRef.current = fn; }}
+        registerSearchFn={(fn) => { findByNameSearchRef.current = fn; }}
       />
       <WorkspaceToolbar
         activeDeck={activeDeck}
@@ -638,6 +640,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
             <CardModal
               card={selectedCard}
               onClose={() => setSelectedCard(null)}
+              onSearchQuery={(q) => { findByNameSearchRef.current?.(q); setSelectedCard(null); }}
               onSwap={(oldId, newCard) => {
                 if (isSideboard) {
                   updateActiveDeck((deck) => ({

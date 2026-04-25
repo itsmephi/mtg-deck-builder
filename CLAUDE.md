@@ -69,7 +69,7 @@ Default to direct work. Tier up only when the change earns it.
 
 ## Current Version
 
-`v1.21.0` — Find-by-Name bar replaces Search tab.
+`v1.21.4` — Prefix syntax (a:/e:) in FindByNameBar.
 
 ## Post-Version Checklist
 

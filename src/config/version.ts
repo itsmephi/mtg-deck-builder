@@ -1,10 +1,22 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.21.0";
+export const APP_VERSION = "1.21.4";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.21.4": [
+    "Enhancement: a: and e: prefix syntax in FindByNameBar — typing a:artist name or e:SETCODE shows a hint row in the dropdown and fires the browse search on Enter or click; quotes around artist name are normalized automatically",
+  ],
+  "1.21.3": [
+    "Enhancement: artist and set links in CardModal now trigger FindByNameBar browse — clicking either closes the modal and fires the artist or set search inline in the deck workspace",
+  ],
+  "1.21.2": [
+    "Enhancement: set code in FindByNameBar preview is now a tappable link — clicking searches e:{setCode} and loads all cards from that set in the right-column strip; same browse pattern as artist search",
+  ],
+  "1.21.1": [
+    "Enhancement: artist name in FindByNameBar preview is now a tappable link — clicking searches a:\"artist\" and loads all cards by that artist in the right-column strip; first result is the active card; input bar updates to show the artist query",
+  ],
   "1.21.0": [
     "Search rebuilt as find-by-name: type a card name, pick from autocomplete, choose your art printing, add — all inline in the deck workspace with no modal or overlay",
     "Removed sidebar Search tab, category chips, NLP parser routing, sort/filter UI, and grid/list search toggle — discovery scaffolding cleared for phase-3 brew mode",
