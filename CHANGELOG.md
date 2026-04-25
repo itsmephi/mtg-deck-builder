@@ -5,6 +5,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.21.5] — FindByNameBar focus polish
+
+### Added
+- **Workspace backdrop**: workspace dims and blurs behind the FindByNameBar when the autocomplete dropdown or preview panel is open — same `bg-surface-backdrop backdrop-blur-sm` treatment as CardModal; clicking the backdrop dismisses the bar entirely
+- **Wheel-to-scroll on art strip**: mouse wheel scrolls the printings/browse strip horizontally when hovering over it; trackpad two-finger horizontal swipe passes through unaffected
+
+---
+
 ## [1.21.4] — Prefix syntax in FindByNameBar
 
 ### Added

@@ -1,4 +1,4 @@
-<!-- Updated by Claude Code after each release. Last updated: v1.21.0 -->
+<!-- Updated by Claude Code after each release. Last updated: v1.21.5 -->
 
 # MTG Deck Builder — Architecture Reference
 
@@ -31,8 +31,8 @@ Living reference for file structure, state ownership, and key technical patterns
 
 | File | Responsibility |
 |---|---|
-| `Workspace.tsx` | Active deck view; renders grid or list, sorts/groups cards, handles format-change dialog, triggers color identity backfill on Commander switch |
-| `FindByNameBar.tsx` | Persistent find-by-name bar pinned above the deck workspace; autocomplete (150ms debounce, max 8 suggestions), card preview panel (art + printings strip + CardModal-style info), add to main/sideboard; overlay uses `z-[60]` stacking context on container, `z-[100]` on the preview overlay itself |
+| `Workspace.tsx` | Active deck view; renders grid or list, sorts/groups cards, handles format-change dialog, triggers color identity backfill on Commander switch; renders `z-[55]` backdrop overlay when FindByNameBar is active — dims/blurs the deck, blocks pointer events, click dismisses the bar |
+| `FindByNameBar.tsx` | Persistent find-by-name bar pinned above the deck workspace; autocomplete (150ms debounce, max 8 suggestions), card preview panel (art + printings strip + CardModal-style info), add to main/sideboard; container is `z-[60]` (above backdrop); fires `onActiveChange` when dropdown/preview open or close; exposes `registerDismissFn` (calls `clearAll`) for backdrop-click dismiss; art strip supports drag-to-scroll and wheel-to-scroll (deltaY → scrollLeft) |
 | `WorkspaceToolbar.tsx` | Two-row toolbar above deck (row 1: name + format badge; row 2: stats + view controls + sort) |
 | `VisualCard.tsx` | Single grid tile; always-visible price badge (bottom-right, scales XS–XL); ownership badge at bottom-center animates to overlay-top on hover and becomes ✓ toggle (neutral/partial-green/full-green/warning-red); unified `[− owned +] / [− qty +]` row with progressive disclosure steppers; `tileSize` prop drives price badge sizing |
 | `ListCardTable.tsx` | Table view; column order: Owned (circle ✓ toggle) | Qty (X/Y steppers) | Name | Type | Mana | Price | ×; `table-fixed` prevents horizontal overflow |

@@ -69,7 +69,7 @@ Default to direct work. Tier up only when the change earns it.
 
 ## Current Version
 
-`v1.21.4` — Prefix syntax (a:/e:) in FindByNameBar.
+`v1.21.5` — FindByNameBar focus polish (backdrop blur, wheel scroll, click-to-dismiss).
 
 ## Post-Version Checklist
 

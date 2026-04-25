@@ -1,10 +1,14 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.21.4";
+export const APP_VERSION = "1.21.5";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.21.5": [
+    "Enhancement: workspace dims and blurs behind FindByNameBar when the autocomplete dropdown or preview panel is open — same backdrop treatment as CardModal; click the backdrop to dismiss",
+    "Enhancement: mouse wheel scrolls the printings/browse strip horizontally when hovering over it — trackpad two-finger swipe unaffected",
+  ],
   "1.21.4": [
     "Enhancement: a: and e: prefix syntax in FindByNameBar — typing a:artist name or e:SETCODE shows a hint row in the dropdown and fires the browse search on Enter or click; quotes around artist name are normalized automatically",
   ],
