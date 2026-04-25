@@ -5,6 +5,18 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.21.0] — Search as Find-by-Name
+
+### Changed
+- **Search rebuilt as find-by-name**: replaced search workspace with an inline bar at the top of the deck workspace — type a name, pick from autocomplete, choose art printing, add. No modal, no overlay, deck stays visible throughout.
+- **Sidebar**: removed Search tab and category chips; sidebar now shows only the Decks tab
+- **Discovery scaffolding removed**: NLP parser routing, sort/filter UI, view-mode toggle, and per-deck filter state cleared from active surface (nlpParser.ts stays, untouched)
+- **Format warning pills**: legality, color-identity, and copy-limit warnings surface inline in the preview before you add — soft warnings, add always enabled
+- **Sideboard-aware**: add button label changes to "+ Add to sideboard" when sideboard view is active
+- **Stale localStorage keys cleaned up on mount**: `mtg-search-view-mode`, `mtg-search-sort-direction`, `mtg-sidebar-active-tab`, `mtg-sidebar-filters`, `mtg-search-filter-active` and per-deck variants
+
+---
+
 ## [1.20.0] — Foundation Reset
 
 ### Changed

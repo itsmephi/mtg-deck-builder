@@ -10,6 +10,7 @@ import VisualCard from "./VisualCard";
 import ListCardTable from "./ListCardTable";
 import ImportModal from "./ImportModal";
 import WorkspaceToolbar from "./WorkspaceToolbar";
+import FindByNameBar from "./FindByNameBar";
 import { ScryfallCard, DeckCard } from "@/types";
 import { DeckFormat, getFormatRules, canPartnerWith, hasPartnerAbility } from "@/lib/formatRules";
 import { backfillColorIdentity } from "@/lib/scryfall";
@@ -21,8 +22,7 @@ interface WorkspaceProps {
   cancelImport: () => void;
   tileSize: TileSizeKey;
   onTileSizeChange: (stop: TileSizeKey) => void;
-  onAddFirstCard?: () => void;
-  onSearchQuery?: (query: string) => void;
+  showToast: (msg: string) => void;
 }
 
 // Color sort: WUBRG mono → multicolor (by combination) → colorless/missing
@@ -50,7 +50,7 @@ interface ConfirmDialogState {
   targetFormat: DeckFormat;
 }
 
-export default function Workspace({ pendingImport, processImport, cancelImport, tileSize, onTileSizeChange, onAddFirstCard, onSearchQuery }: WorkspaceProps) {
+export default function Workspace({ pendingImport, processImport, cancelImport, tileSize, onTileSizeChange, showToast }: WorkspaceProps) {
   const {
     decks,
     activeDeck,
@@ -93,6 +93,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
   const [selectedCard, setSelectedCard] = useState<ScryfallCard | null>(null);
   const [isSampleHandOpen, setIsSampleHandOpen] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const findByNameFocusRef = useRef<(() => void) | null>(null);
   const cardRefs = useRef<Map<string, HTMLElement>>(new Map());
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
   const [hoveredCardList, setHoveredCardList] = useState<ScryfallCard | null>(null);
@@ -460,6 +461,10 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
 
   return (
     <div className="w-full h-full flex flex-col relative text-sm bg-surface-base">
+      <FindByNameBar
+        showToast={showToast}
+        registerFocusFn={(fn) => { findByNameFocusRef.current = fn; }}
+      />
       <WorkspaceToolbar
         activeDeck={activeDeck}
         onUpdateDeckName={(name) => updateActiveDeck((d) => ({ ...d, name }))}
@@ -492,7 +497,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
         {sortedCards.length === 0 && deckViewMode !== "sideboard" ? (
           <div style={gridStyle}>
             <div
-              onClick={onAddFirstCard}
+              onClick={() => findByNameFocusRef.current?.()}
               className="
                 rounded-xl cursor-pointer
                 border border-dashed border-input-edge-focus
@@ -680,7 +685,6 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
                   ? () => setSelectedCard(sortedCards[currentIndex - 1])
                   : undefined
               }
-              onSearchQuery={onSearchQuery}
             />
           );
         })()}

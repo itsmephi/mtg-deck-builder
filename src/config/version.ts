@@ -1,10 +1,16 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.20.0";
+export const APP_VERSION = "1.21.0";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.21.0": [
+    "Search rebuilt as find-by-name: type a card name, pick from autocomplete, choose your art printing, add — all inline in the deck workspace with no modal or overlay",
+    "Removed sidebar Search tab, category chips, NLP parser routing, sort/filter UI, and grid/list search toggle — discovery scaffolding cleared for phase-3 brew mode",
+    "Format warning pills in the preview: legality, color identity, and copy-limit warnings surface before you add, without blocking the add",
+    "Sideboard-aware add: button label changes to '+ Add to sideboard' when the sideboard view is active",
+  ],
   "1.19.3": [
     "Chore: renamed app to \"Project Brew\" throughout — browser tab, Settings Hub header, About and Support tab copy, legal disclaimers, and backup filename (project-brew-backup-*.json); internal code name thebrewlab unchanged",
   ],

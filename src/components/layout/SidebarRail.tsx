@@ -1,15 +1,13 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { Search, Layers, Coffee, Settings, Plus, PanelLeftOpen, Home } from "lucide-react";
+import { Layers, Coffee, Settings, Plus, PanelLeftOpen, Home } from "lucide-react";
 import { useDeckManager } from "@/hooks/useDeckManager";
 import { FormatPicker } from "@/components/layout/FormatPicker";
 import { DeckFormat } from "@/lib/formatRules";
 
 interface Props {
-  expandTo: (tab: "search" | "decks") => void;
-  onTabChange: (tab: "search" | "decks") => void;
-  activeTab: "search" | "decks";
+  expandTo: () => void;
   onOpenSettings: (tab: "preferences" | "whatsnew" | "about" | "support") => void;
   onGoHome: () => void;
   isOnHomeScreen: boolean;
@@ -23,7 +21,7 @@ function RailTooltip({ label }: { label: string }) {
   );
 }
 
-export default function SidebarRail({ expandTo, onTabChange, activeTab, onOpenSettings, onGoHome, isOnHomeScreen }: Props) {
+export default function SidebarRail({ expandTo, onOpenSettings, onGoHome, isOnHomeScreen }: Props) {
   const { createNewDeck, setDeckViewMode } = useDeckManager();
   const [railPickerOpen, setRailPickerOpen] = useState(false);
   const railPickerRef = useRef<HTMLDivElement>(null);
@@ -59,7 +57,7 @@ export default function SidebarRail({ expandTo, onTabChange, activeTab, onOpenSe
 
   const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
-      expandTo(activeTab);
+      expandTo();
     }
   };
 
@@ -71,7 +69,7 @@ export default function SidebarRail({ expandTo, onTabChange, activeTab, onOpenSe
       {/* PanelLeftOpen — expand sidebar */}
       <div className="group relative flex items-center">
         <button
-          onClick={(e) => { e.stopPropagation(); expandTo(activeTab); }}
+          onClick={(e) => { e.stopPropagation(); expandTo(); }}
           className="w-9 h-9 rounded-full flex items-center justify-center text-content-muted hover:text-content-primary hover:bg-surface-raised transition-colors"
         >
           <PanelLeftOpen className="w-4 h-4" />
@@ -79,21 +77,10 @@ export default function SidebarRail({ expandTo, onTabChange, activeTab, onOpenSe
         <RailTooltip label="Expand Sidebar" />
       </div>
 
-      {/* Search */}
-      <div className="group relative flex items-center">
-        <button
-          onClick={(e) => { e.stopPropagation(); onTabChange("search"); }}
-          className="w-9 h-9 rounded-full flex items-center justify-center text-content-muted hover:text-content-primary hover:bg-surface-raised transition-colors"
-        >
-          <Search className="w-4 h-4" />
-        </button>
-        <RailTooltip label="Search" />
-      </div>
-
       {/* Decks */}
       <div className="group relative flex items-center">
         <button
-          onClick={(e) => { e.stopPropagation(); onTabChange("decks"); }}
+          onClick={(e) => { e.stopPropagation(); expandTo(); }}
           className="w-9 h-9 rounded-full flex items-center justify-center text-content-muted hover:text-content-primary hover:bg-surface-raised transition-colors"
         >
           <Layers className="w-4 h-4" />

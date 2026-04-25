@@ -4,9 +4,7 @@ Personal MTG deck builder, designed for Thurgood (13) and shared with anyone who
 
 Authors: Phi & Thurgood Nguyen.
 
-**Current Version: v1.20.0**
-
-> **v1.20.0 is a foundation reset, not a feature release.** See `docs/PRODUCT.md` and `docs/DECISIONS.md` for the new strategic direction. The hybrid rebuild strategy (keep the engine, rebuild the surface) governs all upcoming work.
+> **The current foundation reset governs all upcoming work.** See `docs/PRODUCT.md` and `docs/DECISIONS.md` for the strategic direction. Hybrid rebuild strategy: keep the engine, rebuild the surface.
 
 ## Stack
 
@@ -23,34 +21,40 @@ IDE: Zed (Windows primary, Steam Deck/Linux secondary).
 - Root cause before fix. Diagnose intended behavior before writing any fix spec.
 - Engine vs. surface: the engine (data, format rules, Scryfall integration, types) is stable. Surface (IA, components, mobile) is being rebuilt. Be aware which layer you're touching.
 
+## Working Tiers
+
+Default to direct work. Tier up only when the change earns it.
+
+**Direct work** — bug fixes, polish, copy changes, dependency bumps, obvious-design features. Just do it. No spec, no plan, no approval gate. Explain what changed in the commit or PR.
+
+**Lightweight spec** — features with one or two real decisions but no data model changes or cross-screen flows. A short note in `docs/specs/` covering the decisions. No template required, no checklist required.
+
+**Full spec from Claude.ai** — data model changes, multi-screen flows, real UX tradeoffs, anything touching the engine layer's contracts. Phi designs these in Claude.ai; the resulting spec is the implementation contract, committed before building.
+
 ## Development Rules
 
-- **Alignment before generation.** Confirm plan before writing code or files. `/plan` output is the review gate — wait for explicit PROCEED.
 - **Token optimization.** Targeted reads only. No full-file cats when a grep will do.
 - **Proactive suggestions.** Flag gaps, new docs, or tooling improvements before creating them.
-- **Design gut-check.** For ad-hoc requests: if something feels off — removing a working pattern, reversing a recent decision, a change worth sitting with — raise it in one sentence before planning. Don't ask when the request feels right; only speak up when there's a real concern.
-- **Version sync.** `Current Version` here must match `APP_VERSION` in `src/config/version.ts` and the latest entry in `CHANGELOG.md`. Three files change together on every version bump.
+- **Speak up when something feels wrong.** If a request removes a working pattern, reverses a recent decision, or feels worth sitting with — raise it in one sentence before doing the work. Don't ask when the request feels right.
+- **Version sync.** `APP_VERSION` in `src/config/version.ts` is the source of truth. On every version bump, also update `CHANGELOG.md`. Two files change together.
 - **Commits.** Conventional format: `feat:` `fix:` `docs:` `chore:`. One-liner unless the why isn't obvious from the diff. GitHub issue syntax: `Closes #27, Closes #28` (each separately).
-- **Spec conventions.** Specs are concise handoff contracts, not feature documentation. Cover only what Claude Code can't infer from PRODUCT.md, ARCHITECTURE.md, DESIGN-CONTEXT.md, or existing code: interaction design decisions, data model changes, non-obvious edge cases, deviations from established patterns. Resolve open design questions before generating the spec. Never edit a spec in place — create a new versioned file.
-- **Specs live in `docs/specs/`.** One spec per feature/patch. Prototypes co-located with their spec.
+- **Specs are immutable after implementation.** Never edit a spec in place — create a new versioned file.
 - **Emergent tasks/bugs.** Add to `docs/BACKLOG.md` inbox section during sessions. Triage when inbox has new items.
-- **Design vs. build.** Use Claude.ai for features with significant UX tradeoffs, data model changes, or multi-screen flows. Use Claude Code for polish, hotfixes, and obvious-design features. When designing in Claude Code, `/plan` output is the review gate. When a Claude.ai spec is used, it's the implementation contract, committed before building.
 
 ## Versioning & Docs
 
 - **Semver**: major.minor.patch.
-- **On version bump**: update `Current Version` here + `APP_VERSION` in `src/config/version.ts` + `CHANGELOG.md`.
+- **Source of truth**: `src/config/version.ts`. CHANGELOG.md mirrors it.
 
 ### File Map
 
 | File | Owner | Purpose |
 |------|-------|---------|
-| `CLAUDE.md` | Claude Code | Agent briefing — stack, rules, version |
+| `CLAUDE.md` | Claude Code | Agent briefing — stack, rules, tiers |
 | `docs/PRODUCT.md` | Claude.ai / Phi | What the app is, who it's for, why it exists |
 | `docs/DECISIONS.md` | Claude.ai / Phi | Product decision log with rationale |
 | `docs/specs/*.md` | Claude.ai | Handoff contracts — immutable after implementation |
 | `docs/ARCHITECTURE.md` | Claude Code | Technical patterns, file structure, gotchas |
-| `docs/DESIGN-CONTEXT.md` | Claude Code | Design constraints and patterns reference |
 | `docs/SCHEMA.md` | Claude Code | Data shapes (localStorage, future Supabase) |
 | `docs/BACKLOG.md` | Shared | Inbox → triaged → parked items |
 | `docs/WORKFLOW.md` | Claude Code | Human-readable workflow reference |
@@ -60,18 +64,13 @@ IDE: Zed (Windows primary, Steam Deck/Linux secondary).
 
 ## Workflow Shortcuts
 
-- `/plan` — plan an implementation before building. Output is the review gate; wait for PROCEED.
+- `/plan` — invoke when you want to see the plan before work starts. Optional, not the default. Use it for tricky changes, data model work, or anything you want a second pass on.
 - `/commit-release vX.X.X` — post-QA commit, merge, and push.
 
 ## Post-Version Checklist
 
-After each version ships:
+Trim. Most steps fold into the work itself.
 
-1. Update `Current Version` in CLAUDE.md to match `src/config/version.ts`.
-2. Update `CHANGELOG.md` with version entry.
-3. Update `docs/ARCHITECTURE.md` with new technical patterns (only non-obvious ones).
-4. Update `docs/DESIGN-CONTEXT.md` if any design constraints changed.
-5. Update `docs/SCHEMA.md` if data shapes changed.
-6. Update `docs/BACKLOG.md`: remove the shipped version's triaged section, then triage inbox if it has new items.
-7. Flag to Phi if `docs/PRODUCT.md` or `docs/DECISIONS.md` need updates.
-8. **Staleness check:** scan all doc `<!-- Last updated: vX.X.X -->` headers — flag any two or more versions behind.
+1. **Version sync** — `version.ts` and `CHANGELOG.md` updated together.
+2. **Staleness scan** — flag any doc with a `<!-- Last updated: vX.X.X -->` header two or more versions behind.
+3. **Flag PRODUCT.md / DECISIONS.md changes to Phi** — Claude Code doesn't edit these directly.

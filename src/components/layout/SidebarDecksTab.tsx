@@ -287,15 +287,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting, onClo
               setNewDeckPickerDir(dir);
               setNewDeckPickerOpen(!newDeckPickerOpen);
             }}
-            className="
-              mx-2 my-1
-              border border-dashed border-line-default rounded-md
-              flex items-center justify-center gap-1.5
-              py-1.5 cursor-pointer
-              text-content-faint
-              hover:border-input-edge-focus hover:text-content-muted
-              transition-colors
-            "
+            className="mx-2 my-1 border border-dashed border-line-default rounded-md flex items-center justify-center gap-1.5 py-1.5 cursor-pointer text-content-faint hover:border-input-edge-focus hover:text-content-muted transition-colors"
           >
             <Plus className="w-3 h-3" />
             <span className="text-[10px]">New Deck</span>
