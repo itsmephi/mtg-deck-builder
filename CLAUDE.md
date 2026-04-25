@@ -67,6 +67,10 @@ Default to direct work. Tier up only when the change earns it.
 - `/plan` — invoke when you want to see the plan before work starts. Optional, not the default. Use it for tricky changes, data model work, or anything you want a second pass on.
 - `/commit-release vX.X.X` — post-QA commit, merge, and push.
 
+## Current Version
+
+`v1.21.0` — Find-by-Name bar replaces Search tab.
+
 ## Post-Version Checklist
 
 Trim. Most steps fold into the work itself.

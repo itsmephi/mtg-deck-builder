@@ -7,9 +7,37 @@
   Purpose: preserve the "why" that lives in Claude.ai conversations but evaporates between sessions
 -->
 
+## v1.21.0 — Search as Find-by-Name
+
+### Search tab replaced with inline FindByNameBar
+The sidebar Search tab, SearchWorkspace, and all discovery-shaped UI (NLP parser, category chips, FilterPanel, sidebar filters) were removed. A persistent find-by-name bar now lives at the top of the deck workspace. Type a card name → autocomplete → select → preview with art variants, oracle text, and product details → add to deck or sideboard. This directly implements the v1.20.0 decision to treat search as "find a card I already know I want" rather than a discovery surface.
+
+### All discovery-shaped features cut, not deferred
+CategoryChips, FilterPanel, nlpParser, and the full SearchWorkspace assembly were removed outright rather than parked. The code was large, complex, and built against the old "be a better EDHrec" model. Keeping it as dead code would be a maintenance liability. If discovery features return, they belong in Brew mode with a different shape.
+
+### Preview overlays the deck workspace
+Initial spec called for the preview to push the deck content down. After implementation, overlay (absolute positioning over the workspace) was clearly less disruptive — the deck stays in place while the user is in the preview flow. Deck content temporarily covered by a focused task is good UX; pushing content around is not.
+
+### Artist search link is a v1.21.0 casualty
+CardModal previously had a clickable artist name that triggered a search query in SearchWorkspace. That path is gone. The feature is noted in the backlog as a Phase 1 enhancement — the right solution is something like pre-filling the FindByNameBar with artist syntax, but it needs design before implementation.
+
+### Capture path parked pending real-use signal
+Drag-from-URL currently commits directly. The intent (drag → preview → confirm) requires a spec and is parked until v1.21.0 has been used enough to know what the UX pain points actually are. The destination UI (FindByNameBar preview) is now built; the entry path spec is the remaining work.
+
+---
+
 ## v1.20.0 — Foundation Reset
 
 This version is not a feature release. It's a strategic reset following a project retrospective with Phi and Thurgood. The decisions below redefine what Project Brew is, who it's for, and how we'll build it going forward. Earlier decisions live in specs and git history and remain valid for the engine layer; the surface layer is being reconsidered against the new foundation.
+
+### Workflow streamlined for nights-and-weekends pace
+The original workflow (gating `/plan` reviews on most changes, mandatory checklist runs before any spec, full template required regardless of feature size) was useful when Phi was learning what good Claude Code output looks like. Now that's known, the gates are friction. New shape:
+ 
+- **Default is direct work.** Claude Code does the change and explains after. `/plan` becomes opt-in for tricky changes, not a default review gate.
+- **Three tiers explicit.** Direct work (most things) → lightweight spec (one or two decisions) → full spec (data model, multi-screen, engine contracts). Tier up only when the change earns it. Ceremony has a cost.
+- **Post-version checklist trims to three items.** Version sync, staleness scan, flag PRODUCT/DECISIONS changes. Everything else folded into the work itself.
+### DESIGN-CONTEXT.md retired in favor of a skill
+The document existed because CLAUDE.md was Claude Code's home and design context needed somewhere else to live. After the workflow streamline, the substantive parts (principles, patterns) were already in PRODUCT.md and DECISIONS.md — the document was mostly carrying gating ceremony that's now cut. The remaining useful pieces (design checklist, spec template, "what good looks like" framing) moved into a `project-brew-design` skill that loads only when designing features. Loads when relevant, invisible otherwise. No third document to keep in sync.
 
 ### The user is Thurgood
 Project Brew is designed for Thurgood Nguyen specifically — a 13-year-old MTG player advancing rapidly in the hobby. Other users are welcome and their feedback is valuable, but design tradeoffs resolve in Thurgood's favor. We do not design for "kids broadly" or "casual players generally" — the resulting compromises would dull the product. Generosity in distribution; sharpness in design.

@@ -1,4 +1,4 @@
-<!-- Updated by Claude Code after each release. Last updated: v1.19.2 -->
+<!-- Updated by Claude Code after each release. Last updated: v1.21.0 -->
 
 # MTG Deck Builder — Architecture Reference
 
@@ -13,21 +13,18 @@ Living reference for file structure, state ownership, and key technical patterns
 | File | Responsibility |
 |---|---|
 | `layout.tsx` | Next.js root layout; wraps app in `DeckProvider`; inline `<script>` in `<head>` applies saved theme before first paint to prevent flash |
-| `page.tsx` (Dashboard) | Top-level shell; owns sidebar tab state, settings open/tab state, tile size, chip state, sidebar filters, toast, and import plumbing; decides which main-area panel renders (HomeScreen / SearchWorkspace / Workspace / SettingsView) |
+| `page.tsx` (Dashboard) | Top-level shell; owns settings open/tab state, tile size, toast, drag-drop handling, and import plumbing; decides which main-area panel renders (HomeScreen / Workspace / SettingsView) |
 
 ### `src/components/layout/`
 
 | File | Responsibility |
 |---|---|
-| `Sidebar.tsx` | Outer shell; renders collapsed rail or expanded tab bar + tab content; manages collapsed/expanded state; enforces settings overlay close contract |
-| `SidebarRail.tsx` | Collapsed 48px icon strip — search, decks, home, settings icons |
-| `SidebarSearchTab.tsx` | Search tab: `CategoryChips` + `FilterPanel` |
-| `SidebarDecksTab.tsx` | Deck list with create/delete/format/sideboard/import/export actions |
-| `CardModal.tsx` | Full-screen card detail overlay; `context='search'` → "+ Add to Deck"; `context='deck'` (default) → "Confirm Art Swap" |
+| `Sidebar.tsx` | Outer shell; renders collapsed rail or expanded Decks tab content; manages collapsed/expanded state; enforces settings overlay close contract |
+| `SidebarRail.tsx` | Collapsed 48px icon strip — decks, home, settings icons |
+| `SidebarDecksTab.tsx` | Deck list with create/delete/format/sideboard/import/export/buy actions |
+| `CardModal.tsx` | Full-screen card detail overlay; `context='deck'` (default) → "Confirm Art Swap" |
 | `SampleHandModal.tsx` | Opening hand simulator — 7-card draw, mana curve histogram, draw odds per card; all commanders excluded from library |
 | `FormatPicker.tsx` | Popover format selector (Freeform / Standard / Commander); opens downward or upward based on available space |
-| `CategoryChips.tsx` | Format-aware quick-search chips (Ramp, Removal, Card Draw, etc.) shown in search tab |
-| `FilterPanel.tsx` | Sidebar filter controls (price, rarity, type, color, year); exports `FilterState`, `DEFAULT_FILTERS`, `buildSidebarFilterSyntax()`, `serializeFilters()`, `deserializeFilters()`, `SIDEBAR_FILTERS_STORAGE_KEY` |
 | `DropOverlay.tsx` | Full-viewport fixed overlay (`z-[9999]`); shown during URL drag-enter; pointer-events-none so it doesn't block the drag |
 
 ### `src/components/workspace/`
@@ -35,15 +32,12 @@ Living reference for file structure, state ownership, and key technical patterns
 | File | Responsibility |
 |---|---|
 | `Workspace.tsx` | Active deck view; renders grid or list, sorts/groups cards, handles format-change dialog, triggers color identity backfill on Commander switch |
+| `FindByNameBar.tsx` | Persistent find-by-name bar pinned above the deck workspace; autocomplete (150ms debounce, max 8 suggestions), card preview panel (art + printings strip + CardModal-style info), add to main/sideboard; overlay uses `z-[60]` stacking context on container, `z-[100]` on the preview overlay itself |
 | `WorkspaceToolbar.tsx` | Two-row toolbar above deck (row 1: name + format badge; row 2: stats + view controls + sort) |
 | `VisualCard.tsx` | Single grid tile; always-visible price badge (bottom-right, scales XS–XL); ownership badge at bottom-center animates to overlay-top on hover and becomes ✓ toggle (neutral/partial-green/full-green/warning-red); unified `[− owned +] / [− qty +]` row with progressive disclosure steppers; `tileSize` prop drives price badge sizing |
 | `ListCardTable.tsx` | Table view; column order: Owned (circle ✓ toggle) | Qty (X/Y steppers) | Name | Type | Mana | Price | ×; `table-fixed` prevents horizontal overflow |
 | `ImportModal.tsx` | Resolves a pending import into current deck or new deck |
-| `SearchWorkspace.tsx` | Search tab main area; assembles Scryfall query from format filter + NLP chip/query + sidebar filter syntax; owns autocomplete, set-match detection, grid/list `viewMode` (persisted to `mtg-search-view-mode`) |
-| `SearchListTable.tsx` | List view for search results; color-tinted rows, hover-reveal + add button, "Own" column (green dot), mana symbols, cursor-follow thumbnail |
-| `SearchBar.tsx` | Search input with removable NLP token chips and autocomplete dropdown |
 | `TileSizeSlider.tsx` | Tile size snap slider popover (XS / S / M / L / XL) |
-| `SearchTakeover.tsx` | Empty-deck-aware search overlay with autofocus and quick-tag buttons |
 | `SettingsView.tsx` | Full workspace-takeover settings hub (Preferences, What's New, About, Support tabs) |
 | `HomeScreen.tsx` | Welcome screen when no active deck; shows deck cover cards and ghost create slot |
 
@@ -61,7 +55,6 @@ Living reference for file structure, state ownership, and key technical patterns
 |---|---|
 | `scryfall.ts` | All Scryfall API calls: `searchCards`, `getCardPrintings`, `autocompleteCards`, `lookupSetCode`, `backfillColorIdentity`, `getCardRulings`, `getTopCards` |
 | `formatRules.ts` | Single source of truth for format behavior: `getFormatRules()`, `getCardWarnings()`, `isEligibleCommander()`, `getPartnerType()`, `canPartnerWith()`, `isVehicleOrSpacecraftCommander()` |
-| `nlpParser.ts` | `parseSearchQuery(input)` — returns `{ tokens, scryfallQuery, remainder }`; `ParsedToken.matchedText` used for chip removal |
 
 ### `src/config/`
 
@@ -98,14 +91,10 @@ All deck data lives here. Persists to `localStorage` via `useEffect` watchers ga
 
 | State | Notes |
 |---|---|
-| `activeTab` | `"search" \| "decks"` — persists to `mtg-sidebar-active-tab` |
 | `showSettings` / `settingsTab` | Settings overlay state — NOT auto-cleared by routing; any navigation must call `onCloseSettings?.()` |
-| `sidebarFilters` | `FilterState` — persists to `mtg-sidebar-filters` |
-| `tileSize` | `TileSizeKey` — persists to `mtg-tile-size`; shared by both grids |
-| `activeChipId` / `activeChipQuery` | Active category chip |
+| `tileSize` | `TileSizeKey` — persists to `mtg-tile-size` |
 | `toastMessage` / `toastAction` | Toast message + optional inline action (e.g. Undo); 2s plain, 4s undo variant |
 | `isDragActive` / `dragDepthRef` | Drop overlay visibility; depth counter prevents flicker on child element drag-leave |
-| `pendingSearch` | Triggers a search in SearchWorkspace from Workspace (e.g. clicking a set code in CardModal) |
 
 ### localStorage Keys
 
@@ -116,12 +105,7 @@ All deck data lives here. Persists to `localStorage` via `useEffect` watchers ga
 | `mtg-deck-view-mode` | `"main" \| "sideboard"` | `useDeckManager` |
 | `mtg-sort-preference` | `{ by, dir }` JSON | `useDeckManager` |
 | `mtg-show-thumbnail` | `"true" \| "false"` | `useDeckManager` |
-| `mtg-sidebar-active-tab` | `"search" \| "decks"` | `page.tsx` |
-| `mtg-sidebar-filters` | serialized `FilterState` | `page.tsx` / `FilterPanel` |
 | `mtg-tile-size` | `"xs" \| "s" \| "m" \| "l" \| "xl"` | `page.tsx` / `gridConfig` |
-| `mtg-search-filter-active-{deckId}` | `"true" \| "false"` — per-deck key; absent = false | `SearchWorkspace` |
-| `mtg-search-sort-direction` | `"asc" \| "desc"` | `SearchWorkspace` |
-| `mtg-search-view-mode` | `"grid" \| "list"` | `SearchWorkspace` |
 | `mtg-theme` | `"zed-dark"` or absent (Warm Stone) | `SettingsView` / `layout.tsx` |
 | `mtg-last-backup` | ISO 8601 timestamp of last backup | `SettingsView` |
 
@@ -139,22 +123,24 @@ DeckProvider (useDeckManager)
     │
     └─▶ page.tsx
             │
-            ├─▶ Workspace  (activeDeck → VisualCard / ListCardTable)
-            │       │
-            │       └─▶ useDeckStats  (derived: totalCards, totalValue, remainingCost)
-            │
-            └─▶ SearchWorkspace  (reads activeDeck for format filter + commander color identity)
-                        │
-                        ├─▶ nlpParser  (query → tokens + scryfallQuery + remainder)
-                        ├─▶ FilterPanel  (sidebar filters → buildSidebarFilterSyntax)
-                        └─▶ scryfall.ts  (assembled query → ScryfallCard[])
+            └─▶ Workspace
+                    │
+                    ├─▶ FindByNameBar  (autocomplete → printings → add card)
+                    │       └─▶ scryfall.ts  (autocompleteCards, searchCards, getCardPrintings)
+                    │
+                    ├─▶ WorkspaceToolbar  (deck name, format, sort, view controls)
+                    │
+                    ├─▶ VisualCard / ListCardTable  (deck cards)
+                    │
+                    └─▶ useDeckStats  (derived: totalCards, totalValue, remainingCost)
 ```
 
-**Card add flow:**
-1. `SearchWorkspace` / `CardModal` calls `handleAddCard` (async) in Sidebar
-2. Price rescue: if `prices.usd` is null or `"0.00"`, fetch a priced printing via `searchCards` with `order:usd` before adding
-3. `updateActiveDeck` writes the new `DeckCard` into context
-4. `setLastAddedId` triggers scroll+highlight in `Workspace`; `Workspace` clears `lastAddedId` after animation
+**Card add flow (FindByNameBar):**
+1. User selects a suggestion → `searchCards(`!"name"`)` resolves canonical card → `getCardPrintings()` loads all variants
+2. User picks a printing; clicks Add
+3. Price rescue: if `prices.usd` is null or `"0.00"`, fetch `prices` only from a `searchCards` with `order:usd` result (only `prices` field is patched — art/set/image of the selected printing are preserved)
+4. `updateActiveDeck` writes the new `DeckCard` into context
+5. `setLastAddedId` triggers scroll+highlight in `Workspace`; `Workspace` clears `lastAddedId` after animation
 
 **Import flow:**
 `handleImportFile` (useDeckImportExport) → `pendingImport` state → `ImportModal` → `processImport("current" | "new")` → `updateActiveDeck` or `createNewDeck`
@@ -193,21 +179,11 @@ Copy limit exemptions: `type_line` contains `"Basic Land"` OR `oracle_text` cont
 
 **Color identity**: union of all commanders' `color_identity` arrays — `[...new Set(commanderCards.flatMap(c => c.color_identity ?? []))]`.
 
-### Search Query Assembly (SearchWorkspace)
+### FindByNameBar
 
-Three parts joined by space, in this order:
-1. **Format filter** — `legal:{format}` + commander color identity clause (when format filter badge is active)
-2. **Chip or NLP** — active category chip query, or `parseSearchQuery(input).scryfallQuery`
-3. **Sidebar filter syntax** — `buildSidebarFilterSyntax(sidebarFilters)`
+`autocompleteCards(query)` — fires after 150ms debounce when `query.length >= 2`; results capped at 8; used for name-only suggestions. On selection: `searchCards(`!"name"`)` → `getCardPrintings(name, oracle_id)` → variant strip.
 
-**Set match**: debounced 500ms, fires when `parsed.remainder` has 2+ words; injects `e:CODE` into the query; guarded by `setMatch.query === parsed.remainder` to prevent stale injection.
-
-### NLP Parser
-
-`parseSearchQuery(input)` in `lib/nlpParser.ts` returns:
-- `tokens` — matched NLP tokens with `matchedText` (used for chip removal via `query.replace(token.matchedText, '')`)
-- `scryfallQuery` — assembled Scryfall syntax
-- `remainder` — unmatched text passed through as a name/text search
+Stacking context: the `FindByNameBar` container is `relative z-[60]`, which creates a stacking context at z=60. This beats `VisualCard`'s price badge (`z-[50]`) and hover roll-up (`z-20` via CSS transform). The preview overlay itself is `z-[100]` within that context.
 
 ### Commander Grouping (`Workspace`)
 

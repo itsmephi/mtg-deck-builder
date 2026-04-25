@@ -1,5 +1,5 @@
 # Schema — MTG Deck Builder
-<!-- Last updated: v1.19.1 -->
+<!-- Last updated: v1.21.0 -->
 
 ## Client State
 
@@ -18,11 +18,6 @@ Primary state lives in `useDeckManager` (hook) and is threaded down via props. N
 | `mtg-group-by-type` | `'true' \| 'false'` | Group cards by type in deck view |
 | `mtg-tile-size` | `'xs' \| 's' \| 'm' \| 'l' \| 'xl'` | Shared tile size for both grid views |
 | `mtg-sidebar-collapsed` | `'true' \| 'false'` | Sidebar expanded/collapsed state |
-| `mtg-sidebar-active-tab` | `'Search' \| 'Decks'` | Last active sidebar tab |
-| `mtg-sidebar-filters` | serialized filter state (JSON) | Price, rarities, types, colors, year range |
-| `mtg-search-sort-direction` | `'asc' \| 'desc'` | Search result sort direction |
-| `mtg-search-view-mode` | `'grid' \| 'list'` | Search result display mode |
-| `mtg-search-filter-active-{deckId}` | `'true' \| 'false'` | Per-deck format/color filter badge state |
 | `mtg-theme` | `'zed-dark'` | Absent = Warm Stone (default) |
 | `mtg-last-backup` | ISO date string | Timestamp of last deck backup |
 

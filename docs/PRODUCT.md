@@ -65,4 +65,16 @@ Make something Thurgood loves using every day. Share it with anyone who finds it
 
 ## Where it's heading
 
-Public access (free, optional accounts for sync), mobile-responsive design that actually works on iPad, contextual brewing suggestions, and Supabase-backed cloud sync. Beyond that — we don't know yet. We'll keep listening to Thurgood, and to anyone else who shows up.
+The rebuild proceeds in rough phases. These are direction, not commitment — the specifics will shift as we learn what each phase teaches us.
+
+**Phase 1 — Rebuild surfaces in place.** Pick individual surfaces (capture path, search-as-find-by-name, the modal's art-swap framing, others as they surface) and rebuild each one against the new foundation. The engine stays; the surface gets reconsidered piece by piece. The app stays continuously deployable throughout. Each surface is a discrete spec, shipped on its own. No attempt to redesign the whole app at once.
+
+**Phase 2 — IA and mobile, informed by phase 1.** Once a few surfaces have been rebuilt, the structural questions get easier — what the navigation wants to be, what's core vs. settings-sprawl, how the app should feel on iPad. Designing IA now would be guessing; designing it after phase 1 is responding to real constraints. Mobile-responsive design lives here too, since layout and IA are entangled.
+
+**Phase 3 — Brew mode.** Contextual suggestions based on the deck in progress: cards that fit the strategy, cards similar to ones already added, cards from the same theme. Brewing as creative exploration, not "be EDHrec." Built against the engine, surfaced through the rebuilt UI from phases 1 and 2. The first genuinely new feature the rebuild enables.
+
+**Phase 4 — Public release, accounts, Supabase sync.** Optional accounts for cross-device sync, Buy Me a Coffee link, public URL. The data layer work lands here on purpose — doing it before the surface is right would mean redesigning it twice. By this phase, we know what data shapes the rebuilt surfaces actually need.
+
+The trigger for moving between phases isn't a date or a feature count — it's a feeling. Phase 1 ends when the patchwork of new surfaces against old IA starts to chafe. Phase 2 ends when the foundation feels ready to carry brew mode. Phase 3 ends when brew mode is solid enough that we'd be proud to put it in front of strangers.
+
+Beyond phase 4 — we don't know yet. We'll keep listening to Thurgood, and to anyone else who shows up.
