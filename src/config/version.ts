@@ -1,10 +1,15 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.21.6";
+export const APP_VERSION = "1.22.0";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.22.0": [
+    "Fix: dragging a TCGPlayer product URL now resolves the exact printing the URL points to — product ID extracted from URL and passed to Scryfall /cards/tcgplayer/:id; falls back to existing slug-based name resolution on 404",
+    "Feature: paste or drag highlighted text anywhere into the app to capture a card or decklist — single card name opens FindByNameBar preview; multi-line decklist (2+ quantity lines) opens ImportModal; set code hints (e.g. [FIN]) pre-select the matching printing",
+    "Feature: global Cmd/Ctrl+V paste capture when no text field is focused — same routing as drag-text; ignored while ImportModal or FindByNameBar preview is open",
+  ],
   "1.21.6": [
     "Enhancement: search preview panel redesigned to 2 columns — large card image removed (redundant with active art tile); info panel is now the left column with more horizontal breathing room",
     "Enhancement: art strip tiles now show a hover overlay with '+ Add' and '↔ Flip' (DFC only) buttons — hover any printing to add it directly or preview the back face; clicking + Add selects the tile and adds it",

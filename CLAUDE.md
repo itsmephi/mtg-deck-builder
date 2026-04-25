@@ -69,7 +69,7 @@ Default to direct work. Tier up only when the change earns it.
 
 ## Current Version
 
-`v1.21.6` — 2-column search preview + tile hover actions (add/flip on hover).
+`v1.22.0` — Capture path: TCGPlayer URL exact-variant resolution + text/paste capture.
 
 ## Post-Version Checklist
 

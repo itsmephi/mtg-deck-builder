@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Search, X, RotateCw, AlertTriangle } from "lucide-react";
 import { autocompleteCards, searchCards, getCardPrintings } from "@/lib/scryfall";
 import { useDeckManager } from "@/hooks/useDeckManager";
+import { parseDroppedText } from "@/hooks/useDeckImportExport";
 import { ScryfallCard } from "@/types";
 import { getFormatRules } from "@/lib/formatRules";
 
@@ -12,6 +13,7 @@ interface FindByNameBarProps {
   registerFocusFn?: (fn: () => void) => void;
   registerSearchFn?: (fn: (query: string) => void) => void;
   registerDismissFn?: (fn: () => void) => void;
+  registerCardPreviewFn?: (fn: (name: string, setCode?: string) => void) => void;
   onActiveChange?: (active: boolean) => void;
 }
 
@@ -59,7 +61,7 @@ function renderOracleText(text: string | undefined): React.ReactNode {
   );
 }
 
-export default function FindByNameBar({ showToast, registerFocusFn, registerSearchFn, registerDismissFn, onActiveChange }: FindByNameBarProps) {
+export default function FindByNameBar({ showToast, registerFocusFn, registerSearchFn, registerDismissFn, registerCardPreviewFn, onActiveChange }: FindByNameBarProps) {
   const { activeDeck, updateActiveDeck, deckViewMode, setLastAddedId } = useDeckManager();
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -453,6 +455,43 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
     registerSearchFn?.(handleExternalQuery);
   }, [registerSearchFn, handleExternalQuery]);
 
+  const openExternalCardPreview = useCallback(async (name: string, setCode?: string) => {
+    setQuery(name);
+    setShowDropdown(false);
+    setShowPreview(true);
+    setIsLoadingPreview(true);
+    setFlipFace(false);
+    setSelectedPrinting(null);
+    setPrintings([]);
+
+    try {
+      const results = await searchCards(`!"${name}"`);
+      if (!results.length) {
+        setShowPreview(false);
+        setIsLoadingPreview(false);
+        showToast(`Couldn't find "${name}".`);
+        return;
+      }
+      const canonical = results[0];
+      const allPrintings = await getCardPrintings(canonical.name, canonical.oracle_id);
+      const available = allPrintings.length > 0 ? allPrintings : [canonical];
+      const match = setCode
+        ? available.find((p) => p.set.toLowerCase() === setCode.toLowerCase())
+        : undefined;
+      setSelectedPrinting(match ?? available[0]);
+      setPrintings(available);
+    } catch {
+      setShowPreview(false);
+      showToast("Could not fetch card data. Try again.");
+    } finally {
+      setIsLoadingPreview(false);
+    }
+  }, [showToast]);
+
+  useEffect(() => {
+    registerCardPreviewFn?.(openExternalCardPreview);
+  }, [registerCardPreviewFn, openExternalCardPreview]);
+
   const onArtPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     const el = artStripRef.current;
     if (!el) return;
@@ -507,6 +546,15 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
           }}
           onBlur={() => setInputFocused(false)}
           onKeyDown={handleInputKeyDown}
+          onPaste={(e) => {
+            const text = e.clipboardData.getData("text/plain").trim();
+            if (!text.includes("(") && !text.includes("[") && !text.includes(" - ")) return;
+            const parsed = parseDroppedText(text);
+            if (parsed.type === "single" || parsed.type === "direct-add") {
+              e.preventDefault();
+              handleSelectSuggestion(parsed.name);
+            }
+          }}
           placeholder="Find a card by name…"
           className="flex-1 bg-transparent text-sm text-content-heading placeholder:text-content-muted outline-none"
           autoComplete="off"

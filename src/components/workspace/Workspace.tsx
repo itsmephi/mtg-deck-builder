@@ -23,6 +23,8 @@ interface WorkspaceProps {
   tileSize: TileSizeKey;
   onTileSizeChange: (stop: TileSizeKey) => void;
   showToast: (msg: string) => void;
+  registerCardPreviewFn?: (fn: (name: string, setCode?: string) => void) => void;
+  onFindBarActiveChange?: (active: boolean) => void;
 }
 
 // Color sort: WUBRG mono → multicolor (by combination) → colorless/missing
@@ -50,7 +52,7 @@ interface ConfirmDialogState {
   targetFormat: DeckFormat;
 }
 
-export default function Workspace({ pendingImport, processImport, cancelImport, tileSize, onTileSizeChange, showToast }: WorkspaceProps) {
+export default function Workspace({ pendingImport, processImport, cancelImport, tileSize, onTileSizeChange, showToast, registerCardPreviewFn, onFindBarActiveChange }: WorkspaceProps) {
   const {
     decks,
     activeDeck,
@@ -97,6 +99,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
   const findByNameFocusRef = useRef<(() => void) | null>(null);
   const findByNameSearchRef = useRef<((q: string) => void) | null>(null);
   const findByNameDismissRef = useRef<(() => void) | null>(null);
+  const findByNameCardPreviewRef = useRef<((name: string, setCode?: string) => void) | null>(null);
   const cardRefs = useRef<Map<string, HTMLElement>>(new Map());
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
   const [hoveredCardList, setHoveredCardList] = useState<ScryfallCard | null>(null);
@@ -469,7 +472,14 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
         registerFocusFn={(fn) => { findByNameFocusRef.current = fn; }}
         registerSearchFn={(fn) => { findByNameSearchRef.current = fn; }}
         registerDismissFn={(fn) => { findByNameDismissRef.current = fn; }}
-        onActiveChange={setIsFindBarActive}
+        registerCardPreviewFn={(fn) => {
+          findByNameCardPreviewRef.current = fn;
+          registerCardPreviewFn?.(fn);
+        }}
+        onActiveChange={(active) => {
+          setIsFindBarActive(active);
+          onFindBarActiveChange?.(active);
+        }}
       />
       {isFindBarActive && (
         <div

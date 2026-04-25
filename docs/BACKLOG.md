@@ -12,9 +12,13 @@
 ## Inbox
 <!-- New items land here. Triage promotes to Triaged or Parked. -->
 
+- [ ] **feedback** | **[low]** | v1.22.0 unvalidated: single-card paste/drag routes to FindByNameBar preview (confirm step) — if Thurgood finds the confirm step annoying for bare card names, switch to direct-add with undo toast (same as URL drop). Flag after first use.
+
 - [ ] **enhancement** | **[high]** | Settings Hub: "Submit a Bug" button/link in Support tab (#78) — blocked: needs email address first
 - [x] **enhancement** | **[med]** | Artist search removed from CardModal — resolved in v1.21.1: artist name in FindByNameBar preview is now a tappable link that runs `a:"artist"` and populates the right-column strip
 - [ ] **bug** | Drop overlay fires during FindByNameBar preview — dragging a URL from an external source while the search preview is open triggers the DropOverlay behind the preview; the drop gesture should be suppressed or redirected while a preview is active ⚠️ needs design
+- [ ] - how to preview the card art at full res to appreciate the art.
+- [ ] ability to flip the card in the workspace
 
 ---
 

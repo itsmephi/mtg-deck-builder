@@ -6,10 +6,10 @@ import Workspace from "@/components/workspace/Workspace";
 import SettingsView from "@/components/workspace/SettingsView";
 import HomeScreen from "@/components/home/HomeScreen";
 import DropOverlay from "@/components/layout/DropOverlay";
-import { useDeckImportExport } from "@/hooks/useDeckImportExport";
+import { useDeckImportExport, parseDroppedText } from "@/hooks/useDeckImportExport";
 import { useDeckManager } from "@/hooks/useDeckManager";
 import { TILE_SIZE_STOPS, TileSizeKey, DEFAULT_TILE_SIZE, TILE_SIZE_STORAGE_KEY } from "@/config/gridConfig";
-import { searchCardsForDrop, lookupSetCode, lookupCardFuzzy, searchCards } from "@/lib/scryfall";
+import { searchCardsForDrop, lookupSetCode, lookupCardFuzzy, searchCards, getCardByTcgplayerId } from "@/lib/scryfall";
 
 // TCGPlayer appends variant/treatment words to slugs that are NOT part of the card name.
 const SLUG_TREATMENT_SINGLES = new Set([
@@ -30,6 +30,7 @@ export default function Dashboard() {
     pendingImport,
     processImport,
     cancelImport,
+    directImportToCurrent,
   } = useDeckImportExport();
 
   const {
@@ -43,10 +44,13 @@ export default function Dashboard() {
     deleteDeck,
     setLastAddedId,
     deckViewMode,
+    updateActiveDeck,
   } = useDeckManager();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const cardPreviewFnRef = useRef<((name: string, setCode?: string) => void) | null>(null);
+  const isFindBarActiveRef = useRef(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastAction, setToastAction] = useState<{ label: string; onAction: () => void } | null>(null);
   const [showSettings, setShowSettings] = useState(false);
@@ -100,7 +104,70 @@ export default function Dashboard() {
     perDeckKeys.forEach((k) => localStorage.removeItem(k));
   }, []);
 
+  const addDroppedCardToDeck = useCallback(async (initialCard: import("@/types").ScryfallCard) => {
+    let card = initialCard;
+    if (!card.prices.usd || card.prices.usd === "0.00") {
+      const rescueResults = await searchCards(`!"${card.name}" order:usd`);
+      if (rescueResults.length > 0 && rescueResults[0].prices.usd && rescueResults[0].prices.usd !== "0.00") {
+        card = { ...rescueResults[0], id: initialCard.id };
+      }
+    }
+
+    const currentActiveDeck = activeDeck;
+    let targetDeckId: string;
+    let wasAutoCreatedDeck = false;
+
+    if (currentActiveDeck) {
+      targetDeckId = currentActiveDeck.id;
+    } else {
+      targetDeckId = createNamedDeck(`${card.name} Deck`, "freeform");
+      wasAutoCreatedDeck = true;
+    }
+
+    const targetPool: "main" | "sideboard" = deckViewMode === "sideboard" ? "sideboard" : "main";
+    const targetDeck = decks.find((d) => d.id === targetDeckId);
+    const poolCards = targetPool === "sideboard" ? (targetDeck?.sideboard ?? []) : (targetDeck?.cards ?? []);
+    const wasExistingCard = poolCards.some((c) => c.id === card.id);
+
+    addCardToSpecificDeck(targetDeckId, card, targetPool);
+    setLastAddedId(card.id);
+
+    const cardNameDisplay = card.name;
+    showUndoToast(`Added ${cardNameDisplay}`, () => {
+      if (wasAutoCreatedDeck) {
+        deleteDeck(targetDeckId);
+        setActiveDeckId(null);
+      } else {
+        removeCardFromDeckById(targetDeckId, card.id, targetPool, wasExistingCard);
+      }
+      showToast(`Removed ${cardNameDisplay}`);
+    });
+  }, [
+    activeDeck,
+    decks,
+    deckViewMode,
+    showToast,
+    showUndoToast,
+    createNamedDeck,
+    addCardToSpecificDeck,
+    removeCardFromDeckById,
+    deleteDeck,
+    setActiveDeckId,
+    setLastAddedId,
+  ]);
+
   const handleTCGPlayerDrop = useCallback(async (url: string) => {
+    // Phase 1: try exact variant via TCGPlayer product ID
+    const productIdMatch = url.match(/tcgplayer\.com\/product\/(\d+)\//);
+    if (productIdMatch) {
+      const card = await getCardByTcgplayerId(productIdMatch[1]);
+      if (card) {
+        await addDroppedCardToDeck(card);
+        return;
+      }
+      // null = 404 or network error — fall through to slug-based resolution
+    }
+
     const tcgMatch = url.match(/tcgplayer\.com\/product\/\d+\/([^?#/]+)/);
     if (!tcgMatch) {
       showToast("Card not found from dropped URL");
@@ -187,60 +254,75 @@ export default function Dashboard() {
       return;
     }
 
-    let card = results.find((c) => c.name.toLowerCase() === cardName.toLowerCase()) ?? results[0];
+    const card = results.find((c) => c.name.toLowerCase() === cardName.toLowerCase()) ?? results[0];
+    await addDroppedCardToDeck(card);
+  }, [addDroppedCardToDeck, showToast]);
 
-    if (!card.prices.usd || card.prices.usd === "0.00") {
-      const rescueResults = await searchCards(`!"${card.name}" order:usd`);
-      if (rescueResults.length > 0 && rescueResults[0].prices.usd && rescueResults[0].prices.usd !== "0.00") {
-        card = { ...rescueResults[0], id: card.id };
-      }
+  const handleTextCapture = useCallback(async (text: string) => {
+    const parsed = parseDroppedText(text);
+    if (parsed.type === "unknown") {
+      showToast("Couldn't read that as a card or decklist.");
+      return;
     }
-
-    const currentActiveDeck = activeDeck;
-    let targetDeckId: string;
-    let wasAutoCreatedDeck = false;
-
-    if (currentActiveDeck) {
-      targetDeckId = currentActiveDeck.id;
-    } else {
-      targetDeckId = createNamedDeck(`${card.name} Deck`, "freeform");
-      wasAutoCreatedDeck = true;
+    if (parsed.type === "decklist") {
+      if (!activeDeck) { showToast("Open a deck first to add cards."); return; }
+      const count = await directImportToCurrent(parsed.rawLines);
+      showToast(count > 0 ? `Added ${count} card${count === 1 ? "" : "s"} to deck` : "No cards found in that decklist.");
+      return;
     }
-
-    const targetPool: "main" | "sideboard" = deckViewMode === "sideboard" ? "sideboard" : "main";
-
-    const targetDeck = decks.find((d) => d.id === targetDeckId);
-    const poolCards = targetPool === "sideboard"
-      ? (targetDeck?.sideboard ?? [])
-      : (targetDeck?.cards ?? []);
-    const wasExistingCard = poolCards.some((c) => c.id === card.id);
-
-    addCardToSpecificDeck(targetDeckId, card, targetPool);
-    setLastAddedId(card.id);
-
-    const cardNameDisplay = card.name;
-    showUndoToast(`Added ${cardNameDisplay}`, () => {
-      if (wasAutoCreatedDeck) {
-        deleteDeck(targetDeckId);
-        setActiveDeckId(null);
-      } else {
-        removeCardFromDeckById(targetDeckId, card.id, targetPool, wasExistingCard);
+    if (parsed.type === "direct-add") {
+      if (!activeDeck) {
+        showToast("Open a deck first to add cards.");
+        return;
       }
-      showToast(`Removed ${cardNameDisplay}`);
-    });
-  }, [
-    activeDeck,
-    decks,
-    deckViewMode,
-    showToast,
-    showUndoToast,
-    createNamedDeck,
-    addCardToSpecificDeck,
-    removeCardFromDeckById,
-    deleteDeck,
-    setActiveDeckId,
-    setLastAddedId,
-  ]);
+      let card;
+      try {
+        const results = await searchCards(`!"${parsed.name}"`);
+        if (!results.length) {
+          const fuzzy = await lookupCardFuzzy(parsed.name);
+          if (!fuzzy) { showToast(`Couldn't find "${parsed.name}".`); return; }
+          card = fuzzy;
+        } else {
+          card = results[0];
+        }
+        if (!card.prices.usd || card.prices.usd === "0.00") {
+          const rescue = await searchCards(`!"${card.name}" order:usd`);
+          if (rescue.length > 0 && rescue[0].prices.usd && rescue[0].prices.usd !== "0.00") {
+            card = { ...rescue[0], id: card.id };
+          }
+        }
+      } catch {
+        showToast("Could not reach Scryfall. Try again.");
+        return;
+      }
+      const { qty } = parsed;
+      const existing = activeDeck.cards.find((c) => c.id === card.id);
+      const prevQty = existing?.quantity ?? 0;
+      updateActiveDeck((deck) => ({
+        ...deck,
+        cards: existing
+          ? deck.cards.map((c) => c.id === card.id ? { ...c, quantity: c.quantity + qty } : c)
+          : [...deck.cards, { ...card, quantity: qty, ownedQty: 0, isOwned: false }],
+      }));
+      setLastAddedId(card.id);
+      showUndoToast(`Added ${qty > 1 ? `${qty}× ` : ""}${card.name}`, () => {
+        updateActiveDeck((deck) => ({
+          ...deck,
+          cards: prevQty === 0
+            ? deck.cards.filter((c) => c.id !== card.id)
+            : deck.cards.map((c) => c.id === card.id ? { ...c, quantity: prevQty } : c),
+        }));
+        showToast(`Removed ${card.name}`);
+      });
+      return;
+    }
+    // single → FindByNameBar preview
+    if (!cardPreviewFnRef.current) {
+      showToast(`Couldn't find "${parsed.name}".`);
+      return;
+    }
+    cardPreviewFnRef.current(parsed.name, parsed.setCode);
+  }, [showToast, directImportToCurrent, activeDeck, updateActiveDeck, setLastAddedId, showUndoToast]);
 
   useEffect(() => {
     const handleDragEnter = (e: DragEvent) => {
@@ -258,15 +340,15 @@ export default function Dashboard() {
       e.preventDefault();
       dragDepthRef.current = 0;
       setIsDragActive(false);
-      const url =
-        e.dataTransfer?.getData("text/uri-list") ||
-        e.dataTransfer?.getData("text/plain") ||
-        "";
-      if (!url.trim()) {
+      const uriList = e.dataTransfer?.getData("text/uri-list") ?? "";
+      const plainText = e.dataTransfer?.getData("text/plain") ?? "";
+      if (uriList.trim()) {
+        handleTCGPlayerDrop(uriList.trim());
+      } else if (plainText.trim()) {
+        handleTextCapture(plainText.trim());
+      } else {
         showToast("Card not found from dropped URL");
-        return;
       }
-      handleTCGPlayerDrop(url.trim());
     };
     window.addEventListener("dragenter", handleDragEnter);
     window.addEventListener("dragleave", handleDragLeave);
@@ -278,7 +360,25 @@ export default function Dashboard() {
       window.removeEventListener("dragover", handleDragOver);
       window.removeEventListener("drop", handleDrop);
     };
-  }, [handleTCGPlayerDrop, showToast]);
+  }, [handleTCGPlayerDrop, handleTextCapture, showToast]);
+
+  useEffect(() => {
+    const handlePaste = (e: ClipboardEvent) => {
+      if (pendingImport !== null) return;
+      if (isFindBarActiveRef.current) return;
+      const el = document.activeElement as HTMLElement | null;
+      if (!el) return;
+      const tag = el.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
+      if (el.isContentEditable) return;
+      const text = e.clipboardData?.getData("text/plain") ?? "";
+      if (!text.trim()) return;
+      e.preventDefault();
+      handleTextCapture(text.trim());
+    };
+    document.addEventListener("paste", handlePaste);
+    return () => document.removeEventListener("paste", handlePaste);
+  }, [handleTextCapture, pendingImport]);
 
   const setTileSize = (s: TileSizeKey) => {
     setTileSizeState(s);
@@ -329,6 +429,8 @@ export default function Dashboard() {
               tileSize={tileSize}
               onTileSizeChange={setTileSize}
               showToast={showToast}
+              registerCardPreviewFn={(fn) => { cardPreviewFnRef.current = fn; }}
+              onFindBarActiveChange={(active) => { isFindBarActiveRef.current = active; }}
             />
           </div>
         )}

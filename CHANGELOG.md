@@ -5,6 +5,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.22.0] — Capture path
+
+### Fixed
+- **TCGPlayer URL drop**: dragging a product URL now resolves the exact printing the URL points to — product ID extracted from the URL path and passed to Scryfall `/cards/tcgplayer/:id`; falls back to the existing slug-based name resolution on 404
+
+### Added
+- **Text drag + paste capture**: paste (`Cmd/Ctrl+V`) or drag highlighted text anywhere into the app to capture a card or decklist
+  - Single card name → opens FindByNameBar preview pre-populated with that card; set code hints (e.g. `[FIN]`) pre-select the matching printing in the art strip
+  - Multi-line decklist (2+ quantity lines) → opens ImportModal; supports `3 Ba Sing Se`, `3 Ba Sing Se [TLA]`, and `// Commander:` headers
+  - Paste is ignored while ImportModal or FindByNameBar preview is open, and while any text input is focused
+
+---
+
 ## [1.21.6] — 2-column search preview + tile hover actions
 
 ### Changed
