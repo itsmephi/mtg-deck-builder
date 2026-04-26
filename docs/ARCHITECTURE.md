@@ -1,4 +1,4 @@
-<!-- Updated by Claude Code after each release. Last updated: v1.21.5 -->
+<!-- Updated by Claude Code after each release. Last updated: v1.23.1 -->
 
 # MTG Deck Builder — Architecture Reference
 
@@ -22,7 +22,6 @@ Living reference for file structure, state ownership, and key technical patterns
 | `Sidebar.tsx` | Outer shell; renders collapsed rail or expanded Decks tab content; manages collapsed/expanded state; enforces settings overlay close contract |
 | `SidebarRail.tsx` | Collapsed 48px icon strip — decks, home, settings icons |
 | `SidebarDecksTab.tsx` | Deck list with create/delete/format/sideboard/import/export/buy actions |
-| `CardModal.tsx` | Full-screen card detail overlay; `context='deck'` (default) → "Confirm Art Swap" |
 | `SampleHandModal.tsx` | Opening hand simulator — 7-card draw, mana curve histogram, draw odds per card; all commanders excluded from library |
 | `FormatPicker.tsx` | Popover format selector (Freeform / Standard / Commander); opens downward or upward based on available space |
 | `DropOverlay.tsx` | Full-viewport fixed overlay (`z-[9999]`); shown during URL drag-enter; pointer-events-none so it doesn't block the drag |
@@ -32,7 +31,7 @@ Living reference for file structure, state ownership, and key technical patterns
 | File | Responsibility |
 |---|---|
 | `Workspace.tsx` | Active deck view; renders grid or list, sorts/groups cards, handles format-change dialog, triggers color identity backfill on Commander switch; renders `z-[55]` backdrop overlay when FindByNameBar is active — dims/blurs the deck, blocks pointer events, click dismisses the bar |
-| `FindByNameBar.tsx` | Persistent find-by-name bar pinned above the deck workspace; autocomplete (150ms debounce, max 8 suggestions), card preview panel (art + printings strip + CardModal-style info), add to main/sideboard; container is `z-[60]` (above backdrop); fires `onActiveChange` when dropdown/preview open or close; exposes `registerDismissFn` (calls `clearAll`) for backdrop-click dismiss; art strip supports drag-to-scroll and wheel-to-scroll (deltaY → scrollLeft) |
+| `FindByNameBar.tsx` | Persistent find-by-name bar pinned above the deck workspace; autocomplete (150ms debounce, max 8 suggestions), card preview panel (info column + art-variants strip), add to main/sideboard; also the entry point for **deck-card preview** (clicking a deck card opens the bar with that card's printing pre-selected) and **swap-art** (replaces CardModal); container is `z-[60]` (above backdrop); fires `onActiveChange` when dropdown/preview open or close; exposes `registerDismissFn` (calls `clearAll`) for backdrop-click dismiss; loading spinner overlays skeletons during slow Scryfall queries; art strip supports drag-to-scroll and wheel-to-scroll — wheel handler is a **window-level non-passive** listener delegated to `[data-art-strip]` (NOT React `onWheel`, see React Patterns) |
 | `WorkspaceToolbar.tsx` | Two-row toolbar above deck (row 1: name + format badge; row 2: stats + view controls + sort) |
 | `VisualCard.tsx` | Single grid tile; always-visible price badge (bottom-right, scales XS–XL); ownership badge at bottom-center animates to overlay-top on hover and becomes ✓ toggle (neutral/partial-green/full-green/warning-red); unified `[− owned +] / [− qty +]` row with progressive disclosure steppers; `tileSize` prop drives price badge sizing |
 | `ListCardTable.tsx` | Table view; column order: Owned (circle ✓ toggle) | Qty (X/Y steppers) | Name | Type | Mana | Price | ×; `table-fixed` prevents horizontal overflow |
@@ -225,6 +224,7 @@ Any navigation action (tab click, deck name click, home button) **must** call `o
 - `table-fixed` on `ListCardTable` — prevents horizontal overflow
 - Workspace scroll container uses `p-4 pb-20` (not `overflow-x-hidden`) — needed for tooltips, ring-offset, and badge overhang clearance
 - `contentEditable` abandoned for deck name input — use `size={Math.max(10, name.length)}`
+- **React 19 registers `onWheel` as passive** — `e.preventDefault()` inside a JSX `onWheel={...}` handler is silently ignored. Any wheel handler that needs to override default scroll (e.g. convert vertical wheel into horizontal `scrollLeft` inside an `overflow-y-auto` ancestor) must be attached natively with `addEventListener("wheel", handler, { passive: false })`. The `FindByNameBar` art strip uses a window-level listener delegated by `[data-art-strip]` selector (see line 35); v1.23.1 fixed the regression where the strip's wheel scroll silently broke after upgrading. Same caution applies to `onTouchStart`/`onTouchMove`
 
 ### Import/Export Formats
 
