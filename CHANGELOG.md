@@ -5,6 +5,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.23.1] — Wheel-scroll regression fix + loading spinner
+
+### Fixed
+- **Mouse-wheel horizontal scroll** on the search-preview art strip — regressed under React 19 (`onWheel` registered as passive, so `e.preventDefault()` was silently ignored and the parent panel's `overflow-y-auto` swallowed the wheel event before the strip could scroll); restored via a window-level non-passive wheel listener delegated to `[data-art-strip]`
+
+### Added
+- **Loading spinner** on the search-preview panel and on the artist/set browse strip — `Loader2` icon centered over the existing skeleton placeholders so slow Scryfall queries get a clear in-flight indicator
+
+---
+
 ## [1.23.0] — Card modal replacement
 
 ### Changed

@@ -1,10 +1,14 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.23.0";
+export const APP_VERSION = "1.23.1";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.23.1": [
+    "Fix: mouse-wheel horizontal scroll on the search-preview art strip — regressed under React 19 (onWheel registered as passive, so the parent panel's overflow-y-auto was eating the wheel event); restored via a window-level non-passive wheel listener delegated to [data-art-strip]",
+    "Enhancement: loading spinner overlay on the search-preview panel and on the artist/set browse strip — Loader2 icon centered over the existing skeleton placeholders so slow Scryfall queries get a clear in-flight indicator",
+  ],
   "1.23.0": [
     "Feature: clicking a card in the deck opens FindByNameBar preview with that card's current printing pre-selected — no separate modal",
     "Feature: art-strip hover button shows 'Swap art' (deck entry) vs '+ Add' (search entry); clicking swaps immediately with no confirm step",

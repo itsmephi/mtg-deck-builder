@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo } from "react";
-import { Search, X, RotateCw, AlertTriangle } from "lucide-react";
+import { Search, X, RotateCw, AlertTriangle, Loader2 } from "lucide-react";
 import { autocompleteCards, searchCards, getCardPrintings } from "@/lib/scryfall";
 import { useDeckManager } from "@/hooks/useDeckManager";
 import { parseDroppedText } from "@/hooks/useDeckImportExport";
@@ -293,6 +293,25 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
     }
     document.addEventListener("mousedown", onMouseDown);
     return () => document.removeEventListener("mousedown", onMouseDown);
+  }, []);
+
+  // React 19 registers onWheel as passive (e.preventDefault() is ignored), so the
+  // parent panel's overflow-y-auto eats the wheel event before the strip can scroll.
+  // Workaround: window-level non-passive wheel listener with closest() delegation —
+  // matches by [data-art-strip] attribute so any current strip is found regardless
+  // of which conditional branch rendered it.
+  useEffect(() => {
+    const handler = (e: WheelEvent) => {
+      const target = e.target as Element | null;
+      const strip = target?.closest?.("[data-art-strip]") as HTMLDivElement | null;
+      if (!strip) return;
+      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) && e.deltaY !== 0) {
+        e.preventDefault();
+        strip.scrollLeft += e.deltaY;
+      }
+    };
+    window.addEventListener("wheel", handler, { passive: false });
+    return () => window.removeEventListener("wheel", handler);
   }, []);
 
   // Format rules + warnings
@@ -709,7 +728,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
       {showPreview && (
         <div className="absolute left-3 right-3 top-full z-[100] bg-surface-panel border border-line-default rounded-lg shadow-xl overflow-y-auto" style={{ maxHeight: "80vh" }}>
           {isLoadingPreview || !selectedPrinting ? (
-            <div className="flex gap-4 p-4">
+            <div className="relative flex gap-4 p-4">
               <div className="shrink-0 space-y-3 pt-1" style={{ width: 280 }}>
                 <div className="h-5 rounded-lg bg-surface-deep animate-pulse w-3/4" />
                 <div className="h-4 rounded-lg bg-surface-deep animate-pulse w-1/2" />
@@ -720,6 +739,9 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
                 {[0, 1, 2].map((i) => (
                   <div key={i} className="h-40 w-[115px] rounded-lg bg-surface-deep animate-pulse shrink-0" />
                 ))}
+              </div>
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <Loader2 className="w-8 h-8 text-content-muted animate-spin" />
               </div>
             </div>
           ) : (
@@ -828,10 +850,13 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
                   {isLoadingBrowse ? (
                     <>
                       <div className="h-3 w-36 rounded bg-surface-deep animate-pulse mb-2" />
-                      <div className="flex gap-2" style={{ height: 318 }}>
+                      <div className="relative flex gap-2" style={{ height: 318 }}>
                         {[0, 1, 2].map((i) => (
                           <div key={i} className="h-full w-[115px] rounded-lg bg-surface-deep animate-pulse shrink-0" />
                         ))}
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                          <Loader2 className="w-8 h-8 text-content-muted animate-spin" />
+                        </div>
                       </div>
                     </>
                   ) : browseResults.length > 0 ? (
@@ -841,14 +866,14 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
                       </p>
                       <div
                         ref={artStripRef}
+                        data-art-strip
                         className="flex gap-2 overflow-x-auto pr-1.5 pt-1.5 pb-2 cursor-grab select-none [&::-webkit-scrollbar]:h-3 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-surface-deep"
-                        style={{ scrollSnapType: "x proximity", height: 318 }}
+                        style={{ height: 318 }}
                         onPointerDown={onArtPointerDown}
                         onPointerMove={onArtPointerMove}
                         onPointerUp={onArtPointerUp}
                         onPointerLeave={onArtPointerUp}
                         onDragStart={(e) => e.preventDefault()}
-                        onWheel={(e) => { if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) e.currentTarget.scrollLeft += e.deltaY; }}
                       >
                         <div className="w-1 shrink-0" />
                         {browseResults.map((p) => {
@@ -939,14 +964,14 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
                       </p>
                       <div
                         ref={artStripRef}
+                        data-art-strip
                         className="flex gap-2 overflow-x-auto pr-1.5 pt-1.5 pb-2 cursor-grab select-none [&::-webkit-scrollbar]:h-3 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-surface-deep"
-                        style={{ scrollSnapType: "x proximity", height: 318 }}
+                        style={{ height: 318 }}
                         onPointerDown={onArtPointerDown}
                         onPointerMove={onArtPointerMove}
                         onPointerUp={onArtPointerUp}
                         onPointerLeave={onArtPointerUp}
                         onDragStart={(e) => e.preventDefault()}
-                        onWheel={(e) => { if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) e.currentTarget.scrollLeft += e.deltaY; }}
                       >
                         <div className="w-1 shrink-0" />
                         {printings.map((p) => {

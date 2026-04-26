@@ -69,7 +69,7 @@ Default to direct work. Tier up only when the change earns it.
 
 ## Current Version
 
-`v1.23.0` — Card modal replacement: clicking a deck card opens FindByNameBar preview with current printing pre-selected; "Swap art" replaces CardModal.
+`v1.23.1` — Wheel-scroll regression fix on search-preview art strip + loading spinner overlay on slow Scryfall queries.
 
 ## Post-Version Checklist
 
