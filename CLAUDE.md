@@ -69,7 +69,9 @@ Default to direct work. Tier up only when the change earns it.
 
 ## Current Version
 
-`v1.27.0` — Grid-view editing on touch (the 1.26.0 follow-up). The visual card tile's edit controls were inside a `group-hover` overlay — unreachable on touch. Now, on touch only (`useIsTouch` → `(hover: none)`), tapping the always-on quantity badge reveals a slim bottom bar with full desktop parity (owned ✓ toggle, owned + qty steppers with tap-to-edit numbers, remove); it's a thin strip over a gradient, not the ~45% hover panel, and dismisses on tap-art / tap-outside / re-tap badge. The Commander crown becomes an always-visible corner tap on touch. Desktop/pointer behaviour is unchanged — everything new is gated behind `isTouch`. Pattern documented in `docs/ARCHITECTURE.md` → **Touch & Sizing System** (Grid tile editing).
+`v1.28.0` — Undoable card removal + safer touch delete (1.27.0 follow-up). Deleting a card now shows a 4s Undo toast that restores it at its original position (`Workspace.removeCard` / `removeSideboardCard` → `showUndoToast`); covers grid + list, desktop + touch. The grid touch bar's ✕ moved out of the bar to the top-right corner (its desktop-hover spot), shown only while the bar is open — it was too easy to tap ✕ to dismiss the bar and delete by accident. Dismiss the bar by tapping the art / outside instead.
+
+Prior: `v1.27.0` — Grid-view editing on touch (the 1.26.0 follow-up). On touch only (`useIsTouch` → `(hover: none)`), tapping the always-on quantity badge reveals a slim bottom bar (owned ✓ toggle, owned + qty steppers with tap-to-edit numbers). The Commander crown becomes an always-visible corner tap on touch. Desktop/pointer behaviour unchanged. Pattern in `docs/ARCHITECTURE.md` → **Touch & Sizing System** (Grid tile editing).
 
 Prior: `v1.26.0` — Site-wide touch & sizing pass. One unified, finger-friendly scale across desktop and touch (no responsive split): 11px text floor, 44px standalone chrome buttons, dense inline controls un-gated from `opacity-0 group-hover` and always visible at ~28px, explicit `viewport-fit=cover`. Standard in `docs/ARCHITECTURE.md` → **Touch & Sizing System**.
 

@@ -323,14 +323,22 @@ export default function VisualCard({
           alt={card.name}
         />
 
-        {/* × remove — inset top-right, hover-only */}
+        {/* × remove — inset top-right. Desktop: hover-only. Touch: shown while
+            the edit bar is open (same corner as desktop hover), so it's kept
+            clear of the bar's controls and isn't mistaken for a close button. */}
         <button
           onClick={(e) => {
             e.stopPropagation();
             onRemove(card.id);
           }}
           aria-label="Remove card"
-          className="absolute top-1.5 right-1.5 w-7 h-7 flex items-center justify-center rounded-full bg-surface-base text-content-tertiary hover:text-red-400 hover:bg-red-900 opacity-0 group-hover:opacity-100 transition-all z-30"
+          className={`absolute top-1.5 right-1.5 w-7 h-7 flex items-center justify-center rounded-full bg-surface-base text-content-tertiary hover:text-red-400 hover:bg-red-900 transition-all z-[46] ${
+            isTouch
+              ? barOpen
+                ? "opacity-100 pointer-events-auto"
+                : "opacity-0 pointer-events-none"
+              : "opacity-0 group-hover:opacity-100"
+          }`}
         >
           <X className="w-4 h-4" />
         </button>
@@ -782,15 +790,8 @@ export default function VisualCard({
               <Plus className="w-3.5 h-3.5" />
             </button>
           </div>
-
-          {/* Remove */}
-          <button
-            onClick={(e) => { e.stopPropagation(); onRemove(card.id); }}
-            aria-label="Remove card"
-            className="w-7 h-7 rounded-full flex items-center justify-center bg-white/5 border border-white/20 text-neutral-300 active:bg-red-500/30 active:text-red-400 transition-colors shrink-0"
-          >
-            <X className="w-4 h-4" />
-          </button>
+          {/* Remove lives at the top-right corner (see × button above), not in
+              the bar — keeps the destructive action away from the steppers. */}
         </div>
       )}
 
