@@ -5,6 +5,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.32.2] — One-line list rows in landscape
+
+The mobile list row (1.31.0) stacks the name over a mana + type subline — right for a portrait phone, but wasteful in landscape (and on tablets), where there's room for it all on one line.
+
+### Changed
+- **Responsive touch row** (`ListCardTable.tsx`) — the name cell is now `flex-col` on narrow screens and `sm:flex-row sm:items-center` at ≥ 640px, so the mana symbols and type line flow inline after the name on one line in landscape / on tablets, and stack as before in portrait. The name takes the remaining space (`sm:flex-1`, truncates); the meta group stays put (`sm:shrink-0`). Cells switch to `sm:align-middle` so single-line rows center vertically. `renderTouchRow` only renders on touch, so these `sm:` rules never affect the desktop table.
+
+---
+
 ## [1.32.1] — Stronger list color tints on Light theme
 
 The list view shades each row by the card's color (blue, red, land, multicolor, etc.). Those tints were tuned for the dark themes — faint 8–15% alpha washes — so on the Light theme's cream surface (`#faf7f2`) they were nearly invisible.
