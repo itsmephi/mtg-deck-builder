@@ -5,7 +5,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-## [1.31.3] — Stronger list color tints on Light theme
+## [1.32.1] — Stronger list color tints on Light theme
 
 The list view shades each row by the card's color (blue, red, land, multicolor, etc.). Those tints were tuned for the dark themes — faint 8–15% alpha washes — so on the Light theme's cream surface (`#faf7f2`) they were nearly invisible.
 
@@ -15,6 +15,16 @@ The list view shades each row by the card's color (blue, red, land, multicolor, 
 
 ### Added
 - `useIsLightTheme()` — a small in-file hook that tracks `<html data-theme="light">` via a `MutationObserver`, so the tints update live when the theme is switched in Settings or when the OS flips (System preference).
+
+---
+
+## [1.32.0] — Themed mobile status bar
+
+The mobile browser chrome (the status bar with the clock, battery, and signal) now matches the active theme. The app emitted no `<meta name="theme-color">` at all, so browsers fell back to their default chrome — or, on iOS Safari, unreliably sampled the page background, which is why a dark theme only *sometimes* tinted the bar.
+
+### Added
+- **`theme-color` meta tag, theme-aware** — `applyThemeColor()` in `theme.ts` creates/updates `<meta name="theme-color">` to the active palette's `--surface-base` (`#1c1917` Warm Stone · `#282c34` Zed Dark · `#faf7f2` Light), via a new exported `THEME_COLORS` map. Wired into `applyTheme()`, so every runtime theme switch updates the bar.
+- **First-paint + OS-flip coverage** — the no-flash init script in `layout.tsx` now sets the meta tag at the resolved color before first paint and updates it on OS dark/light flips while the preference is `system` (inlined color map kept in sync with `THEME_COLORS`).
 
 ---
 
@@ -37,8 +47,6 @@ Follow-up polish to the mobile list view (1.31.0), reported on the Light theme.
 ### Changed
 - **Name prominence** — the touch row name is now `text-[15px] font-semibold` (was `font-medium`/14px) with `min-w-0` for clean single-line truncation.
 - **More room for the name** — trimmed the touch layout so longer names fit on one line: quantity column `w-14 → w-12`, tighter cell padding, and the workspace scroll container's horizontal gutter is `px-2` on small screens (`sm:px-4` keeps desktop unchanged). The narrower gutter also gives grid view a touch more width on phones.
-
----
 
 ## [1.31.0] — List view on mobile
 

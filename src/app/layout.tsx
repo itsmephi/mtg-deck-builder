@@ -30,6 +30,8 @@ export default function RootLayout({
           (function() {
             try {
               var mq = window.matchMedia('(prefers-color-scheme: dark)');
+              // Keep in sync with THEME_COLORS in src/lib/theme.ts.
+              var colors = { 'warm-stone': '#1c1917', 'zed-dark': '#282c34', light: '#faf7f2' };
               function resolve(pref) {
                 if (pref === 'system') return mq.matches ? 'warm-stone' : 'light';
                 return pref;
@@ -37,6 +39,13 @@ export default function RootLayout({
               function apply(theme) {
                 if (theme === 'warm-stone') delete document.documentElement.dataset.theme;
                 else document.documentElement.dataset.theme = theme;
+                var meta = document.querySelector('meta[name="theme-color"]');
+                if (!meta) {
+                  meta = document.createElement('meta');
+                  meta.name = 'theme-color';
+                  document.head.appendChild(meta);
+                }
+                meta.content = colors[theme];
               }
               function pref() {
                 var v = localStorage.getItem('mtg-theme');
