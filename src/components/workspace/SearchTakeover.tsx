@@ -55,7 +55,7 @@ export default function SearchTakeover({ onSearch, onTagSelect }: SearchTakeover
               key={tag}
               onClick={() => onTagSelect(tag)}
               className="
-                text-xs py-1.5 px-3.5 rounded-full
+                text-sm py-2.5 px-4 rounded-full
                 bg-surface-raised border border-line-default
                 text-content-secondary
                 hover:bg-[color:var(--input-edge-focus)]/8

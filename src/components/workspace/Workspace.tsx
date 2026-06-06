@@ -581,8 +581,8 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
                 aspect-[2.5/3.5] w-full
               "
             >
-              <span className="text-base leading-none">+</span>
-              <span className="text-[8px] text-center leading-tight px-1.5">
+              <span className="text-lg leading-none">+</span>
+              <span className="text-xs text-center leading-tight px-1.5">
                 Add your first card
               </span>
             </div>
@@ -593,7 +593,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
               ([cat, cards]) =>
                 cards.length > 0 && (
                   <div key={cat}>
-                    <h3 className="text-[10px] font-bold text-content-muted uppercase tracking-widest mb-4 ml-1">
+                    <h3 className="text-[11px] font-bold text-content-muted uppercase tracking-widest mb-4 ml-1">
                       {cat} ({cards.reduce((s, c) => s + c.quantity, 0)})
                     </h3>
                     {viewMode === "visual" ? (

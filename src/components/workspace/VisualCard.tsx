@@ -1,6 +1,7 @@
 import { Minus, Plus, X } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { DeckCard, ScryfallCard } from '@/types';
+import { useIsTouch } from '@/hooks/useIsTouch';
 import { DeckFormat, getCardWarnings, isEligibleCommander, isVehicleOrSpacecraftCommander, hasPartnerAbility } from '@/lib/formatRules';
 import { TileSizeKey } from '@/config/gridConfig';
 
@@ -63,6 +64,26 @@ export default function VisualCard({
 }: VisualCardProps) {
   const badgeSize = PRICE_BADGE_SIZES[tileSize];
 
+  // Touch: the desktop edit overlay is hover-driven and unreachable on touch.
+  // Instead, tapping the qty badge reveals a slim bottom bar with the same
+  // controls (full parity). Declared before the search-mode early return so the
+  // hook order stays stable. Pointer/hover behaviour is left untouched.
+  const isTouch = useIsTouch();
+  const [barOpen, setBarOpen] = useState(false);
+  const cardRootRef = useRef<HTMLDivElement>(null);
+
+  // Close the touch bar on a tap/scroll anywhere outside this card.
+  useEffect(() => {
+    if (!barOpen) return;
+    const onDown = (e: Event) => {
+      if (cardRootRef.current && !cardRootRef.current.contains(e.target as Node)) {
+        setBarOpen(false);
+      }
+    };
+    document.addEventListener("pointerdown", onDown);
+    return () => document.removeEventListener("pointerdown", onDown);
+  }, [barOpen]);
+
   // Search mode — simplified tile with "+ Add to Deck" overlay
   if (mode === "search") {
     const imgSrc = card.card_faces?.[0].image_uris?.normal || card.image_uris?.normal;
@@ -82,7 +103,7 @@ export default function VisualCard({
             <span className="text-xs font-semibold text-content-primary text-center leading-tight line-clamp-2">
               {card.name}
             </span>
-            <span className="text-[10px] text-content-tertiary truncate w-full text-center">
+            <span className="text-xs text-content-tertiary truncate w-full text-center">
               {card.type_line}
             </span>
             <button
@@ -234,10 +255,13 @@ export default function VisualCard({
     badgeCheckColor = isBadgeHovered ? '#f87171' : '#fff';
   }
 
-  const activeBadgeBg = isCardHovered ? badgeCheckBg : badgeRestBg;
-  const activeBadgeBorder = isCardHovered ? badgeCheckBorder : badgeRestBorder;
-  const activeBadgeColor = isCardHovered ? badgeCheckColor : badgeRestColor;
-  const badgeBottom = isCardHovered ? badgeTargetBottom : '-12px';
+  // On touch, ignore emulated hover so the badge stays a stable qty chip (the
+  // tap-to-reveal trigger) instead of flipping to the desktop ✓ toggle state.
+  const badgeHoverActive = !isTouch && isCardHovered;
+  const activeBadgeBg = badgeHoverActive ? badgeCheckBg : badgeRestBg;
+  const activeBadgeBorder = badgeHoverActive ? badgeCheckBorder : badgeRestBorder;
+  const activeBadgeColor = badgeHoverActive ? badgeCheckColor : badgeRestColor;
+  const badgeBottom = badgeHoverActive ? badgeTargetBottom : '-12px';
 
   // Owned number color in overlay — dim when not tracking (isOwned=false)
   const ownedNumColor = !card.isOwned || card.ownedQty === 0
@@ -253,8 +277,8 @@ export default function VisualCard({
   const stepperBtn = (visible: boolean, btnId: string): React.CSSProperties => {
     const hovered = hoveredBtn === btnId && visible;
     return {
-      width: '24px',
-      height: '24px',
+      width: '28px',
+      height: '28px',
       borderRadius: '50%',
       display: 'flex',
       alignItems: 'center',
@@ -273,8 +297,14 @@ export default function VisualCard({
 
   return (
     <div
+      ref={cardRootRef}
       className="relative group rounded-xl cursor-pointer aspect-[2.5/3.5]"
-      onClick={() => onSelect(card)}
+      onClick={() => {
+        // On touch, if the edit bar is open a tap on the art dismisses it
+        // (rather than opening the card preview).
+        if (isTouch && barOpen) { setBarOpen(false); return; }
+        onSelect(card);
+      }}
       onMouseEnter={() => {
         setIsCardHovered(true);
         if (overlayRef.current) {
@@ -299,9 +329,10 @@ export default function VisualCard({
             e.stopPropagation();
             onRemove(card.id);
           }}
-          className="absolute top-1.5 right-1.5 w-6 h-6 flex items-center justify-center rounded-full bg-surface-base text-content-tertiary hover:text-red-400 hover:bg-red-900 opacity-0 group-hover:opacity-100 transition-all z-30"
+          aria-label="Remove card"
+          className="absolute top-1.5 right-1.5 w-7 h-7 flex items-center justify-center rounded-full bg-surface-base text-content-tertiary hover:text-red-400 hover:bg-red-900 opacity-0 group-hover:opacity-100 transition-all z-30"
         >
-          <X className="w-3 h-3" />
+          <X className="w-4 h-4" />
         </button>
 
         {/* Slide-up bottom overlay */}
@@ -315,7 +346,7 @@ export default function VisualCard({
             {card.name}
           </span>
           {/* Type line */}
-          <span className="text-[10px] text-content-tertiary truncate w-full text-center -mt-1">
+          <span className="text-xs text-content-tertiary truncate w-full text-center -mt-1">
             {card.type_line}
           </span>
 
@@ -339,7 +370,7 @@ export default function VisualCard({
                 <path d="M12 9v4" stroke="#171717" strokeWidth="2.2" strokeLinecap="round" fill="none" />
                 <circle cx="12" cy="17" r="1" fill="#171717" />
               </svg>
-              <span style={{ fontSize: '10px', fontWeight: 600, color: '#f87171', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: '11px', fontWeight: 600, color: '#f87171', whiteSpace: 'nowrap' }}>
                 {warnings[0]}
               </span>
             </div>
@@ -362,7 +393,7 @@ export default function VisualCard({
                   onUpdateOwnedQty(card.id, Math.max(0, card.ownedQty - 1));
                 }}
               >
-                <Minus style={{ width: '10px', height: '10px' }} />
+                <Minus style={{ width: '14px', height: '14px' }} />
               </button>
 
               {isOwnedEditing ? (
@@ -401,7 +432,7 @@ export default function VisualCard({
                   onUpdateOwnedQty(card.id, card.ownedQty + 1);
                 }}
               >
-                <Plus style={{ width: '10px', height: '10px' }} />
+                <Plus style={{ width: '14px', height: '14px' }} />
               </button>
             </div>
 
@@ -423,7 +454,7 @@ export default function VisualCard({
                   onUpdateQuantity(card.id, -1);
                 }}
               >
-                <Minus style={{ width: '10px', height: '10px' }} />
+                <Minus style={{ width: '14px', height: '14px' }} />
               </button>
 
               {isEditing ? (
@@ -466,7 +497,7 @@ export default function VisualCard({
                   onUpdateQuantity(card.id, 1);
                 }}
               >
-                <Plus style={{ width: '10px', height: '10px' }} />
+                <Plus style={{ width: '14px', height: '14px' }} />
               </button>
             </div>
           </div>
@@ -532,7 +563,7 @@ export default function VisualCard({
                   <button
                     onClick={(e) => { e.stopPropagation(); if (canAct && crownAction) crownAction(); }}
                     title={!eligible && commanderCount === 0 ? "Must be Legendary" : undefined}
-                    className={`w-7 h-7 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 border border-neutral-600 bg-neutral-900/70 shadow-md transition-all duration-150 ${canAct ? "hover:bg-yellow-500/20 hover:border-yellow-400 hover:scale-110 cursor-pointer group/crown" : "cursor-not-allowed"}`}
+                    className={`w-7 h-7 rounded-full flex items-center justify-center ${isTouch ? "opacity-90" : "opacity-0 group-hover:opacity-100"} border border-neutral-600 bg-neutral-900/70 shadow-md transition-all duration-150 ${canAct ? "hover:bg-yellow-500/20 hover:border-yellow-400 hover:scale-110 cursor-pointer group/crown" : "cursor-not-allowed"}`}
                   >
                     <svg width="16" height="16" viewBox="0 0 24 24">
                       <path
@@ -544,7 +575,7 @@ export default function VisualCard({
 
                   {showCrownTooltip && canAct && (
                     <div
-                      className="absolute left-1/2 -translate-x-1/2 top-full mt-1 px-2 py-1 bg-neutral-900 border border-neutral-700 rounded text-[10px] text-neutral-200 whitespace-nowrap z-30 flex items-center gap-1.5"
+                      className="absolute left-1/2 -translate-x-1/2 top-full mt-1 px-2 py-1 bg-neutral-900 border border-neutral-700 rounded text-xs text-neutral-200 whitespace-nowrap z-30 flex items-center gap-1.5"
                       onMouseEnter={() => {
                         if (crownTooltipTimeout.current) { clearTimeout(crownTooltipTimeout.current); crownTooltipTimeout.current = null; }
                       }}
@@ -577,33 +608,41 @@ export default function VisualCard({
       {/* Qty/owned badge — bottom-center, animates to overlay-top on card hover and becomes ✓ toggle */}
       <div
         onClick={(e) => {
+          // Touch: the badge is the reveal trigger for the edit bar.
+          if (isTouch) {
+            e.stopPropagation();
+            setBarOpen((o) => !o);
+            return;
+          }
           if (!isCardHovered) return;
           e.stopPropagation();
           onToggleIsOwned(card.id);
         }}
         onMouseEnter={() => { if (isCardHovered) setIsBadgeHovered(true); }}
         onMouseLeave={() => setIsBadgeHovered(false)}
-        title={isCardHovered ? (card.isOwned ? "Unmark as owned" : "Mark as owned") : undefined}
+        title={isTouch ? "Edit quantities" : isCardHovered ? (card.isOwned ? "Unmark as owned" : "Mark as owned") : undefined}
         style={{
           position: 'absolute',
           left: '50%',
           transform: 'translateX(-50%)',
           bottom: badgeBottom,
-          width: '24px',
-          height: '24px',
+          width: isTouch ? '30px' : '24px',
+          height: isTouch ? '30px' : '24px',
           borderRadius: '50%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          transition: 'bottom 0.25s cubic-bezier(0.4,0,0.2,1), background 0.15s, border-color 0.15s, color 0.15s',
+          transition: 'bottom 0.25s cubic-bezier(0.4,0,0.2,1), opacity 0.15s, background 0.15s, border-color 0.15s, color 0.15s',
           zIndex: 25,
           border: `1px solid ${activeBadgeBorder}`,
           background: activeBadgeBg,
           color: activeBadgeColor,
-          cursor: isCardHovered ? 'pointer' : 'default',
+          cursor: (isCardHovered || isTouch) ? 'pointer' : 'default',
           userSelect: 'none',
           boxShadow: '0 2px 6px rgba(0,0,0,0.5)',
           overflow: 'hidden',
+          opacity: isTouch && barOpen ? 0 : 1,
+          pointerEvents: isTouch && barOpen ? 'none' : 'auto',
         }}
       >
         {/* Qty number — visible at rest */}
@@ -612,7 +651,7 @@ export default function VisualCard({
           fontSize: '11px',
           fontWeight: 700,
           fontVariantNumeric: 'tabular-nums',
-          opacity: isCardHovered ? 0 : 1,
+          opacity: badgeHoverActive ? 0 : 1,
           transition: 'opacity 0.15s',
           pointerEvents: 'none',
         }}>
@@ -623,7 +662,7 @@ export default function VisualCard({
           position: 'absolute',
           fontSize: '13px',
           fontWeight: 700,
-          opacity: isCardHovered ? 1 : 0,
+          opacity: badgeHoverActive ? 1 : 0,
           transition: 'opacity 0.15s',
           pointerEvents: 'none',
           lineHeight: 1,
@@ -631,6 +670,129 @@ export default function VisualCard({
           ✓
         </span>
       </div>
+
+      {/* Touch edit bar — slim, revealed by tapping the qty badge. Full parity
+          with the desktop hover overlay (owned toggle, owned/qty steppers with
+          tap-to-edit numbers, remove). Always mounted so number inputs commit
+          onBlur; visibility is toggled via classes. Touch only. */}
+      {isTouch && (
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className={`absolute bottom-0 left-0 right-0 z-[45] flex flex-wrap items-center justify-center gap-1.5 px-1.5 py-2 rounded-b-xl bg-gradient-to-t from-black/90 via-black/80 to-transparent transition-all duration-200 ${
+            barOpen ? "opacity-100 pointer-events-auto translate-y-0" : "opacity-0 pointer-events-none translate-y-2"
+          }`}
+        >
+          {/* Owned toggle */}
+          <button
+            onClick={(e) => { e.stopPropagation(); onToggleIsOwned(card.id); }}
+            aria-label={card.isOwned ? "Unmark as owned" : "Mark as owned"}
+            className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold border shrink-0 transition-colors ${
+              card.isOwned
+                ? isFullyOwned
+                  ? "bg-emerald-500 border-transparent text-white"
+                  : "bg-emerald-700 border-emerald-400/50 text-white"
+                : "bg-white/5 border-white/25 text-neutral-400"
+            }`}
+          >
+            ✓
+          </button>
+
+          {/* Owned stepper */}
+          <div className="flex items-center gap-1 shrink-0">
+            <button
+              onClick={(e) => { e.stopPropagation(); onUpdateOwnedQty(card.id, Math.max(0, card.ownedQty - 1)); }}
+              aria-label="Decrease owned"
+              className="w-7 h-7 rounded-full flex items-center justify-center bg-white/10 border border-white/20 text-neutral-100 active:bg-white/25 transition-colors"
+            >
+              <Minus className="w-3.5 h-3.5" />
+            </button>
+            {isOwnedEditing ? (
+              <input
+                type="text"
+                value={ownedEditValue}
+                onChange={(e) => setOwnedEditValue(e.target.value)}
+                onFocus={(e) => e.target.select()}
+                onBlur={() => { if (isOwnedEscaping.current) { isOwnedEscaping.current = false; return; } commitOwnedEdit(); }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") { e.preventDefault(); commitOwnedEdit(); }
+                  if (e.key === "Escape") { isOwnedEscaping.current = true; setIsOwnedEditing(false); }
+                }}
+                onClick={(e) => e.stopPropagation()}
+                className="w-7 text-center text-xs font-bold bg-white/10 border border-blue-500 rounded text-emerald-400 outline-none tabular-nums"
+                autoFocus
+              />
+            ) : (
+              <button
+                onClick={(e) => { e.stopPropagation(); startOwnedEdit(); }}
+                className="w-7 text-center text-xs font-bold tabular-nums"
+                style={{ color: ownedNumColor }}
+              >
+                {card.ownedQty}
+              </button>
+            )}
+            <button
+              onClick={(e) => { e.stopPropagation(); onUpdateOwnedQty(card.id, card.ownedQty + 1); }}
+              aria-label="Increase owned"
+              className="w-7 h-7 rounded-full flex items-center justify-center bg-white/10 border border-white/20 text-neutral-100 active:bg-white/25 transition-colors"
+            >
+              <Plus className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          <span className="text-neutral-500 text-xs select-none">/</span>
+
+          {/* Qty stepper */}
+          <div className="flex items-center gap-1 shrink-0">
+            <button
+              onClick={(e) => { e.stopPropagation(); onUpdateQuantity(card.id, -1); }}
+              aria-label="Decrease quantity"
+              className="w-7 h-7 rounded-full flex items-center justify-center bg-white/10 border border-white/20 text-neutral-100 active:bg-white/25 transition-colors"
+            >
+              <Minus className="w-3.5 h-3.5" />
+            </button>
+            {isEditing ? (
+              <input
+                type="text"
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                onFocus={(e) => e.target.select()}
+                onBlur={() => { if (isEscaping.current) { isEscaping.current = false; return; } commitEdit(); }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") { e.preventDefault(); commitEdit(); }
+                  if (e.key === "Escape") { isEscaping.current = true; setIsEditing(false); }
+                }}
+                onClick={(e) => e.stopPropagation()}
+                className="w-7 text-center text-xs font-bold bg-white/10 border border-blue-500 rounded text-white outline-none tabular-nums"
+                autoFocus
+              />
+            ) : (
+              <button
+                onClick={(e) => { e.stopPropagation(); startEdit(); }}
+                className="w-7 text-center text-xs font-bold tabular-nums"
+                style={{ color: overCopyLimit ? '#f87171' : '#e5e5e5' }}
+              >
+                {card.quantity}
+              </button>
+            )}
+            <button
+              onClick={(e) => { e.stopPropagation(); onUpdateQuantity(card.id, 1); }}
+              aria-label="Increase quantity"
+              className="w-7 h-7 rounded-full flex items-center justify-center bg-white/10 border border-white/20 text-neutral-100 active:bg-white/25 transition-colors"
+            >
+              <Plus className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          {/* Remove */}
+          <button
+            onClick={(e) => { e.stopPropagation(); onRemove(card.id); }}
+            aria-label="Remove card"
+            className="w-7 h-7 rounded-full flex items-center justify-center bg-white/5 border border-white/20 text-neutral-300 active:bg-red-500/30 active:text-red-400 transition-colors shrink-0"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
       {/* Price badge — stays visible, green when fully owned */}
       <div
@@ -642,7 +804,8 @@ export default function VisualCard({
           backdropFilter: 'blur(8px)',
           WebkitBackdropFilter: 'blur(8px)',
           color: price ? '#e5e5e5' : undefined,
-          opacity: price ? undefined : 0.45,
+          opacity: isTouch && barOpen ? 0 : price ? undefined : 0.45,
+          pointerEvents: isTouch && barOpen ? 'none' : undefined,
           fontSize: badgeSize.fontSize,
           fontWeight: 600,
           fontVariantNumeric: 'tabular-nums',

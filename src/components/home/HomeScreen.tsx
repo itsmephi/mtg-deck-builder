@@ -35,7 +35,7 @@ export default function HomeScreen({ decks, onDeckSelect, onCreateDeck }: HomeSc
         <h2 className="text-base font-medium text-content-heading">
           What are you brewing?
         </h2>
-        <p className="text-xs text-content-faint">{tagline}</p>
+        <p className="text-sm text-content-faint">{tagline}</p>
       </div>
 
       {/* Deck grid */}
@@ -51,8 +51,10 @@ export default function HomeScreen({ decks, onDeckSelect, onCreateDeck }: HomeSc
         {/* Ghost deck slot — always last */}
         <div ref={ghostRef} className="relative">
           <GhostDeckCard onClick={() => setPickerOpen(true)} />
+          {/* Picker drops below the ghost card, centered — avoids overflowing
+              the viewport on narrow/touch screens where left-full would clip. */}
           {pickerOpen && (
-            <div className="absolute left-full ml-2 top-0 w-52 bg-surface-base border border-line-default rounded-lg shadow-xl z-50">
+            <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-52 bg-surface-base border border-line-default rounded-lg shadow-xl z-50">
               <FormatPicker
                 onSelect={(format) => {
                   setPickerOpen(false);

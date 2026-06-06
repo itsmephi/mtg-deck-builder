@@ -58,7 +58,7 @@ function SegButton({
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`flex-1 h-10 px-2 flex items-center justify-center gap-1.5 text-sm rounded-md transition-all ${
+      className={`flex-1 h-11 px-2 flex items-center justify-center gap-1.5 text-sm rounded-md transition-all ${
         active
           ? "bg-blue-600 text-white border border-blue-500/50"
           : disabled
@@ -74,7 +74,7 @@ function SegButton({
 function Section({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="space-y-2">
-      <span className="text-[10px] font-bold text-content-muted uppercase tracking-widest">
+      <span className="text-[11px] font-bold text-content-muted uppercase tracking-widest">
         {label}
       </span>
       {children}
@@ -136,7 +136,7 @@ export default function DeckToolsSheet({
           <button
             onClick={onClose}
             aria-label="Close deck tools"
-            className="w-9 h-9 -mr-2 flex items-center justify-center text-content-muted hover:text-content-primary transition-colors"
+            className="w-11 h-11 -mr-2 flex items-center justify-center text-content-muted hover:text-content-primary transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -189,7 +189,7 @@ export default function DeckToolsSheet({
             <button
               onClick={() => setSortDir(sortDir === "asc" ? "desc" : "asc")}
               disabled={sortBy === "original"}
-              className={`w-full h-10 flex items-center justify-center gap-2 rounded-lg border text-sm transition-colors ${
+              className={`w-full h-11 flex items-center justify-center gap-2 rounded-lg border text-sm transition-colors ${
                 sortBy === "original"
                   ? "text-content-disabled border-line-subtle cursor-not-allowed"
                   : "text-content-secondary border-line-subtle hover:bg-surface-raised"

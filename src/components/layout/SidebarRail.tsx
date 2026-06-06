@@ -15,7 +15,7 @@ interface Props {
 
 function RailTooltip({ label }: { label: string }) {
   return (
-    <span className="absolute left-full ml-2 top-1/2 -translate-y-1/2 px-2 py-1 bg-surface-raised border border-line-default text-content-heading text-[10px] font-medium rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+    <span className="absolute left-full ml-2 top-1/2 -translate-y-1/2 px-2 py-1 bg-surface-raised border border-line-default text-content-heading text-[11px] font-medium rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
       {label}
     </span>
   );
@@ -70,9 +70,9 @@ export default function SidebarRail({ expandTo, onOpenSettings, onGoHome, isOnHo
       <div className="group relative flex items-center">
         <button
           onClick={(e) => { e.stopPropagation(); expandTo(); }}
-          className="w-9 h-9 rounded-full flex items-center justify-center text-content-muted hover:text-content-primary hover:bg-surface-raised transition-colors"
+          className="w-11 h-11 rounded-full flex items-center justify-center text-content-muted hover:text-content-primary hover:bg-surface-raised transition-colors"
         >
-          <PanelLeftOpen className="w-4 h-4" />
+          <PanelLeftOpen className="w-5 h-5" />
         </button>
         <RailTooltip label="Expand Sidebar" />
       </div>
@@ -81,9 +81,9 @@ export default function SidebarRail({ expandTo, onOpenSettings, onGoHome, isOnHo
       <div className="group relative flex items-center">
         <button
           onClick={(e) => { e.stopPropagation(); expandTo(); }}
-          className="w-9 h-9 rounded-full flex items-center justify-center text-content-muted hover:text-content-primary hover:bg-surface-raised transition-colors"
+          className="w-11 h-11 rounded-full flex items-center justify-center text-content-muted hover:text-content-primary hover:bg-surface-raised transition-colors"
         >
-          <Layers className="w-4 h-4" />
+          <Layers className="w-5 h-5" />
         </button>
         <RailTooltip label="Decks" />
       </div>
@@ -92,9 +92,9 @@ export default function SidebarRail({ expandTo, onOpenSettings, onGoHome, isOnHo
       <div className="group relative flex items-center">
         <button
           onClick={handleNewDeck}
-          className="w-9 h-9 rounded-full flex items-center justify-center text-content-muted hover:text-content-primary hover:bg-surface-raised transition-colors"
+          className="w-11 h-11 rounded-full flex items-center justify-center text-content-muted hover:text-content-primary hover:bg-surface-raised transition-colors"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-5 h-5" />
         </button>
         {!railPickerOpen && <RailTooltip label="New Deck" />}
         {railPickerOpen && (
@@ -116,9 +116,9 @@ export default function SidebarRail({ expandTo, onOpenSettings, onGoHome, isOnHo
           target="_blank"
           rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}
-          className="w-9 h-9 rounded-full flex items-center justify-center text-content-muted hover:text-yellow-400 transition-colors"
+          className="w-11 h-11 rounded-full flex items-center justify-center text-content-muted hover:text-yellow-400 transition-colors"
         >
-          <Coffee className="w-4 h-4" />
+          <Coffee className="w-5 h-5" />
         </a>
         <RailTooltip label="Buy Me a Coffee" />
       </div>
@@ -127,9 +127,9 @@ export default function SidebarRail({ expandTo, onOpenSettings, onGoHome, isOnHo
       <div className="group relative flex items-center">
         <button
           onClick={(e) => { e.stopPropagation(); onOpenSettings("preferences"); }}
-          className="w-9 h-9 rounded-full flex items-center justify-center text-content-muted hover:text-content-primary hover:bg-surface-raised transition-colors"
+          className="w-11 h-11 rounded-full flex items-center justify-center text-content-muted hover:text-content-primary hover:bg-surface-raised transition-colors"
         >
-          <Settings className="w-4 h-4" />
+          <Settings className="w-5 h-5" />
         </button>
         <RailTooltip label="Settings" />
       </div>
@@ -139,14 +139,14 @@ export default function SidebarRail({ expandTo, onOpenSettings, onGoHome, isOnHo
         <button
           onClick={isOnHomeScreen ? undefined : (e) => { e.stopPropagation(); onGoHome(); }}
           className={`
-            w-9 h-9 rounded-full flex items-center justify-center transition-colors
+            w-11 h-11 rounded-full flex items-center justify-center transition-colors
             ${isOnHomeScreen
               ? "text-content-disabled cursor-not-allowed"
               : "text-content-muted hover:text-content-primary hover:bg-surface-raised"
             }
           `}
         >
-          <Home className="w-4 h-4" />
+          <Home className="w-5 h-5" />
         </button>
         {!isOnHomeScreen && <RailTooltip label="Home" />}
       </div>

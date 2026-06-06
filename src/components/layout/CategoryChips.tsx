@@ -41,17 +41,17 @@ export default function CategoryChips({
 
   return (
     <div className="px-2.5 pt-2 pb-1 border-b border-line-subtle shrink-0">
-      <div className="text-[9px] text-content-faint uppercase tracking-wider mb-1.5">
+      <div className="text-[11px] text-content-faint uppercase tracking-wider mb-1.5">
         Quick Search
       </div>
-      <div className="flex flex-wrap gap-1.5">
+      <div className="flex flex-wrap gap-2">
         {visible.map((cat) => {
           const isActive = activeChipId === cat.id;
           return (
             <button
               key={cat.id}
               onClick={() => onSelectChip(cat.id, cat.query)}
-              className={`px-2 py-0.5 rounded text-[10px] border transition-colors ${
+              className={`px-2.5 py-1.5 rounded text-xs border transition-colors ${
                 isActive
                   ? "bg-blue-900/30 border-blue-500/30 text-blue-400"
                   : "bg-surface-raised border-line-default text-content-tertiary hover:text-content-heading hover:border-line-hover"

@@ -147,7 +147,7 @@ function ToggleChip({
   return (
     <button
       onClick={onClick}
-      className={`flex items-center gap-1 px-2 py-0.5 rounded text-[10px] border transition-colors ${
+      className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded text-xs border transition-colors ${
         active
           ? activeClassName
           : "bg-surface-raised border-line-default text-content-muted"
@@ -211,10 +211,10 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
       {/* Price Range */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <div className="text-[10px] text-content-muted uppercase tracking-wider">Price Range</div>
+          <div className="text-[11px] text-content-muted uppercase tracking-wider">Price Range</div>
           <button
             onClick={() => onFiltersChange({ ...filters, anyPrice: !filters.anyPrice })}
-            className={`text-[10px] px-1.5 py-0.5 rounded border transition-colors ${
+            className={`text-[11px] px-2 py-1 rounded border transition-colors ${
               filters.anyPrice
                 ? "bg-blue-900/30 border-blue-500/30 text-blue-400"
                 : "bg-surface-raised border-line-default text-content-muted hover:text-content-secondary"
@@ -237,12 +237,12 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
                 setLocalMin(String(val));
                 onFiltersChange({ ...filters, priceMin: val });
               }}
-              className="w-10 bg-input-surface border border-input-edge rounded text-xs text-content-secondary px-1.5 py-0.5 text-center focus:outline-none focus:border-neutral-500"
+              className="w-12 bg-input-surface border border-input-edge rounded text-sm text-content-secondary px-2 py-1.5 text-center focus:outline-none focus:border-neutral-500"
             />
           </div>
           <div
             ref={sliderRef}
-            className="flex-1 relative h-2 bg-surface-overlay rounded cursor-pointer"
+            className="flex-1 relative h-2.5 bg-surface-overlay rounded cursor-pointer"
             onMouseDown={handleSliderMouseDown}
           >
             {(() => {
@@ -257,7 +257,7 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
                     }}
                   />
                   <div
-                    className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 bg-white rounded-full border-2 border-blue-500 shadow"
+                    className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 bg-white rounded-full border-2 border-blue-500 shadow"
                     style={{ left: `${(displayMax / 100) * 100}%`, cursor: dragMax !== null ? "grabbing" : "grab" }}
                   />
                 </>
@@ -277,7 +277,7 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
                 setLocalMax(String(val));
                 onFiltersChange({ ...filters, priceMax: val });
               }}
-              className="w-10 bg-input-surface border border-input-edge rounded text-xs text-content-secondary px-1.5 py-0.5 text-center focus:outline-none focus:border-neutral-500"
+              className="w-12 bg-input-surface border border-input-edge rounded text-sm text-content-secondary px-2 py-1.5 text-center focus:outline-none focus:border-neutral-500"
             />
           </div>
         </div>
@@ -286,7 +286,7 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
       {/* Release Year */}
       <div>
         <div className="mb-2">
-          <div className="text-[10px] text-content-muted uppercase tracking-wider mb-1.5">Release Year</div>
+          <div className="text-[11px] text-content-muted uppercase tracking-wider mb-1.5">Release Year</div>
           <div className="flex gap-1">
             {([
               { label: "This Year", min: CURRENT_YEAR, max: CURRENT_YEAR },
@@ -298,7 +298,7 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
                 <button
                   key={preset.label}
                   onClick={() => onFiltersChange({ ...filters, yearMin: preset.min, yearMax: preset.max })}
-                  className={`flex-1 px-1.5 py-0.5 rounded text-[10px] border transition-colors ${
+                  className={`flex-1 px-2 py-1.5 rounded text-xs border transition-colors ${
                     active
                       ? "bg-blue-900/30 border-blue-500/30 text-blue-400"
                       : "bg-surface-raised border-line-default text-content-muted hover:text-content-secondary"
@@ -322,7 +322,7 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
               setLocalYearMin(String(val));
               onFiltersChange({ ...filters, yearMin: val });
             }}
-            className="w-14 bg-input-surface border border-input-edge rounded text-xs text-content-secondary px-1.5 py-0.5 text-center focus:outline-none focus:border-neutral-500"
+            className="w-16 bg-input-surface border border-input-edge rounded text-sm text-content-secondary px-2 py-1.5 text-center focus:outline-none focus:border-neutral-500"
           />
           <span className="text-xs text-content-muted">to</span>
           <input
@@ -336,7 +336,7 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
               setLocalYearMax(String(val));
               onFiltersChange({ ...filters, yearMax: val });
             }}
-            className="w-14 bg-input-surface border border-input-edge rounded text-xs text-content-secondary px-1.5 py-0.5 text-center focus:outline-none focus:border-neutral-500"
+            className="w-16 bg-input-surface border border-input-edge rounded text-sm text-content-secondary px-2 py-1.5 text-center focus:outline-none focus:border-neutral-500"
           />
         </div>
       </div>
@@ -344,7 +344,7 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
       {/* Rarity */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <div className="text-[10px] text-content-muted uppercase tracking-wider">Rarity</div>
+          <div className="text-[11px] text-content-muted uppercase tracking-wider">Rarity</div>
           <button
             onClick={() =>
               onFiltersChange({
@@ -352,7 +352,7 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
                 rarities: filters.rarities.size === RARITIES.length ? new Set() : new Set(RARITIES),
               })
             }
-            className="text-[10px] text-content-muted hover:text-content-secondary transition-colors"
+            className="text-[11px] px-1.5 py-1 text-content-muted hover:text-content-secondary transition-colors"
           >
             {filters.rarities.size === RARITIES.length ? "None" : "All"}
           </button>
@@ -375,7 +375,7 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
       {/* Card Type */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <div className="text-[10px] text-content-muted uppercase tracking-wider">Card Type</div>
+          <div className="text-[11px] text-content-muted uppercase tracking-wider">Card Type</div>
           <button
             onClick={() =>
               onFiltersChange({
@@ -383,7 +383,7 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
                 types: filters.types.size === TYPES.length ? new Set() : new Set(TYPES),
               })
             }
-            className="text-[10px] text-content-muted hover:text-content-secondary transition-colors"
+            className="text-[11px] px-1.5 py-1 text-content-muted hover:text-content-secondary transition-colors"
           >
             {filters.types.size === TYPES.length ? "None" : "All"}
           </button>
@@ -406,7 +406,7 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
       {/* Colors */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <div className="text-[10px] text-content-muted uppercase tracking-wider">Colors</div>
+          <div className="text-[11px] text-content-muted uppercase tracking-wider">Colors</div>
           <button
             onClick={() =>
               onFiltersChange({
@@ -414,7 +414,7 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
                 colors: filters.colors.size === COLORS.length ? new Set() : new Set(COLORS.map((c) => c.key)),
               })
             }
-            className="text-[10px] text-content-muted hover:text-content-secondary transition-colors"
+            className="text-[11px] px-1.5 py-1 text-content-muted hover:text-content-secondary transition-colors"
           >
             {filters.colors.size === COLORS.length ? "None" : "All"}
           </button>
@@ -431,7 +431,7 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
             >
               <img
                 src={`https://svgs.scryfall.io/card-symbols/${key}.svg`}
-                className="w-3 h-3"
+                className="w-4 h-4"
                 alt={key}
               />
               {label}
@@ -444,7 +444,7 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
         <div className="pt-1">
           <button
             onClick={() => onFiltersChange(DEFAULT_FILTERS)}
-            className="w-full px-2 py-1 rounded text-[10px] border border-line-default bg-surface-raised text-content-muted hover:text-content-secondary hover:border-line-hover transition-colors"
+            className="w-full px-2 py-2 rounded text-xs border border-line-default bg-surface-raised text-content-muted hover:text-content-secondary hover:border-line-hover transition-colors"
           >
             Reset to defaults
           </button>

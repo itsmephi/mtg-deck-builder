@@ -47,6 +47,7 @@ Living reference for file structure, state ownership, and key technical patterns
 | `useDeckManager.tsx` | `DeckProvider` + `useDeckManager` — all deck CRUD, commander ops, sideboard ops, sort state, thumbnail toggle, `lastAddedId`; persists to localStorage |
 | `useDeckImportExport.tsx` | File import parsing (`.txt` deck lists) and export formatting; owned by `page.tsx` |
 | `useDeckStats.ts` | Pure derived stats from `activeDeck` — `totalCards`, `totalValue`, `remainingCost`, `hasPriceData`, `targetDeckSize`, `isAtTarget`, `isOverTarget`, `buyOnTCGPlayer()`, `buyOnCardKingdom()` |
+| `useIsTouch.ts` | `useIsTouch()` — `matchMedia("(hover: none)")` listener; single source of truth for touch-only affordances (see Touch & Sizing System) |
 
 ### `src/lib/`
 
@@ -216,6 +217,36 @@ Any navigation action (tab click, deck name click, home button) **must** call `o
 **Not tokenized:** opacity variants (`bg-neutral-800/50`), accent colors, `text-neutral-100`.
 
 **Depth model:** Warm Stone sidebar is RAISED (panel lighter than base); Zed Dark sidebar is RECESSED (panel darker than base) — same token names, theme handles the difference.
+
+### Touch & Sizing System
+
+<!-- Last updated: v1.26.0 -->
+
+Unified, touch-first sizing applied across all surfaces (desktop included — one comfortable scale, no responsive split). Established in v1.26.0 to kill ad-hoc per-component values. **When adding UI, conform to these floors instead of inventing new sizes.**
+
+**Text floor — nothing below 11px.**
+- Primary content & interactive labels: `text-sm` (14px)
+- Secondary / metadata: `text-xs` (12px)
+- Micro labels only (uppercase section headers, badges, counts): `text-[11px]`
+- Banned: `text-[8px]`, `text-[9px]`, `text-[10px]`. Promote to the role-appropriate floor above.
+
+**Icons.**
+- Functional icons (inside buttons, indicators): ≥ 16px (`w-4 h-4` / `size={16}`)
+- Standalone nav / action icons: 18–20px (`w-5 h-5`)
+- Decorative dots may stay small.
+
+**Tap targets (44px = iOS HIG / 48dp Android floor).**
+- Standalone chrome buttons (sidebar rail, toolbar, modal close, back, hamburger, home, settings): **44px** — `h-11 w-11` for icon buttons, `min-h-11` for text buttons.
+- Dense inline controls (table qty/owned steppers, card-overlay buttons, chips): **always visible** (≥ 28px, `w-7 h-7`) with real 16px lucide icons.
+- **Never gate an interactive control behind `opacity-0 group-hover:opacity-100`** — touch devices have no hover, so the control becomes unreachable. Use always-on (optionally `opacity-70 hover:opacity-100`).
+
+**Spacing.** Interactive rows: `py-1.5`+ and `gap-1.5`+ minimum. Reserve `py-0.5`/`gap-1` for non-interactive inline runs.
+
+**Viewport.** `layout.tsx` exports an explicit `viewport` with `viewportFit: "cover"` for iPad/notch safe areas (Next.js otherwise injects a default without it).
+
+**Touch detection.** `useIsTouch()` (`src/hooks/useIsTouch.ts`) is the single source of truth — a `matchMedia("(hover: none)")` listener. Use it to add touch-only affordances; never to remove pointer/hover behaviour.
+
+**Grid tile editing (`VisualCard`, deck mode).** The desktop edit surface is a `group-hover` slide-up overlay (name/type/steppers) — unreachable on touch and, if naively tap-revealed, it covers ~45% of the art. On touch (`useIsTouch`) the model is different: the always-on **qty badge is a reveal trigger** — tapping it opens a slim, full-width bottom bar with full desktop parity (owned ✓ toggle, owned & qty steppers with tap-to-edit numbers, remove). The bar is always mounted (visibility toggled via classes) so number inputs commit `onBlur`. It's dismissed by tapping the art, tapping outside the card (`pointerdown` listener gated on `barOpen`), or re-tapping the badge; the badge and price pill hide while it's open. The commander crown is un-gated to an always-visible corner tap rather than folded into the bar. Desktop hover is untouched — everything new is gated behind `isTouch`, and the badge's emulated-hover visuals are suppressed on touch (`badgeHoverActive = !isTouch && isCardHovered`).
 
 ### React Patterns
 

@@ -430,7 +430,7 @@ export default function Dashboard() {
             <button
               onClick={() => setMobileSidebarOpen(true)}
               aria-label="Open menu"
-              className="w-9 h-9 flex items-center justify-center rounded-md text-content-muted hover:text-content-primary hover:bg-surface-raised transition-colors"
+              className="w-11 h-11 flex items-center justify-center rounded-md text-content-muted hover:text-content-primary hover:bg-surface-raised transition-colors"
             >
               <Menu className="w-5 h-5" />
             </button>

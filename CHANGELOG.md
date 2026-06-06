@@ -5,6 +5,48 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.27.0] — Grid-view editing on touch
+
+The follow-up flagged in 1.26.0: the visual (grid) card tile's edit controls lived inside a `group-hover` slide-up overlay, so on touch they never appeared and the overlay (when it did) covered ~45% of the art. Grid tiles are now editable on touch via a tap-to-reveal slim bar, at full parity with desktop. The design decision (tap the qty badge → slim bar, vs. long-press; full parity; crown as a corner tap) was made in-session.
+
+### Added
+- **`useIsTouch()` hook** (`src/hooks/useIsTouch.ts`) — single source of truth for `matchMedia("(hover: none)")`; `FindByNameBar`'s duplicated inline detection now uses it
+- **Touch edit bar on `VisualCard` (deck mode)** — tapping the always-on quantity badge reveals a slim, full-width bottom bar with full desktop parity: owned ✓ toggle, owned stepper, qty stepper (numbers are tap-to-edit), and remove. The bar is a thin bottom strip over a gradient (not the ~45% hover panel) and is always mounted so number inputs commit `onBlur`
+- **Crown as a corner tap** — in Commander decks the non-commander "set as commander/partner" crown is un-gated to always-visible on touch, instead of being folded into the bar
+
+### Changed
+- **Dismiss + non-overlap behaviour** — the bar closes on a tap on the art, a tap/scroll outside the card (`pointerdown` listener gated on `barOpen`), or a second tap on the badge; the badge and price pill hide while it's open
+- **Stable touch badge** — emulated `mouseenter` on tap no longer flips the badge to its desktop ✓/raised state (`badgeHoverActive = !isTouch && isCardHovered`), so on touch the badge stays a quantity chip / reveal trigger
+
+### Unchanged
+- **Desktop / pointer** behaviour is identical — the hover overlay, the badge-as-owned-toggle, hover steppers, and the top-right remove all work exactly as before; everything new is gated behind `isTouch`
+
+---
+
+## [1.26.0] — Site-wide touch & sizing pass
+
+A systematic audit and pass over text, icon, spacing, and tap-target sizing across the whole app, with a single unified scale applied to desktop and touch alike (no responsive split). The standard is recorded in `docs/ARCHITECTURE.md` → **Touch & Sizing System** so new UI conforms instead of re-introducing ad-hoc values.
+
+### Fixed
+- **Hover-gated controls were unreachable on touch** — in list view, the quantity/owned steppers, the owned ✓ toggle, the row remove ✕, and the search-results **+** add button were all `opacity-0 group-hover:opacity-100`. Touch devices have no hover, so these never appeared and the actions were impossible. They're now always visible (subtle at rest, brighter on pointer hover), enlarged to ~28px hit areas, and the 6px inline `<svg>` glyphs were replaced with real 16px `lucide` `Minus`/`Plus` icons. The list qty column widened (`w-40`→`w-52`) to fit the larger steppers
+- **Sub-legible text everywhere** — every hardcoded `text-[8px]`/`text-[9px]`/`text-[10px]` (deck names, card counts, format badges, column headers, tooltips, mana-curve labels, legal copy, etc.) was promoted to the new floor: 11px for micro-labels, `text-xs` for secondary, `text-sm` for primary content
+
+### Changed
+- **44px tap targets** — standalone icon buttons across the chrome are now `h-11 w-11`: sidebar rail (6 buttons), sidebar collapse/close, footer home/settings, mobile hamburgers (`page.tsx`, `FindByNameBar`), settings back, simulator close, deck-tools close, mobile Tools button. Text/menu buttons gained `min-h-11`
+- **Dense inline controls** — `SidebarDecksTab` deck rows, delete/sideboard buttons, action strip (Export/Import/TCGPlayer/Card Kingdom), and `FilterPanel` chips/inputs/presets/slider got larger padding, 16px icons, and 11–14px text; the price-range slider thumb grew to 16px
+- **Icons normalised** — functional icons floored at 16px; nav/action icons 18–20px (`SidebarRail`, toolbar sort/group/view, search clear, color symbols, crowns)
+- **Home covers** — `DeckCoverCard`/`GhostDeckCard` enlarged to 120×168 with `text-xs`/11px labels; the home format picker now drops below the ghost card centered (was `left-full`, which clipped off-screen on narrow viewports)
+- **Desktop is intentionally slightly less dense** — per the "unify everything" decision, the same comfortable scale applies at all widths; the desktop toolbar control block stepped from `h-8`→`h-9` with 16px icons
+
+### Added
+- **Explicit viewport** — `layout.tsx` exports `viewport` with `viewportFit: "cover"` for iPad/notch safe-area insets (Next.js otherwise injects a default without it)
+- **Touch & Sizing System** section in `docs/ARCHITECTURE.md` documenting the text floor, icon sizes, tap-target rules, and the "never hover-gate an interactive control" rule
+
+### Known follow-up
+- The **visual (grid) card tile** reveals its name/type/steppers/crown inside a `group-hover` slide-up overlay, so inline editing there is still pointer-oriented on touch. Sizing within the overlay was bumped, but converting it to a tap-to-reveal interaction is a behavioural change with real UX decisions and is left as a planned follow-up rather than guessed at here
+
+---
+
 ## [1.25.0] — Mobile deck controls
 
 ### Added

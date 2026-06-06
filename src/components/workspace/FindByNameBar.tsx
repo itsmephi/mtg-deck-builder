@@ -7,6 +7,7 @@ import { useDeckManager } from "@/hooks/useDeckManager";
 import { parseDroppedText } from "@/hooks/useDeckImportExport";
 import { ScryfallCard, DeckCard } from "@/types";
 import { getFormatRules } from "@/lib/formatRules";
+import { useIsTouch } from "@/hooks/useIsTouch";
 
 interface FindByNameBarProps {
   showToast: (msg: string) => void;
@@ -98,15 +99,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
   // Touch devices have no hover, so the per-tile action overlay (Add / Flip /
   // Swap art) can't be reached the desktop way. On these we reveal the overlay
   // on the selected tile instead — tap a printing to select it, then tap Add.
-  const [isTouch, setIsTouch] = useState(false);
-  useEffect(() => {
-    if (typeof window === "undefined" || !window.matchMedia) return;
-    const mq = window.matchMedia("(hover: none)");
-    const update = () => setIsTouch(mq.matches);
-    update();
-    mq.addEventListener?.("change", update);
-    return () => mq.removeEventListener?.("change", update);
-  }, []);
+  const isTouch = useIsTouch();
 
   // Detect e: and a: prefix queries — suppress normal autocomplete, show hint row
   const prefixHint = useMemo(() => {
@@ -632,7 +625,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
         <button
           onClick={onOpenMobileSidebar}
           aria-label="Open menu"
-          className="md:hidden w-9 h-9 shrink-0 flex items-center justify-center rounded-md text-content-muted hover:text-content-primary hover:bg-surface-raised transition-colors"
+          className="md:hidden w-11 h-11 shrink-0 flex items-center justify-center rounded-md text-content-muted hover:text-content-primary hover:bg-surface-raised transition-colors"
         >
           <Menu className="w-5 h-5" />
         </button>
@@ -682,17 +675,17 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
           spellCheck={false}
         />
         {!inputFocused && !query && !showPreview && (
-          <kbd className="text-[10px] text-content-disabled font-mono border border-line-subtle rounded px-1 py-0.5 shrink-0 select-none">
+          <kbd className="text-[11px] text-content-disabled font-mono border border-line-subtle rounded px-1.5 py-0.5 shrink-0 select-none">
             /
           </kbd>
         )}
         {(query || showPreview) && (
           <button
             onClick={() => clearAll()}
-            className="text-content-muted hover:text-content-primary transition-colors shrink-0 p-0.5"
+            className="w-8 h-8 flex items-center justify-center text-content-muted hover:text-content-primary transition-colors shrink-0"
             aria-label="Clear search"
           >
-            <X className="w-3.5 h-3.5" />
+            <X className="w-4 h-4" />
           </button>
         )}
       </div>
@@ -771,7 +764,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
             <button
               onClick={() => clearAll({ refocus: false })}
               aria-label="Close preview"
-              className="w-9 h-9 flex items-center justify-center text-content-muted hover:text-content-primary transition-colors"
+              className="w-11 h-11 -mr-2 flex items-center justify-center text-content-muted hover:text-content-primary transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -840,9 +833,9 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
                       {warnings.map((w) => (
                         <span
                           key={w.type}
-                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-yellow-500/10 border border-yellow-500/20 text-yellow-400"
+                          className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-medium bg-yellow-500/10 border border-yellow-500/20 text-yellow-400"
                         >
-                          <AlertTriangle className="w-2.5 h-2.5 shrink-0" />
+                          <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
                           {w.text}
                         </span>
                       ))}
@@ -851,7 +844,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
 
                   {/* Product Details */}
                   <div className="space-y-1 mb-3">
-                    <p className="text-[10px] font-semibold text-content-muted uppercase tracking-wider">Product Details</p>
+                    <p className="text-[11px] font-semibold text-content-muted uppercase tracking-wider">Product Details</p>
                     <div className="space-y-0.5 text-[11px]">
                       {displayArtist && (
                         <div className="flex gap-2">
@@ -915,7 +908,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
                     </>
                   ) : browseResults.length > 0 ? (
                     <>
-                      <p className="text-[10px] font-semibold text-content-muted uppercase tracking-wider mb-2">
+                      <p className="text-[11px] font-semibold text-content-muted uppercase tracking-wider mb-2">
                         {browseLabel} — {browseResults.length} card{browseResults.length !== 1 ? "s" : ""}
                       </p>
                       <div
@@ -966,7 +959,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
                               ) : frontImg ? (
                                 <img src={frontImg} alt={p.name} className="h-full w-auto" draggable={false} loading="lazy" />
                               ) : (
-                                <div className="h-full w-16 bg-surface-deep flex items-center justify-center text-[8px] text-content-muted">
+                                <div className="h-full w-16 bg-surface-deep flex items-center justify-center text-[11px] text-content-muted">
                                   {p.set.toUpperCase()}
                                 </div>
                               )}
@@ -981,9 +974,9 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
                                       if (alreadySelected) setFlipFace((f) => !f);
                                       else setFlipFace(true);
                                     }}
-                                    className="px-3 py-1 rounded-full text-[11px] font-medium border border-white/30 bg-white/10 hover:bg-white/25 hover:border-white/60 active:bg-white/35 text-white transition-colors flex items-center gap-1"
+                                    className="px-3 py-1.5 rounded-full text-[11px] font-medium border border-white/30 bg-white/10 hover:bg-white/25 hover:border-white/60 active:bg-white/35 text-white transition-colors flex items-center gap-1"
                                   >
-                                    <RotateCw className="w-3 h-3" /> Flip
+                                    <RotateCw className="w-4 h-4" /> Flip
                                   </button>
                                 )}
                                 <button
@@ -994,7 +987,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
                                     setFlipFace(false);
                                     handleAddCard(p);
                                   }}
-                                  className="px-3 py-1 rounded-md text-[11px] font-semibold bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white transition-colors"
+                                  className="px-3 py-1.5 rounded-md text-[11px] font-semibold bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white transition-colors"
                                 >
                                   + Add
                                 </button>
@@ -1012,7 +1005,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
                     </>
                   ) : (
                     <>
-                      <p className="text-[10px] font-semibold text-content-muted uppercase tracking-wider mb-2">
+                      <p className="text-[11px] font-semibold text-content-muted uppercase tracking-wider mb-2">
                         Art Variants — {printings.length} printing{printings.length !== 1 ? "s" : ""}
                       </p>
                       <div
@@ -1064,7 +1057,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
                               ) : frontImg ? (
                                 <img src={frontImg} alt={`${p.set_name} — ${p.set.toUpperCase()}`} className="h-full w-auto" width={488} height={680} draggable={false} loading="lazy" />
                               ) : (
-                                <div className="h-full w-16 bg-surface-deep flex items-center justify-center text-[8px] text-content-muted">
+                                <div className="h-full w-16 bg-surface-deep flex items-center justify-center text-[11px] text-content-muted">
                                   {p.set.toUpperCase()}
                                 </div>
                               )}
@@ -1079,9 +1072,9 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
                                       if (alreadySelected) setFlipFace((f) => !f);
                                       else setFlipFace(true);
                                     }}
-                                    className="px-3 py-1 rounded-full text-[11px] font-medium border border-white/30 bg-white/10 hover:bg-white/25 hover:border-white/60 active:bg-white/35 text-white transition-colors flex items-center gap-1"
+                                    className="px-3 py-1.5 rounded-full text-[11px] font-medium border border-white/30 bg-white/10 hover:bg-white/25 hover:border-white/60 active:bg-white/35 text-white transition-colors flex items-center gap-1"
                                   >
-                                    <RotateCw className="w-3 h-3" /> Flip
+                                    <RotateCw className="w-4 h-4" /> Flip
                                   </button>
                                 )}
                                 {!(entryMode === "deck" && p.id === deckEntryCardRef.current?.id) && (
@@ -1098,7 +1091,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
                                         handleAddCard(p);
                                       }
                                     }}
-                                    className="px-3 py-1 rounded-md text-[11px] font-semibold bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white transition-colors"
+                                    className="px-3 py-1.5 rounded-md text-[11px] font-semibold bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white transition-colors"
                                   >
                                     {entryMode === "deck" ? "Swap art" : "+ Add"}
                                   </button>
