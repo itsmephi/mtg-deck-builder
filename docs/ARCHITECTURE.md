@@ -222,7 +222,7 @@ Any navigation action (tab click, deck name click, home button) **must** call `o
 
 ### Touch & Sizing System
 
-<!-- Last updated: v1.26.0 -->
+<!-- Last updated: v1.31.0 -->
 
 Unified, touch-first sizing applied across all surfaces (desktop included — one comfortable scale, no responsive split). Established in v1.26.0 to kill ad-hoc per-component values. **When adding UI, conform to these floors instead of inventing new sizes.**
 
@@ -250,6 +250,8 @@ Unified, touch-first sizing applied across all surfaces (desktop included — on
 
 **Grid tile editing (`VisualCard`, deck mode).** The desktop edit surface is a `group-hover` slide-up overlay (name/type/steppers) — unreachable on touch and, if naively tap-revealed, it covers ~45% of the art. On touch (`useIsTouch`) the model is different: the always-on **qty badge is a reveal trigger** — tapping it opens a slim, full-width bottom bar with the owned ✓ toggle and the owned & qty steppers (tap-to-edit numbers). The bar is always mounted (visibility toggled via classes) so number inputs commit `onBlur`. It's dismissed by tapping the art, tapping outside the card (`pointerdown` listener gated on `barOpen`), or re-tapping the badge; the badge and price pill hide while it's open. The commander crown is un-gated to an always-visible corner tap. **Remove is deliberately *not* in the bar** — it's the top-right corner × (desktop: hover-gated; touch: shown while the bar is open), kept clear of the steppers so it's never mistaken for a "close" button. Desktop hover is untouched — everything new is gated behind `isTouch`, and the badge's emulated-hover visuals are suppressed on touch (`badgeHoverActive = !isTouch && isCardHovered`).
 
+**List row editing (`ListCardTable`, deck mode).** The desktop row is a 7-column `table-fixed` (owned ✓ · `w-52` dual owned/qty stepper · name · type · mana · price · remove) ≈ 656px of fixed columns, with steppers revealed on row-hover — it overflows a phone and its controls are unreachable on touch. On touch (`useIsTouch`) the table swaps to a compact 4-column layout via `renderTouchRow`: owned ✓ · name (mana symbols + type line as a subline) · **qty chip** · price. The qty chip is the **reveal trigger** — tapping it expands an inline edit sub-row (`<tr>` with a `colSpan` cell) holding the owned ✓ toggle, owned/qty steppers (tap-to-edit numbers, reusing the same `editingId`/`editingOwnedId` state), and a red remove ✕ at the right. A fixed `<colgroup>` pins the touch column widths (so the first body row being a pinned commander or group spacer can't skew them) and the desktop `<thead>` is hidden on touch. The commander crown is un-gated to an always-visible per-row tap, sharing the `getCrownDecision` helper with the (unchanged) desktop `renderRow`. Same philosophy as the grid tile: everything new is gated behind `isTouch`; the pointer table is untouched.
+
 **Destructive actions are undoable** (4s `showUndoToast`, inline Undo):
 - **Card removal** — `Workspace.removeCard` / `removeSideboardCard` snapshot the card's index (+ commander status) and re-insert it where it was; covers grid *and* list, desktop *and* touch.
 - **Deck / sideboard deletion** — `SidebarDecksTab.deleteDeckWithUndo` / `deleteSideboardWithUndo` snapshot the full `decks` list + active id, then restore via `replaceAllDecks(snapshot)` + `setActiveDeckId(prevActiveId)` (the latter corrects `replaceAllDecks`'s default of activating `decks[0]`). `showUndoToast` is threaded `page.tsx → Sidebar → SidebarDecksTab`.
@@ -258,7 +260,7 @@ Unified, touch-first sizing applied across all surfaces (desktop included — on
 
 - `setCardRef(id)` — curried helper for card refs; inline `{ if(el) }` causes parse errors in JSX
 - `duplicate ))}` bug — caused by stacked `.map()` closings; always verify one closing per map
-- `table-fixed` on `ListCardTable` — prevents horizontal overflow
+- `table-fixed` on `ListCardTable` — prevents horizontal overflow on desktop; on touch a `<colgroup>` defines the compact 4-column widths (see Touch & Sizing System → List row editing)
 - Workspace scroll container uses `p-4 pb-20` (not `overflow-x-hidden`) — needed for tooltips, ring-offset, and badge overhang clearance
 - `contentEditable` abandoned for deck name input — use `size={Math.max(10, name.length)}`
 - **React 19 registers `onWheel` as passive** — `e.preventDefault()` inside a JSX `onWheel={...}` handler is silently ignored. Any wheel handler that needs to override default scroll (e.g. convert vertical wheel into horizontal `scrollLeft` inside an `overflow-y-auto` ancestor) must be attached natively with `addEventListener("wheel", handler, { passive: false })`. The `FindByNameBar` art strip uses a window-level listener delegated by `[data-art-strip]` selector (see line 35); v1.23.1 fixed the regression where the strip's wheel scroll silently broke after upgrading. Same caution applies to `onTouchStart`/`onTouchMove`

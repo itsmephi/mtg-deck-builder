@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import { X, Minus, Plus } from "lucide-react";
 import { DeckCard, ScryfallCard } from "@/types";
+import { useIsTouch } from "@/hooks/useIsTouch";
 import { DeckFormat, getFormatRules, getCardWarnings, isEligibleCommander, isVehicleOrSpacecraftCommander, hasPartnerAbility } from "@/lib/formatRules";
 
 const COLOR_ORDER_L = ["W", "U", "B", "R", "G"];
@@ -123,6 +124,14 @@ export default function ListCardTable({
 }: ListCardTableProps) {
   const rules = getFormatRules(format);
 
+  // Touch: the desktop row is a wide 7-column table (steppers, type, mana, price)
+  // that overflows a phone and whose hover-revealed steppers are cramped. On
+  // touch we render a compact row (✓ · name+meta · qty chip · price) and reveal
+  // the full edit controls in an expanding sub-row when the qty chip is tapped —
+  // mirroring the grid tile's tap-to-edit bar. Pointer behaviour is untouched.
+  const isTouch = useIsTouch();
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
   // Row hover state for tint brightening
   const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
 
@@ -192,7 +201,39 @@ export default function ListCardTable({
 
   const isCommanderFormat = format === "commander";
   const COLUMN_COUNT = 7;
+  const TOUCH_COLUMN_COUNT = 4; // ✓ · name · qty · price
   const commanderCount = commanderIds?.length ?? 0;
+
+  // Pure crown decision (which action a non-commander card's crown performs).
+  // Shared by the touch row; the desktop row keeps its inline copy for the
+  // tooltip wiring. Returns null action when the card can't legally be set.
+  const getCrownDecision = (card: DeckCard) => {
+    const eligible = isEligibleCommander(card);
+    const cardHasPartner = hasPartnerAbility(card);
+    let crownLabel = "Set as Commander";
+    let crownAction: (() => void) | null = null;
+    let canAct = eligible;
+    if (commanderCount === 0) {
+      crownAction = eligible ? () => onAddCommander?.(card.id) : null;
+    } else if (commanderCount === 1) {
+      if (cardHasPartner && existingCommanderHasPartner) {
+        crownLabel = "Set as Partner";
+        crownAction = () => onAddCommander?.(card.id);
+        canAct = true;
+      } else {
+        crownAction = eligible ? () => onReplaceCommander?.(0, card.id) : null;
+      }
+    } else {
+      if (cardHasPartner) {
+        crownLabel = "Set as Partner";
+        crownAction = () => onReplaceCommander?.(1, card.id);
+        canAct = true;
+      } else {
+        crownAction = eligible ? () => onReplaceCommander?.(0, card.id) : null;
+      }
+    }
+    return { crownLabel, crownAction, canAct, eligible };
+  };
 
   // Separate out pinned commanders (leading cards that are commanders)
   const pinnedCommanders: DeckCard[] = [];
@@ -636,13 +677,328 @@ export default function ListCardTable({
     );
   };
 
+  // ── Touch row — compact, with a tap-to-expand edit sub-row ────────────────────
+  const renderTouchRow = (card: DeckCard, index: number, fromPinned = false) => {
+    const showGroupSpacer =
+      !fromPinned &&
+      !isGrouped &&
+      !!sortBy &&
+      (sortBy === "color" || sortBy === "mv") &&
+      index > 0 &&
+      getGroupKey(bodyCards[index - 1], sortBy) !== getGroupKey(card, sortBy);
+
+    const isFullyOwned = card.isOwned && card.quantity > 0 && card.ownedQty >= card.quantity;
+    const ownershipRatio = card.isOwned && card.quantity > 0 ? Math.min(card.ownedQty / card.quantity, 1) : 0;
+    const cellOpacity = card.quantity === 0 ? 0.3 : 1 - ownershipRatio * 0.5;
+    const cellGrayscale = card.quantity === 0 ? "grayscale" : "";
+    const nameColor = card.quantity === 0
+      ? "text-content-muted"
+      : isFullyOwned
+      ? "text-green-400"
+      : "text-neutral-100";
+
+    const extraQty = sideboardQtyMap?.get(card.name.toLowerCase()) ?? 0;
+    const isExempt =
+      card.type_line?.toLowerCase().includes("basic land") ||
+      card.oracle_text?.includes("A deck can have any number");
+    const combinedQty = card.quantity + extraQty;
+    const overCopyLimit = combinedQty >= rules.softWarnThreshold && !isExempt;
+
+    const isCommander1 = isCommanderFormat && card.id === commanderIds?.[0];
+    const isCommander2 = isCommanderFormat && card.id === commanderIds?.[1];
+    const isThisCommander = isCommander1 || isCommander2;
+    const partnerInvalid = isCommander2 && partnerValidation?.valid === false;
+    const warnings = getCardWarnings(card, format, commanderIdentity);
+
+    const rowBg = highlightedId === card.id ? "" : getRowTint(card);
+    const expanded = expandedId === card.id;
+    const ownedNumColor = !card.isOwned || card.ownedQty === 0
+      ? "text-content-disabled"
+      : isFullyOwned
+      ? "text-green-400"
+      : "text-content-tertiary";
+
+    return (
+      <React.Fragment key={card.id}>
+        {showGroupSpacer && (
+          <tr aria-hidden>
+            <td colSpan={TOUCH_COLUMN_COUNT} className="p-0 bg-transparent">
+              <div className="h-3" />
+            </td>
+          </tr>
+        )}
+        <tr
+          ref={(el) => {
+            if (el && cardRefs) cardRefs.current.set(card.id, el);
+          }}
+          className={`transition-colors ${expanded ? "" : "border-b border-neutral-800/40"} ${highlightedId === card.id ? "bg-yellow-400/10 outline outline-1 outline-yellow-400/50" : ""}`}
+          style={highlightedId !== card.id ? { backgroundColor: rowBg } : undefined}
+        >
+          {/* Owned ✓ toggle */}
+          <td className="pl-2 pr-1 py-2.5 w-9 align-top">
+            {(() => {
+              const isFull = card.isOwned && card.ownedQty >= card.quantity;
+              let bg: string, border: string, color: string;
+              if (!card.isOwned) {
+                bg = "transparent"; border = "rgba(255,255,255,0.12)"; color = "#737373";
+              } else if (isFull) {
+                bg = "rgba(74,222,128,0.85)"; border = "transparent"; color = "#fff";
+              } else {
+                bg = "rgba(22,101,52,0.85)"; border = "rgba(74,222,128,0.5)"; color = "#fff";
+              }
+              return (
+                <button
+                  onClick={() => onToggleIsOwned(card.id)}
+                  aria-label={card.isOwned ? "Unmark as owned" : "Mark as owned"}
+                  style={{
+                    width: "28px", height: "28px", borderRadius: "50%",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    border: `1px solid ${border}`, background: bg, color,
+                    fontSize: "13px", fontWeight: 700, flexShrink: 0,
+                  }}
+                >
+                  ✓
+                </button>
+              );
+            })()}
+          </td>
+
+          {/* Name + meta (crown · name · warning, then mana + type subline) */}
+          <td className="px-1 py-2.5 min-w-0 align-top">
+            <div className="flex items-center gap-1 min-w-0">
+              {/* Crown — always-visible tap on touch (commander format only) */}
+              {isCommanderFormat && (onAddCommander || onRemoveCommander || onReplaceCommander) && (
+                isThisCommander ? (
+                  <button
+                    onClick={() => onRemoveCommander?.(card.id)}
+                    aria-label="Remove commander"
+                    className="shrink-0"
+                  >
+                    <CrownFilled className={`w-4 h-4 ${partnerInvalid ? "text-red-400" : "text-yellow-400"}`} />
+                  </button>
+                ) : (
+                  (() => {
+                    const { crownAction, canAct } = getCrownDecision(card);
+                    return (
+                      <button
+                        onClick={() => canAct && crownAction?.()}
+                        aria-label="Set as commander"
+                        className={`shrink-0 ${canAct ? "" : "opacity-40"}`}
+                      >
+                        <CrownOutline className={`w-4 h-4 ${canAct ? "text-content-faint" : "text-content-faint"}`} />
+                      </button>
+                    );
+                  })()
+                )
+              )}
+
+              {partnerInvalid && (
+                <span title={partnerValidation?.warning} className="shrink-0">
+                  <svg width="14" height="14" viewBox="0 0 24 24">
+                    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" fill="#f59e0b" stroke="none" />
+                    <path d="M12 9v4" stroke="white" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+                    <circle cx="12" cy="17" r="1" fill="white" />
+                  </svg>
+                </span>
+              )}
+
+              <span
+                onClick={() => onSelect(card)}
+                className={`font-medium truncate ${nameColor}`}
+                style={{ opacity: cellOpacity }}
+              >
+                {card.name}
+              </span>
+
+              {warnings.length > 0 && (
+                <span title={warnings.join("\n")} className="shrink-0">
+                  <svg width="15" height="15" viewBox="0 0 24 24">
+                    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" fill="#f87171" stroke="none" />
+                    <path d="M12 9v4" stroke="white" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+                    <circle cx="12" cy="17" r="1" fill="white" />
+                  </svg>
+                </span>
+              )}
+            </div>
+            {/* Mana + type subline */}
+            <div className={`flex items-center gap-1.5 mt-0.5 min-w-0 ${cellGrayscale}`} style={{ opacity: cellOpacity }}>
+              {card.card_faces ? (
+                <div className="flex items-center gap-1 shrink-0">
+                  {renderManaSymbols(card.card_faces[0].mana_cost)}
+                  <span className="text-[11px] text-content-faint font-bold">//</span>
+                  {renderManaSymbols(card.card_faces[1].mana_cost)}
+                </div>
+              ) : (
+                <div className="shrink-0">{renderManaSymbols((card as any).mana_cost)}</div>
+              )}
+              <span className="text-[11px] text-content-muted truncate">
+                {card.type_line || "—"}
+              </span>
+            </div>
+          </td>
+
+          {/* Qty chip — tap to expand edit controls */}
+          <td className="px-1 py-2.5 w-14 align-top text-right">
+            <button
+              onClick={() => setExpandedId(expanded ? null : card.id)}
+              aria-label="Edit quantities"
+              className={`inline-flex items-center justify-center min-w-[34px] h-7 px-2 rounded-full text-sm font-bold tabular-nums transition-colors ${
+                expanded
+                  ? "bg-surface-overlay text-content-heading"
+                  : "bg-surface-raised text-content-secondary"
+              } ${overCopyLimit ? "text-red-400" : ""}`}
+            >
+              {card.quantity}
+            </button>
+          </td>
+
+          {/* Price */}
+          <td
+            className={`pr-2 py-2.5 text-right text-[11px] tabular-nums w-14 text-content-tertiary align-top ${cellGrayscale}`}
+            style={{ opacity: cellOpacity }}
+          >
+            {card.prices.usd ? `$${card.prices.usd}` : "N/A"}
+          </td>
+        </tr>
+
+        {/* Expanded edit sub-row — owned toggle · owned stepper · qty stepper · remove */}
+        {expanded && (
+          <tr
+            className="border-b border-neutral-800/40"
+            style={highlightedId !== card.id ? { backgroundColor: rowBg } : undefined}
+          >
+            <td colSpan={TOUCH_COLUMN_COUNT} className="px-2 pb-3 pt-0">
+              <div className="flex items-center gap-1.5 flex-wrap justify-center rounded-lg bg-surface-raised/60 py-2 px-2">
+                {/* Owned toggle */}
+                <button
+                  onClick={() => onToggleIsOwned(card.id)}
+                  aria-label={card.isOwned ? "Unmark as owned" : "Mark as owned"}
+                  className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold border shrink-0 transition-colors ${
+                    card.isOwned
+                      ? isFullyOwned
+                        ? "bg-emerald-500 border-transparent text-white"
+                        : "bg-emerald-700 border-emerald-400/50 text-white"
+                      : "bg-surface-overlay border-line-default text-content-tertiary"
+                  }`}
+                >
+                  ✓
+                </button>
+
+                {/* Owned stepper */}
+                <div className="flex items-center gap-1 shrink-0">
+                  <button
+                    onClick={() => onUpdateOwnedQty(card.id, Math.max(0, card.ownedQty - 1))}
+                    aria-label="Decrease owned"
+                    className="w-7 h-7 rounded-full bg-surface-overlay text-content-tertiary active:bg-surface-base flex items-center justify-center transition-colors"
+                  >
+                    <Minus className="w-3.5 h-3.5" />
+                  </button>
+                  {editingOwnedId === card.id ? (
+                    <input
+                      type="text"
+                      value={ownedEditValue}
+                      onChange={(e) => setOwnedEditValue(e.target.value)}
+                      onFocus={(e) => e.target.select()}
+                      onBlur={() => { if (isOwnedEscaping.current) { isOwnedEscaping.current = false; return; } commitOwnedEdit(card); }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") { e.preventDefault(); commitOwnedEdit(card); }
+                        if (e.key === "Escape") { isOwnedEscaping.current = true; setEditingOwnedId(null); }
+                      }}
+                      className="w-8 text-center text-xs font-bold bg-surface-base border border-blue-500 rounded text-green-400 focus:outline-none"
+                      autoFocus
+                    />
+                  ) : (
+                    <button
+                      onClick={() => startOwnedEdit(card)}
+                      className={`w-8 text-center text-xs font-bold tabular-nums ${ownedNumColor}`}
+                    >
+                      {card.ownedQty}
+                    </button>
+                  )}
+                  <button
+                    onClick={() => onUpdateOwnedQty(card.id, card.ownedQty + 1)}
+                    aria-label="Increase owned"
+                    className="w-7 h-7 rounded-full bg-surface-overlay text-content-tertiary active:bg-surface-base flex items-center justify-center transition-colors"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+
+                <span className="text-[11px] text-content-muted select-none">/</span>
+
+                {/* Qty stepper */}
+                <div className="flex items-center gap-1 shrink-0">
+                  <button
+                    onClick={() => onUpdateQuantity(card.id, -1)}
+                    aria-label="Decrease quantity"
+                    className="w-7 h-7 rounded-full bg-surface-overlay text-content-tertiary active:bg-surface-base flex items-center justify-center transition-colors"
+                  >
+                    <Minus className="w-3.5 h-3.5" />
+                  </button>
+                  {editingId === card.id ? (
+                    <input
+                      type="text"
+                      value={editValue}
+                      onChange={(e) => setEditValue(e.target.value)}
+                      onFocus={(e) => e.target.select()}
+                      onBlur={() => { if (isEscaping.current) { isEscaping.current = false; return; } commitEdit(card); }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") { e.preventDefault(); commitEdit(card); }
+                        if (e.key === "Escape") { isEscaping.current = true; setEditingId(null); }
+                      }}
+                      className="w-8 text-center text-sm font-bold bg-surface-base border border-blue-500 rounded text-content-heading focus:outline-none"
+                      autoFocus
+                    />
+                  ) : (
+                    <button
+                      onClick={() => startEdit(card)}
+                      className={`w-8 text-center text-sm font-bold tabular-nums ${overCopyLimit ? "text-red-400" : "text-content-secondary"}`}
+                    >
+                      {card.quantity}
+                    </button>
+                  )}
+                  <button
+                    onClick={() => onUpdateQuantity(card.id, 1)}
+                    aria-label="Increase quantity"
+                    className="w-7 h-7 rounded-full bg-surface-overlay text-content-tertiary active:bg-surface-base flex items-center justify-center transition-colors"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+
+                {/* Remove — red, separated to the right */}
+                <button
+                  onClick={() => onRemove(card.id)}
+                  aria-label="Remove card"
+                  className="w-7 h-7 ml-1 rounded-full flex items-center justify-center bg-red-900 text-red-300 active:bg-red-800 transition-colors shrink-0"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </td>
+          </tr>
+        )}
+      </React.Fragment>
+    );
+  };
+
   return (
     <div
       className="bg-surface-base border border-line-subtle rounded-lg shadow-sm"
       onMouseMove={onMouseMove}
     >
       <table className="w-full table-fixed text-left text-sm">
-        {showHeader && (
+        {/* Touch uses a fixed colgroup so the compact columns stay stable even
+            when the first body row is a pinned commander or a group spacer. */}
+        {isTouch && (
+          <colgroup>
+            <col className="w-9" />
+            <col />
+            <col className="w-14" />
+            <col className="w-14" />
+          </colgroup>
+        )}
+        {showHeader && !isTouch && (
           <thead className="bg-surface-base text-[11px] text-content-muted border-b border-line-subtle uppercase tracking-wider">
             <tr>
               <th className="px-2 py-1.5 w-10"></th>
@@ -659,16 +1015,20 @@ export default function ListCardTable({
           {/* Pinned commander rows */}
           {pinnedCommanders.length > 0 && (
             <>
-              {pinnedCommanders.map((cmd, i) => renderRow(cmd, i, true))}
+              {pinnedCommanders.map((cmd, i) =>
+                isTouch ? renderTouchRow(cmd, i, true) : renderRow(cmd, i, true),
+              )}
               <tr aria-hidden>
-                <td colSpan={COLUMN_COUNT} className="p-0 bg-transparent">
+                <td colSpan={isTouch ? TOUCH_COLUMN_COUNT : COLUMN_COUNT} className="p-0 bg-transparent">
                   <div className="h-3" />
                 </td>
               </tr>
             </>
           )}
           {/* Remaining cards */}
-          {bodyCards.map((card, index) => renderRow(card, index))}
+          {bodyCards.map((card, index) =>
+            isTouch ? renderTouchRow(card, index) : renderRow(card, index),
+          )}
         </tbody>
       </table>
     </div>

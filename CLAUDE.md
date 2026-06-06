@@ -69,7 +69,9 @@ Default to direct work. Tier up only when the change earns it.
 
 ## Current Version
 
-`v1.30.2` — Tools button border fix. The mobile "Tools" button in `WorkspaceToolbar` is now borderless — dropped `bg-surface-base border border-line-subtle shadow-sm` for a plain `text-content-muted` / `hover:bg-surface-raised` icon button, matching the site's other chrome icon buttons (hamburger, sidebar rail, search-bar menu). The boxed look was inconsistent.
+`v1.31.0` — List view on mobile. The list (table) view now works on touch, mirroring the grid-view touch pass (1.27.0). The desktop list is a wide 7-column `table-fixed` (~656px of fixed columns) with hover-revealed steppers — unusable on a phone. On touch (`useIsTouch` → `(hover: none)`) `ListCardTable` renders a compact 4-column row (owned ✓ · name with mana+type subline · qty chip · price) via a new `renderTouchRow`; tapping the qty chip expands an inline edit sub-row (owned toggle, owned/qty steppers with tap-to-edit numbers, red remove ✕). A fixed `<colgroup>` keeps columns stable; the desktop `<thead>` is hidden on touch. The commander crown becomes an always-visible per-row tap (shared `getCrownDecision` helper). Desktop (`renderRow`) is unchanged. See `docs/ARCHITECTURE.md` → **Touch & Sizing System**.
+
+Prior: `v1.30.2` — Tools button border fix. The mobile "Tools" button in `WorkspaceToolbar` is now borderless — dropped `bg-surface-base border border-line-subtle shadow-sm` for a plain `text-content-muted` / `hover:bg-surface-raised` icon button, matching the site's other chrome icon buttons (hamburger, sidebar rail, search-bar menu). The boxed look was inconsistent.
 
 Prior: `v1.30.1` — Mobile toolbar & delete polish. The mobile-only "Tools" button in `WorkspaceToolbar` is now icon-only (44px square, `SlidersHorizontal`, no label) to reclaim toolbar width. The grid card's touch remove (✕) in `VisualCard` — shown while the tap-to-edit bar is open — is now tinted red (`bg-red-900 text-red-300`) instead of neutral surface, since touch has no hover to signal the destructive action; desktop hover-to-red is unchanged.
 
