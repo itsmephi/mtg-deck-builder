@@ -18,6 +18,17 @@ export const THEME_STORAGE_KEY = "mtg-theme";
 
 const DARK_QUERY = "(prefers-color-scheme: dark)";
 
+// The mobile browser chrome (status bar with clock/battery/signal) is tinted by
+// the <meta name="theme-color"> tag — without it, browsers fall back to their
+// own chrome (or unreliably sample the page background). Each color mirrors the
+// palette's --surface-base in globals.css. Keep in sync with the inlined map in
+// layout.tsx's no-flash script (which sets this before first paint).
+export const THEME_COLORS: Record<ResolvedTheme, string> = {
+  "warm-stone": "#1c1917",
+  "zed-dark": "#282c34",
+  light: "#faf7f2",
+};
+
 /** Resolve a preference to the palette that should paint right now. */
 export function resolveTheme(pref: ThemePreference): ResolvedTheme {
   if (pref === "system") {
@@ -39,6 +50,19 @@ export function applyTheme(resolved: ResolvedTheme): void {
   } else {
     document.documentElement.dataset.theme = resolved;
   }
+  applyThemeColor(resolved);
+}
+
+/** Update the <meta name="theme-color"> so the mobile status bar matches. */
+export function applyThemeColor(resolved: ResolvedTheme): void {
+  if (typeof document === "undefined") return;
+  let meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+  if (!meta) {
+    meta = document.createElement("meta");
+    meta.name = "theme-color";
+    document.head.appendChild(meta);
+  }
+  meta.content = THEME_COLORS[resolved];
 }
 
 /** Read the stored preference, defaulting to "system" when absent/invalid. */
