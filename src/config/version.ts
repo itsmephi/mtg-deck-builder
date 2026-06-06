@@ -1,10 +1,15 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.24.1";
+export const APP_VERSION = "1.24.2";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.24.2": [
+    "Enhancement: on mobile the deck view's hamburger now sits inline to the left of the search bar instead of on its own row — reclaims a full row of vertical space; Home and Settings keep the slim top-bar hamburger (no search bar there)",
+    "Enhancement: mobile drawer Settings moved from the top tab bar to the footer, right-aligned on the same row as Home and the version badge — groups the meta actions together",
+    "Enhancement: mobile drawer close button now uses the PanelLeftClose icon (matching the sidebar open/collapse icons) instead of a plain X",
+  ],
   "1.24.1": [
     "Fix: mobile drawer layering — the open drawer and its backdrop now sit above the deck's search bar and card price badges (raised to z-[80]/z-[90], still below the z-[100] modals); previously the search bar (z-[60]) and price chips (z-[50]) bled through on top",
     "Fix: removed the deck-name label next to the mobile hamburger — redundant with the large deck name already shown in the workspace",

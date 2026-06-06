@@ -24,6 +24,7 @@ interface WorkspaceProps {
   showToast: (msg: string) => void;
   registerCardPreviewFn?: (fn: (name: string, setCode?: string) => void) => void;
   onFindBarActiveChange?: (active: boolean) => void;
+  onOpenMobileSidebar?: () => void;
 }
 
 // Color sort: WUBRG mono → multicolor (by combination) → colorless/missing
@@ -51,7 +52,7 @@ interface ConfirmDialogState {
   targetFormat: DeckFormat;
 }
 
-export default function Workspace({ pendingImport, processImport, cancelImport, tileSize, onTileSizeChange, showToast, registerCardPreviewFn, onFindBarActiveChange }: WorkspaceProps) {
+export default function Workspace({ pendingImport, processImport, cancelImport, tileSize, onTileSizeChange, showToast, registerCardPreviewFn, onFindBarActiveChange, onOpenMobileSidebar }: WorkspaceProps) {
   const {
     decks,
     activeDeck,
@@ -528,6 +529,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
           setIsFindBarActive(active);
           onFindBarActiveChange?.(active);
         }}
+        onOpenMobileSidebar={onOpenMobileSidebar}
       />
       {isFindBarActive && (
         <div

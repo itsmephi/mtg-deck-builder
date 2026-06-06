@@ -69,7 +69,7 @@ Default to direct work. Tier up only when the change earns it.
 
 ## Current Version
 
-`v1.24.1` — Mobile drawer fixes: drawer/backdrop layered above the search bar and price chips; removed the redundant deck-name label next to the hamburger.
+`v1.24.2` — Mobile drawer polish: hamburger inline left of the deck search bar (saves a row); Settings moved to the drawer footer; close button uses the PanelLeftClose icon.
 
 ## Post-Version Checklist
 

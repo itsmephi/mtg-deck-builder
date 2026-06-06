@@ -5,6 +5,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.24.2] — Mobile drawer polish
+
+### Changed
+- **Inline hamburger** — in the deck view the mobile hamburger now sits to the left of the search bar (`FindByNameBar`) instead of on its own row, reclaiming a full row of vertical space; Home and Settings keep the slim top-bar hamburger since they have no search bar
+- **Settings location** — moved from the drawer's top tab bar to the footer, right-aligned on the same row as Home and the version badge (mobile only; desktop unchanged)
+- **Close icon** — the drawer close button now uses `PanelLeftClose` (matching the existing sidebar open/collapse icons) instead of a plain `X`
+
+---
+
 ## [1.24.1] — Mobile drawer fixes
 
 ### Fixed
