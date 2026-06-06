@@ -9,6 +9,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - **Full-screen takeover on mobile** — below `md` (768px) the search preview now fills the whole viewport (`fixed inset-0`) with its own header (card name + close `X`) and a vertically-scrolling body, instead of a dropdown dangling off the search bar with a `80vh` cap. This fixes the card art being clipped at the top: the dropdown's lower portion sat behind the on-screen keyboard, cutting off the card
+- **Slide-up animation** — the mobile takeover slides up like a bottom sheet on open via a `sheet-up` keyframe (250ms ease-out); the desktop dropdown still appears instantly (`md:animate-none`)
 - **Taller art strip on mobile** — the art-variants/browse strip is `400px` tall on mobile (vs `318px` on desktop) so each printing renders as a whole card; horizontal swipe to compare printings is unchanged
 - **Desktop unchanged** — still the backdrop-dismissed dropdown anchored below the search bar; the mobile/desktop split is driven by `md:` breakpoints, with `md:contents` dissolving the mobile scroll wrapper so desktop scroll behaves exactly as before
 

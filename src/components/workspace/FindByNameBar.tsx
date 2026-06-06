@@ -754,7 +754,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
 
       {/* Preview — overlays the deck workspace */}
       {showPreview && (
-        <div className="fixed inset-0 z-[100] flex flex-col bg-surface-panel md:absolute md:inset-auto md:left-3 md:right-3 md:top-full md:block md:max-h-[80vh] md:overflow-y-auto md:border md:border-line-default md:rounded-lg md:shadow-xl">
+        <div className="fixed inset-0 z-[100] flex flex-col bg-surface-panel animate-[sheet-up_250ms_ease-out] md:animate-none md:absolute md:inset-auto md:left-3 md:right-3 md:top-full md:block md:max-h-[80vh] md:overflow-y-auto md:border md:border-line-default md:rounded-lg md:shadow-xl">
           {/* Mobile-only header — the full-screen takeover hides the search box's
               X, so it gets its own close affordance + card title. Desktop keeps the
               backdrop-dismissed dropdown unchanged (md:hidden). */}

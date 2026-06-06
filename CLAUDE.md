@@ -69,7 +69,7 @@ Default to direct work. Tier up only when the change earns it.
 
 ## Current Version
 
-`v1.24.4` — Mobile search preview drawer: below 768px the preview is now a full-screen takeover (header with card name + close X, vertical scroll) instead of a keyboard-clipped dropdown; the art-variants strip is taller on mobile (400px) so cards show whole. Desktop dropdown unchanged.
+`v1.24.4` — Mobile search preview drawer: below 768px the preview is now a full-screen takeover (header with card name + close X, vertical scroll) that slides up like a bottom sheet on open; the art-variants strip is taller on mobile (400px) so cards show whole. Desktop dropdown unchanged.
 
 ## Post-Version Checklist
 

@@ -170,3 +170,10 @@ body {
     scrollbar-width: thin;
     scrollbar-color: var(--surface-overlay) transparent;
 }
+
+/* Mobile search-preview takeover slides up like a bottom sheet on open.
+   Applied via animate-[sheet-up_...] on FindByNameBar, disabled at md+. */
+@keyframes sheet-up {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+}

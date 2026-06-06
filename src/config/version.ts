@@ -7,6 +7,7 @@ export const APP_VERSION = "1.24.4";
 export const CHANGELOG: Record<string, string[]> = {
   "1.24.4": [
     "Enhancement: on mobile (below 768px) the search preview is now a full-screen takeover instead of a cramped dropdown dangling off the search bar — it owns the whole viewport with a header (card name + close X) and scrolls vertically, so the keyboard no longer clips the card art off at the top",
+    "Enhancement: the mobile takeover slides up like a bottom sheet on open (sheet-up keyframe, 250ms); desktop dropdown still appears instantly (animation disabled at md+)",
     "Enhancement: the art-variants strip is taller on mobile (400px vs 318px on desktop) so each printing shows as a whole card; horizontal swipe to compare printings is unchanged",
     "Chore: desktop search preview unchanged — still the backdrop-dismissed dropdown anchored below the search bar (mobile/desktop split via md: breakpoints, md:contents dissolves the mobile scroll wrapper on desktop)",
   ],
