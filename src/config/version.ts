@@ -1,10 +1,16 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.26.0";
+export const APP_VERSION = "1.27.0";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.27.0": [
+    "Feature: you can now edit cards in the visual (grid) view on a touch tablet. The quantity/owned controls used to live in a panel that only appeared on mouse-hover, so on an iPad they were unreachable. Tap the quantity badge on a card and a slim bar slides up with everything the desktop has — mark-owned toggle, owned and quantity steppers (tap the number to type it), and remove.",
+    "Enhancement: the bar prioritizes the card art — it's a thin strip along the bottom, not the big panel that covered nearly half the card, and it only appears when you ask for it. Tap the art, tap elsewhere, or tap the badge again to dismiss it.",
+    "Enhancement: in Commander decks, the 'set as commander/partner' crown is now an always-visible corner tap on touch instead of a hover-only control.",
+    "Chore: desktop is unchanged — the hover overlay behaves exactly as before; the new tap-to-reveal bar is touch-only, driven by a shared (hover: none) check.",
+  ],
   "1.26.0": [
     "Feature: site-wide touch & sizing pass — one unified, finger-friendly scale across every screen (desktop included). Tiny hardcoded text (8–10px) is gone: nothing renders below 11px anymore, and primary content like deck names, card rows, and toolbar labels stepped up to legible sizes.",
     "Fix: list-view card controls work on touch now — the quantity/owned steppers, the owned ✓ toggle, the remove ✕, and the search 'add' button were hidden until mouse-hover, so on an iPad they never appeared and were impossible to tap. They're now always visible, enlarged to ~28px with real icons (no more 6px glyphs).",

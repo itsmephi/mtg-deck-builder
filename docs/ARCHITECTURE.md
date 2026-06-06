@@ -47,6 +47,7 @@ Living reference for file structure, state ownership, and key technical patterns
 | `useDeckManager.tsx` | `DeckProvider` + `useDeckManager` — all deck CRUD, commander ops, sideboard ops, sort state, thumbnail toggle, `lastAddedId`; persists to localStorage |
 | `useDeckImportExport.tsx` | File import parsing (`.txt` deck lists) and export formatting; owned by `page.tsx` |
 | `useDeckStats.ts` | Pure derived stats from `activeDeck` — `totalCards`, `totalValue`, `remainingCost`, `hasPriceData`, `targetDeckSize`, `isAtTarget`, `isOverTarget`, `buyOnTCGPlayer()`, `buyOnCardKingdom()` |
+| `useIsTouch.ts` | `useIsTouch()` — `matchMedia("(hover: none)")` listener; single source of truth for touch-only affordances (see Touch & Sizing System) |
 
 ### `src/lib/`
 
@@ -242,6 +243,10 @@ Unified, touch-first sizing applied across all surfaces (desktop included — on
 **Spacing.** Interactive rows: `py-1.5`+ and `gap-1.5`+ minimum. Reserve `py-0.5`/`gap-1` for non-interactive inline runs.
 
 **Viewport.** `layout.tsx` exports an explicit `viewport` with `viewportFit: "cover"` for iPad/notch safe areas (Next.js otherwise injects a default without it).
+
+**Touch detection.** `useIsTouch()` (`src/hooks/useIsTouch.ts`) is the single source of truth — a `matchMedia("(hover: none)")` listener. Use it to add touch-only affordances; never to remove pointer/hover behaviour.
+
+**Grid tile editing (`VisualCard`, deck mode).** The desktop edit surface is a `group-hover` slide-up overlay (name/type/steppers) — unreachable on touch and, if naively tap-revealed, it covers ~45% of the art. On touch (`useIsTouch`) the model is different: the always-on **qty badge is a reveal trigger** — tapping it opens a slim, full-width bottom bar with full desktop parity (owned ✓ toggle, owned & qty steppers with tap-to-edit numbers, remove). The bar is always mounted (visibility toggled via classes) so number inputs commit `onBlur`. It's dismissed by tapping the art, tapping outside the card (`pointerdown` listener gated on `barOpen`), or re-tapping the badge; the badge and price pill hide while it's open. The commander crown is un-gated to an always-visible corner tap rather than folded into the bar. Desktop hover is untouched — everything new is gated behind `isTouch`, and the badge's emulated-hover visuals are suppressed on touch (`badgeHoverActive = !isTouch && isCardHovered`).
 
 ### React Patterns
 

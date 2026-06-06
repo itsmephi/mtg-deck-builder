@@ -69,7 +69,9 @@ Default to direct work. Tier up only when the change earns it.
 
 ## Current Version
 
-`v1.26.0` — Site-wide touch & sizing pass. One unified, finger-friendly scale across desktop and touch (no responsive split). Text floor is now 11px (every `text-[8/9/10px]` promoted by role); standalone chrome buttons are 44px (`h-11 w-11`); dense inline controls — the list-view qty/owned steppers, owned ✓ toggle, row remove ✕, and search-results add button — are no longer `opacity-0 group-hover` (which made them unreachable on iPad) and are now always visible at ~28px with real 16px `lucide` icons. Explicit `viewport-fit=cover` added in `layout.tsx`. The standard lives in `docs/ARCHITECTURE.md` → **Touch & Sizing System**. Known follow-up: the visual (grid) card tile still reveals its editing controls inside a `group-hover` overlay, so grid inline-editing on touch awaits a tap-to-reveal redesign (sizing was bumped; behaviour unchanged).
+`v1.27.0` — Grid-view editing on touch (the 1.26.0 follow-up). The visual card tile's edit controls were inside a `group-hover` overlay — unreachable on touch. Now, on touch only (`useIsTouch` → `(hover: none)`), tapping the always-on quantity badge reveals a slim bottom bar with full desktop parity (owned ✓ toggle, owned + qty steppers with tap-to-edit numbers, remove); it's a thin strip over a gradient, not the ~45% hover panel, and dismisses on tap-art / tap-outside / re-tap badge. The Commander crown becomes an always-visible corner tap on touch. Desktop/pointer behaviour is unchanged — everything new is gated behind `isTouch`. Pattern documented in `docs/ARCHITECTURE.md` → **Touch & Sizing System** (Grid tile editing).
+
+Prior: `v1.26.0` — Site-wide touch & sizing pass. One unified, finger-friendly scale across desktop and touch (no responsive split): 11px text floor, 44px standalone chrome buttons, dense inline controls un-gated from `opacity-0 group-hover` and always visible at ~28px, explicit `viewport-fit=cover`. Standard in `docs/ARCHITECTURE.md` → **Touch & Sizing System**.
 
 ## Post-Version Checklist
 

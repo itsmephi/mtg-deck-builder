@@ -5,6 +5,24 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.27.0] — Grid-view editing on touch
+
+The follow-up flagged in 1.26.0: the visual (grid) card tile's edit controls lived inside a `group-hover` slide-up overlay, so on touch they never appeared and the overlay (when it did) covered ~45% of the art. Grid tiles are now editable on touch via a tap-to-reveal slim bar, at full parity with desktop. The design decision (tap the qty badge → slim bar, vs. long-press; full parity; crown as a corner tap) was made in-session.
+
+### Added
+- **`useIsTouch()` hook** (`src/hooks/useIsTouch.ts`) — single source of truth for `matchMedia("(hover: none)")`; `FindByNameBar`'s duplicated inline detection now uses it
+- **Touch edit bar on `VisualCard` (deck mode)** — tapping the always-on quantity badge reveals a slim, full-width bottom bar with full desktop parity: owned ✓ toggle, owned stepper, qty stepper (numbers are tap-to-edit), and remove. The bar is a thin bottom strip over a gradient (not the ~45% hover panel) and is always mounted so number inputs commit `onBlur`
+- **Crown as a corner tap** — in Commander decks the non-commander "set as commander/partner" crown is un-gated to always-visible on touch, instead of being folded into the bar
+
+### Changed
+- **Dismiss + non-overlap behaviour** — the bar closes on a tap on the art, a tap/scroll outside the card (`pointerdown` listener gated on `barOpen`), or a second tap on the badge; the badge and price pill hide while it's open
+- **Stable touch badge** — emulated `mouseenter` on tap no longer flips the badge to its desktop ✓/raised state (`badgeHoverActive = !isTouch && isCardHovered`), so on touch the badge stays a quantity chip / reveal trigger
+
+### Unchanged
+- **Desktop / pointer** behaviour is identical — the hover overlay, the badge-as-owned-toggle, hover steppers, and the top-right remove all work exactly as before; everything new is gated behind `isTouch`
+
+---
+
 ## [1.26.0] — Site-wide touch & sizing pass
 
 A systematic audit and pass over text, icon, spacing, and tap-target sizing across the whole app, with a single unified scale applied to desktop and touch alike (no responsive split). The standard is recorded in `docs/ARCHITECTURE.md` → **Touch & Sizing System** so new UI conforms instead of re-introducing ad-hoc values.

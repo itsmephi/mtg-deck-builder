@@ -7,6 +7,7 @@ import { useDeckManager } from "@/hooks/useDeckManager";
 import { parseDroppedText } from "@/hooks/useDeckImportExport";
 import { ScryfallCard, DeckCard } from "@/types";
 import { getFormatRules } from "@/lib/formatRules";
+import { useIsTouch } from "@/hooks/useIsTouch";
 
 interface FindByNameBarProps {
   showToast: (msg: string) => void;
@@ -98,15 +99,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
   // Touch devices have no hover, so the per-tile action overlay (Add / Flip /
   // Swap art) can't be reached the desktop way. On these we reveal the overlay
   // on the selected tile instead — tap a printing to select it, then tap Add.
-  const [isTouch, setIsTouch] = useState(false);
-  useEffect(() => {
-    if (typeof window === "undefined" || !window.matchMedia) return;
-    const mq = window.matchMedia("(hover: none)");
-    const update = () => setIsTouch(mq.matches);
-    update();
-    mq.addEventListener?.("change", update);
-    return () => mq.removeEventListener?.("change", update);
-  }, []);
+  const isTouch = useIsTouch();
 
   // Detect e: and a: prefix queries — suppress normal autocomplete, show hint row
   const prefixHint = useMemo(() => {
