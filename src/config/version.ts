@@ -1,10 +1,16 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.30.2";
+export const APP_VERSION = "1.31.0";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.31.0": [
+    "Feature: the list view now works on a phone/tablet. The desktop list is a wide 7-column table (a dual owned/quantity stepper, type, mana, price) that ran off the side of a phone and whose controls only appeared on mouse-hover, so on touch it was unusable. On touch each card is now a compact row — owned ✓, name with its mana + type underneath, the quantity, and price — that fits the screen.",
+    "Feature: tap the quantity chip on a row and it expands to reveal the full edit controls — mark-owned toggle, owned and quantity steppers (tap a number to type it), and a red remove button. This mirrors the tap-to-edit bar added to the grid (visual) view.",
+    "Enhancement: in Commander decks the 'set as commander/partner' crown is an always-visible tap on each list row on touch, instead of a hover-only control.",
+    "Chore: desktop list view is unchanged — the full 7-column hover table renders exactly as before. The compact touch layout is driven by the shared (hover: none) check.",
+  ],
   "1.30.2": [
     "Fix: the mobile 'Tools' button no longer has a box around it — dropped the border, background, and shadow so it's a plain icon button matching the rest of the site's chrome (the hamburger menu, sidebar rail, etc.).",
   ],

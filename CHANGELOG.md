@@ -5,6 +5,23 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.31.0] — List view on mobile
+
+Brings the list (table) view to touch, the way the grid (visual) view was brought to touch in 1.27.0. The desktop list is a wide 7-column `table-fixed` (owned ✓, a dual owned/quantity stepper at `w-52`, name, type, mana, price, remove) totalling ~656px of fixed columns, with its steppers revealed on row-hover — so on a phone it overflowed off-screen and its controls were unreachable.
+
+### Added
+- **Compact touch row** (`ListCardTable.tsx`) — on touch (`useIsTouch()` → `(hover: none)`) each card renders as a 4-column row that fits a phone: owned ✓ toggle · name (with mana symbols + type line as a subline) · quantity chip · price. A fixed `<colgroup>` keeps the columns stable regardless of the first body row.
+- **Tap-to-expand edit sub-row** — tapping the quantity chip expands an inline control bar beneath the row with full parity: mark-owned toggle, owned stepper, quantity stepper (tap a number to type it), and a red remove (✕). Reuses the existing inline-edit state/handlers; mirrors the grid tile's tap-to-edit bar.
+- **Always-visible crown on touch** — in Commander decks the set-as-commander/partner crown is an always-visible per-row tap instead of hover-only. The crown's decision logic was factored into a shared `getCrownDecision()` helper.
+
+### Changed
+- The table now renders a touch `<colgroup>` and hides the desktop `<thead>` on touch; the body picks `renderTouchRow` vs. `renderRow` per `isTouch`.
+
+### Unchanged
+- Desktop (pointer) list view is byte-for-byte the same — the full 7-column hover table still renders via `renderRow`. The mobile/desktop split is driven entirely by the shared `(hover: none)` check.
+
+---
+
 ## [1.30.2] — Tools button border fix
 
 ### Changed
