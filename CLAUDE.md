@@ -69,7 +69,7 @@ Default to direct work. Tier up only when the change earns it.
 
 ## Current Version
 
-`v1.24.0` — Mobile sidebar is now a true off-canvas drawer (slides in from the left, hamburger top bar, backdrop/Escape/auto-close); desktop collapse-to-rail unchanged.
+`v1.24.1` — Mobile drawer fixes: drawer/backdrop layered above the search bar and price chips; removed the redundant deck-name label next to the hamburger.
 
 ## Post-Version Checklist
 

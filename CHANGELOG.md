@@ -5,6 +5,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.24.1] — Mobile drawer fixes
+
+### Fixed
+- **Drawer layering** — the open drawer and backdrop now sit above the deck's search bar and card price badges; raised to `z-[80]`/`z-[90]` (still below the `z-[100]` modals) so the search bar (`z-[60]`) and price chips (`z-[50]`) no longer bleed through on top
+- **Mobile top bar** — removed the deck-name label next to the hamburger; it's redundant with the large deck name already rendered in the workspace
+
+---
+
 ## [1.24.0] — Mobile sidebar drawer
 
 ### Added
