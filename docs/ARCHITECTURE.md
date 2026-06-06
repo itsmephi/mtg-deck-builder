@@ -106,7 +106,7 @@ All deck data lives here. Persists to `localStorage` via `useEffect` watchers ga
 | `mtg-sort-preference` | `{ by, dir }` JSON | `useDeckManager` |
 | `mtg-show-thumbnail` | `"true" \| "false"` | `useDeckManager` |
 | `mtg-tile-size` | `"xs" \| "s" \| "m" \| "l" \| "xl"` | `page.tsx` / `gridConfig` |
-| `mtg-theme` | `"zed-dark"` or absent (Warm Stone) | `SettingsView` / `layout.tsx` |
+| `mtg-theme` | `"warm-stone" \| "zed-dark" \| "light"`, absent = `system` | `SettingsView` / `layout.tsx` / `lib/theme.ts` |
 | `mtg-last-backup` | ISO 8601 timestamp of last backup | `SettingsView` |
 
 ---
@@ -204,7 +204,9 @@ Any navigation action (tab click, deck name click, home button) **must** call `o
 
 25 semantic CSS custom properties in `globals.css`, registered via `@theme inline` as Tailwind utilities.
 
-**Dual palette:** Warm Stone (`:root` default), Zed Dark (`[data-theme="zed-dark"]`). Switch via `document.documentElement.dataset.theme`.
+**Three palettes:** Warm Stone (`:root` default, warm dark), Zed Dark (`[data-theme="zed-dark"]`, cool dark), Light (`[data-theme="light"]`, warm light). Switch via `document.documentElement.dataset.theme` (Warm Stone = no attribute).
+
+**Preference vs. resolved theme** — `src/lib/theme.ts` is the single source of truth. The stored *preference* (`mtg-theme`) is one of `system | warm-stone | zed-dark | light` (`system` = absent, the default). `resolveTheme()` maps `system` to a palette via `(prefers-color-scheme: dark)` — dark OS → Warm Stone, light OS → Light — and `applyTheme()` sets/clears the `<html>` attribute. The no-flash init script in `layout.tsx` inlines an equivalent resolver (it must run before any module loads) plus a `matchMedia` listener that repaints live while the preference is `system`. **Keep the inline script and `theme.ts` in sync.**
 
 **Token categories:**
 - `bg-surface-base/raised/overlay/backdrop/panel/panel-raised/deep/hover`

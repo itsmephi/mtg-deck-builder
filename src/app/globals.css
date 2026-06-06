@@ -70,6 +70,41 @@
     --border-line-hover:     #4b5263;
 }
 
+:root[data-theme="light"] {
+    /* Surface tokens — Warm Light palette (the light counterpart to Warm Stone) */
+    --surface-base:          #faf7f2;
+    --surface-raised:        #f1ebe2;
+    --surface-overlay:       #ffffff;
+    --surface-backdrop:      rgba(28,25,23,0.45);
+    --surface-panel:         #f1ebe2;
+    --surface-panel-raised:  #e7ded2;
+    --surface-deep:          #ebe4d9;
+    --surface-hover:         #e0d6c8;
+
+    /* Input tokens */
+    --input-surface:         #ffffff;
+    --input-edge:            #d8cebf;
+    --input-edge-focus:      #a0725c;
+    --input-value:           #2a2521;
+    --input-placeholder:     #9a8d7c;
+
+    /* Text tokens */
+    --text-primary:          #2a2521;
+    --text-heading:          #463f37;
+    --text-secondary:        #5e564b;
+    --text-tertiary:         #766c5f;
+    --text-muted:            #8d8173;
+    --text-faint:            #ab9f8e;
+    --text-disabled:         #c4b9a8;
+
+    /* Border tokens */
+    --border-line-default:   #d8cebf;
+    --border-line-subtle:    #ece5da;
+    --border-line-panel:     #ddd3c4;
+    --border-line-focus:     #a0725c;
+    --border-line-hover:     #c4b9a8;
+}
+
 @theme inline {
     --color-surface-base:          var(--surface-base);
     --color-surface-raised:        var(--surface-raised);
@@ -104,38 +139,9 @@
     --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-    :root {
-        --surface-base:          #1c1917;
-        --surface-raised:        #292524;
-        --surface-overlay:       #3f3a36;
-        --surface-backdrop:      rgba(0,0,0,0.8);
-        --surface-panel:         #231f1d;
-        --surface-panel-raised:  #2e2926;
-        --surface-deep:          #15120f;
-        --surface-hover:         #524b44;
-
-        --input-surface:         #292524;
-        --input-edge:            #3f3a36;
-        --input-edge-focus:      #a0725c;
-        --input-value:           #bdb4a8;
-        --input-placeholder:     #6b6259;
-
-        --text-primary:          #e7e0d6;
-        --text-heading:          #bdb4a8;
-        --text-secondary:        #a69e94;
-        --text-tertiary:         #8a8279;
-        --text-muted:            #6b6259;
-        --text-faint:            #574f46;
-        --text-disabled:         #524b44;
-
-        --border-line-default:   #3f3a36;
-        --border-line-subtle:    #292524;
-        --border-line-panel:     #1c1917;
-        --border-line-focus:     #a0725c;
-        --border-line-hover:     #524b44;
-    }
-}
+/* Theme is resolved in JS (see src/lib/theme.ts + the no-flash init script in
+   layout.tsx): "system" maps a dark OS to Warm Stone (:root) and a light OS to
+   the [data-theme="light"] palette. No prefers-color-scheme block needed. */
 
 body {
     background: var(--surface-base);

@@ -5,6 +5,13 @@ import { ChevronLeft, Coffee, Download, Upload } from "lucide-react";
 import { APP_VERSION, CHANGELOG } from "@/config/version";
 import { useDeckManager } from "@/hooks/useDeckManager";
 import { Deck } from "@/types";
+import {
+  ThemePreference,
+  ResolvedTheme,
+  getThemePreference,
+  setThemePreference,
+  resolveTheme,
+} from "@/lib/theme";
 
 type SettingsTab = "preferences" | "whatsnew" | "about" | "support";
 
@@ -22,6 +29,32 @@ const TABS: { id: SettingsTab; label: string }[] = [
   { id: "support", label: "Support" },
 ];
 
+// Theme swatches. "System" shows a split light/warm-dark gradient to signal it
+// adapts; the others mirror each palette's base→raised→overlay surfaces.
+const THEME_OPTIONS: { id: ThemePreference; label: string; swatch: string }[] = [
+  {
+    id: "system",
+    label: "System",
+    swatch:
+      "linear-gradient(135deg, #faf7f2 0%, #f1ebe2 50%, #1c1917 50%, #3f3a36 100%)",
+  },
+  {
+    id: "warm-stone",
+    label: "Warm Stone",
+    swatch: "linear-gradient(135deg, #1c1917, #292524 50%, #3f3a36)",
+  },
+  {
+    id: "zed-dark",
+    label: "Zed Dark",
+    swatch: "linear-gradient(135deg, #282c34, #2c313a 50%, #3a3f47)",
+  },
+  {
+    id: "light",
+    label: "Light",
+    swatch: "linear-gradient(135deg, #ece5da, #f1ebe2 50%, #ffffff)",
+  },
+];
+
 // ─── Preferences ─────────────────────────────────────────────────────────────
 
 interface PreferencesTabProps {
@@ -31,28 +64,31 @@ interface PreferencesTabProps {
 
 function PreferencesTab({ showToast, onClose }: PreferencesTabProps) {
   const { showThumbnail, setShowThumbnail, decks, replaceAllDecks } = useDeckManager();
-  const [activeTheme, setActiveTheme] = useState<"warm-stone" | "zed-dark">("warm-stone");
+  const [themePref, setThemePref] = useState<ThemePreference>("system");
+  const [systemResolved, setSystemResolved] = useState<ResolvedTheme>("warm-stone");
   const [lastBackup, setLastBackup] = useState<string | null>(null);
   const [backupError, setBackupError] = useState<string | null>(null);
   const [restoreData, setRestoreData] = useState<{ decks: Deck[]; exportedAt: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem("mtg-theme");
-    setActiveTheme(stored === "zed-dark" ? "zed-dark" : "warm-stone");
+    setThemePref(getThemePreference());
+    setSystemResolved(resolveTheme("system"));
     const storedBackup = localStorage.getItem("mtg-last-backup");
     setLastBackup(storedBackup);
+
+    // Keep the "currently …" hint live if the OS flips while settings is open.
+    // The actual repaint for system mode is handled by the init script's own
+    // matchMedia listener (layout.tsx); this only updates the display.
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const onChange = () => setSystemResolved(resolveTheme("system"));
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
   }, []);
 
-  const handleThemeSelect = (theme: "warm-stone" | "zed-dark") => {
-    setActiveTheme(theme);
-    if (theme === "zed-dark") {
-      document.documentElement.dataset.theme = "zed-dark";
-      localStorage.setItem("mtg-theme", "zed-dark");
-    } else {
-      delete document.documentElement.dataset.theme;
-      localStorage.removeItem("mtg-theme");
-    }
+  const handleThemeSelect = (pref: ThemePreference) => {
+    setThemePref(pref);
+    setThemePreference(pref);
   };
 
   const handleBackup = () => {
@@ -161,45 +197,33 @@ function PreferencesTab({ showToast, onClose }: PreferencesTabProps) {
       <div className="py-3 border-b border-line-subtle">
         <p className="text-sm text-content-heading">Theme</p>
         <p className="text-xs text-content-muted mt-0.5">
-          Choose your color palette
+          Match your system, or pick a palette
         </p>
-        <div className="flex gap-3 mt-3">
-          {/* Warm Stone */}
-          <button
-            onClick={() => handleThemeSelect("warm-stone")}
-            className={`w-[110px] h-16 rounded-lg overflow-hidden relative cursor-pointer border-2 transition-all ${
-              activeTheme === "warm-stone"
-                ? "border-line-focus"
-                : "border-line-default hover:border-line-hover"
-            }`}
-            style={{
-              background:
-                "linear-gradient(135deg, #1c1917, #292524 50%, #3f3a36)",
-            }}
-          >
-            <span className="absolute bottom-0 inset-x-0 px-2 py-1 bg-black/50 text-[11px] font-bold uppercase tracking-wide text-content-secondary text-left">
-              Warm Stone
-            </span>
-          </button>
-
-          {/* Zed Dark */}
-          <button
-            onClick={() => handleThemeSelect("zed-dark")}
-            className={`w-[110px] h-16 rounded-lg overflow-hidden relative cursor-pointer border-2 transition-all ${
-              activeTheme === "zed-dark"
-                ? "border-line-focus"
-                : "border-line-default hover:border-line-hover"
-            }`}
-            style={{
-              background:
-                "linear-gradient(135deg, #282c34, #2c313a 50%, #3a3f47)",
-            }}
-          >
-            <span className="absolute bottom-0 inset-x-0 px-2 py-1 bg-black/50 text-[11px] font-bold uppercase tracking-wide text-content-secondary text-left">
-              Zed Dark
-            </span>
-          </button>
+        <div className="flex flex-wrap gap-3 mt-3">
+          {THEME_OPTIONS.map((opt) => (
+            <button
+              key={opt.id}
+              onClick={() => handleThemeSelect(opt.id)}
+              aria-pressed={themePref === opt.id}
+              className={`w-[110px] h-16 rounded-lg overflow-hidden relative cursor-pointer border-2 transition-all ${
+                themePref === opt.id
+                  ? "border-line-focus"
+                  : "border-line-default hover:border-line-hover"
+              }`}
+              style={{ background: opt.swatch }}
+            >
+              <span className="absolute bottom-0 inset-x-0 px-2 py-1 bg-black/50 text-[11px] font-bold uppercase tracking-wide text-content-secondary text-left">
+                {opt.label}
+              </span>
+            </button>
+          ))}
         </div>
+        {themePref === "system" && (
+          <p className="text-[11px] text-content-faint mt-2">
+            Following your system — currently{" "}
+            {systemResolved === "light" ? "Light" : "Warm Stone (dark)"}
+          </p>
+        )}
       </div>
 
       {/* Deck Backup */}
