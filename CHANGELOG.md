@@ -5,6 +5,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.24.6] — Mobile preview close no longer pops the keyboard
+
+### Fixed
+- **Close X keeps the keyboard down** — closing the mobile full-screen search preview re-focused the search input (`clearAll`'s `requestAnimationFrame` focus), which re-opened the on-screen keyboard and covered the screen. The close `X` now skips the refocus (`clearAll({ refocus: false })`); the search box's clear `X` and the desktop backdrop dismiss still refocus the input as before
+
+---
+
 ## [1.24.5] — Mobile search preview fits the screen
 
 ### Fixed

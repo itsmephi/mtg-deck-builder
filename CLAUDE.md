@@ -69,7 +69,7 @@ Default to direct work. Tier up only when the change earns it.
 
 ## Current Version
 
-`v1.24.5` — Mobile search preview now fits the screen with no scroll: the art-variants strip flexes to fill the space left below the card info (floored at 240px) instead of a fixed height, so the whole card always lands on-screen. Desktop dropdown unchanged (fixed 318px strip).
+`v1.24.6` — Closing the mobile full-screen search preview (the X) no longer re-focuses the search field, so the on-screen keyboard stays down instead of popping back up. Search-box clear X and desktop dismiss still refocus as before.
 
 ## Post-Version Checklist
 

@@ -227,7 +227,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
     requestAnimationFrame(() => inputRef.current?.focus());
   }, [suggestions.length, query]);
 
-  const clearAll = useCallback(() => {
+  const clearAll = useCallback((opts?: { refocus?: boolean }) => {
     setQuery("");
     setSuggestions([]);
     setShowDropdown(false);
@@ -241,7 +241,12 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
     setIsLoadingBrowse(false);
     setEntryMode("search");
     deckEntryCardRef.current = null;
-    requestAnimationFrame(() => inputRef.current?.focus());
+    // Refocus the input so you can keep typing — except when the mobile
+    // full-screen takeover is closed (refocus:false), where re-focusing would
+    // pop the on-screen keyboard right back up and swallow the screen.
+    if (opts?.refocus !== false) {
+      requestAnimationFrame(() => inputRef.current?.focus());
+    }
   }, []);
 
   useEffect(() => {
@@ -683,7 +688,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
         )}
         {(query || showPreview) && (
           <button
-            onClick={clearAll}
+            onClick={() => clearAll()}
             className="text-content-muted hover:text-content-primary transition-colors shrink-0 p-0.5"
             aria-label="Clear search"
           >
@@ -764,7 +769,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
               {selectedPrinting?.name ?? "Card preview"}
             </span>
             <button
-              onClick={clearAll}
+              onClick={() => clearAll({ refocus: false })}
               aria-label="Close preview"
               className="w-9 h-9 flex items-center justify-center text-content-muted hover:text-content-primary transition-colors"
             >
