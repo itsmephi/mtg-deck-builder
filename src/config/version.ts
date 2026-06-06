@@ -1,10 +1,14 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.30.0";
+export const APP_VERSION = "1.30.1";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.30.1": [
+    "Enhancement: on mobile the deck toolbar's 'Tools' button is now icon-only (the sliders icon, no label) — frees up horizontal room in the toolbar.",
+    "Enhancement: on touch, the card's remove (✕) button — the one that appears when you tap a card's quantity in grid view — is now tinted red instead of neutral white, so it reads clearly as the delete action.",
+  ],
   "1.30.0": [
     "Feature: Light theme — a warm-light palette (the daylight counterpart to Warm Stone) joins the two dark themes. Pick it in Settings › Preferences › Theme.",
     "Feature: Match system — the theme picker now has a 'System' option (the new default) that follows your OS appearance. A dark OS uses Warm Stone; a light OS uses the new Light theme. It updates live if you flip your system between light and dark with the app open.",

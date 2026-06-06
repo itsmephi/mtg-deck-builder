@@ -5,6 +5,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.30.1] — Mobile toolbar & delete polish
+
+Two small mobile/touch UX tweaks.
+
+### Changed
+- **Mobile "Tools" button is icon-only** — the deck toolbar's mobile-only Tools button (`WorkspaceToolbar.tsx`) now shows just the `SlidersHorizontal` icon in a 44px square, dropping the text label to reclaim horizontal space.
+- **Touch remove (✕) tinted red** — the grid card's remove button (`VisualCard.tsx`), shown when the touch edit bar is open, now renders red (`bg-red-900 text-red-300`) instead of the neutral surface color. Touch has no hover, so the destructive action is signaled up front. Desktop's hover-to-red behavior is unchanged.
+
+---
+
 ## [1.30.0] — Light theme + match system
 
 Adds a third palette (Light) and a "System" preference that follows the OS. Previously the app shipped two dark palettes (Warm Stone, Zed Dark) selectable only as an explicit choice, with no daylight option and no OS awareness.

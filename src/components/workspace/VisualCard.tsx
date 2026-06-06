@@ -332,12 +332,16 @@ export default function VisualCard({
             onRemove(card.id);
           }}
           aria-label="Remove card"
-          className={`absolute top-1.5 right-1.5 w-7 h-7 flex items-center justify-center rounded-full bg-surface-base text-content-tertiary hover:text-red-400 hover:bg-red-900 transition-all z-[46] ${
+          className={`absolute top-1.5 right-1.5 w-7 h-7 flex items-center justify-center rounded-full transition-all z-[46] ${
             isTouch
-              ? barOpen
-                ? "opacity-100 pointer-events-auto"
-                : "opacity-0 pointer-events-none"
-              : "opacity-0 group-hover:opacity-100"
+              ? // Touch has no hover, so the destructive action is tinted red
+                // up front to signal that tapping it deletes the card.
+                `bg-red-900 text-red-300 ${
+                  barOpen
+                    ? "opacity-100 pointer-events-auto"
+                    : "opacity-0 pointer-events-none"
+                }`
+              : "bg-surface-base text-content-tertiary hover:text-red-400 hover:bg-red-900 opacity-0 group-hover:opacity-100"
           }`}
         >
           <X className="w-4 h-4" />
