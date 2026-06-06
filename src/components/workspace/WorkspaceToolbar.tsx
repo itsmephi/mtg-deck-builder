@@ -238,14 +238,14 @@ export default function WorkspaceToolbar({
         </div>
 
       {/* Mobile: single Tools button — the dense desktop control block below
-          overflows the viewport, so on mobile it collapses into a bottom sheet. */}
+          overflows the viewport, so on mobile it collapses into a bottom sheet.
+          Icon-only to save horizontal room in the toolbar. */}
       <button
         onClick={() => setMobileToolsOpen(true)}
         aria-label="Deck tools"
-        className="md:hidden flex items-center justify-center gap-1.5 h-11 px-4 shrink-0 bg-surface-base border border-line-subtle rounded-lg text-sm font-bold text-content-tertiary hover:text-content-primary hover:bg-surface-raised transition-colors shadow-sm"
+        className="md:hidden flex items-center justify-center w-11 h-11 shrink-0 bg-surface-base border border-line-subtle rounded-lg text-content-tertiary hover:text-content-primary hover:bg-surface-raised transition-colors shadow-sm"
       >
         <SlidersHorizontal className="w-4 h-4" />
-        <span>Tools</span>
       </button>
 
       {/* Right: simulator + main/side + sort/group/view (desktop only) */}
