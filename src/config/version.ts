@@ -1,10 +1,16 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.23.1";
+export const APP_VERSION = "1.24.0";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.24.0": [
+    "Feature: mobile sidebar is now a true off-canvas drawer — slides in from the left over a dimmed backdrop instead of stacking at the top of the screen; defaults closed so the workspace gets the full viewport height on phones",
+    "Feature: mobile top bar with a hamburger button opens the drawer; the bar shows the current context (active deck name, 'Settings', or 'Brew'); hidden on desktop (≥768px)",
+    "Enhancement: drawer auto-closes after selecting a deck, going home, or opening Settings, and dismisses via the backdrop, an X button in the drawer header, or the Escape key",
+    "Chore: desktop layout unchanged — the collapse-to-rail sidebar still renders in-flow at ≥768px; mobile/desktop split is now driven by Tailwind md: breakpoints to avoid a load flash",
+  ],
   "1.23.1": [
     "Fix: mouse-wheel horizontal scroll on the search-preview art strip — regressed under React 19 (onWheel registered as passive, so the parent panel's overflow-y-auto was eating the wheel event); restored via a window-level non-passive wheel listener delegated to [data-art-strip]",
     "Enhancement: loading spinner overlay on the search-preview panel and on the artist/set browse strip — Loader2 icon centered over the existing skeleton placeholders so slow Scryfall queries get a clear in-flight indicator",

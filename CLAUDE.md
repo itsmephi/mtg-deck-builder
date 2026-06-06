@@ -69,7 +69,7 @@ Default to direct work. Tier up only when the change earns it.
 
 ## Current Version
 
-`v1.23.1` — Wheel-scroll regression fix on search-preview art strip + loading spinner overlay on slow Scryfall queries.
+`v1.24.0` — Mobile sidebar is now a true off-canvas drawer (slides in from the left, hamburger top bar, backdrop/Escape/auto-close); desktop collapse-to-rail unchanged.
 
 ## Post-Version Checklist
 

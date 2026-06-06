@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Layers, PanelRightOpen, Settings, Home } from "lucide-react";
+import { Layers, PanelRightOpen, Settings, Home, X } from "lucide-react";
 import { APP_VERSION } from "@/config/version";
 import SidebarRail from "./SidebarRail";
 import SidebarDecksTab from "./SidebarDecksTab";
@@ -15,9 +15,11 @@ interface Props {
   onCloseSettings?: () => void;
   onGoHome: () => void;
   isOnHomeScreen: boolean;
+  mobileOpen: boolean;
+  onMobileClose: () => void;
 }
 
-export default function Sidebar({ onImport, onExport, isImporting, onOpenSettings, onCloseSettings, onGoHome, isOnHomeScreen }: Props) {
+export default function Sidebar({ onImport, onExport, isImporting, onOpenSettings, onCloseSettings, onGoHome, isOnHomeScreen, mobileOpen, onMobileClose }: Props) {
   const [collapsed, setCollapsed] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
 
@@ -47,17 +49,32 @@ export default function Sidebar({ onImport, onExport, isImporting, onOpenSetting
   const isCollapsed = isDesktop && collapsed;
 
   return (
-    <aside
-      className={`h-[40vh] md:h-screen border-b md:border-b-0 md:border-r border-line-panel bg-surface-panel flex flex-col ${isCollapsed ? "overflow-visible" : "overflow-hidden"}`}
-      style={
-        isDesktop
-          ? {
-              width: isCollapsed ? 48 : 256,
-              transition: "width 300ms cubic-bezier(0.4, 0, 0.2, 1)",
-            }
-          : { width: "100%" }
-      }
-    >
+    <>
+      {/* Mobile backdrop — only rendered below md, fades with the drawer */}
+      <div
+        className={`fixed inset-0 z-40 bg-black/50 md:hidden transition-opacity duration-300 ${
+          mobileOpen ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
+        onClick={onMobileClose}
+        aria-hidden="true"
+      />
+      <aside
+        className={`
+          bg-surface-panel border-line-panel flex flex-col overflow-hidden
+          fixed inset-y-0 left-0 z-50 w-[82vw] max-w-[320px] border-r shadow-2xl
+          transition-transform duration-300 ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
+          md:static md:z-auto md:h-screen md:w-auto md:max-w-none md:translate-x-0 md:shadow-none
+          ${isCollapsed ? "md:overflow-visible" : "md:overflow-hidden"}
+        `}
+        style={
+          isDesktop
+            ? {
+                width: isCollapsed ? 48 : 256,
+                transition: "width 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+              }
+            : undefined
+        }
+      >
       {isCollapsed ? (
         <SidebarRail expandTo={expandTo} onOpenSettings={onOpenSettings} onGoHome={onGoHome} isOnHomeScreen={isOnHomeScreen} />
       ) : (
@@ -77,12 +94,21 @@ export default function Sidebar({ onImport, onExport, isImporting, onOpenSetting
               </button>
             )}
             {!isDesktop && (
-              <button
-                onClick={() => onOpenSettings("preferences")}
-                className="w-9 h-9 flex items-center justify-center bg-surface-deep border-b border-line-subtle text-content-muted hover:text-content-primary transition-colors"
-              >
-                <Settings className="w-4 h-4" />
-              </button>
+              <>
+                <button
+                  onClick={() => onOpenSettings("preferences")}
+                  className="w-9 h-9 flex items-center justify-center bg-surface-deep border-b border-line-subtle text-content-muted hover:text-content-primary transition-colors"
+                >
+                  <Settings className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={onMobileClose}
+                  aria-label="Close menu"
+                  className="w-9 h-9 flex items-center justify-center bg-surface-deep border-b border-line-subtle text-content-muted hover:text-content-primary transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </>
             )}
           </div>
 
@@ -92,6 +118,7 @@ export default function Sidebar({ onImport, onExport, isImporting, onOpenSetting
               onExport={onExport}
               isImporting={isImporting}
               onCloseSettings={onCloseSettings}
+              onNavigate={onMobileClose}
             />
           </div>
 
@@ -120,6 +147,7 @@ export default function Sidebar({ onImport, onExport, isImporting, onOpenSetting
           </div>
         </div>
       )}
-    </aside>
+      </aside>
+    </>
   );
 }

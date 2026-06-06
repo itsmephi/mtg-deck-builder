@@ -12,6 +12,9 @@ interface Props {
   onExport: () => void;
   isImporting: boolean;
   onCloseSettings?: () => void;
+  // Called on any in-sidebar navigation (deck select, sideboard view, new deck)
+  // so the mobile drawer can close itself.
+  onNavigate?: () => void;
 }
 
 interface ConfirmDialogState {
@@ -20,7 +23,7 @@ interface ConfirmDialogState {
   targetFormat: DeckFormat;
 }
 
-export default function SidebarDecksTab({ onImport, onExport, isImporting, onCloseSettings }: Props) {
+export default function SidebarDecksTab({ onImport, onExport, isImporting, onCloseSettings, onNavigate }: Props) {
   const {
     decks,
     activeDeck,
@@ -152,6 +155,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting, onClo
                     setDeckViewMode("main");
                   }
                   onCloseSettings?.();
+                  onNavigate?.();
                 }}
                 className={`flex-1 text-left text-xs truncate transition-colors min-w-0 ${
                   isActive ? "text-content-primary" : "text-content-tertiary hover:text-content-primary"
@@ -213,6 +217,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting, onClo
                   if (!hasSideboard) enableSideboard(deck.id);
                   setDeckViewMode("sideboard");
                   onCloseSettings?.();
+                  onNavigate?.();
                 }}
                 disabled={isCommander}
                 title={
@@ -301,6 +306,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting, onClo
                 onSelect={(format) => {
                   createNewDeck(format);
                   setNewDeckPickerOpen(false);
+                  onNavigate?.();
                 }}
               />
             </div>
