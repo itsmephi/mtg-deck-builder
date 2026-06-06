@@ -1,10 +1,13 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.31.0";
+export const APP_VERSION = "1.31.1";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.31.1": [
+    "Fix: tapping a card in your deck on a phone now scrolls the art-variants strip so the card's current printing lands dead-center. The centering math assumed the strip was a fixed height (true on desktop), but on mobile the strip grows to fill the full-screen preview, so the math was off and the active printing sat off to the side. It now measures the real tile, so it's centered on any screen.",
+  ],
   "1.31.0": [
     "Feature: the list view now works on a phone/tablet. The desktop list is a wide 7-column table (a dual owned/quantity stepper, type, mana, price) that ran off the side of a phone and whose controls only appeared on mouse-hover, so on touch it was unusable. On touch each card is now a compact row — owned ✓, name with its mana + type underneath, the quantity, and price — that fits the screen.",
     "Feature: tap the quantity chip on a row and it expands to reveal the full edit controls — mark-owned toggle, owned and quantity steppers (tap a number to type it), and a red remove button. This mirrors the tap-to-edit bar added to the grid (visual) view.",

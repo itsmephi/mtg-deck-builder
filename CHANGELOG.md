@@ -5,6 +5,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.31.1] — Mobile art-strip centering fix
+
+Tapping a card in the deck opens the FindByNameBar preview and scrolls the art-variants strip to that card's current printing. On mobile the printing landed off-center.
+
+### Fixed
+- **Mobile centering** (`FindByNameBar.tsx`) — the strip-scroll math derived tile width from a hardcoded 318px strip height. That's correct on desktop (`md:h-[318px]`), but the mobile full-screen preview makes the strip `flex-1` so its height (and thus tile width) is larger and variable — the computed scroll position was off, leaving the active printing to the side. The `useLayoutEffect` now measures the real tile element (via its `data-printing-id` and `getBoundingClientRect`) instead of computing from a fixed height, so it centers correctly at any strip height.
+
+---
+
 ## [1.31.0] — List view on mobile
 
 Brings the list (table) view to touch, the way the grid (visual) view was brought to touch in 1.27.0. The desktop list is a wide 7-column `table-fixed` (owned ✓, a dual owned/quantity stepper at `w-52`, name, type, mana, price, remove) totalling ~656px of fixed columns, with its steppers revealed on row-hover — so on a phone it overflowed off-screen and its controls were unreachable.
