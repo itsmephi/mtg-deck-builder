@@ -585,11 +585,15 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
     scrollToPrintingIdRef.current = null;
     const strip = artStripRef.current;
     if (!strip) return;
-    const idx = printings.findIndex((p) => p.id === targetId);
-    if (idx < 0) return;
-    // Strip height 318, card aspect ratio 488/680 → tile width ≈ 228px. gap-2 = 8px. w-1 spacer = 4px.
-    const tileW = 318 * 488 / 680;
-    const tileCenter = 4 + idx * (tileW + 8) + tileW / 2;
+    // Measure the actual tile rather than deriving width from a hardcoded strip
+    // height — the strip is a fixed 318px on desktop (md:h-[318px]) but flex-1 in
+    // the mobile full-screen sheet, so its height (and thus tile width) varies.
+    const tile = strip.querySelector<HTMLElement>(`[data-printing-id="${targetId}"]`);
+    if (!tile) return;
+    const stripRect = strip.getBoundingClientRect();
+    const tileRect = tile.getBoundingClientRect();
+    // tile center measured within the strip's scrollable content
+    const tileCenter = (tileRect.left - stripRect.left) + strip.scrollLeft + tileRect.width / 2;
     strip.scrollLeft = tileCenter - strip.clientWidth / 2;
   }, [printings]);
 
