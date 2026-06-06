@@ -5,7 +5,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-## [1.31.2] — Stronger list color tints on Light theme
+## [1.31.3] — Stronger list color tints on Light theme
 
 The list view shades each row by the card's color (blue, red, land, multicolor, etc.). Those tints were tuned for the dark themes — faint 8–15% alpha washes — so on the Light theme's cream surface (`#faf7f2`) they were nearly invisible.
 
@@ -15,6 +15,15 @@ The list view shades each row by the card's color (blue, red, land, multicolor, 
 
 ### Added
 - `useIsLightTheme()` — a small in-file hook that tracks `<html data-theme="light">` via a `MutationObserver`, so the tints update live when the theme is switched in Settings or when the OS flips (System preference).
+
+---
+
+## [1.31.2] — Mobile art-strip centering fix
+
+Tapping a card in the deck opens the FindByNameBar preview and scrolls the art-variants strip to that card's current printing. On mobile the printing landed off-center.
+
+### Fixed
+- **Mobile centering** (`FindByNameBar.tsx`) — the strip-scroll math derived tile width from a hardcoded 318px strip height. That's correct on desktop (`md:h-[318px]`), but the mobile full-screen preview makes the strip `flex-1` so its height (and thus tile width) is larger and variable — the computed scroll position was off, leaving the active printing to the side. The `useLayoutEffect` now measures the real tile element (via its `data-printing-id` and `getBoundingClientRect`) instead of computing from a fixed height, so it centers correctly at any strip height.
 
 ---
 

@@ -1,12 +1,15 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.31.2";
+export const APP_VERSION = "1.31.3";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
-  "1.31.2": [
+  "1.31.3": [
     "Enhancement: the per-card color tint in the list view now reads clearly on the Light theme. The row tints (which shade each card by its color — blue, red, land, etc.) were tuned for the dark themes, so their faint 8–15% washes nearly disappeared on the light cream background. The Light theme now uses a stronger, more saturated set of tints so a card's color is easy to scan at a glance; the dark themes are unchanged.",
+  ],
+  "1.31.2": [
+    "Fix: tapping a card in your deck on a phone now scrolls the art-variants strip so the card's current printing lands dead-center. The centering math assumed the strip was a fixed height (true on desktop), but on mobile the strip grows to fill the full-screen preview, so the math was off and the active printing sat off to the side. It now measures the real tile, so it's centered on any screen.",
   ],
   "1.31.1": [
     "Fix: on the Light theme, card names in the mobile list view were nearly invisible — they were a hardcoded near-white, which is fine on the dark themes but washed out on the light background. Names now use the theme's primary text color, so they're high-contrast on every theme (this also fixes the same washed-out names in the desktop list view on Light).",
