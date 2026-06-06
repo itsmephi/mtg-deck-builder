@@ -1,10 +1,16 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.24.6";
+export const APP_VERSION = "1.25.0";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.25.0": [
+    "Feature: deck controls are now reachable on mobile — the dense toolbar control block (Simulator, Main/Side, Sort, Group, card size, Grid/List) was wider than a phone screen and overflowed off the right edge with no way to reach it. Below 768px it now collapses into a single 'Tools' button that opens a bottom sheet with all of those controls as full-width, finger-sized rows.",
+    "Enhancement: the bottom sheet slides up from the bottom over a dimmed backdrop (tap the backdrop or the X to close); the Simulator row closes the sheet and opens the simulator modal. Card size uses a touch-friendly XS–XL segmented control inside the sheet (the desktop slider is pointer-only).",
+    "Enhancement: the deck stats on the left (card count, Value, To Buy) are unchanged but now wrap gracefully on very narrow screens so the Tools button always stays visible.",
+    "Chore: desktop (≥768px) toolbar is completely unchanged — the inline control bar still renders as before; the mobile/desktop split is driven by md: breakpoints.",
+  ],
   "1.24.6": [
     "Fix: closing the mobile full-screen search preview (the X) no longer re-focuses the search field, so the on-screen keyboard stays down instead of popping back up and swallowing the screen; the search box's clear X and desktop dismiss still refocus as before",
   ],

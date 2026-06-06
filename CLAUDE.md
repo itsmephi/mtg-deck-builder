@@ -69,7 +69,7 @@ Default to direct work. Tier up only when the change earns it.
 
 ## Current Version
 
-`v1.24.6` — Closing the mobile full-screen search preview (the X) no longer re-focuses the search field, so the on-screen keyboard stays down instead of popping back up. Search-box clear X and desktop dismiss still refocus as before.
+`v1.25.0` — Deck controls are now reachable on mobile: below 768px the dense toolbar control block (Simulator, Main/Side, Sort, Group, card size, Grid/List) collapses into a single "Tools" button that opens a bottom sheet (`DeckToolsSheet`) with all controls as full-width, finger-sized rows. Card size uses a touch-friendly XS–XL segmented control (desktop slider is pointer-only). Left-side stats are unchanged but now wrap on narrow screens. Desktop toolbar unchanged (`hidden md:flex`).
 
 ## Post-Version Checklist
 
