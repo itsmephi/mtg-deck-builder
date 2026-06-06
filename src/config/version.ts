@@ -1,10 +1,13 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.32.1";
+export const APP_VERSION = "1.32.2";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.32.2": [
+    "Enhancement: rotate your phone to landscape (or use a tablet) and each card in the list view now fits on a single line — the name, mana, and type sit side by side instead of stacking onto two rows. In portrait, where there isn't room, it still stacks as before.",
+  ],
   "1.32.1": [
     "Enhancement: the per-card color tint in the list view now reads clearly on the Light theme. The row tints (which shade each card by its color — blue, red, land, etc.) were tuned for the dark themes, so their faint 8–15% washes nearly disappeared on the light cream background. The Light theme now uses a stronger, more saturated set of tints so a card's color is easy to scan at a glance; the dark themes are unchanged.",
   ],

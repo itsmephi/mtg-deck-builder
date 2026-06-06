@@ -783,7 +783,7 @@ export default function ListCardTable({
           style={highlightedId !== card.id ? { backgroundColor: rowBg } : undefined}
         >
           {/* Owned ✓ toggle */}
-          <td className="pl-1.5 pr-0.5 py-2.5 w-9 align-top">
+          <td className="pl-1.5 pr-0.5 py-2.5 w-9 align-top sm:align-middle">
             {(() => {
               const isFull = card.isOwned && card.ownedQty >= card.quantity;
               let bg: string, border: string, color: string;
@@ -811,9 +811,11 @@ export default function ListCardTable({
             })()}
           </td>
 
-          {/* Name + meta (crown · name · warning, then mana + type subline) */}
-          <td className="px-1 py-2.5 min-w-0 align-top">
-            <div className="flex items-center gap-1 min-w-0">
+          {/* Name + meta — stacked on narrow (portrait); collapses onto one
+              line on wider screens (landscape / tablet) where there's room. */}
+          <td className="px-1 py-2.5 min-w-0 align-top sm:align-middle">
+            <div className="flex flex-col min-w-0 sm:flex-row sm:items-center sm:gap-2">
+            <div className="flex items-center gap-1 min-w-0 sm:flex-1">
               {/* Crown — always-visible tap on touch (commander format only) */}
               {isCommanderFormat && (onAddCommander || onRemoveCommander || onReplaceCommander) && (
                 isThisCommander ? (
@@ -868,8 +870,8 @@ export default function ListCardTable({
                 </span>
               )}
             </div>
-            {/* Mana + type subline */}
-            <div className={`flex items-center gap-1.5 mt-0.5 min-w-0 ${cellGrayscale}`} style={{ opacity: cellOpacity }}>
+            {/* Mana + type — subline on narrow, inline on wide */}
+            <div className={`flex items-center gap-1.5 mt-0.5 min-w-0 sm:mt-0 sm:shrink-0 ${cellGrayscale}`} style={{ opacity: cellOpacity }}>
               {card.card_faces ? (
                 <div className="flex items-center gap-1 shrink-0">
                   {renderManaSymbols(card.card_faces[0].mana_cost)}
@@ -883,10 +885,11 @@ export default function ListCardTable({
                 {card.type_line || "—"}
               </span>
             </div>
+            </div>
           </td>
 
           {/* Qty chip — tap to expand edit controls */}
-          <td className="px-0.5 py-2.5 w-12 align-top text-right">
+          <td className="px-0.5 py-2.5 w-12 align-top sm:align-middle text-right">
             <button
               onClick={() => setExpandedId(expanded ? null : card.id)}
               aria-label="Edit quantities"
@@ -902,7 +905,7 @@ export default function ListCardTable({
 
           {/* Price */}
           <td
-            className={`pr-2 py-2.5 text-right text-[11px] tabular-nums w-14 text-content-tertiary align-top ${cellGrayscale}`}
+            className={`pr-2 py-2.5 text-right text-[11px] tabular-nums w-14 text-content-tertiary align-top sm:align-middle ${cellGrayscale}`}
             style={{ opacity: cellOpacity }}
           >
             {card.prices.usd ? `$${card.prices.usd}` : "N/A"}
