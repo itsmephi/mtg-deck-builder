@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { X, Minus, Plus } from "lucide-react";
 import { DeckCard, ScryfallCard } from "@/types";
 import { useIsTouch } from "@/hooks/useIsTouch";
@@ -6,35 +6,82 @@ import { DeckFormat, getFormatRules, getCardWarnings, isEligibleCommander, isVeh
 
 const COLOR_ORDER_L = ["W", "U", "B", "R", "G"];
 
-function getRowTint(card: DeckCard): string {
-  const isLand = card.type_line?.includes("Land");
-  if (isLand) return "rgba(180, 140, 90, 0.15)";
+// True while the Light theme is active. Reactive to theme switches (Settings)
+// and live OS flips — both end up as <html data-theme="light"> (see lib/theme.ts).
+// The row color tints are tuned for dark backgrounds; on the light cream surface
+// (#faf7f2) those 8–15% alphas wash out, so the light palette below is stronger.
+function useIsLightTheme(): boolean {
+  const [isLight, setIsLight] = useState(false);
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const el = document.documentElement;
+    const read = () => setIsLight(el.dataset.theme === "light");
+    read();
+    const obs = new MutationObserver(read);
+    obs.observe(el, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => obs.disconnect();
+  }, []);
+  return isLight;
+}
+
+function getColorKey(card: DeckCard): "land" | "multi" | "colorless" | "W" | "U" | "B" | "R" | "G" {
+  if (card.type_line?.includes("Land")) return "land";
   const colors: string[] = (card as any).colors ?? [];
-  if (colors.length > 1) return "rgba(199, 162, 75, 0.10)";
-  if (colors.length === 0) return "rgba(150, 150, 150, 0.12)";
-  switch (colors[0]) {
-    case "W": return "rgba(248, 231, 187, 0.08)";
-    case "U": return "rgba(14, 104, 171, 0.10)";
-    case "B": return "rgba(148, 110, 174, 0.10)";
-    case "R": return "rgba(211, 73, 53, 0.10)";
-    case "G": return "rgba(0, 115, 62, 0.10)";
-    default:  return "rgba(150, 150, 150, 0.12)";
+  if (colors.length > 1) return "multi";
+  if (colors.length === 0) return "colorless";
+  return colors[0] as "W" | "U" | "B" | "R" | "G";
+}
+
+function getRowTint(card: DeckCard, isLight = false): string {
+  const key = getColorKey(card);
+  if (isLight) {
+    // Stronger, more saturated tints so the card color reads on cream.
+    switch (key) {
+      case "land":      return "rgba(168, 120, 64, 0.30)";
+      case "multi":     return "rgba(198, 156, 60, 0.32)";
+      case "colorless": return "rgba(140, 134, 122, 0.24)";
+      case "W":         return "rgba(213, 178, 92, 0.34)";
+      case "U":         return "rgba(44, 118, 196, 0.22)";
+      case "B":         return "rgba(112, 88, 146, 0.26)";
+      case "R":         return "rgba(210, 72, 54, 0.22)";
+      case "G":         return "rgba(30, 138, 78, 0.26)";
+    }
+  }
+  switch (key) {
+    case "land":      return "rgba(180, 140, 90, 0.15)";
+    case "multi":     return "rgba(199, 162, 75, 0.10)";
+    case "colorless": return "rgba(150, 150, 150, 0.12)";
+    case "W":         return "rgba(248, 231, 187, 0.08)";
+    case "U":         return "rgba(14, 104, 171, 0.10)";
+    case "B":         return "rgba(148, 110, 174, 0.10)";
+    case "R":         return "rgba(211, 73, 53, 0.10)";
+    case "G":         return "rgba(0, 115, 62, 0.10)";
   }
 }
 
-function getRowHoverTint(card: DeckCard): string {
-  const isLand = card.type_line?.includes("Land");
-  if (isLand) return "rgba(180, 140, 90, 0.28)";
-  const colors: string[] = (card as any).colors ?? [];
-  if (colors.length > 1) return "rgba(199, 162, 75, 0.20)";
-  if (colors.length === 0) return "rgba(150, 150, 150, 0.22)";
-  switch (colors[0]) {
-    case "W": return "rgba(248, 231, 187, 0.16)";
-    case "U": return "rgba(14, 104, 171, 0.20)";
-    case "B": return "rgba(148, 110, 174, 0.20)";
-    case "R": return "rgba(211, 73, 53, 0.20)";
-    case "G": return "rgba(0, 115, 62, 0.20)";
-    default:  return "rgba(150, 150, 150, 0.22)";
+function getRowHoverTint(card: DeckCard, isLight = false): string {
+  const key = getColorKey(card);
+  if (isLight) {
+    switch (key) {
+      case "land":      return "rgba(168, 120, 64, 0.44)";
+      case "multi":     return "rgba(198, 156, 60, 0.46)";
+      case "colorless": return "rgba(140, 134, 122, 0.38)";
+      case "W":         return "rgba(213, 178, 92, 0.48)";
+      case "U":         return "rgba(44, 118, 196, 0.36)";
+      case "B":         return "rgba(112, 88, 146, 0.40)";
+      case "R":         return "rgba(210, 72, 54, 0.36)";
+      case "G":         return "rgba(30, 138, 78, 0.40)";
+    }
+  }
+  switch (key) {
+    case "land":      return "rgba(180, 140, 90, 0.28)";
+    case "multi":     return "rgba(199, 162, 75, 0.20)";
+    case "colorless": return "rgba(150, 150, 150, 0.22)";
+    case "W":         return "rgba(248, 231, 187, 0.16)";
+    case "U":         return "rgba(14, 104, 171, 0.20)";
+    case "B":         return "rgba(148, 110, 174, 0.20)";
+    case "R":         return "rgba(211, 73, 53, 0.20)";
+    case "G":         return "rgba(0, 115, 62, 0.20)";
   }
 }
 
@@ -130,6 +177,7 @@ export default function ListCardTable({
   // the full edit controls in an expanding sub-row when the qty chip is tapped —
   // mirroring the grid tile's tap-to-edit bar. Pointer behaviour is untouched.
   const isTouch = useIsTouch();
+  const isLight = useIsLightTheme();
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   // Row hover state for tint brightening
@@ -292,9 +340,9 @@ export default function ListCardTable({
     if (highlightedId === card.id) {
       rowBg = ""; // handled by className
     } else if (hoveredRowId === card.id) {
-      rowBg = getRowHoverTint(card);
+      rowBg = getRowHoverTint(card, isLight);
     } else {
-      rowBg = getRowTint(card);
+      rowBg = getRowTint(card, isLight);
     }
 
     // Steppers stay visible at rest so they're reachable on touch (no hover);
@@ -710,7 +758,7 @@ export default function ListCardTable({
     const partnerInvalid = isCommander2 && partnerValidation?.valid === false;
     const warnings = getCardWarnings(card, format, commanderIdentity);
 
-    const rowBg = highlightedId === card.id ? "" : getRowTint(card);
+    const rowBg = highlightedId === card.id ? "" : getRowTint(card, isLight);
     const expanded = expandedId === card.id;
     const ownedNumColor = !card.isOwned || card.ownedQty === 0
       ? "text-content-disabled"

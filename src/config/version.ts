@@ -1,10 +1,13 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.31.1";
+export const APP_VERSION = "1.31.2";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.31.2": [
+    "Enhancement: the per-card color tint in the list view now reads clearly on the Light theme. The row tints (which shade each card by its color — blue, red, land, etc.) were tuned for the dark themes, so their faint 8–15% washes nearly disappeared on the light cream background. The Light theme now uses a stronger, more saturated set of tints so a card's color is easy to scan at a glance; the dark themes are unchanged.",
+  ],
   "1.31.1": [
     "Fix: on the Light theme, card names in the mobile list view were nearly invisible — they were a hardcoded near-white, which is fine on the dark themes but washed out on the light background. Names now use the theme's primary text color, so they're high-contrast on every theme (this also fixes the same washed-out names in the desktop list view on Light).",
     "Enhancement: mobile list card names are larger and bolder, and the row gives the name more room — the quantity column and side gutters were tightened so longer names fit on one line.",

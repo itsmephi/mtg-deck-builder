@@ -5,6 +5,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.31.2] — Stronger list color tints on Light theme
+
+The list view shades each row by the card's color (blue, red, land, multicolor, etc.). Those tints were tuned for the dark themes — faint 8–15% alpha washes — so on the Light theme's cream surface (`#faf7f2`) they were nearly invisible.
+
+### Changed
+- **Light-theme row tints** (`ListCardTable.tsx`) — `getRowTint` / `getRowHoverTint` now take an `isLight` flag and return a stronger, more saturated palette (≈ 22–34% rest, 36–48% hover) so a card's color reads at a glance on cream. The dark-theme palette is unchanged.
+- Refactored the color→tint mapping through a shared `getColorKey()` helper (land · multi · colorless · W/U/B/R/G) so the rest and hover palettes can't drift out of sync.
+
+### Added
+- `useIsLightTheme()` — a small in-file hook that tracks `<html data-theme="light">` via a `MutationObserver`, so the tints update live when the theme is switched in Settings or when the OS flips (System preference).
+
+---
+
 ## [1.31.1] — Mobile list readability
 
 Follow-up polish to the mobile list view (1.31.0), reported on the Light theme.
