@@ -9,12 +9,14 @@ import {
   ArrowUp,
   ArrowDown,
   Dices,
+  SlidersHorizontal,
 } from "lucide-react";
 import { Deck } from "@/types";
 import { SortBy, SortDir, useDeckManager } from "@/hooks/useDeckManager";
 import { getFormatRules, DeckFormat } from "@/lib/formatRules";
 import { FormatPicker } from "@/components/layout/FormatPicker";
 import TileSizeSlider from "./TileSizeSlider";
+import DeckToolsSheet from "./DeckToolsSheet";
 import { TileSizeKey } from "@/config/gridConfig";
 
 interface Props {
@@ -73,6 +75,7 @@ export default function WorkspaceToolbar({
   onTileSizeChange,
 }: Props) {
   const [isEditingName, setIsEditingName] = useState(false);
+  const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
   const [formatPickerOpen, setFormatPickerOpen] = useState(false);
   const [formatPickerDir, setFormatPickerDir] = useState<"up" | "down">("down");
   const formatPickerRef = useRef<HTMLDivElement>(null);
@@ -197,7 +200,7 @@ export default function WorkspaceToolbar({
 
       {/* Row 2: stats (left) + controls (right) */}
       <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3 text-xs text-content-tertiary shrink-0">
+        <div className="flex items-center gap-3 text-xs text-content-tertiary flex-wrap min-w-0 md:shrink-0 md:flex-nowrap">
           {deckViewMode === "sideboard" ? (
             <span className={sideboardClass}>
               {format === "standard"
@@ -234,8 +237,19 @@ export default function WorkspaceToolbar({
           )}
         </div>
 
-      {/* Right: simulator + main/side + sort/group/view */}
-      <div className="flex items-center gap-2 h-8 shrink-0">
+      {/* Mobile: single Tools button — the dense desktop control block below
+          overflows the viewport, so on mobile it collapses into a bottom sheet. */}
+      <button
+        onClick={() => setMobileToolsOpen(true)}
+        aria-label="Deck tools"
+        className="md:hidden flex items-center justify-center gap-1.5 h-9 px-3 shrink-0 bg-surface-base border border-line-subtle rounded-lg text-xs font-bold text-content-tertiary hover:text-content-primary hover:bg-surface-raised transition-colors shadow-sm"
+      >
+        <SlidersHorizontal className="w-4 h-4" />
+        <span>Tools</span>
+      </button>
+
+      {/* Right: simulator + main/side + sort/group/view (desktop only) */}
+      <div className="hidden md:flex items-center gap-2 h-8 shrink-0">
         <button
           onClick={onOpenSampleHand}
           className="flex items-center gap-2 h-full px-3 bg-surface-base border border-line-subtle rounded-lg text-xs font-bold text-content-tertiary hover:text-content-primary hover:bg-surface-raised transition-colors shadow-sm"
@@ -364,6 +378,26 @@ export default function WorkspaceToolbar({
         </div>
       </div>
       </div>
+
+      <DeckToolsSheet
+        open={mobileToolsOpen}
+        onClose={() => setMobileToolsOpen(false)}
+        format={format}
+        viewMode={viewMode}
+        setViewMode={setViewMode}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+        sortDir={sortDir}
+        setSortDir={setSortDir}
+        isGrouped={isGrouped}
+        setIsGrouped={setIsGrouped}
+        deckViewMode={deckViewMode}
+        setDeckViewMode={setDeckViewMode}
+        activeDeckHasSideboard={activeDeckHasSideboard}
+        onOpenSampleHand={onOpenSampleHand}
+        tileSize={tileSize}
+        onTileSizeChange={onTileSizeChange}
+      />
     </div>
   );
 }

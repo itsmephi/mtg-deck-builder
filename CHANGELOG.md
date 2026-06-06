@@ -5,6 +5,21 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.25.0] — Mobile deck controls
+
+### Added
+- **Mobile Tools sheet** — the deck toolbar's right-side control block (Simulator, Main/Side, Sort, Group, card size, Grid/List) was a fixed-width inline bar that ran far wider than a phone viewport, so on mobile it overflowed off the right edge with no way to scroll to it — the simulator, sort, grouping, and view toggles were all unreachable. Below `md` (768px) the block now collapses into a single **Tools** button (`SlidersHorizontal` icon) that opens a bottom sheet (`DeckToolsSheet`) listing every control as a full-width, finger-sized row
+
+### Changed
+- **Touch-friendly controls in the sheet** — each control group is a tap-target-sized segmented control: Main/Sideboard, Sort by (Original/Name/Color/Mana Value) + Ascending/Descending, Grouping (Flat / By type), Card size (XS–XL), and View (Grid / List). The card-size control is a segmented row rather than the desktop vertical slider, which is pointer-only (`mousedown`/`mouseup`). The Simulator row closes the sheet and opens the simulator modal
+- **Bottom-sheet behaviour** — slides up from the bottom over a dimmed backdrop (`sheet`-style `translate-y` transition), dismissed by tapping the backdrop or the `X`; body scroll is locked while open; respects `env(safe-area-inset-bottom)`
+- **Stats wrap, don't overflow** — the left-side stats (card count, Value, To Buy) are unchanged in content but now `flex-wrap` on narrow screens (`md:flex-nowrap md:shrink-0` keeps desktop identical) so the Tools button always stays on-screen
+
+### Unchanged
+- **Desktop (≥768px) toolbar** is byte-for-byte the same — the inline control bar still renders as before (`hidden md:flex`); the mobile/desktop split is driven entirely by `md:` breakpoints
+
+---
+
 ## [1.24.6] — Mobile preview close no longer pops the keyboard
 
 ### Fixed
