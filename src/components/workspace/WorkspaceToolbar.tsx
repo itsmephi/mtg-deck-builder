@@ -243,7 +243,7 @@ export default function WorkspaceToolbar({
       <button
         onClick={() => setMobileToolsOpen(true)}
         aria-label="Deck tools"
-        className="md:hidden flex items-center justify-center w-11 h-11 shrink-0 bg-surface-base border border-line-subtle rounded-lg text-content-tertiary hover:text-content-primary hover:bg-surface-raised transition-colors shadow-sm"
+        className="md:hidden flex items-center justify-center w-11 h-11 shrink-0 rounded-md text-content-muted hover:text-content-primary hover:bg-surface-raised transition-colors"
       >
         <SlidersHorizontal className="w-4 h-4" />
       </button>
