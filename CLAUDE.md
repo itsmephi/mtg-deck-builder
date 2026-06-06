@@ -69,7 +69,9 @@ Default to direct work. Tier up only when the change earns it.
 
 ## Current Version
 
-`v1.30.1` — Mobile toolbar & delete polish. The mobile-only "Tools" button in `WorkspaceToolbar` is now icon-only (44px square, `SlidersHorizontal`, no label) to reclaim toolbar width. The grid card's touch remove (✕) in `VisualCard` — shown while the tap-to-edit bar is open — is now tinted red (`bg-red-900 text-red-300`) instead of neutral surface, since touch has no hover to signal the destructive action; desktop hover-to-red is unchanged.
+`v1.30.2` — Tools button border fix. The mobile "Tools" button in `WorkspaceToolbar` is now borderless — dropped `bg-surface-base border border-line-subtle shadow-sm` for a plain `text-content-muted` / `hover:bg-surface-raised` icon button, matching the site's other chrome icon buttons (hamburger, sidebar rail, search-bar menu). The boxed look was inconsistent.
+
+Prior: `v1.30.1` — Mobile toolbar & delete polish. The mobile-only "Tools" button in `WorkspaceToolbar` is now icon-only (44px square, `SlidersHorizontal`, no label) to reclaim toolbar width. The grid card's touch remove (✕) in `VisualCard` — shown while the tap-to-edit bar is open — is now tinted red (`bg-red-900 text-red-300`) instead of neutral surface, since touch has no hover to signal the destructive action; desktop hover-to-red is unchanged.
 
 Prior: `v1.30.0` — Light theme + match system. Adds a third palette, **Light** (`[data-theme="light"]`, warm light — the daylight counterpart to Warm Stone), and a **System** preference (now the default) that follows the OS: dark OS → Warm Stone, light OS → Light, updating live on OS flip. Theme logic centralized in `src/lib/theme.ts` (preference `system|warm-stone|zed-dark|light` vs. resolved theme); `mtg-theme` now stores the preference (absent = system). The `layout.tsx` no-flash init script resolves `system` before first paint and listens for OS changes. Picker in `SettingsView` is now four swatches (`THEME_OPTIONS`). Removed the dead `prefers-color-scheme` CSS block (resolution is JS-driven now). See `docs/ARCHITECTURE.md` → **Design Token System**.
 

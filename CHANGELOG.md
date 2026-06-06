@@ -5,6 +5,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.30.2] — Tools button border fix
+
+### Changed
+- **Mobile "Tools" button is now borderless** (`WorkspaceToolbar.tsx`) — removed the `bg-surface-base`, `border border-line-subtle`, and `shadow-sm` so it's a plain `text-content-muted` / `hover:bg-surface-raised` icon button, matching the site's other chrome icon buttons (hamburger menu, sidebar rail, search-bar menu). The boxed look was inconsistent with the rest of the UI.
+
+---
+
 ## [1.30.1] — Mobile toolbar & delete polish
 
 Two small mobile/touch UX tweaks.

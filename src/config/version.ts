@@ -1,10 +1,13 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.30.1";
+export const APP_VERSION = "1.30.2";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.30.2": [
+    "Fix: the mobile 'Tools' button no longer has a box around it — dropped the border, background, and shadow so it's a plain icon button matching the rest of the site's chrome (the hamburger menu, sidebar rail, etc.).",
+  ],
   "1.30.1": [
     "Enhancement: on mobile the deck toolbar's 'Tools' button is now icon-only (the sliders icon, no label) — frees up horizontal room in the toolbar.",
     "Enhancement: on touch, the card's remove (✕) button — the one that appears when you tap a card's quantity in grid view — is now tinted red instead of neutral white, so it reads clearly as the delete action.",
