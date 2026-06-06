@@ -1,10 +1,15 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.24.3";
+export const APP_VERSION = "1.24.4";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.24.4": [
+    "Enhancement: on mobile (below 768px) the search preview is now a full-screen takeover instead of a cramped dropdown dangling off the search bar — it owns the whole viewport with a header (card name + close X) and scrolls vertically, so the keyboard no longer clips the card art off at the top",
+    "Enhancement: the art-variants strip is taller on mobile (400px vs 318px on desktop) so each printing shows as a whole card; horizontal swipe to compare printings is unchanged",
+    "Chore: desktop search preview unchanged — still the backdrop-dismissed dropdown anchored below the search bar (mobile/desktop split via md: breakpoints, md:contents dissolves the mobile scroll wrapper on desktop)",
+  ],
   "1.24.3": [
     "Fix: search preview panel is now usable on mobile — below 768px the card-info and art-variant columns stack vertically instead of sitting side-by-side, so the art-variants/browse strip gets the full width instead of being squeezed into ~20px and cut off; the left divider becomes a top divider when stacked",
     "Fix: art-strip action buttons (+ Add / Flip / Swap art) are now reachable on touch devices — on no-hover devices they were trapped behind a hover-only overlay; tapping a printing to select it now reveals its action buttons",

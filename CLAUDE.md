@@ -69,7 +69,7 @@ Default to direct work. Tier up only when the change earns it.
 
 ## Current Version
 
-`v1.24.3` — Mobile search preview fix: the card-info and art-variants columns now stack vertically below 768px so the art strip gets full width (was ~20px wide and cut off); per-tile Add/Flip/Swap buttons are now reachable on touch via the selected tile.
+`v1.24.4` — Mobile search preview drawer: below 768px the preview is now a full-screen takeover (header with card name + close X, vertical scroll) instead of a keyboard-clipped dropdown; the art-variants strip is taller on mobile (400px) so cards show whole. Desktop dropdown unchanged.
 
 ## Post-Version Checklist
 

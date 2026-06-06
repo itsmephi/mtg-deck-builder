@@ -754,7 +754,26 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
 
       {/* Preview — overlays the deck workspace */}
       {showPreview && (
-        <div className="absolute left-3 right-3 top-full z-[100] bg-surface-panel border border-line-default rounded-lg shadow-xl overflow-y-auto" style={{ maxHeight: "80vh" }}>
+        <div className="fixed inset-0 z-[100] flex flex-col bg-surface-panel md:absolute md:inset-auto md:left-3 md:right-3 md:top-full md:block md:max-h-[80vh] md:overflow-y-auto md:border md:border-line-default md:rounded-lg md:shadow-xl">
+          {/* Mobile-only header — the full-screen takeover hides the search box's
+              X, so it gets its own close affordance + card title. Desktop keeps the
+              backdrop-dismissed dropdown unchanged (md:hidden). */}
+          <div className="md:hidden flex items-center gap-2 px-3 h-12 shrink-0 border-b border-line-subtle">
+            <Search className="w-4 h-4 text-content-muted shrink-0" />
+            <span className="flex-1 text-sm font-semibold text-content-heading truncate">
+              {selectedPrinting?.name ?? "Card preview"}
+            </span>
+            <button
+              onClick={clearAll}
+              aria-label="Close preview"
+              className="w-9 h-9 flex items-center justify-center text-content-muted hover:text-content-primary transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+          {/* Scrollable body on mobile; on desktop md:contents dissolves this
+              wrapper so the dropdown scroll behaves exactly as before. */}
+          <div className="flex-1 overflow-y-auto md:contents">
           {isLoadingPreview || !selectedPrinting ? (
             <div className="relative flex flex-col md:flex-row gap-4 p-4">
               <div className="shrink-0 space-y-3 pt-1 w-full md:w-[280px]">
@@ -878,7 +897,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
                   {isLoadingBrowse ? (
                     <>
                       <div className="h-3 w-36 rounded bg-surface-deep animate-pulse mb-2" />
-                      <div className="relative flex gap-2" style={{ height: 318 }}>
+                      <div className="relative flex gap-2 h-[400px] md:h-[318px]">
                         {[0, 1, 2].map((i) => (
                           <div key={i} className="h-full w-[115px] rounded-lg bg-surface-deep animate-pulse shrink-0" />
                         ))}
@@ -895,8 +914,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
                       <div
                         ref={artStripRef}
                         data-art-strip
-                        className="flex gap-2 overflow-x-auto pr-1.5 pt-1.5 pb-2 cursor-grab select-none [&::-webkit-scrollbar]:h-3 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-surface-deep"
-                        style={{ height: 318 }}
+                        className="flex gap-2 overflow-x-auto pr-1.5 pt-1.5 pb-2 cursor-grab select-none h-[400px] md:h-[318px] [&::-webkit-scrollbar]:h-3 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-surface-deep"
                         onPointerDown={onArtPointerDown}
                         onPointerMove={onArtPointerMove}
                         onPointerUp={onArtPointerUp}
@@ -993,8 +1011,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
                       <div
                         ref={artStripRef}
                         data-art-strip
-                        className="flex gap-2 overflow-x-auto pr-1.5 pt-1.5 pb-2 cursor-grab select-none [&::-webkit-scrollbar]:h-3 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-surface-deep"
-                        style={{ height: 318 }}
+                        className="flex gap-2 overflow-x-auto pr-1.5 pt-1.5 pb-2 cursor-grab select-none h-[400px] md:h-[318px] [&::-webkit-scrollbar]:h-3 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-surface-deep"
                         onPointerDown={onArtPointerDown}
                         onPointerMove={onArtPointerMove}
                         onPointerUp={onArtPointerUp}
@@ -1097,6 +1114,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
               </div>
             </div>
           )}
+          </div>
         </div>
       )}
     </div>
