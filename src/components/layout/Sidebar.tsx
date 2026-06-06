@@ -17,9 +17,10 @@ interface Props {
   isOnHomeScreen: boolean;
   mobileOpen: boolean;
   onMobileClose: () => void;
+  showUndoToast: (msg: string, onUndo: () => void) => void;
 }
 
-export default function Sidebar({ onImport, onExport, isImporting, onOpenSettings, onCloseSettings, onGoHome, isOnHomeScreen, mobileOpen, onMobileClose }: Props) {
+export default function Sidebar({ onImport, onExport, isImporting, onOpenSettings, onCloseSettings, onGoHome, isOnHomeScreen, mobileOpen, onMobileClose, showUndoToast }: Props) {
   const [collapsed, setCollapsed] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
 
@@ -114,6 +115,7 @@ export default function Sidebar({ onImport, onExport, isImporting, onOpenSetting
               isImporting={isImporting}
               onCloseSettings={onCloseSettings}
               onNavigate={onMobileClose}
+              showUndoToast={showUndoToast}
             />
           </div>
 
