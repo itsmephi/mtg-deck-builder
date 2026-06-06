@@ -5,6 +5,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.32.1] — Stronger list color tints on Light theme
+
+The list view shades each row by the card's color (blue, red, land, multicolor, etc.). Those tints were tuned for the dark themes — faint 8–15% alpha washes — so on the Light theme's cream surface (`#faf7f2`) they were nearly invisible.
+
+### Changed
+- **Light-theme row tints** (`ListCardTable.tsx`) — `getRowTint` / `getRowHoverTint` now take an `isLight` flag and return a stronger, more saturated palette (≈ 22–34% rest, 36–48% hover) so a card's color reads at a glance on cream. The dark-theme palette is unchanged.
+- Refactored the color→tint mapping through a shared `getColorKey()` helper (land · multi · colorless · W/U/B/R/G) so the rest and hover palettes can't drift out of sync.
+
+### Added
+- `useIsLightTheme()` — a small in-file hook that tracks `<html data-theme="light">` via a `MutationObserver`, so the tints update live when the theme is switched in Settings or when the OS flips (System preference).
+
+---
+
 ## [1.32.0] — Themed mobile status bar
 
 The mobile browser chrome (the status bar with the clock, battery, and signal) now matches the active theme. The app emitted no `<meta name="theme-color">` at all, so browsers fell back to their default chrome — or, on iOS Safari, unreliably sampled the page background, which is why a dark theme only *sometimes* tinted the bar.

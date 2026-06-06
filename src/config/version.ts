@@ -1,10 +1,13 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.32.0";
+export const APP_VERSION = "1.32.1";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.32.1": [
+    "Enhancement: the per-card color tint in the list view now reads clearly on the Light theme. The row tints (which shade each card by its color — blue, red, land, etc.) were tuned for the dark themes, so their faint 8–15% washes nearly disappeared on the light cream background. The Light theme now uses a stronger, more saturated set of tints so a card's color is easy to scan at a glance; the dark themes are unchanged.",
+  ],
   "1.32.0": [
     "Feature: on a phone the browser's top status bar (the area with the clock, battery, and signal) now matches your theme instead of staying a default grey/black. It tracks every palette — Warm Stone, Zed Dark, and Light — and updates instantly when you switch themes or when your phone flips between light and dark mode.",
   ],
