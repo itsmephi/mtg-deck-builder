@@ -50,9 +50,11 @@ export default function Sidebar({ onImport, onExport, isImporting, onOpenSetting
 
   return (
     <>
-      {/* Mobile backdrop — only rendered below md, fades with the drawer */}
+      {/* Mobile backdrop — only rendered below md, fades with the drawer.
+          z-[80] clears the persistent workspace chrome (search bar z-[60],
+          price badges z-[50]) but stays below the z-[100] modals/dialogs. */}
       <div
-        className={`fixed inset-0 z-40 bg-black/50 md:hidden transition-opacity duration-300 ${
+        className={`fixed inset-0 z-[80] bg-black/50 md:hidden transition-opacity duration-300 ${
           mobileOpen ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
         onClick={onMobileClose}
@@ -61,7 +63,7 @@ export default function Sidebar({ onImport, onExport, isImporting, onOpenSetting
       <aside
         className={`
           bg-surface-panel border-line-panel flex flex-col overflow-hidden
-          fixed inset-y-0 left-0 z-50 w-[82vw] max-w-[320px] border-r shadow-2xl
+          fixed inset-y-0 left-0 z-[90] w-[82vw] max-w-[320px] border-r shadow-2xl
           transition-transform duration-300 ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
           md:static md:z-auto md:h-screen md:w-auto md:max-w-none md:translate-x-0 md:shadow-none
           ${isCollapsed ? "md:overflow-visible" : "md:overflow-hidden"}

@@ -423,7 +423,7 @@ export default function Dashboard() {
 
       <div className="flex-1 flex flex-col h-screen overflow-hidden min-w-0">
         {/* Mobile top bar — hamburger opens the sidebar drawer; hidden on desktop */}
-        <div className="md:hidden flex items-center gap-2 px-2 h-12 shrink-0 border-b border-line-panel bg-surface-panel">
+        <div className="md:hidden flex items-center px-2 h-12 shrink-0 border-b border-line-panel bg-surface-panel">
           <button
             onClick={() => setMobileSidebarOpen(true)}
             aria-label="Open menu"
@@ -431,9 +431,6 @@ export default function Dashboard() {
           >
             <Menu className="w-5 h-5" />
           </button>
-          <span className="text-sm font-medium text-content-heading truncate">
-            {showSettings ? "Settings" : activeDeck ? activeDeck.name : "Brew"}
-          </span>
         </div>
 
         <main className="flex-1 flex flex-col overflow-hidden">
