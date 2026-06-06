@@ -407,6 +407,7 @@ export default function Dashboard() {
         onOpenSettings={openSettings}
         showSettings={showSettings}
         onCloseSettings={() => setShowSettings(false)}
+        showUndoToast={showUndoToast}
         onGoHome={() => { setActiveDeckId(null); setShowSettings(false); setMobileSidebarOpen(false); }}
         isOnHomeScreen={!activeDeck && !showSettings}
         mobileOpen={mobileSidebarOpen}

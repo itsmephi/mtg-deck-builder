@@ -250,7 +250,9 @@ Unified, touch-first sizing applied across all surfaces (desktop included — on
 
 **Grid tile editing (`VisualCard`, deck mode).** The desktop edit surface is a `group-hover` slide-up overlay (name/type/steppers) — unreachable on touch and, if naively tap-revealed, it covers ~45% of the art. On touch (`useIsTouch`) the model is different: the always-on **qty badge is a reveal trigger** — tapping it opens a slim, full-width bottom bar with the owned ✓ toggle and the owned & qty steppers (tap-to-edit numbers). The bar is always mounted (visibility toggled via classes) so number inputs commit `onBlur`. It's dismissed by tapping the art, tapping outside the card (`pointerdown` listener gated on `barOpen`), or re-tapping the badge; the badge and price pill hide while it's open. The commander crown is un-gated to an always-visible corner tap. **Remove is deliberately *not* in the bar** — it's the top-right corner × (desktop: hover-gated; touch: shown while the bar is open), kept clear of the steppers so it's never mistaken for a "close" button. Desktop hover is untouched — everything new is gated behind `isTouch`, and the badge's emulated-hover visuals are suppressed on touch (`badgeHoverActive = !isTouch && isCardHovered`).
 
-**Card removal is undoable.** `Workspace.removeCard` / `removeSideboardCard` snapshot the card's index (+ commander status) and fire `showUndoToast` (4s, inline Undo) which re-inserts it where it was — covers grid *and* list, desktop *and* touch.
+**Destructive actions are undoable** (4s `showUndoToast`, inline Undo):
+- **Card removal** — `Workspace.removeCard` / `removeSideboardCard` snapshot the card's index (+ commander status) and re-insert it where it was; covers grid *and* list, desktop *and* touch.
+- **Deck / sideboard deletion** — `SidebarDecksTab.deleteDeckWithUndo` / `deleteSideboardWithUndo` snapshot the full `decks` list + active id, then restore via `replaceAllDecks(snapshot)` + `setActiveDeckId(prevActiveId)` (the latter corrects `replaceAllDecks`'s default of activating `decks[0]`). `showUndoToast` is threaded `page.tsx → Sidebar → SidebarDecksTab`.
 
 ### React Patterns
 

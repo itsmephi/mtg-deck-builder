@@ -34,7 +34,7 @@ Items from v1.19.x carry-forwards and new additions:
 - [ ] **bug** | **[high]** | Price "N/A" fallback — cards showing N/A have a TCGPlayer price; fallback should attempt a lookup or show a more accurate placeholder
 - [ ] **enhancement** | Search: highlight newly added cards after FindByNameBar add — when closing the preview after adding, briefly highlight or scroll to the new card in the deck
 - [ ] **enhancement** | Copy card name to clipboard — click card name in modal to copy ⚠️ needs design
-- [ ] **enhancement** | Undo for destructive actions — ✅ card delete done (v1.28.0, grid + list); **deck delete** still pending
+- [x] **enhancement** | Undo for destructive actions — ✅ card delete (v1.28.0, grid + list) + deck/sideboard delete (v1.29.0)
 - [ ] **enhancement** | CardModal art swap: option to confirm swap or add as new card instead ⚠️ needs design
 - [ ] **enhancement** | Import modal — add "Paste from clipboard" button as an alternative to file import
 - [ ] **enhancement** | Simulator modal has no view mode toggle — consider adding compact list view inside modal for larger decks
