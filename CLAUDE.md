@@ -69,7 +69,9 @@ Default to direct work. Tier up only when the change earns it.
 
 ## Current Version
 
-`v1.28.0` — Undoable card removal + safer touch delete (1.27.0 follow-up). Deleting a card now shows a 4s Undo toast that restores it at its original position (`Workspace.removeCard` / `removeSideboardCard` → `showUndoToast`); covers grid + list, desktop + touch. The grid touch bar's ✕ moved out of the bar to the top-right corner (its desktop-hover spot), shown only while the bar is open — it was too easy to tap ✕ to dismiss the bar and delete by accident. Dismiss the bar by tapping the art / outside instead.
+`v1.29.0` — Undoable deck deletion. The sidebar deck-row ✕ menu's "Delete Deck" / "Delete Sideboard" now show a 4s Undo toast that restores the exact prior state (`SidebarDecksTab.deleteDeckWithUndo` / `deleteSideboardWithUndo` → snapshot `decks` + active id → `replaceAllDecks` + `setActiveDeckId`). `showUndoToast` threaded `page.tsx → Sidebar → SidebarDecksTab`. Completes the undo-on-delete pass (cards in 1.28.0, decks now).
+
+Prior: `v1.28.0` — Undoable card removal + safer touch delete (1.27.0 follow-up). Deleting a card now shows a 4s Undo toast that restores it at its original position (`Workspace.removeCard` / `removeSideboardCard` → `showUndoToast`); covers grid + list, desktop + touch. The grid touch bar's ✕ moved out of the bar to the top-right corner (its desktop-hover spot), shown only while the bar is open — it was too easy to tap ✕ to dismiss the bar and delete by accident. Dismiss the bar by tapping the art / outside instead.
 
 Prior: `v1.27.0` — Grid-view editing on touch (the 1.26.0 follow-up). On touch only (`useIsTouch` → `(hover: none)`), tapping the always-on quantity badge reveals a slim bottom bar (owned ✓ toggle, owned + qty steppers with tap-to-edit numbers). The Commander crown becomes an always-visible corner tap on touch. Desktop/pointer behaviour unchanged. Pattern in `docs/ARCHITECTURE.md` → **Touch & Sizing System** (Grid tile editing).
 

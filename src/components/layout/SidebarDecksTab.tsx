@@ -15,6 +15,7 @@ interface Props {
   // Called on any in-sidebar navigation (deck select, sideboard view, new deck)
   // so the mobile drawer can close itself.
   onNavigate?: () => void;
+  showUndoToast: (msg: string, onUndo: () => void) => void;
 }
 
 interface ConfirmDialogState {
@@ -23,7 +24,7 @@ interface ConfirmDialogState {
   targetFormat: DeckFormat;
 }
 
-export default function SidebarDecksTab({ onImport, onExport, isImporting, onCloseSettings, onNavigate }: Props) {
+export default function SidebarDecksTab({ onImport, onExport, isImporting, onCloseSettings, onNavigate, showUndoToast }: Props) {
   const {
     decks,
     activeDeck,
@@ -36,7 +37,32 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting, onClo
     setDeckFormat,
     mergeSideboardIntoDeck,
     deleteSideboardForFormat,
+    replaceAllDecks,
   } = useDeckManager();
+
+  // Destructive deck/sideboard actions snapshot the full deck list + active id
+  // first, then fire an Undo toast that restores the exact prior state.
+  // `replaceAllDecks` resets the active deck to the first one, so we re-apply
+  // the snapshotted active id afterwards.
+  const deleteDeckWithUndo = (deckId: string, deckName: string) => {
+    const snapshot = decks.map((d) => ({ ...d }));
+    const prevActiveId = activeDeck?.id ?? null;
+    deleteDeck(deckId);
+    showUndoToast(`Deleted ${deckName}`, () => {
+      replaceAllDecks(snapshot);
+      setActiveDeckId(prevActiveId);
+    });
+  };
+
+  const deleteSideboardWithUndo = (deckId: string, deckName: string) => {
+    const snapshot = decks.map((d) => ({ ...d }));
+    const prevActiveId = activeDeck?.id ?? null;
+    deleteSideboard(deckId);
+    showUndoToast(`Deleted ${deckName} sideboard`, () => {
+      replaceAllDecks(snapshot);
+      setActiveDeckId(prevActiveId);
+    });
+  };
 
   const { buyOnTCGPlayer, buyOnCardKingdom } = useDeckStats(activeDeck ?? null);
 
@@ -259,7 +285,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting, onClo
                   >
                     <button
                       onClick={() => {
-                        deleteDeck(deck.id);
+                        deleteDeckWithUndo(deck.id, deck.name);
                         setOpenDeleteDropdownId(null);
                       }}
                       className="flex items-center gap-2 w-full text-left px-3 py-2.5 text-sm text-red-500 hover:bg-red-500/10 transition-colors"
@@ -269,7 +295,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting, onClo
                     {hasSideboard && (
                       <button
                         onClick={() => {
-                          deleteSideboard(deck.id);
+                          deleteSideboardWithUndo(deck.id, deck.name);
                           setOpenDeleteDropdownId(null);
                         }}
                         className="flex items-center gap-2 w-full text-left px-3 py-2.5 text-sm text-red-500 hover:bg-red-500/10 transition-colors"

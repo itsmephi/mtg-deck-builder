@@ -5,6 +5,18 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.29.0] — Undoable deck deletion
+
+Completes the undo-on-delete pass from 1.28.0 (which covered cards). Deleting a deck or its sideboard from the sidebar's deck-row ✕ menu was silent and irreversible — now both fire the 4s `showUndoToast`.
+
+### Added
+- **Undo on deck / sideboard deletion** — `SidebarDecksTab.deleteDeckWithUndo` / `deleteSideboardWithUndo` snapshot the full `decks` list + active deck id before deleting, then restore the exact prior state on Undo via `replaceAllDecks(snapshot)` + `setActiveDeckId(prevActiveId)`. Cross-platform (the deletion UI is the same sidebar menu on desktop and mobile). Closes the BACKLOG undo-for-destructive-actions item.
+
+### Changed
+- `showUndoToast` is now threaded `page.tsx → Sidebar → SidebarDecksTab`
+
+---
+
 ## [1.28.0] — Undoable card removal + safer touch delete
 
 Follow-up to the 1.27.0 touch edit bar. The bar's remove (✕) sat next to the steppers and read like a "close" button — tapping it to dismiss the bar deleted the card instead, with no feedback or undo. Root cause: `removeCard` mutated the deck silently (no toast wired in), and the destructive ✕ was placed inside the bar. Both fixed.

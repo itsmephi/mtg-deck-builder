@@ -1,10 +1,13 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.28.0";
+export const APP_VERSION = "1.29.0";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.29.0": [
+    "Feature: deleting a deck is now undoable. The deck-row ✕ menu's 'Delete Deck' (and 'Delete Sideboard') now show a 4-second toast with an Undo button that puts the deck back exactly as it was. Completes the undo-on-delete pass started in 1.28.0 — now covers cards and decks.",
+  ],
   "1.28.0": [
     "Fix: removing a card is now undoable. Deleting a card (or sideboard card) shows a 4-second toast with an Undo button that puts it back exactly where it was — works in both grid and list views, on desktop and touch.",
     "Fix: on a touch tablet, the grid edit bar's delete (✕) moved out of the bar to the top-right corner of the card (the same spot it sits on desktop), and only shows while the bar is open. It was too easy to tap ✕ to dismiss the bar and delete the card by accident — now you dismiss by tapping the card art or anywhere outside, and the ✕ is clearly separated from the quantity controls.",
