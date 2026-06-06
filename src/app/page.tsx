@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
+import { Menu } from "lucide-react";
 import Sidebar from "@/components/layout/Sidebar";
 import Workspace from "@/components/workspace/Workspace";
 import SettingsView from "@/components/workspace/SettingsView";
@@ -58,6 +59,7 @@ export default function Dashboard() {
   const [isDragActive, setIsDragActive] = useState(false);
   const dragDepthRef = useRef(0);
   const [tileSize, setTileSizeState] = useState<TileSizeKey>(DEFAULT_TILE_SIZE);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   const showToast = useCallback((message: string, durationMs = 2000) => {
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
@@ -79,7 +81,18 @@ export default function Dashboard() {
   const openSettings = (tab: "preferences" | "whatsnew" | "about" | "support") => {
     setSettingsTab(tab);
     setShowSettings(true);
+    setMobileSidebarOpen(false);
   };
+
+  // Escape closes the mobile drawer.
+  useEffect(() => {
+    if (!mobileSidebarOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileSidebarOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [mobileSidebarOpen]);
 
   // Restore persisted preferences + clean up stale search-workspace keys
   useEffect(() => {
@@ -386,7 +399,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-surface-base text-content-heading flex flex-col md:flex-row overflow-hidden font-sans">
+    <div className="h-screen bg-surface-base text-content-heading flex overflow-hidden font-sans">
       <Sidebar
         onImport={() => fileInputRef.current?.click()}
         onExport={exportDeck}
@@ -394,8 +407,10 @@ export default function Dashboard() {
         onOpenSettings={openSettings}
         showSettings={showSettings}
         onCloseSettings={() => setShowSettings(false)}
-        onGoHome={() => { setActiveDeckId(null); setShowSettings(false); }}
+        onGoHome={() => { setActiveDeckId(null); setShowSettings(false); setMobileSidebarOpen(false); }}
         isOnHomeScreen={!activeDeck && !showSettings}
+        mobileOpen={mobileSidebarOpen}
+        onMobileClose={() => setMobileSidebarOpen(false)}
       />
 
       <input
@@ -406,35 +421,51 @@ export default function Dashboard() {
         accept=".txt"
       />
 
-      <main className="flex-1 h-[60vh] md:h-screen flex flex-col overflow-hidden">
-        {showSettings ? (
-          <SettingsView
-            activeTab={settingsTab}
-            onTabChange={setSettingsTab}
-            onClose={() => setShowSettings(false)}
-            showToast={showToast}
-          />
-        ) : !activeDeck ? (
-          <HomeScreen
-            decks={decks}
-            onDeckSelect={(id) => { setActiveDeckId(id); }}
-            onCreateDeck={(format) => { createNewDeck(format); }}
-          />
-        ) : (
-          <div className="flex-1 overflow-hidden p-4">
-            <Workspace
-              pendingImport={pendingImport}
-              processImport={processImport}
-              cancelImport={cancelImport}
-              tileSize={tileSize}
-              onTileSizeChange={setTileSize}
+      <div className="flex-1 flex flex-col h-screen overflow-hidden min-w-0">
+        {/* Mobile top bar — hamburger opens the sidebar drawer; hidden on desktop */}
+        <div className="md:hidden flex items-center gap-2 px-2 h-12 shrink-0 border-b border-line-panel bg-surface-panel">
+          <button
+            onClick={() => setMobileSidebarOpen(true)}
+            aria-label="Open menu"
+            className="w-9 h-9 flex items-center justify-center rounded-md text-content-muted hover:text-content-primary hover:bg-surface-raised transition-colors"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+          <span className="text-sm font-medium text-content-heading truncate">
+            {showSettings ? "Settings" : activeDeck ? activeDeck.name : "Brew"}
+          </span>
+        </div>
+
+        <main className="flex-1 flex flex-col overflow-hidden">
+          {showSettings ? (
+            <SettingsView
+              activeTab={settingsTab}
+              onTabChange={setSettingsTab}
+              onClose={() => setShowSettings(false)}
               showToast={showToast}
-              registerCardPreviewFn={(fn) => { cardPreviewFnRef.current = fn; }}
-              onFindBarActiveChange={(active) => { isFindBarActiveRef.current = active; }}
             />
-          </div>
-        )}
-      </main>
+          ) : !activeDeck ? (
+            <HomeScreen
+              decks={decks}
+              onDeckSelect={(id) => { setActiveDeckId(id); }}
+              onCreateDeck={(format) => { createNewDeck(format); }}
+            />
+          ) : (
+            <div className="flex-1 overflow-hidden p-4">
+              <Workspace
+                pendingImport={pendingImport}
+                processImport={processImport}
+                cancelImport={cancelImport}
+                tileSize={tileSize}
+                onTileSizeChange={setTileSize}
+                showToast={showToast}
+                registerCardPreviewFn={(fn) => { cardPreviewFnRef.current = fn; }}
+                onFindBarActiveChange={(active) => { isFindBarActiveRef.current = active; }}
+              />
+            </div>
+          )}
+        </main>
+      </div>
 
       <DropOverlay visible={isDragActive} />
 

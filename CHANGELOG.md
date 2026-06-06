@@ -5,6 +5,21 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.24.0] — Mobile sidebar drawer
+
+### Added
+- **Mobile off-canvas drawer** — the sidebar now slides in from the left over a dimmed backdrop on screens below `md` (768px) instead of stacking at the top at `h-[40vh]`; it defaults closed so the workspace gets the full viewport height
+- **Mobile top bar** with a hamburger (`Menu`) button to open the drawer; the bar shows the current context — active deck name, `Settings`, or `Brew`
+
+### Changed
+- **Drawer dismissal**: closes via the backdrop tap, an `X` button in the drawer header, the Escape key, and automatically after navigation (selecting a deck, going home, or opening Settings)
+- **Layout split** now driven by Tailwind `md:` breakpoint classes (`fixed` drawer below `md`, in-flow `md:static` above) rather than the JS `isDesktop` flag, so desktop no longer risks a drawer flash on load
+
+### Unchanged
+- **Desktop sidebar** — the collapse-to-rail (48px ⇄ 256px) behavior is identical at ≥768px
+
+---
+
 ## [1.23.1] — Wheel-scroll regression fix + loading spinner
 
 ### Fixed
