@@ -5,6 +5,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.24.5] — Mobile search preview fits the screen
+
+### Fixed
+- **No-scroll takeover** — the mobile preview's art strip was a fixed `400px`, so on taller/text-heavy cards the card-info section plus the strip overflowed the viewport and you had to scroll a little to see the whole art card at the bottom. The strip now **flexes to fill the leftover vertical space** below the info section (via a `flex-1` chain with `min-h-0` ancestors, floored at `240px`), so the full card always lands on-screen. `overflow-y-auto` stays as a safety net for very short screens. Desktop is unchanged (fixed `318px` strip, `md:flex-none`)
+
+---
+
 ## [1.24.4] — Mobile search preview drawer
 
 ### Changed

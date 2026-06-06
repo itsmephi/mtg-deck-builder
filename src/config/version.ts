@@ -1,10 +1,13 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.24.4";
+export const APP_VERSION = "1.24.5";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.24.5": [
+    "Fix: mobile search preview now fits the screen with no scroll — the art-variants strip was a fixed 400px, so on taller cards the info section plus the strip overflowed the viewport and you had to scroll to see the whole card. The strip now flexes to fill whatever vertical space is left below the card info (floor of 240px), so the full card always lands on-screen. Desktop unchanged (still a fixed 318px strip).",
+  ],
   "1.24.4": [
     "Enhancement: on mobile (below 768px) the search preview is now a full-screen takeover instead of a cramped dropdown dangling off the search bar — it owns the whole viewport with a header (card name + close X) and scrolls vertically, so the keyboard no longer clips the card art off at the top",
     "Enhancement: the mobile takeover slides up like a bottom sheet on open (sheet-up keyframe, 250ms); desktop dropdown still appears instantly (animation disabled at md+)",
