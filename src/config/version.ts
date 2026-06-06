@@ -1,10 +1,14 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.24.2";
+export const APP_VERSION = "1.24.3";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.24.3": [
+    "Fix: search preview panel is now usable on mobile — below 768px the card-info and art-variant columns stack vertically instead of sitting side-by-side, so the art-variants/browse strip gets the full width instead of being squeezed into ~20px and cut off; the left divider becomes a top divider when stacked",
+    "Fix: art-strip action buttons (+ Add / Flip / Swap art) are now reachable on touch devices — on no-hover devices they were trapped behind a hover-only overlay; tapping a printing to select it now reveals its action buttons",
+  ],
   "1.24.2": [
     "Enhancement: on mobile the deck view's hamburger now sits inline to the left of the search bar instead of on its own row — reclaims a full row of vertical space; Home and Settings keep the slim top-bar hamburger (no search bar there)",
     "Enhancement: mobile drawer Settings moved from the top tab bar to the footer, right-aligned on the same row as Home and the version badge — groups the meta actions together",

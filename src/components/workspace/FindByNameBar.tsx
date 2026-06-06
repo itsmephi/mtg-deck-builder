@@ -95,6 +95,19 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
   const deckEntryCardRef = useRef<DeckCard | null>(null);
   const scrollToPrintingIdRef = useRef<string | null>(null);
 
+  // Touch devices have no hover, so the per-tile action overlay (Add / Flip /
+  // Swap art) can't be reached the desktop way. On these we reveal the overlay
+  // on the selected tile instead — tap a printing to select it, then tap Add.
+  const [isTouch, setIsTouch] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const mq = window.matchMedia("(hover: none)");
+    const update = () => setIsTouch(mq.matches);
+    update();
+    mq.addEventListener?.("change", update);
+    return () => mq.removeEventListener?.("change", update);
+  }, []);
+
   // Detect e: and a: prefix queries — suppress normal autocomplete, show hint row
   const prefixHint = useMemo(() => {
     const artistMatch = query.match(/^a:"?(.+?)"?$/i);
@@ -743,8 +756,8 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
       {showPreview && (
         <div className="absolute left-3 right-3 top-full z-[100] bg-surface-panel border border-line-default rounded-lg shadow-xl overflow-y-auto" style={{ maxHeight: "80vh" }}>
           {isLoadingPreview || !selectedPrinting ? (
-            <div className="relative flex gap-4 p-4">
-              <div className="shrink-0 space-y-3 pt-1" style={{ width: 280 }}>
+            <div className="relative flex flex-col md:flex-row gap-4 p-4">
+              <div className="shrink-0 space-y-3 pt-1 w-full md:w-[280px]">
                 <div className="h-5 rounded-lg bg-surface-deep animate-pulse w-3/4" />
                 <div className="h-4 rounded-lg bg-surface-deep animate-pulse w-1/2" />
                 <div className="h-24 rounded-lg bg-surface-deep animate-pulse" />
@@ -761,9 +774,9 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
             </div>
           ) : (
             <div className="p-4">
-              <div className="flex">
+              <div className="flex flex-col md:flex-row">
                 {/* Left column: card info */}
-                <div className="shrink-0 flex flex-col pl-0 pr-4" style={{ width: 280 }}>
+                <div className="shrink-0 flex flex-col pl-0 pr-0 md:pr-4 w-full md:w-[280px]">
                   {/* Name + set name */}
                   <div className="mb-2">
                     <div className="flex items-start justify-between gap-2">
@@ -861,7 +874,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
 
               {/* Right column: browse results (artist/set) or art variants */}
               {(isLoadingBrowse || browseResults.length > 0 || printings.length > 0) && (
-                <div className="flex-1 min-w-0 flex flex-col border-l border-line-subtle pl-3">
+                <div className="flex-1 min-w-0 flex flex-col border-t md:border-t-0 md:border-l border-line-subtle mt-3 md:mt-0 pt-3 md:pt-0 pl-0 md:pl-3">
                   {isLoadingBrowse ? (
                     <>
                       <div className="h-3 w-36 rounded bg-surface-deep animate-pulse mb-2" />
@@ -932,7 +945,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
                                   {p.set.toUpperCase()}
                                 </div>
                               )}
-                              <div className="absolute inset-0 flex flex-col items-center justify-end gap-1.5 pb-3 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto">
+                              <div className={`absolute inset-0 flex flex-col items-center justify-end gap-1.5 pb-3 bg-gradient-to-t from-black/80 to-transparent transition-opacity ${(isTouch && isSelected) ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto"}`}>
                                 {tileHasBackFace && (
                                   <button
                                     onClick={(e) => {
@@ -1031,7 +1044,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
                                   {p.set.toUpperCase()}
                                 </div>
                               )}
-                              <div className="absolute inset-0 flex flex-col items-center justify-end gap-1.5 pb-3 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto">
+                              <div className={`absolute inset-0 flex flex-col items-center justify-end gap-1.5 pb-3 bg-gradient-to-t from-black/80 to-transparent transition-opacity ${(isTouch && isSelected) ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto"}`}>
                                 {tileHasBackFace && (
                                   <button
                                     onClick={(e) => {

@@ -69,7 +69,7 @@ Default to direct work. Tier up only when the change earns it.
 
 ## Current Version
 
-`v1.24.2` — Mobile drawer polish: hamburger inline left of the deck search bar (saves a row); Settings moved to the drawer footer; close button uses the PanelLeftClose icon.
+`v1.24.3` — Mobile search preview fix: the card-info and art-variants columns now stack vertically below 768px so the art strip gets full width (was ~20px wide and cut off); per-tile Add/Flip/Swap buttons are now reachable on touch via the selected tile.
 
 ## Post-Version Checklist
 

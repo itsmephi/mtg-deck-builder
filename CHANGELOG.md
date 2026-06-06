@@ -5,6 +5,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.24.3] — Mobile search preview fix
+
+### Fixed
+- **Stacked preview on mobile** — below `md` (768px) the search preview's card-info column and art-variants column now stack vertically instead of sitting side-by-side; previously the fixed 280px info column left the right-hand art-variants/browse strip ~20px wide and cut off. The left divider becomes a top divider when stacked
+- **Touch-reachable tile actions** — the per-tile `+ Add` / `Flip` / `Swap art` buttons were trapped behind a hover-only overlay, unreachable on touch devices; on no-hover devices the overlay now appears on the selected tile, so tapping a printing reveals its actions
+
+---
+
 ## [1.24.2] — Mobile drawer polish
 
 ### Changed
