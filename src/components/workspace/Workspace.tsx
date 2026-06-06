@@ -22,6 +22,7 @@ interface WorkspaceProps {
   tileSize: TileSizeKey;
   onTileSizeChange: (stop: TileSizeKey) => void;
   showToast: (msg: string) => void;
+  showUndoToast: (msg: string, onUndo: () => void) => void;
   registerCardPreviewFn?: (fn: (name: string, setCode?: string) => void) => void;
   onFindBarActiveChange?: (active: boolean) => void;
   onOpenMobileSidebar?: () => void;
@@ -52,7 +53,7 @@ interface ConfirmDialogState {
   targetFormat: DeckFormat;
 }
 
-export default function Workspace({ pendingImport, processImport, cancelImport, tileSize, onTileSizeChange, showToast, registerCardPreviewFn, onFindBarActiveChange, onOpenMobileSidebar }: WorkspaceProps) {
+export default function Workspace({ pendingImport, processImport, cancelImport, tileSize, onTileSizeChange, showToast, showUndoToast, registerCardPreviewFn, onFindBarActiveChange, onOpenMobileSidebar }: WorkspaceProps) {
   const {
     decks,
     activeDeck,
@@ -324,6 +325,15 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
   };
 
   const removeCard = (cardId: string) => {
+    // Snapshot position + commander status so the Undo toast can restore the
+    // card exactly where it was (destructive action — see BACKLOG).
+    const deck = activeDeck;
+    if (!deck) return;
+    const index = deck.cards.findIndex((c) => c.id === cardId);
+    if (index < 0) return;
+    const removedCard = deck.cards[index];
+    const wasCommander = !!deck.commanderIds?.includes(cardId);
+
     updateActiveDeck((deck) => {
       const newCards = deck.cards.filter((c) => c.id !== cardId);
       const newCommanderIds = deck.commanderIds?.filter((id) => id !== cardId);
@@ -332,6 +342,18 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
         cards: newCards,
         commanderIds: newCommanderIds?.length ? newCommanderIds : undefined,
       };
+    });
+
+    showUndoToast(`Removed ${removedCard.name}`, () => {
+      updateActiveDeck((deck) => {
+        if (deck.cards.some((c) => c.id === cardId)) return deck;
+        const cards = [...deck.cards];
+        cards.splice(Math.min(index, cards.length), 0, removedCard);
+        const commanderIds = wasCommander
+          ? Array.from(new Set([...(deck.commanderIds ?? []), cardId]))
+          : deck.commanderIds;
+        return { ...deck, cards, commanderIds };
+      });
     });
   };
 
@@ -357,10 +379,24 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
   };
 
   const removeSideboardCard = (cardId: string) => {
+    const sb = activeDeck?.sideboard;
+    const index = sb?.findIndex((c) => c.id === cardId) ?? -1;
+    if (!sb || index < 0) return;
+    const removedCard = sb[index];
+
     updateActiveDeck((deck) => ({
       ...deck,
       sideboard: deck.sideboard?.filter((c) => c.id !== cardId),
     }));
+
+    showUndoToast(`Removed ${removedCard.name}`, () => {
+      updateActiveDeck((deck) => {
+        const sideboard = [...(deck.sideboard ?? [])];
+        if (sideboard.some((c) => c.id === cardId)) return deck;
+        sideboard.splice(Math.min(index, sideboard.length), 0, removedCard);
+        return { ...deck, sideboard };
+      });
+    });
   };
 
   const updateSideboardOwnedQty = (cardId: string, qty: number) => {

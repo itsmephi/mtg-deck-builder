@@ -1,10 +1,14 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.27.0";
+export const APP_VERSION = "1.28.0";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.28.0": [
+    "Fix: removing a card is now undoable. Deleting a card (or sideboard card) shows a 4-second toast with an Undo button that puts it back exactly where it was — works in both grid and list views, on desktop and touch.",
+    "Fix: on a touch tablet, the grid edit bar's delete (✕) moved out of the bar to the top-right corner of the card (the same spot it sits on desktop), and only shows while the bar is open. It was too easy to tap ✕ to dismiss the bar and delete the card by accident — now you dismiss by tapping the card art or anywhere outside, and the ✕ is clearly separated from the quantity controls.",
+  ],
   "1.27.0": [
     "Feature: you can now edit cards in the visual (grid) view on a touch tablet. The quantity/owned controls used to live in a panel that only appeared on mouse-hover, so on an iPad they were unreachable. Tap the quantity badge on a card and a slim bar slides up with everything the desktop has — mark-owned toggle, owned and quantity steppers (tap the number to type it), and remove.",
     "Enhancement: the bar prioritizes the card art — it's a thin strip along the bottom, not the big panel that covered nearly half the card, and it only appears when you ask for it. Tap the art, tap elsewhere, or tap the badge again to dismiss it.",

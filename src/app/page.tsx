@@ -460,6 +460,7 @@ export default function Dashboard() {
                 tileSize={tileSize}
                 onTileSizeChange={setTileSize}
                 showToast={showToast}
+                showUndoToast={showUndoToast}
                 registerCardPreviewFn={(fn) => { cardPreviewFnRef.current = fn; }}
                 onFindBarActiveChange={(active) => { isFindBarActiveRef.current = active; }}
                 onOpenMobileSidebar={() => setMobileSidebarOpen(true)}

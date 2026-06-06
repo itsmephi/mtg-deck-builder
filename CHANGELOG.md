@@ -5,6 +5,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.28.0] — Undoable card removal + safer touch delete
+
+Follow-up to the 1.27.0 touch edit bar. The bar's remove (✕) sat next to the steppers and read like a "close" button — tapping it to dismiss the bar deleted the card instead, with no feedback or undo. Root cause: `removeCard` mutated the deck silently (no toast wired in), and the destructive ✕ was placed inside the bar. Both fixed.
+
+### Added
+- **Undo on card removal** — `Workspace.removeCard` / `removeSideboardCard` snapshot the card's index (and commander status) and fire the existing 4s `showUndoToast`, restoring the card at its original position. Covers grid *and* list views, desktop *and* touch (closes the long-standing BACKLOG item for card-delete undo)
+
+### Changed
+- **Touch delete moved to the corner** — the grid tile's ✕ is no longer in the edit bar. It's the top-right corner × (where it lives on desktop hover), shown on touch only while the bar is open, kept clear of the steppers. Dismiss the bar by tapping the art or anywhere outside; the ✕ is unambiguously "delete," now backed by Undo
+- `Workspace` receives `showUndoToast` (previously only `showToast`)
+
+---
+
 ## [1.27.0] — Grid-view editing on touch
 
 The follow-up flagged in 1.26.0: the visual (grid) card tile's edit controls lived inside a `group-hover` slide-up overlay, so on touch they never appeared and the overlay (when it did) covered ~45% of the art. Grid tiles are now editable on touch via a tap-to-reveal slim bar, at full parity with desktop. The design decision (tap the qty badge → slim bar, vs. long-press; full parity; crown as a corner tap) was made in-session.
