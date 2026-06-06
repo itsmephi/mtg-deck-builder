@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Layers, PanelRightOpen, Settings, Home, X } from "lucide-react";
+import { Layers, PanelRightOpen, Settings, Home, PanelLeftClose } from "lucide-react";
 import { APP_VERSION } from "@/config/version";
 import SidebarRail from "./SidebarRail";
 import SidebarDecksTab from "./SidebarDecksTab";
@@ -96,21 +96,13 @@ export default function Sidebar({ onImport, onExport, isImporting, onOpenSetting
               </button>
             )}
             {!isDesktop && (
-              <>
-                <button
-                  onClick={() => onOpenSettings("preferences")}
-                  className="w-9 h-9 flex items-center justify-center bg-surface-deep border-b border-line-subtle text-content-muted hover:text-content-primary transition-colors"
-                >
-                  <Settings className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={onMobileClose}
-                  aria-label="Close menu"
-                  className="w-9 h-9 flex items-center justify-center bg-surface-deep border-b border-line-subtle text-content-muted hover:text-content-primary transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </>
+              <button
+                onClick={onMobileClose}
+                aria-label="Close menu"
+                className="w-9 h-9 flex items-center justify-center bg-surface-deep border-b border-line-subtle text-content-muted hover:text-content-primary transition-colors"
+              >
+                <PanelLeftClose className="w-4 h-4" />
+              </button>
             )}
           </div>
 
@@ -145,6 +137,15 @@ export default function Sidebar({ onImport, onExport, isImporting, onOpenSetting
               >
                 v{APP_VERSION}
               </button>
+              {!isDesktop && (
+                <button
+                  onClick={() => onOpenSettings("preferences")}
+                  className="ml-auto w-7 h-7 rounded-md flex items-center justify-center text-content-muted hover:text-content-primary hover:bg-surface-raised transition-colors"
+                  title="Settings"
+                >
+                  <Settings className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
           </div>
         </div>

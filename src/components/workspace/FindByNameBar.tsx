@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo } from "react";
-import { Search, X, RotateCw, AlertTriangle, Loader2 } from "lucide-react";
+import { Search, X, RotateCw, AlertTriangle, Loader2, Menu } from "lucide-react";
 import { autocompleteCards, searchCards, getCardPrintings } from "@/lib/scryfall";
 import { useDeckManager } from "@/hooks/useDeckManager";
 import { parseDroppedText } from "@/hooks/useDeckImportExport";
@@ -17,6 +17,9 @@ interface FindByNameBarProps {
   registerOpenWithCardFn?: (fn: (card: DeckCard) => void) => void;
   onSwapArt?: (deckCard: DeckCard, newPrinting: ScryfallCard) => void;
   onActiveChange?: (active: boolean) => void;
+  // Mobile-only: renders a hamburger to the left of the search box that opens
+  // the sidebar drawer (so the deck view doesn't need a separate top-bar row).
+  onOpenMobileSidebar?: () => void;
 }
 
 function renderManaSymbols(manaCost: string | undefined): React.ReactNode {
@@ -63,7 +66,7 @@ function renderOracleText(text: string | undefined): React.ReactNode {
   );
 }
 
-export default function FindByNameBar({ showToast, registerFocusFn, registerSearchFn, registerDismissFn, registerCardPreviewFn, registerOpenWithCardFn, onSwapArt, onActiveChange }: FindByNameBarProps) {
+export default function FindByNameBar({ showToast, registerFocusFn, registerSearchFn, registerDismissFn, registerCardPreviewFn, registerOpenWithCardFn, onSwapArt, onActiveChange, onOpenMobileSidebar }: FindByNameBarProps) {
   const { activeDeck, updateActiveDeck, deckViewMode, setLastAddedId } = useDeckManager();
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -605,8 +608,19 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
 
   return (
     <div ref={containerRef} className="relative shrink-0 bg-surface-base z-[60] px-3 py-2">
+      {/* Row: mobile hamburger (left) + the styled input box */}
+      <div className="flex items-center gap-2">
+      {onOpenMobileSidebar && (
+        <button
+          onClick={onOpenMobileSidebar}
+          aria-label="Open menu"
+          className="md:hidden w-9 h-9 shrink-0 flex items-center justify-center rounded-md text-content-muted hover:text-content-primary hover:bg-surface-raised transition-colors"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+      )}
       {/* Header row — visually styled input box */}
-      <div className={`flex items-center gap-2 px-3 h-11 rounded-xl border bg-surface-panel ${inputFocused || showPreview ? "border-line-focus" : "border-line-subtle"}`}>
+      <div className={`flex-1 flex items-center gap-2 px-3 h-11 rounded-xl border bg-surface-panel ${inputFocused || showPreview ? "border-line-focus" : "border-line-subtle"}`}>
         <Search className="w-4 h-4 text-content-muted shrink-0" />
         <input
           ref={inputRef}
@@ -663,6 +677,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
             <X className="w-3.5 h-3.5" />
           </button>
         )}
+      </div>
       </div>
 
       {/* Autocomplete dropdown */}

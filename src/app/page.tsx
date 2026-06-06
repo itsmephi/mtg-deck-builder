@@ -422,16 +422,20 @@ export default function Dashboard() {
       />
 
       <div className="flex-1 flex flex-col h-screen overflow-hidden min-w-0">
-        {/* Mobile top bar — hamburger opens the sidebar drawer; hidden on desktop */}
-        <div className="md:hidden flex items-center px-2 h-12 shrink-0 border-b border-line-panel bg-surface-panel">
-          <button
-            onClick={() => setMobileSidebarOpen(true)}
-            aria-label="Open menu"
-            className="w-9 h-9 flex items-center justify-center rounded-md text-content-muted hover:text-content-primary hover:bg-surface-raised transition-colors"
-          >
-            <Menu className="w-5 h-5" />
-          </button>
-        </div>
+        {/* Mobile top bar — hamburger opens the sidebar drawer; hidden on desktop.
+            Only shown on Home/Settings; the deck view renders the hamburger
+            inline to the left of the search bar (FindByNameBar) instead. */}
+        {(showSettings || !activeDeck) && (
+          <div className="md:hidden flex items-center px-2 h-12 shrink-0 border-b border-line-panel bg-surface-panel">
+            <button
+              onClick={() => setMobileSidebarOpen(true)}
+              aria-label="Open menu"
+              className="w-9 h-9 flex items-center justify-center rounded-md text-content-muted hover:text-content-primary hover:bg-surface-raised transition-colors"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+          </div>
+        )}
 
         <main className="flex-1 flex flex-col overflow-hidden">
           {showSettings ? (
@@ -458,6 +462,7 @@ export default function Dashboard() {
                 showToast={showToast}
                 registerCardPreviewFn={(fn) => { cardPreviewFnRef.current = fn; }}
                 onFindBarActiveChange={(active) => { isFindBarActiveRef.current = active; }}
+                onOpenMobileSidebar={() => setMobileSidebarOpen(true)}
               />
             </div>
           )}
