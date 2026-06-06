@@ -5,12 +5,25 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-## [1.31.1] — Mobile art-strip centering fix
+## [1.31.2] — Mobile art-strip centering fix
 
 Tapping a card in the deck opens the FindByNameBar preview and scrolls the art-variants strip to that card's current printing. On mobile the printing landed off-center.
 
 ### Fixed
 - **Mobile centering** (`FindByNameBar.tsx`) — the strip-scroll math derived tile width from a hardcoded 318px strip height. That's correct on desktop (`md:h-[318px]`), but the mobile full-screen preview makes the strip `flex-1` so its height (and thus tile width) is larger and variable — the computed scroll position was off, leaving the active printing to the side. The `useLayoutEffect` now measures the real tile element (via its `data-printing-id` and `getBoundingClientRect`) instead of computing from a fixed height, so it centers correctly at any strip height.
+
+---
+
+## [1.31.1] — Mobile list readability
+
+Follow-up polish to the mobile list view (1.31.0), reported on the Light theme.
+
+### Fixed
+- **Washed-out card names** (`ListCardTable.tsx`) — the row name color was a hardcoded `text-neutral-100` (≈ #f5f5f5). Correct on the dark themes, but near-invisible on the Light theme's cream background. Switched to the theme-aware `text-content-primary` token (brightest on dark, darkest on light), so names are high-contrast on every theme. This also fixes the same latent bug in the desktop `renderRow`.
+
+### Changed
+- **Name prominence** — the touch row name is now `text-[15px] font-semibold` (was `font-medium`/14px) with `min-w-0` for clean single-line truncation.
+- **More room for the name** — trimmed the touch layout so longer names fit on one line: quantity column `w-14 → w-12`, tighter cell padding, and the workspace scroll container's horizontal gutter is `px-2` on small screens (`sm:px-4` keeps desktop unchanged). The narrower gutter also gives grid view a touch more width on phones.
 
 ---
 
