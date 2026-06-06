@@ -1,10 +1,16 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.29.0";
+export const APP_VERSION = "1.30.0";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.30.0": [
+    "Feature: Light theme — a warm-light palette (the daylight counterpart to Warm Stone) joins the two dark themes. Pick it in Settings › Preferences › Theme.",
+    "Feature: Match system — the theme picker now has a 'System' option (the new default) that follows your OS appearance. A dark OS uses Warm Stone; a light OS uses the new Light theme. It updates live if you flip your system between light and dark with the app open.",
+    "Enhancement: the theme picker shows all four choices — System, Warm Stone, Zed Dark, Light — and, while on System, a caption tells you which palette it's currently resolving to.",
+    "Chore: theme resolution centralized in src/lib/theme.ts (preference vs. resolved theme) and the no-flash init script in layout.tsx now resolves 'system' before first paint, so there's no flash on load.",
+  ],
   "1.29.0": [
     "Feature: deleting a deck is now undoable. The deck-row ✕ menu's 'Delete Deck' (and 'Delete Sideboard') now show a 4-second toast with an Undo button that puts the deck back exactly as it was. Completes the undo-on-delete pass started in 1.28.0 — now covers cards and decks.",
   ],

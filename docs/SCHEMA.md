@@ -18,7 +18,7 @@ Primary state lives in `useDeckManager` (hook) and is threaded down via props. N
 | `mtg-group-by-type` | `'true' \| 'false'` | Group cards by type in deck view |
 | `mtg-tile-size` | `'xs' \| 's' \| 'm' \| 'l' \| 'xl'` | Shared tile size for both grid views |
 | `mtg-sidebar-collapsed` | `'true' \| 'false'` | Sidebar expanded/collapsed state |
-| `mtg-theme` | `'zed-dark'` | Absent = Warm Stone (default) |
+| `mtg-theme` | `'warm-stone' \| 'zed-dark' \| 'light'` | Theme *preference*. Absent = `system` (default → dark OS: Warm Stone, light OS: Light) |
 | `mtg-last-backup` | ISO date string | Timestamp of last deck backup |
 
 ## sessionStorage

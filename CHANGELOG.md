@@ -5,6 +5,28 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.30.0] — Light theme + match system
+
+Adds a third palette (Light) and a "System" preference that follows the OS. Previously the app shipped two dark palettes (Warm Stone, Zed Dark) selectable only as an explicit choice, with no daylight option and no OS awareness.
+
+### Added
+- **Light theme** — a warm-light palette (`[data-theme="light"]` in `globals.css`), the daylight counterpart to Warm Stone: warm off-white surfaces, near-black warm text, copper focus accent. Fills out the existing 25-token contract so every surface/input/text/border token has a light value.
+- **Match system** — new `"system"` theme preference (now the default). Resolves a dark OS to Warm Stone and a light OS to the new Light theme, per `resolveTheme()` in the new `src/lib/theme.ts`. The `(prefers-color-scheme: dark)` media query is now consulted in JS rather than CSS, so the explicit themes still override it.
+- **Live OS following** — while the preference is `"system"`, a `matchMedia` listener in the no-flash init script repaints the app when the OS flips between light and dark with the app open. The Settings picker mirrors this with a "currently …" caption.
+- `src/lib/theme.ts` — centralizes preference (`ThemePreference`) vs. resolved theme (`ResolvedTheme`), storage, resolution, and DOM application. `SettingsView` uses it instead of inlining the localStorage/`data-theme` logic.
+
+### Changed
+- **Theme picker** — now four swatches (System, Warm Stone, Zed Dark, Light) driven by a `THEME_OPTIONS` config; the System swatch shows a split light/warm-dark gradient. `mtg-theme` now stores the *preference* (`"warm-stone"` | `"zed-dark"` | `"light"`, or absent for system) rather than only `"zed-dark"`.
+- **No-flash init script** (`layout.tsx`) resolves `"system"` before first paint and attaches the live OS listener.
+
+### Removed
+- The dead `@media (prefers-color-scheme: dark)` block in `globals.css` that merely re-declared the Warm Stone defaults — theme resolution is now JS-driven.
+
+### Migration
+- Existing users with no stored theme (Warm Stone) now default to **System**; a dark OS keeps them on Warm Stone, a light OS moves them to Light. Users who had explicitly chosen Zed Dark are unaffected (`mtg-theme: "zed-dark"` still forces it).
+
+---
+
 ## [1.29.0] — Undoable deck deletion
 
 Completes the undo-on-delete pass from 1.28.0 (which covered cards). Deleting a deck or its sideboard from the sidebar's deck-row ✕ menu was silent and irreversible — now both fire the 4s `showUndoToast`.
