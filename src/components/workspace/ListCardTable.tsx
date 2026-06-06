@@ -267,7 +267,7 @@ export default function ListCardTable({
       ? "text-content-muted"
       : isFullyOwned
       ? "text-green-400"
-      : "text-neutral-100";
+      : "text-content-primary";
 
     const extraQty = sideboardQtyMap?.get(card.name.toLowerCase()) ?? 0;
     const isExempt =
@@ -695,7 +695,7 @@ export default function ListCardTable({
       ? "text-content-muted"
       : isFullyOwned
       ? "text-green-400"
-      : "text-neutral-100";
+      : "text-content-primary";
 
     const extraQty = sideboardQtyMap?.get(card.name.toLowerCase()) ?? 0;
     const isExempt =
@@ -735,7 +735,7 @@ export default function ListCardTable({
           style={highlightedId !== card.id ? { backgroundColor: rowBg } : undefined}
         >
           {/* Owned ✓ toggle */}
-          <td className="pl-2 pr-1 py-2.5 w-9 align-top">
+          <td className="pl-1.5 pr-0.5 py-2.5 w-9 align-top">
             {(() => {
               const isFull = card.isOwned && card.ownedQty >= card.quantity;
               let bg: string, border: string, color: string;
@@ -804,7 +804,7 @@ export default function ListCardTable({
 
               <span
                 onClick={() => onSelect(card)}
-                className={`font-medium truncate ${nameColor}`}
+                className={`text-[15px] font-semibold truncate min-w-0 ${nameColor}`}
                 style={{ opacity: cellOpacity }}
               >
                 {card.name}
@@ -838,7 +838,7 @@ export default function ListCardTable({
           </td>
 
           {/* Qty chip — tap to expand edit controls */}
-          <td className="px-1 py-2.5 w-14 align-top text-right">
+          <td className="px-0.5 py-2.5 w-12 align-top text-right">
             <button
               onClick={() => setExpandedId(expanded ? null : card.id)}
               aria-label="Edit quantities"
@@ -994,7 +994,7 @@ export default function ListCardTable({
           <colgroup>
             <col className="w-9" />
             <col />
-            <col className="w-14" />
+            <col className="w-12" />
             <col className="w-14" />
           </colgroup>
         )}

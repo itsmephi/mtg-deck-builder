@@ -5,6 +5,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.31.1] — Mobile list readability
+
+Follow-up polish to the mobile list view (1.31.0), reported on the Light theme.
+
+### Fixed
+- **Washed-out card names** (`ListCardTable.tsx`) — the row name color was a hardcoded `text-neutral-100` (≈ #f5f5f5). Correct on the dark themes, but near-invisible on the Light theme's cream background. Switched to the theme-aware `text-content-primary` token (brightest on dark, darkest on light), so names are high-contrast on every theme. This also fixes the same latent bug in the desktop `renderRow`.
+
+### Changed
+- **Name prominence** — the touch row name is now `text-[15px] font-semibold` (was `font-medium`/14px) with `min-w-0` for clean single-line truncation.
+- **More room for the name** — trimmed the touch layout so longer names fit on one line: quantity column `w-14 → w-12`, tighter cell padding, and the workspace scroll container's horizontal gutter is `px-2` on small screens (`sm:px-4` keeps desktop unchanged). The narrower gutter also gives grid view a touch more width on phones.
+
+---
+
 ## [1.31.0] — List view on mobile
 
 Brings the list (table) view to touch, the way the grid (visual) view was brought to touch in 1.27.0. The desktop list is a wide 7-column `table-fixed` (owned ✓, a dual owned/quantity stepper at `w-52`, name, type, mana, price, remove) totalling ~656px of fixed columns, with its steppers revealed on row-hover — so on a phone it overflowed off-screen and its controls were unreachable.

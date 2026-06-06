@@ -600,7 +600,7 @@ export default function Workspace({ pendingImport, processImport, cancelImport, 
 
       <div
         ref={scrollContainerRef}
-        className="flex-1 overflow-y-auto p-4 pb-20"
+        className="flex-1 overflow-y-auto px-2 pt-4 pb-20 sm:px-4"
       >
         {sortedCards.length === 0 && deckViewMode !== "sideboard" ? (
           <div style={gridStyle}>
