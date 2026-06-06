@@ -134,7 +134,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting, onClo
           return (
             <div
               key={deck.id}
-              className={`flex items-center gap-1.5 px-2 py-1.5 rounded-lg group relative ${
+              className={`flex items-center gap-2 px-2 py-2.5 rounded-lg group relative ${
                 isActive ? "bg-surface-panel" : "hover:bg-neutral-800/50"
               } transition-colors`}
             >
@@ -157,7 +157,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting, onClo
                   onCloseSettings?.();
                   onNavigate?.();
                 }}
-                className={`flex-1 text-left text-xs truncate transition-colors min-w-0 ${
+                className={`flex-1 text-left text-sm truncate transition-colors min-w-0 ${
                   isActive ? "text-content-primary" : "text-content-tertiary hover:text-content-primary"
                 }`}
               >
@@ -167,7 +167,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting, onClo
               </button>
 
               {/* Card count */}
-              <span className="text-[10px] text-content-faint shrink-0">{cardCount}</span>
+              <span className="text-[11px] text-content-faint shrink-0">{cardCount}</span>
 
               {/* Format badge — clickable, opens format picker */}
               <div className="shrink-0">
@@ -181,17 +181,17 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting, onClo
                   className="flex items-center"
                 >
                   {deck.format === "standard" && (
-                    <span className="text-[9px] font-bold text-blue-400 bg-blue-400/10 px-1 rounded hover:bg-blue-400/20 transition-colors cursor-pointer">
+                    <span className="text-[11px] font-bold text-blue-400 bg-blue-400/10 px-1.5 py-0.5 rounded hover:bg-blue-400/20 transition-colors cursor-pointer">
                       STD
                     </span>
                   )}
                   {deck.format === "commander" && (
-                    <span className="text-[9px] font-bold text-yellow-400 bg-yellow-400/10 px-1 rounded hover:bg-yellow-400/20 transition-colors cursor-pointer">
+                    <span className="text-[11px] font-bold text-yellow-400 bg-yellow-400/10 px-1.5 py-0.5 rounded hover:bg-yellow-400/20 transition-colors cursor-pointer">
                       CMD
                     </span>
                   )}
                   {(!deck.format || deck.format === "freeform") && (
-                    <span className="text-[9px] font-bold text-neutral-500 bg-neutral-500/10 px-1 rounded hover:bg-neutral-500/20 transition-colors cursor-pointer">
+                    <span className="text-[11px] font-bold text-neutral-500 bg-neutral-500/10 px-1.5 py-0.5 rounded hover:bg-neutral-500/20 transition-colors cursor-pointer">
                       FF
                     </span>
                   )}
@@ -227,7 +227,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting, onClo
                     ? "View sideboard"
                     : "Add sideboard"
                 }
-                className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-colors ${
                   isCommander
                     ? "text-content-faint cursor-not-allowed opacity-40"
                     : hasSideboard
@@ -235,7 +235,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting, onClo
                     : "text-content-disabled hover:text-content-tertiary"
                 }`}
               >
-                <Layers className="w-3 h-3" />
+                <Layers className="w-4 h-4" />
               </button>
 
               {/* × button — hover-only, opens delete dropdown */}
@@ -246,9 +246,10 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting, onClo
                       openDeleteDropdownId === deck.id ? null : deck.id
                     )
                   }
-                  className="w-6 h-6 rounded-full flex items-center justify-center text-content-disabled hover:text-content-tertiary opacity-0 group-hover:opacity-100 transition-all"
+                  aria-label="Delete deck"
+                  className="w-7 h-7 rounded-full flex items-center justify-center text-content-disabled hover:text-content-tertiary opacity-60 group-hover:opacity-100 transition-all"
                 >
-                  <X className="w-3 h-3" />
+                  <X className="w-4 h-4" />
                 </button>
 
                 {openDeleteDropdownId === deck.id && (
@@ -261,7 +262,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting, onClo
                         deleteDeck(deck.id);
                         setOpenDeleteDropdownId(null);
                       }}
-                      className="flex items-center gap-2 w-full text-left px-3 py-2 text-xs text-red-500 hover:bg-red-500/10 transition-colors"
+                      className="flex items-center gap-2 w-full text-left px-3 py-2.5 text-sm text-red-500 hover:bg-red-500/10 transition-colors"
                     >
                       Delete Deck
                     </button>
@@ -271,7 +272,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting, onClo
                           deleteSideboard(deck.id);
                           setOpenDeleteDropdownId(null);
                         }}
-                        className="flex items-center gap-2 w-full text-left px-3 py-2 text-xs text-red-500 hover:bg-red-500/10 transition-colors"
+                        className="flex items-center gap-2 w-full text-left px-3 py-2.5 text-sm text-red-500 hover:bg-red-500/10 transition-colors"
                       >
                         Delete Sideboard
                       </button>
@@ -292,10 +293,10 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting, onClo
               setNewDeckPickerDir(dir);
               setNewDeckPickerOpen(!newDeckPickerOpen);
             }}
-            className="mx-2 my-1 border border-dashed border-line-default rounded-md flex items-center justify-center gap-1.5 py-1.5 cursor-pointer text-content-faint hover:border-input-edge-focus hover:text-content-muted transition-colors"
+            className="mx-2 my-1 border border-dashed border-line-default rounded-md flex items-center justify-center gap-1.5 py-2.5 cursor-pointer text-content-faint hover:border-input-edge-focus hover:text-content-muted transition-colors"
           >
-            <Plus className="w-3 h-3" />
-            <span className="text-[10px]">New Deck</span>
+            <Plus className="w-4 h-4" />
+            <span className="text-xs">New Deck</span>
           </div>
           {newDeckPickerOpen && (
             <div
@@ -319,20 +320,20 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting, onClo
         <div className="flex items-center gap-1.5">
           <button
             onClick={onExport}
-            className="flex items-center gap-1.5 flex-1 justify-center px-2 py-1.5 bg-surface-raised hover:bg-surface-overlay rounded-lg text-xs text-content-secondary hover:text-content-primary transition-colors"
+            className="flex items-center gap-1.5 flex-1 justify-center px-2 py-2.5 min-h-11 bg-surface-raised hover:bg-surface-overlay rounded-lg text-xs text-content-secondary hover:text-content-primary transition-colors"
           >
-            <Download className="w-3 h-3" />
+            <Download className="w-4 h-4" />
             Export
           </button>
           <button
             onClick={onImport}
             disabled={isImporting}
-            className="flex items-center gap-1.5 flex-1 justify-center px-2 py-1.5 bg-surface-raised hover:bg-surface-overlay rounded-lg text-xs text-content-secondary hover:text-content-primary transition-colors disabled:opacity-50"
+            className="flex items-center gap-1.5 flex-1 justify-center px-2 py-2.5 min-h-11 bg-surface-raised hover:bg-surface-overlay rounded-lg text-xs text-content-secondary hover:text-content-primary transition-colors disabled:opacity-50"
           >
             {isImporting ? (
-              <RefreshCw className="w-3 h-3 animate-spin" />
+              <RefreshCw className="w-4 h-4 animate-spin" />
             ) : (
-              <Upload className="w-3 h-3" />
+              <Upload className="w-4 h-4" />
             )}
             Import
           </button>
@@ -340,16 +341,16 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting, onClo
         <div className="flex items-center gap-1.5">
           <button
             onClick={buyOnTCGPlayer}
-            className="flex items-center gap-1.5 flex-1 justify-center px-2 py-1.5 bg-orange-600/10 border border-orange-600/30 rounded-lg text-[10px] font-bold text-orange-400 hover:bg-orange-600/20 transition-colors"
+            className="flex items-center gap-1.5 flex-1 justify-center px-2 py-2.5 min-h-11 bg-orange-600/10 border border-orange-600/30 rounded-lg text-xs font-bold text-orange-400 hover:bg-orange-600/20 transition-colors"
           >
-            <ShoppingCart className="w-3 h-3" />
+            <ShoppingCart className="w-4 h-4" />
             TCGPlayer
           </button>
           <button
             onClick={buyOnCardKingdom}
-            className="flex items-center gap-1.5 flex-1 justify-center px-2 py-1.5 bg-blue-600/10 border border-blue-600/30 rounded-lg text-[10px] font-bold text-blue-400 hover:bg-blue-600/20 transition-colors"
+            className="flex items-center gap-1.5 flex-1 justify-center px-2 py-2.5 min-h-11 bg-blue-600/10 border border-blue-600/30 rounded-lg text-xs font-bold text-blue-400 hover:bg-blue-600/20 transition-colors"
           >
-            <ShoppingCart className="w-3 h-3" />
+            <ShoppingCart className="w-4 h-4" />
             Card Kingdom
           </button>
         </div>
@@ -382,7 +383,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting, onClo
                   setDeckFormat(confirmDialog.deckId, "commander");
                   setConfirmDialog(null);
                 }}
-                className="w-full px-3 py-2 rounded-lg text-xs font-medium bg-yellow-600 hover:bg-yellow-500 text-content-primary transition-colors"
+                className="w-full px-3 py-2.5 min-h-11 rounded-lg text-sm font-medium bg-yellow-600 hover:bg-yellow-500 text-content-primary transition-colors"
               >
                 Merge into Main Deck
               </button>
@@ -392,7 +393,7 @@ export default function SidebarDecksTab({ onImport, onExport, isImporting, onClo
                   setDeckFormat(confirmDialog.deckId, "commander");
                   setConfirmDialog(null);
                 }}
-                className="w-full px-3 py-2 rounded-lg text-xs font-medium bg-red-600/20 text-red-400 border border-red-600/30 hover:bg-red-600/30 transition-colors"
+                className="w-full px-3 py-2.5 min-h-11 rounded-lg text-sm font-medium bg-red-600/20 text-red-400 border border-red-600/30 hover:bg-red-600/30 transition-colors"
               >
                 Delete Sideboard
               </button>

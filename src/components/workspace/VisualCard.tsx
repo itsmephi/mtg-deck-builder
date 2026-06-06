@@ -82,7 +82,7 @@ export default function VisualCard({
             <span className="text-xs font-semibold text-content-primary text-center leading-tight line-clamp-2">
               {card.name}
             </span>
-            <span className="text-[10px] text-content-tertiary truncate w-full text-center">
+            <span className="text-xs text-content-tertiary truncate w-full text-center">
               {card.type_line}
             </span>
             <button
@@ -253,8 +253,8 @@ export default function VisualCard({
   const stepperBtn = (visible: boolean, btnId: string): React.CSSProperties => {
     const hovered = hoveredBtn === btnId && visible;
     return {
-      width: '24px',
-      height: '24px',
+      width: '28px',
+      height: '28px',
       borderRadius: '50%',
       display: 'flex',
       alignItems: 'center',
@@ -299,9 +299,10 @@ export default function VisualCard({
             e.stopPropagation();
             onRemove(card.id);
           }}
-          className="absolute top-1.5 right-1.5 w-6 h-6 flex items-center justify-center rounded-full bg-surface-base text-content-tertiary hover:text-red-400 hover:bg-red-900 opacity-0 group-hover:opacity-100 transition-all z-30"
+          aria-label="Remove card"
+          className="absolute top-1.5 right-1.5 w-7 h-7 flex items-center justify-center rounded-full bg-surface-base text-content-tertiary hover:text-red-400 hover:bg-red-900 opacity-0 group-hover:opacity-100 transition-all z-30"
         >
-          <X className="w-3 h-3" />
+          <X className="w-4 h-4" />
         </button>
 
         {/* Slide-up bottom overlay */}
@@ -315,7 +316,7 @@ export default function VisualCard({
             {card.name}
           </span>
           {/* Type line */}
-          <span className="text-[10px] text-content-tertiary truncate w-full text-center -mt-1">
+          <span className="text-xs text-content-tertiary truncate w-full text-center -mt-1">
             {card.type_line}
           </span>
 
@@ -339,7 +340,7 @@ export default function VisualCard({
                 <path d="M12 9v4" stroke="#171717" strokeWidth="2.2" strokeLinecap="round" fill="none" />
                 <circle cx="12" cy="17" r="1" fill="#171717" />
               </svg>
-              <span style={{ fontSize: '10px', fontWeight: 600, color: '#f87171', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: '11px', fontWeight: 600, color: '#f87171', whiteSpace: 'nowrap' }}>
                 {warnings[0]}
               </span>
             </div>
@@ -362,7 +363,7 @@ export default function VisualCard({
                   onUpdateOwnedQty(card.id, Math.max(0, card.ownedQty - 1));
                 }}
               >
-                <Minus style={{ width: '10px', height: '10px' }} />
+                <Minus style={{ width: '14px', height: '14px' }} />
               </button>
 
               {isOwnedEditing ? (
@@ -401,7 +402,7 @@ export default function VisualCard({
                   onUpdateOwnedQty(card.id, card.ownedQty + 1);
                 }}
               >
-                <Plus style={{ width: '10px', height: '10px' }} />
+                <Plus style={{ width: '14px', height: '14px' }} />
               </button>
             </div>
 
@@ -423,7 +424,7 @@ export default function VisualCard({
                   onUpdateQuantity(card.id, -1);
                 }}
               >
-                <Minus style={{ width: '10px', height: '10px' }} />
+                <Minus style={{ width: '14px', height: '14px' }} />
               </button>
 
               {isEditing ? (
@@ -466,7 +467,7 @@ export default function VisualCard({
                   onUpdateQuantity(card.id, 1);
                 }}
               >
-                <Plus style={{ width: '10px', height: '10px' }} />
+                <Plus style={{ width: '14px', height: '14px' }} />
               </button>
             </div>
           </div>
@@ -544,7 +545,7 @@ export default function VisualCard({
 
                   {showCrownTooltip && canAct && (
                     <div
-                      className="absolute left-1/2 -translate-x-1/2 top-full mt-1 px-2 py-1 bg-neutral-900 border border-neutral-700 rounded text-[10px] text-neutral-200 whitespace-nowrap z-30 flex items-center gap-1.5"
+                      className="absolute left-1/2 -translate-x-1/2 top-full mt-1 px-2 py-1 bg-neutral-900 border border-neutral-700 rounded text-xs text-neutral-200 whitespace-nowrap z-30 flex items-center gap-1.5"
                       onMouseEnter={() => {
                         if (crownTooltipTimeout.current) { clearTimeout(crownTooltipTimeout.current); crownTooltipTimeout.current = null; }
                       }}

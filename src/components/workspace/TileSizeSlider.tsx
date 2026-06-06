@@ -113,7 +113,7 @@ export default function TileSizeSlider({ activeStop, onChangeStop }: TileSizeSli
             : "text-content-muted hover:text-content-secondary border border-transparent"
         }`}
       >
-        <ZoomIn className="w-3.5 h-3.5" />
+        <ZoomIn className="w-4 h-4" />
       </button>
 
       {/* Always in DOM — visibility controlled by opacity + pointer-events for smooth transition */}

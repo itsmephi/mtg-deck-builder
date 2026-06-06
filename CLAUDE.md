@@ -69,7 +69,7 @@ Default to direct work. Tier up only when the change earns it.
 
 ## Current Version
 
-`v1.25.0` — Deck controls are now reachable on mobile: below 768px the dense toolbar control block (Simulator, Main/Side, Sort, Group, card size, Grid/List) collapses into a single "Tools" button that opens a bottom sheet (`DeckToolsSheet`) with all controls as full-width, finger-sized rows. Card size uses a touch-friendly XS–XL segmented control (desktop slider is pointer-only). Left-side stats are unchanged but now wrap on narrow screens. Desktop toolbar unchanged (`hidden md:flex`).
+`v1.26.0` — Site-wide touch & sizing pass. One unified, finger-friendly scale across desktop and touch (no responsive split). Text floor is now 11px (every `text-[8/9/10px]` promoted by role); standalone chrome buttons are 44px (`h-11 w-11`); dense inline controls — the list-view qty/owned steppers, owned ✓ toggle, row remove ✕, and search-results add button — are no longer `opacity-0 group-hover` (which made them unreachable on iPad) and are now always visible at ~28px with real 16px `lucide` icons. Explicit `viewport-fit=cover` added in `layout.tsx`. The standard lives in `docs/ARCHITECTURE.md` → **Touch & Sizing System**. Known follow-up: the visual (grid) card tile still reveals its editing controls inside a `group-hover` overlay, so grid inline-editing on touch awaits a tap-to-reveal redesign (sizing was bumped; behaviour unchanged).
 
 ## Post-Version Checklist
 

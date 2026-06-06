@@ -80,7 +80,7 @@ export default function SearchListTable({ cards, deckCardNames, onAdd, onSelect,
     <div onMouseMove={handleMouseMove}>
       <div className="bg-surface-base border border-line-subtle rounded-lg shadow-sm" style={{ margin: "10px" }}>
         <table className="w-full table-fixed text-left text-xs">
-          <thead className="bg-surface-base text-[10px] text-content-muted border-b border-line-subtle uppercase tracking-wider">
+          <thead className="bg-surface-base text-[11px] text-content-muted border-b border-line-subtle uppercase tracking-wider">
             <tr>
               <th className="px-2 py-1.5 w-10"></th>
               <th className="px-2 py-1.5 w-8">Own</th>
@@ -106,12 +106,13 @@ export default function SearchListTable({ cards, deckCardNames, onAdd, onSelect,
                   style={{ backgroundColor: rowBg }}
                 >
                   {/* + Add button */}
-                  <td className="px-2 py-1 w-10">
+                  <td className="px-2 py-2 w-10">
                     <div className="flex items-center justify-center">
                       <button
                         onClick={(e) => { e.stopPropagation(); onAdd(card); }}
                         title="Add to deck"
-                        className="w-[22px] h-[22px] rounded-full border border-white/10 flex items-center justify-center text-content-tertiary text-xs opacity-0 group-hover:opacity-100 transition-opacity hover:bg-blue-500/15 hover:border-blue-500/30 hover:text-blue-400"
+                        aria-label="Add to deck"
+                        className="w-7 h-7 rounded-full border border-white/10 flex items-center justify-center text-content-tertiary text-base opacity-60 group-hover:opacity-100 transition-opacity hover:bg-blue-500/15 hover:border-blue-500/30 hover:text-blue-400"
                       >
                         +
                       </button>
@@ -119,7 +120,7 @@ export default function SearchListTable({ cards, deckCardNames, onAdd, onSelect,
                   </td>
 
                   {/* In-deck indicator */}
-                  <td className="px-1 py-1 w-5">
+                  <td className="px-1 py-2 w-5">
                     <div className="flex items-center justify-center">
                       {inDeck && (
                         <span
@@ -131,23 +132,23 @@ export default function SearchListTable({ cards, deckCardNames, onAdd, onSelect,
                   </td>
 
                   {/* Name */}
-                  <td className="px-2 py-1 min-w-0">
+                  <td className="px-2 py-2 min-w-0">
                     <span className={`truncate font-medium block ${inDeck ? "text-content-tertiary" : "text-content-primary"}`}>
                       {card.name}
                     </span>
                   </td>
 
                   {/* Type */}
-                  <td className={`px-2 py-1 text-[10px] truncate w-48 ${inDeck ? "text-content-faint" : "text-content-tertiary"}`}>
+                  <td className={`px-2 py-2 text-[11px] truncate w-48 ${inDeck ? "text-content-faint" : "text-content-tertiary"}`}>
                     {card.type_line || "—"}
                   </td>
 
                   {/* Mana */}
-                  <td className={`px-2 py-1 w-24 ${inDeck ? "opacity-40" : ""}`}>
+                  <td className={`px-2 py-2 w-24 ${inDeck ? "opacity-40" : ""}`}>
                     {card.card_faces ? (
                       <div className="flex items-center gap-1">
                         {renderManaSymbols(card.card_faces[0].mana_cost)}
-                        <span className="text-[10px] text-content-faint font-bold">//</span>
+                        <span className="text-[11px] text-content-faint font-bold">//</span>
                         {renderManaSymbols(card.card_faces[1].mana_cost)}
                       </div>
                     ) : (
@@ -156,7 +157,7 @@ export default function SearchListTable({ cards, deckCardNames, onAdd, onSelect,
                   </td>
 
                   {/* Price */}
-                  <td className={`px-2 py-1 text-right text-[10px] tabular-nums w-20 ${inDeck ? "text-content-faint" : "text-content-tertiary"}`}>
+                  <td className={`px-2 py-2 text-right text-[11px] tabular-nums w-20 ${inDeck ? "text-content-faint" : "text-content-tertiary"}`}>
                     {card.prices.usd ? `$${card.prices.usd}` : "N/A"}
                   </td>
                 </tr>

@@ -155,7 +155,7 @@ export default function WorkspaceToolbar({
                 setFormatPickerDir((window.innerHeight - rect.bottom) > rect.top ? "down" : "up");
                 setFormatPickerOpen(!formatPickerOpen);
               }}
-              className="text-[10px] font-medium text-blue-400 bg-blue-400/10 border border-blue-400/20 px-1.5 py-0.5 rounded-full cursor-pointer hover:bg-blue-400/20 transition-colors select-none"
+              className="text-[11px] font-medium text-blue-400 bg-blue-400/10 border border-blue-400/20 px-2 py-1 rounded-full cursor-pointer hover:bg-blue-400/20 transition-colors select-none"
             >
               Standard
             </span>
@@ -167,7 +167,7 @@ export default function WorkspaceToolbar({
                 setFormatPickerDir((window.innerHeight - rect.bottom) > rect.top ? "down" : "up");
                 setFormatPickerOpen(!formatPickerOpen);
               }}
-              className="text-[10px] font-medium text-yellow-400 bg-yellow-400/10 border border-yellow-400/20 px-1.5 py-0.5 rounded-full cursor-pointer hover:bg-yellow-400/20 transition-colors select-none"
+              className="text-[11px] font-medium text-yellow-400 bg-yellow-400/10 border border-yellow-400/20 px-2 py-1 rounded-full cursor-pointer hover:bg-yellow-400/20 transition-colors select-none"
             >
               Commander
             </span>
@@ -179,7 +179,7 @@ export default function WorkspaceToolbar({
                 setFormatPickerDir((window.innerHeight - rect.bottom) > rect.top ? "down" : "up");
                 setFormatPickerOpen(!formatPickerOpen);
               }}
-              className="text-[10px] font-medium text-content-muted bg-neutral-500/10 border border-neutral-500/20 px-1.5 py-0.5 rounded-full cursor-pointer hover:bg-neutral-500/20 transition-colors select-none"
+              className="text-[11px] font-medium text-content-muted bg-neutral-500/10 border border-neutral-500/20 px-2 py-1 rounded-full cursor-pointer hover:bg-neutral-500/20 transition-colors select-none"
             >
               Freeform
             </span>
@@ -242,14 +242,14 @@ export default function WorkspaceToolbar({
       <button
         onClick={() => setMobileToolsOpen(true)}
         aria-label="Deck tools"
-        className="md:hidden flex items-center justify-center gap-1.5 h-9 px-3 shrink-0 bg-surface-base border border-line-subtle rounded-lg text-xs font-bold text-content-tertiary hover:text-content-primary hover:bg-surface-raised transition-colors shadow-sm"
+        className="md:hidden flex items-center justify-center gap-1.5 h-11 px-4 shrink-0 bg-surface-base border border-line-subtle rounded-lg text-sm font-bold text-content-tertiary hover:text-content-primary hover:bg-surface-raised transition-colors shadow-sm"
       >
         <SlidersHorizontal className="w-4 h-4" />
         <span>Tools</span>
       </button>
 
       {/* Right: simulator + main/side + sort/group/view (desktop only) */}
-      <div className="hidden md:flex items-center gap-2 h-8 shrink-0">
+      <div className="hidden md:flex items-center gap-2 h-9 shrink-0">
         <button
           onClick={onOpenSampleHand}
           className="flex items-center gap-2 h-full px-3 bg-surface-base border border-line-subtle rounded-lg text-xs font-bold text-content-tertiary hover:text-content-primary hover:bg-surface-raised transition-colors shadow-sm"
@@ -289,7 +289,7 @@ export default function WorkspaceToolbar({
         {/* Sort / Group / View */}
         <div className="flex items-center h-full bg-surface-base p-0.5 rounded-lg border border-line-subtle space-x-0.5 shadow-sm">
           <div className="flex items-center px-2 border-r border-line-subtle h-full gap-1">
-            <ArrowUpDown className="w-3 h-3 text-content-muted shrink-0" />
+            <ArrowUpDown className="w-4 h-4 text-content-muted shrink-0" />
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as SortBy)}
@@ -304,19 +304,19 @@ export default function WorkspaceToolbar({
               <button
                 onClick={() => setSortDir(sortDir === "asc" ? "desc" : "asc")}
                 disabled={sortBy === "original"}
-                className={`flex items-center justify-center w-5 h-5 rounded transition-colors ${
+                className={`flex items-center justify-center w-7 h-7 rounded transition-colors ${
                   sortBy === "original"
                     ? "text-content-disabled cursor-not-allowed"
                     : "text-content-tertiary hover:text-content-primary"
                 }`}
               >
                 {sortDir === "asc" ? (
-                  <ArrowUp className="w-3 h-3" />
+                  <ArrowUp className="w-4 h-4" />
                 ) : (
-                  <ArrowDown className="w-3 h-3" />
+                  <ArrowDown className="w-4 h-4" />
                 )}
               </button>
-              <span className="absolute bottom-full mb-1.5 left-1/2 -translate-x-1/2 px-2 py-1 bg-surface-raised border border-line-default text-content-heading text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-normal max-w-xs z-50">
+              <span className="absolute bottom-full mb-1.5 left-1/2 -translate-x-1/2 px-2 py-1 bg-surface-raised border border-line-default text-content-heading text-[11px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-normal max-w-xs z-50">
                 {sortDir === "asc" ? "Sort ascending" : "Sort descending"}
               </span>
             </div>
@@ -331,9 +331,9 @@ export default function WorkspaceToolbar({
                   : "text-content-muted hover:text-content-secondary border border-transparent"
               }`}
             >
-              <Layout className="w-3.5 h-3.5" />
+              <Layout className="w-4 h-4" />
             </button>
-            <span className="absolute top-full mt-2 px-2 py-1 bg-surface-raised border border-line-default text-content-heading text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-normal max-w-xs z-50">
+            <span className="absolute top-full mt-2 px-2 py-1 bg-surface-raised border border-line-default text-content-heading text-[11px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-normal max-w-xs z-50">
               Toggle Type Groups
             </span>
           </div>
@@ -353,9 +353,9 @@ export default function WorkspaceToolbar({
                   : "text-content-muted hover:text-content-secondary border border-transparent"
               }`}
             >
-              <LayoutGrid className="w-3.5 h-3.5" />
+              <LayoutGrid className="w-4 h-4" />
             </button>
-            <span className="absolute top-full mt-2 px-2 py-1 bg-surface-raised border border-line-default text-content-heading text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-normal max-w-xs z-50">
+            <span className="absolute top-full mt-2 px-2 py-1 bg-surface-raised border border-line-default text-content-heading text-[11px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-normal max-w-xs z-50">
               Grid View
             </span>
           </div>
@@ -369,9 +369,9 @@ export default function WorkspaceToolbar({
                   : "text-content-muted hover:text-content-secondary border border-transparent"
               }`}
             >
-              <List className="w-3.5 h-3.5" />
+              <List className="w-4 h-4" />
             </button>
-            <span className="absolute top-full mt-2 px-2 py-1 bg-surface-raised border border-line-default text-content-heading text-[9px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-normal max-w-xs z-50">
+            <span className="absolute top-full mt-2 px-2 py-1 bg-surface-raised border border-line-default text-content-heading text-[11px] font-bold uppercase tracking-wider rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-normal max-w-xs z-50">
               List View
             </span>
           </div>

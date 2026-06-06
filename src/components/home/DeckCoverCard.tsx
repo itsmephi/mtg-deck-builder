@@ -27,10 +27,10 @@ export default function DeckCoverCard({ deck, onClick }: DeckCoverCardProps) {
     <div
       onClick={onClick}
       className="
-        w-[100px] h-[140px] rounded-lg cursor-pointer
+        w-[120px] h-[168px] rounded-lg cursor-pointer
         border border-line-default bg-surface-raised
         flex flex-col items-end justify-end
-        pb-2.5 gap-1
+        pb-3 gap-1
         relative overflow-hidden shrink-0
         hover:border-surface-hover transition-colors
       "
@@ -38,11 +38,11 @@ export default function DeckCoverCard({ deck, onClick }: DeckCoverCardProps) {
       {/* Placeholder art */}
       <div className={`absolute inset-0 bg-gradient-to-br ${tint} opacity-50`} />
       {/* Text — above gradient */}
-      <div className="relative z-10 flex flex-col items-center w-full gap-0.5 px-1.5">
-        <span className="text-[10px] font-medium text-content-heading text-center leading-tight line-clamp-2">
+      <div className="relative z-10 flex flex-col items-center w-full gap-0.5 px-2">
+        <span className="text-xs font-medium text-content-heading text-center leading-tight line-clamp-2">
           {deck.name || "Untitled"}
         </span>
-        <span className="text-[9px] text-content-muted">
+        <span className="text-[11px] text-content-muted">
           {deck.cards.reduce((sum, c) => sum + c.quantity, 0)} cards
         </span>
       </div>

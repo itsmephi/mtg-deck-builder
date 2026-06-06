@@ -30,7 +30,7 @@ function ManaPip({ symbol }: { symbol: string }) {
   return (
     <img
       src={`https://svgs.scryfall.io/card-symbols/${symbol}.svg`}
-      className="w-3 h-3 inline-block"
+      className="w-4 h-4 inline-block"
       alt={symbol}
     />
   );
@@ -68,14 +68,14 @@ export default function SearchBar({
   return (
     <div ref={containerRef} className="flex-1 relative min-w-0">
       {/* Search bar row */}
-      <div className="flex items-center flex-wrap min-w-0 bg-surface-deep border border-line-subtle rounded-lg px-2 gap-1 min-h-[40px] transition-colors focus-within:border-input-edge-focus">
-        <Search size={14} className="text-content-muted shrink-0" />
+      <div className="flex items-center flex-wrap min-w-0 bg-surface-deep border border-line-subtle rounded-lg px-2 gap-1 min-h-[44px] transition-colors focus-within:border-input-edge-focus">
+        <Search size={16} className="text-content-muted shrink-0" />
 
         {/* Filter badge */}
         {filterBadge && (
           <span
             onClick={onToggleFilter}
-            className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] shrink-0 cursor-pointer transition-colors select-none ${
+            className={`inline-flex items-center gap-1 px-2 py-1 rounded text-[11px] shrink-0 cursor-pointer transition-colors select-none ${
               filterBadge.active
                 ? filterBadge.label.toLowerCase() === "commander"
                   ? "bg-yellow-900/30 border border-yellow-500/25 text-yellow-400"
@@ -85,7 +85,7 @@ export default function SearchBar({
                 : "bg-surface-raised border border-line-default text-content-muted"
             }`}
           >
-            <Lock size={9} />
+            <Lock size={13} />
             {filterBadge.label}
             {filterBadge.manaColors?.map((color) => (
               <ManaPip key={color} symbol={color} />
@@ -95,7 +95,8 @@ export default function SearchBar({
                 e.stopPropagation();
                 onToggleFilter();
               }}
-              className="opacity-60 hover:opacity-100 leading-none"
+              aria-label="Clear filter"
+              className="opacity-60 hover:opacity-100 leading-none px-1 text-base"
             >
               ×
             </button>
@@ -107,14 +108,14 @@ export default function SearchBar({
           <span
             key={i}
             onClick={() => onRemoveToken(i)}
-            className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-surface-raised border border-line-default rounded text-[10px] text-content-secondary shrink-0 cursor-pointer transition-colors hover:border-red-500/60 hover:text-red-400 group select-none"
+            className="inline-flex items-center gap-1 px-2 py-1 bg-surface-raised border border-line-default rounded text-[11px] text-content-secondary shrink-0 cursor-pointer transition-colors hover:border-red-500/60 hover:text-red-400 group select-none"
             title="Click to remove"
           >
-            <span className="text-content-muted text-[9px] uppercase tracking-wide">
+            <span className="text-content-muted text-[11px] uppercase tracking-wide">
               {token.label}:
             </span>
             {token.value}
-            <span className="text-[9px] opacity-0 group-hover:opacity-100 transition-opacity leading-none">
+            <span className="text-[11px] opacity-60 group-hover:opacity-100 transition-opacity leading-none">
               ×
             </span>
           </span>
@@ -130,16 +131,17 @@ export default function SearchBar({
             if (e.key === "Escape" || e.key === "Enter") onDismissAutocomplete();
           }}
           placeholder={tokens.length > 0 ? "Add more filters..." : "Search for cards, types, keywords..."}
-          className="flex-1 min-w-[80px] bg-transparent border-none text-input-value text-xs outline-none placeholder:text-input-placeholder py-0.5"
+          className="flex-1 min-w-[80px] bg-transparent border-none text-input-value text-sm outline-none placeholder:text-input-placeholder py-1"
         />
 
         {/* Clear button */}
         {(query || tokens.length > 0) && (
           <button
             onClick={onClear}
-            className="w-4 h-4 flex items-center justify-center rounded-full text-content-muted hover:text-content-secondary hover:bg-surface-overlay transition-colors shrink-0"
+            aria-label="Clear search"
+            className="w-7 h-7 flex items-center justify-center rounded-full text-content-muted hover:text-content-secondary hover:bg-surface-overlay transition-colors shrink-0"
           >
-            <X size={10} />
+            <X size={16} />
           </button>
         )}
       </div>
@@ -150,7 +152,7 @@ export default function SearchBar({
           {/* Card name matches */}
           {autocompleteSuggestions.length > 0 && (
             <div className="py-1">
-              <div className="px-2.5 py-1 text-[9px] text-content-muted uppercase tracking-wider">
+              <div className="px-2.5 py-1 text-[11px] text-content-muted uppercase tracking-wider">
                 Cards
               </div>
               {autocompleteSuggestions.slice(0, 5).map((name) => (
@@ -160,7 +162,7 @@ export default function SearchBar({
                     e.preventDefault(); // prevent input blur before click
                     onSelectAutocomplete(name);
                   }}
-                  className="w-full flex items-center gap-2 px-2.5 py-1.5 text-xs text-content-secondary hover:bg-surface-raised hover:text-content-primary transition-colors text-left"
+                  className="w-full flex items-center gap-2 px-2.5 py-2.5 text-sm text-content-secondary hover:bg-surface-raised hover:text-content-primary transition-colors text-left"
                 >
                   {deckCardNames.has(name) && (
                     <span className="w-1.5 h-1.5 rounded-full bg-green-500 shrink-0" />
@@ -174,7 +176,7 @@ export default function SearchBar({
           {/* Parsed token preview */}
           {tokens.length > 0 && (
             <div className="px-2.5 py-2 border-t border-line-subtle flex flex-wrap gap-1 items-center">
-              <span className="text-[9px] text-content-muted mr-1">Parsed:</span>
+              <span className="text-[11px] text-content-muted mr-1">Parsed:</span>
               {tokens.map((token, i) => (
                 <span
                   key={i}
@@ -182,9 +184,9 @@ export default function SearchBar({
                     e.preventDefault();
                     onRemoveToken(i);
                   }}
-                  className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-surface-raised border border-line-default rounded text-[10px] text-content-secondary cursor-pointer hover:border-red-500/60 hover:text-red-400 select-none"
+                  className="inline-flex items-center gap-1 px-2 py-1 bg-surface-raised border border-line-default rounded text-[11px] text-content-secondary cursor-pointer hover:border-red-500/60 hover:text-red-400 select-none"
                 >
-                  <span className="text-content-muted text-[9px] uppercase tracking-wide">
+                  <span className="text-content-muted text-[11px] uppercase tracking-wide">
                     {token.label}:
                   </span>
                   {token.value}

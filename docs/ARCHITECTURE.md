@@ -217,6 +217,32 @@ Any navigation action (tab click, deck name click, home button) **must** call `o
 
 **Depth model:** Warm Stone sidebar is RAISED (panel lighter than base); Zed Dark sidebar is RECESSED (panel darker than base) — same token names, theme handles the difference.
 
+### Touch & Sizing System
+
+<!-- Last updated: v1.26.0 -->
+
+Unified, touch-first sizing applied across all surfaces (desktop included — one comfortable scale, no responsive split). Established in v1.26.0 to kill ad-hoc per-component values. **When adding UI, conform to these floors instead of inventing new sizes.**
+
+**Text floor — nothing below 11px.**
+- Primary content & interactive labels: `text-sm` (14px)
+- Secondary / metadata: `text-xs` (12px)
+- Micro labels only (uppercase section headers, badges, counts): `text-[11px]`
+- Banned: `text-[8px]`, `text-[9px]`, `text-[10px]`. Promote to the role-appropriate floor above.
+
+**Icons.**
+- Functional icons (inside buttons, indicators): ≥ 16px (`w-4 h-4` / `size={16}`)
+- Standalone nav / action icons: 18–20px (`w-5 h-5`)
+- Decorative dots may stay small.
+
+**Tap targets (44px = iOS HIG / 48dp Android floor).**
+- Standalone chrome buttons (sidebar rail, toolbar, modal close, back, hamburger, home, settings): **44px** — `h-11 w-11` for icon buttons, `min-h-11` for text buttons.
+- Dense inline controls (table qty/owned steppers, card-overlay buttons, chips): **always visible** (≥ 28px, `w-7 h-7`) with real 16px lucide icons.
+- **Never gate an interactive control behind `opacity-0 group-hover:opacity-100`** — touch devices have no hover, so the control becomes unreachable. Use always-on (optionally `opacity-70 hover:opacity-100`).
+
+**Spacing.** Interactive rows: `py-1.5`+ and `gap-1.5`+ minimum. Reserve `py-0.5`/`gap-1` for non-interactive inline runs.
+
+**Viewport.** `layout.tsx` exports an explicit `viewport` with `viewportFit: "cover"` for iPad/notch safe areas (Next.js otherwise injects a default without it).
+
 ### React Patterns
 
 - `setCardRef(id)` — curried helper for card refs; inline `{ if(el) }` causes parse errors in JSX

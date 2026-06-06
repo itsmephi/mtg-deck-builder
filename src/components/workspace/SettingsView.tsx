@@ -177,7 +177,7 @@ function PreferencesTab({ showToast, onClose }: PreferencesTabProps) {
                 "linear-gradient(135deg, #1c1917, #292524 50%, #3f3a36)",
             }}
           >
-            <span className="absolute bottom-0 inset-x-0 px-2 py-1 bg-black/50 text-[9px] font-bold uppercase tracking-wide text-content-secondary text-left">
+            <span className="absolute bottom-0 inset-x-0 px-2 py-1 bg-black/50 text-[11px] font-bold uppercase tracking-wide text-content-secondary text-left">
               Warm Stone
             </span>
           </button>
@@ -195,7 +195,7 @@ function PreferencesTab({ showToast, onClose }: PreferencesTabProps) {
                 "linear-gradient(135deg, #282c34, #2c313a 50%, #3a3f47)",
             }}
           >
-            <span className="absolute bottom-0 inset-x-0 px-2 py-1 bg-black/50 text-[9px] font-bold uppercase tracking-wide text-content-secondary text-left">
+            <span className="absolute bottom-0 inset-x-0 px-2 py-1 bg-black/50 text-[11px] font-bold uppercase tracking-wide text-content-secondary text-left">
               Zed Dark
             </span>
           </button>
@@ -213,23 +213,23 @@ function PreferencesTab({ showToast, onClose }: PreferencesTabProps) {
             onClick={handleBackup}
             disabled={decks.length === 0}
             title={decks.length === 0 ? "No decks to back up" : undefined}
-            className={`flex items-center gap-1.5 px-4 py-2 bg-surface-raised hover:bg-surface-overlay border border-line-default rounded-lg text-xs text-content-secondary hover:text-content-primary transition-colors ${decks.length === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
+            className={`flex items-center gap-1.5 px-4 py-2.5 min-h-11 bg-surface-raised hover:bg-surface-overlay border border-line-default rounded-lg text-xs text-content-secondary hover:text-content-primary transition-colors ${decks.length === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
           >
-            <Download className="w-3.5 h-3.5" />
+            <Download className="w-4 h-4" />
             Backup All Decks
           </button>
           <button
             onClick={handleRestoreClick}
-            className="flex items-center gap-1.5 px-4 py-2 bg-surface-raised hover:bg-surface-overlay border border-line-default rounded-lg text-xs text-content-secondary hover:text-content-primary transition-colors"
+            className="flex items-center gap-1.5 px-4 py-2.5 min-h-11 bg-surface-raised hover:bg-surface-overlay border border-line-default rounded-lg text-xs text-content-secondary hover:text-content-primary transition-colors"
           >
-            <Upload className="w-3.5 h-3.5" />
+            <Upload className="w-4 h-4" />
             Restore from Backup
           </button>
         </div>
         {backupError && (
           <p className="text-xs text-red-400 mt-2">{backupError}</p>
         )}
-        <p className="text-[10px] text-content-faint mt-2">
+        <p className="text-[11px] text-content-faint mt-2">
           {lastBackup ? `Last backup: ${formatBackupDate(lastBackup)}` : "No backups yet"}
         </p>
         <input
@@ -246,7 +246,7 @@ function PreferencesTab({ showToast, onClose }: PreferencesTabProps) {
         <p className="text-xs text-content-disabled">
           More preferences coming soon
         </p>
-        <p className="text-[10px] font-bold uppercase tracking-wide text-content-faint mt-1.5">
+        <p className="text-[11px] font-bold uppercase tracking-wide text-content-faint mt-1.5">
           Animations · Token Gallery · Display density
         </p>
       </div>
@@ -287,13 +287,13 @@ function PreferencesTab({ showToast, onClose }: PreferencesTabProps) {
             <div className="flex justify-end gap-3 mt-5">
               <button
                 onClick={() => setRestoreData(null)}
-                className="px-4 py-2 rounded-lg text-sm text-content-secondary hover:text-content-primary hover:bg-surface-raised transition-colors"
+                className="px-4 py-2.5 min-h-11 rounded-lg text-sm text-content-secondary hover:text-content-primary hover:bg-surface-raised transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleConfirmRestore}
-                className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-500 transition-colors"
+                className="px-4 py-2.5 min-h-11 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-500 transition-colors"
               >
                 Restore
               </button>
@@ -317,11 +317,11 @@ function WhatsNewTab() {
           {index > 0 && <div className="border-b border-line-subtle my-5" />}
           <div className="mb-2">
             {index === 0 ? (
-              <span className="inline-flex items-center px-2 py-0.5 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[9px] font-bold uppercase tracking-wider rounded-full">
+              <span className="inline-flex items-center px-2 py-1 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[11px] font-bold uppercase tracking-wider rounded-full">
                 v{version}
               </span>
             ) : (
-              <p className="text-[10px] font-bold text-content-disabled">
+              <p className="text-[11px] font-bold text-content-disabled">
                 v{version}
               </p>
             )}
@@ -372,7 +372,7 @@ function AboutTab() {
       </p>
 
       {/* Team */}
-      <p className="text-[10px] font-bold uppercase tracking-widest text-content-muted mb-2">
+      <p className="text-[11px] font-bold uppercase tracking-widest text-content-muted mb-2">
         Team
       </p>
       <MonogramRow
@@ -389,7 +389,7 @@ function AboutTab() {
       <div className="border-b border-line-subtle my-5" />
 
       {/* Powered By */}
-      <p className="text-[10px] font-bold uppercase tracking-widest text-content-muted mb-2">
+      <p className="text-[11px] font-bold uppercase tracking-widest text-content-muted mb-2">
         Powered By
       </p>
       <MonogramRow
@@ -411,19 +411,19 @@ function AboutTab() {
       <div className="border-b border-line-subtle my-5" />
 
       {/* Legal */}
-      <p className="text-[10px] font-bold uppercase tracking-widest text-content-muted mb-2">
+      <p className="text-[11px] font-bold uppercase tracking-widest text-content-muted mb-2">
         Legal
       </p>
-      <p className="text-[10px] text-content-disabled leading-relaxed mb-3">
+      <p className="text-[11px] text-content-disabled leading-relaxed mb-3">
         Project Brew is unofficial Fan Content permitted under the Fan Content
         Policy. Not approved/endorsed by Wizards. Portions of the materials used
         are property of Wizards of the Coast. ©Wizards of the Coast LLC.
       </p>
-      <p className="text-[10px] text-content-disabled leading-relaxed mb-3">
+      <p className="text-[11px] text-content-disabled leading-relaxed mb-3">
         Card data and images provided by Scryfall. Project Brew is not produced
         by or endorsed by Scryfall.
       </p>
-      <p className="text-[10px] text-content-disabled leading-relaxed mb-3">
+      <p className="text-[11px] text-content-disabled leading-relaxed mb-3">
         Magic: The Gathering is a trademark of Wizards of the Coast LLC.
       </p>
     </div>
@@ -486,7 +486,7 @@ function SupportTab() {
         <p className="text-xs text-content-disabled">
           Bug reports, feature requests, and feedback
         </p>
-        <p className="text-[10px] font-bold uppercase tracking-wide text-content-faint mt-1.5">
+        <p className="text-[11px] font-bold uppercase tracking-wide text-content-faint mt-1.5">
           Coming soon
         </p>
       </div>
@@ -519,14 +519,15 @@ export default function SettingsView({
           <div className="flex items-center gap-2">
             <button
               onClick={onClose}
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-content-muted hover:text-content-primary hover:bg-surface-raised transition-colors shrink-0"
+              aria-label="Back"
+              className="w-11 h-11 -ml-2 rounded-lg flex items-center justify-center text-content-muted hover:text-content-primary hover:bg-surface-raised transition-colors shrink-0"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
             <h1 className="text-xl font-extrabold text-content-primary tracking-tight">
               Project Brew
             </h1>
-            <span className="ml-auto inline-flex items-center px-2 py-0.5 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[9px] font-bold uppercase tracking-wider rounded-full shrink-0">
+            <span className="ml-auto inline-flex items-center px-2 py-1 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[11px] font-bold uppercase tracking-wider rounded-full shrink-0">
               v{APP_VERSION}
             </span>
           </div>
@@ -543,7 +544,7 @@ export default function SettingsView({
             <button
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
-              className={`px-4 py-2.5 text-xs font-semibold border-b-2 transition-colors whitespace-nowrap ${
+              className={`px-4 py-3 min-h-11 text-sm font-semibold border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === tab.id
                   ? "text-content-primary border-line-focus"
                   : "text-content-muted hover:text-content-secondary border-transparent"
