@@ -1,10 +1,13 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.32.2";
+export const APP_VERSION = "1.32.3";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.32.3": [
+    "Fix: on a phone, the quantity and owned controls that slide up when you tap a card in the grid are now easier to read and better organised. The panel had a see-through gradient that let the card art bleed through behind the top row of buttons, and the owned ✓ checkbox sat to the left of the numbers, pushing them off-centre. The panel now has a solid backdrop, the − owned + / − qty + steppers sit centred and symmetric (matching the desktop layout), and the owned ✓ toggle moved to its own line directly below — the same bottom-centre spot it occupies on desktop.",
+  ],
   "1.32.2": [
     "Enhancement: rotate your phone to landscape (or use a tablet) and each card in the list view now fits on a single line — the name, mana, and type sit side by side instead of stacking onto two rows. In portrait, where there isn't room, it still stacks as before.",
   ],
