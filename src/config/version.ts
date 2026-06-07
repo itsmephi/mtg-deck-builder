@@ -1,10 +1,13 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.32.3";
+export const APP_VERSION = "1.32.4";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.32.4": [
+    "Polish: the phone grid edit panel now lines up its two counters. The owned and quantity steppers are stacked one above the other with short \"Own\" / \"Qty\" labels, so the − number + controls sit in a single tidy column instead of side by side with a slash pushing the owned counter off-centre. The owned ✓ checkmark moved down onto the bottom edge of the card — the same spot the quantity badge sits — so opening the panel now looks like that badge simply flipped to a checkmark.",
+  ],
   "1.32.3": [
     "Fix: on a phone, the quantity and owned controls that slide up when you tap a card in the grid are now easier to read and better organised. The panel had a see-through gradient that let the card art bleed through behind the top row of buttons, and the owned ✓ checkbox sat to the left of the numbers, pushing them off-centre. The panel now has a solid backdrop, the − owned + / − qty + steppers sit centred and symmetric (matching the desktop layout), and the owned ✓ toggle moved to its own line directly below — the same bottom-centre spot it occupies on desktop.",
   ],
