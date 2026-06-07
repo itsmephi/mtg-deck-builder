@@ -684,17 +684,114 @@ export default function VisualCard({
       </div>
 
       {/* Touch edit bar — slim, revealed by tapping the qty badge. Full parity
-          with the desktop hover overlay (owned toggle, owned/qty steppers with
-          tap-to-edit numbers, remove). Always mounted so number inputs commit
-          onBlur; visibility is toggled via classes. Touch only. */}
+          with the desktop hover overlay (owned/qty steppers with tap-to-edit
+          numbers, owned toggle, remove). Always mounted so number inputs commit
+          onBlur; visibility is toggled via classes. Touch only.
+
+          Layout mirrors the desktop overlay: a symmetric, centered
+          [− owned +] / [− qty +] row, with the owned ✓ toggle on its own line
+          directly below — the bottom-center spot the desktop owned toggle (the
+          qty badge) occupies. A solid backdrop (not a fade-to-transparent
+          gradient) keeps the upper steppers legible over busy card art. */}
       {isTouch && (
         <div
           onClick={(e) => e.stopPropagation()}
-          className={`absolute bottom-0 left-0 right-0 z-[45] flex flex-wrap items-center justify-center gap-1.5 px-1.5 py-2 rounded-b-xl bg-gradient-to-t from-black/90 via-black/80 to-transparent transition-all duration-200 ${
+          className={`absolute bottom-0 left-0 right-0 z-[45] flex flex-col items-center gap-2 px-1.5 py-2.5 rounded-b-xl bg-black/85 backdrop-blur-sm transition-all duration-200 ${
             barOpen ? "opacity-100 pointer-events-auto translate-y-0" : "opacity-0 pointer-events-none translate-y-2"
           }`}
         >
-          {/* Owned toggle */}
+          {/* Steppers row — symmetric [− owned +] / [− qty +], matching desktop */}
+          <div className="flex flex-wrap items-center justify-center gap-1.5">
+            {/* Owned stepper */}
+            <div className="flex items-center gap-1 shrink-0">
+              <button
+                onClick={(e) => { e.stopPropagation(); onUpdateOwnedQty(card.id, Math.max(0, card.ownedQty - 1)); }}
+                aria-label="Decrease owned"
+                className="w-7 h-7 rounded-full flex items-center justify-center bg-white/10 border border-white/20 text-neutral-100 active:bg-white/25 transition-colors"
+              >
+                <Minus className="w-3.5 h-3.5" />
+              </button>
+              {isOwnedEditing ? (
+                <input
+                  type="text"
+                  value={ownedEditValue}
+                  onChange={(e) => setOwnedEditValue(e.target.value)}
+                  onFocus={(e) => e.target.select()}
+                  onBlur={() => { if (isOwnedEscaping.current) { isOwnedEscaping.current = false; return; } commitOwnedEdit(); }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") { e.preventDefault(); commitOwnedEdit(); }
+                    if (e.key === "Escape") { isOwnedEscaping.current = true; setIsOwnedEditing(false); }
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="w-7 text-center text-xs font-bold bg-white/10 border border-blue-500 rounded text-emerald-400 outline-none tabular-nums"
+                  autoFocus
+                />
+              ) : (
+                <button
+                  onClick={(e) => { e.stopPropagation(); startOwnedEdit(); }}
+                  className="w-7 text-center text-xs font-bold tabular-nums"
+                  style={{ color: ownedNumColor }}
+                >
+                  {card.ownedQty}
+                </button>
+              )}
+              <button
+                onClick={(e) => { e.stopPropagation(); onUpdateOwnedQty(card.id, card.ownedQty + 1); }}
+                aria-label="Increase owned"
+                className="w-7 h-7 rounded-full flex items-center justify-center bg-white/10 border border-white/20 text-neutral-100 active:bg-white/25 transition-colors"
+              >
+                <Plus className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            <span className="text-neutral-500 text-xs select-none">/</span>
+
+            {/* Qty stepper */}
+            <div className="flex items-center gap-1 shrink-0">
+              <button
+                onClick={(e) => { e.stopPropagation(); onUpdateQuantity(card.id, -1); }}
+                aria-label="Decrease quantity"
+                className="w-7 h-7 rounded-full flex items-center justify-center bg-white/10 border border-white/20 text-neutral-100 active:bg-white/25 transition-colors"
+              >
+                <Minus className="w-3.5 h-3.5" />
+              </button>
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={editValue}
+                  onChange={(e) => setEditValue(e.target.value)}
+                  onFocus={(e) => e.target.select()}
+                  onBlur={() => { if (isEscaping.current) { isEscaping.current = false; return; } commitEdit(); }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") { e.preventDefault(); commitEdit(); }
+                    if (e.key === "Escape") { isEscaping.current = true; setIsEditing(false); }
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="w-7 text-center text-xs font-bold bg-white/10 border border-blue-500 rounded text-white outline-none tabular-nums"
+                  autoFocus
+                />
+              ) : (
+                <button
+                  onClick={(e) => { e.stopPropagation(); startEdit(); }}
+                  className="w-7 text-center text-xs font-bold tabular-nums"
+                  style={{ color: overCopyLimit ? '#f87171' : '#e5e5e5' }}
+                >
+                  {card.quantity}
+                </button>
+              )}
+              <button
+                onClick={(e) => { e.stopPropagation(); onUpdateQuantity(card.id, 1); }}
+                aria-label="Increase quantity"
+                className="w-7 h-7 rounded-full flex items-center justify-center bg-white/10 border border-white/20 text-neutral-100 active:bg-white/25 transition-colors"
+              >
+                <Plus className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Owned ✓ toggle — centered below the steppers, at the bottom-center
+              spot the desktop owned toggle (the qty badge) lives. Keeps the
+              steppers row symmetric instead of shoving the owned counter over. */}
           <button
             onClick={(e) => { e.stopPropagation(); onToggleIsOwned(card.id); }}
             aria-label={card.isOwned ? "Unmark as owned" : "Mark as owned"}
@@ -708,92 +805,6 @@ export default function VisualCard({
           >
             ✓
           </button>
-
-          {/* Owned stepper */}
-          <div className="flex items-center gap-1 shrink-0">
-            <button
-              onClick={(e) => { e.stopPropagation(); onUpdateOwnedQty(card.id, Math.max(0, card.ownedQty - 1)); }}
-              aria-label="Decrease owned"
-              className="w-7 h-7 rounded-full flex items-center justify-center bg-white/10 border border-white/20 text-neutral-100 active:bg-white/25 transition-colors"
-            >
-              <Minus className="w-3.5 h-3.5" />
-            </button>
-            {isOwnedEditing ? (
-              <input
-                type="text"
-                value={ownedEditValue}
-                onChange={(e) => setOwnedEditValue(e.target.value)}
-                onFocus={(e) => e.target.select()}
-                onBlur={() => { if (isOwnedEscaping.current) { isOwnedEscaping.current = false; return; } commitOwnedEdit(); }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") { e.preventDefault(); commitOwnedEdit(); }
-                  if (e.key === "Escape") { isOwnedEscaping.current = true; setIsOwnedEditing(false); }
-                }}
-                onClick={(e) => e.stopPropagation()}
-                className="w-7 text-center text-xs font-bold bg-white/10 border border-blue-500 rounded text-emerald-400 outline-none tabular-nums"
-                autoFocus
-              />
-            ) : (
-              <button
-                onClick={(e) => { e.stopPropagation(); startOwnedEdit(); }}
-                className="w-7 text-center text-xs font-bold tabular-nums"
-                style={{ color: ownedNumColor }}
-              >
-                {card.ownedQty}
-              </button>
-            )}
-            <button
-              onClick={(e) => { e.stopPropagation(); onUpdateOwnedQty(card.id, card.ownedQty + 1); }}
-              aria-label="Increase owned"
-              className="w-7 h-7 rounded-full flex items-center justify-center bg-white/10 border border-white/20 text-neutral-100 active:bg-white/25 transition-colors"
-            >
-              <Plus className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          <span className="text-neutral-500 text-xs select-none">/</span>
-
-          {/* Qty stepper */}
-          <div className="flex items-center gap-1 shrink-0">
-            <button
-              onClick={(e) => { e.stopPropagation(); onUpdateQuantity(card.id, -1); }}
-              aria-label="Decrease quantity"
-              className="w-7 h-7 rounded-full flex items-center justify-center bg-white/10 border border-white/20 text-neutral-100 active:bg-white/25 transition-colors"
-            >
-              <Minus className="w-3.5 h-3.5" />
-            </button>
-            {isEditing ? (
-              <input
-                type="text"
-                value={editValue}
-                onChange={(e) => setEditValue(e.target.value)}
-                onFocus={(e) => e.target.select()}
-                onBlur={() => { if (isEscaping.current) { isEscaping.current = false; return; } commitEdit(); }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") { e.preventDefault(); commitEdit(); }
-                  if (e.key === "Escape") { isEscaping.current = true; setIsEditing(false); }
-                }}
-                onClick={(e) => e.stopPropagation()}
-                className="w-7 text-center text-xs font-bold bg-white/10 border border-blue-500 rounded text-white outline-none tabular-nums"
-                autoFocus
-              />
-            ) : (
-              <button
-                onClick={(e) => { e.stopPropagation(); startEdit(); }}
-                className="w-7 text-center text-xs font-bold tabular-nums"
-                style={{ color: overCopyLimit ? '#f87171' : '#e5e5e5' }}
-              >
-                {card.quantity}
-              </button>
-            )}
-            <button
-              onClick={(e) => { e.stopPropagation(); onUpdateQuantity(card.id, 1); }}
-              aria-label="Increase quantity"
-              className="w-7 h-7 rounded-full flex items-center justify-center bg-white/10 border border-white/20 text-neutral-100 active:bg-white/25 transition-colors"
-            >
-              <Plus className="w-3.5 h-3.5" />
-            </button>
-          </div>
           {/* Remove lives at the top-right corner (see × button above), not in
               the bar — keeps the destructive action away from the steppers. */}
         </div>

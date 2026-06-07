@@ -5,6 +5,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.32.3] — Mobile grid edit-bar legibility & layout
+
+The slide-up edit panel on a phone (tap a card's qty badge in grid view) was hard to read and slightly lopsided: a fade-to-transparent gradient let card art bleed through behind the upper steppers, and the leading owned `✓` checkbox shoved the `− owned + / − qty +` numbers off-centre versus the symmetric desktop overlay.
+
+### Changed
+- **Solid backdrop** (`VisualCard.tsx`) — the touch edit bar swaps `bg-gradient-to-t from-black/90 via-black/80 to-transparent` for the desktop overlay's solid `bg-black/85 backdrop-blur-sm`, so the steppers stay legible over busy art.
+- **Symmetric, desktop-matched layout** — the bar is now a centred `flex-col`: a symmetric `[− owned +] / [− qty +]` steppers row (identical to the desktop overlay) on top, with the owned `✓` toggle on its own line directly below — the bottom-centre spot the desktop owned toggle (the qty badge) occupies. The toggle no longer offsets the owned counter. Desktop is untouched.
+
+---
+
 ## [1.32.2] — One-line list rows in landscape
 
 The mobile list row (1.31.0) stacks the name over a mana + type subline — right for a portrait phone, but wasteful in landscape (and on tablets), where there's room for it all on one line.
