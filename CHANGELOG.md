@@ -5,6 +5,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.32.4] — Mobile grid edit-bar: lined-up counters & bottom-rail ✓
+
+Follow-up to 1.32.3. The single `[− owned +] / [− qty +]` row left the owned counter visually offset by the `/`, and the owned `✓` toggle sat as a separate line inside the bar.
+
+### Changed
+- **Stacked, lined-up steppers** (`VisualCard.tsx`) — the touch edit bar now stacks the owned stepper above the qty stepper, each prefixed with a fixed-width `Own` / `Qty` label, so the `− N +` controls line up in one column. The `/` separator is gone.
+- **✓ rides the bottom rail** — the owned toggle is no longer a child of the bar. Instead the bottom-rail qty badge itself flips into the `✓` owned toggle when the bar opens (new `badgeAsOwnedToggle` / `badgeShowsCheck` flags): it stays pinned at its `-12px` bottom-center spot, raises above the bar (`z-46`), and tapping it toggles owned — mirroring the desktop hover flip, so it reads as the badge becoming a checkmark. The bar reserves `pb-7` to clear it. Bar dismissal is via tapping the art / outside (the badge no longer closes it). Desktop unchanged.
+
+---
+
 ## [1.32.3] — Mobile grid edit-bar legibility & layout
 
 The slide-up edit panel on a phone (tap a card's qty badge in grid view) was hard to read and slightly lopsided: a fade-to-transparent gradient let card art bleed through behind the upper steppers, and the leading owned `✓` checkbox shoved the `− owned + / − qty +` numbers off-centre versus the symmetric desktop overlay.
