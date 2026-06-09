@@ -1,10 +1,13 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.32.4";
+export const APP_VERSION = "1.33.0";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.33.0": [
+    "New: The Brew Lab now installs as an app. Adding it to your home screen (or pinning it as a browser app) gives it a proper icon — a warm copper potion in a lab flask with a little magic spark — instead of a blank or generic placeholder. The browser tab also gets a matching favicon, and on iPhone/iPad the home-screen icon and full-screen app name (\"Brew Lab\") are set up correctly.",
+  ],
   "1.32.4": [
     "Polish: the phone grid edit panel now lines up its two counters. The owned and quantity steppers are stacked one above the other with short \"Own\" / \"Qty\" labels, so the − number + controls sit in a single tidy column instead of side by side with a slash pushing the owned counter off-centre. The owned ✓ checkmark moved down onto the bottom edge of the card — the same spot the quantity badge sits — so opening the panel now looks like that badge simply flipped to a checkmark.",
   ],
