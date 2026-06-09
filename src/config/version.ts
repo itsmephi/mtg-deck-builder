@@ -1,10 +1,13 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.33.0";
+export const APP_VERSION = "1.34.0";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.34.0": [
+    "New: Project Brew now installs as an app. Adding it to your home screen (or pinning it as a browser app) gives it a proper icon — a brewing flask whose potion is layered in the five Magic colors (white, blue, black, red, green), with a little spark — instead of a blank or generic placeholder. The browser tab also gets a matching favicon, and on iPhone/iPad the home-screen icon and full-screen app name are set up correctly.",
+  ],
   "1.33.0": [
     "Feature: the Opening Hand Simulator now has a phone-friendly layout. Before, the stats panel (mana curve, current hand, draw odds) stacked on top on a phone and pushed the actual drawn cards far down the screen — the main view was buried and felt broken. The drawn hand is now the main view and fills the screen, the stats moved into a 'Stats' button that slides them up from the bottom when you want them, and Draw / Mulligan / Stats sit in a thumb-reachable bar along the bottom edge.",
     "Chore: desktop is unchanged — the stats sidebar stays pinned to the left and Draw / Mulligan stay in the header. The mobile bottom bar and slide-up sheet only appear below the large-screen breakpoint; both layouts render the same stats so they can't drift.",

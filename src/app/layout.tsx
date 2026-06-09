@@ -7,7 +7,23 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Project Brew',
-  description: 'Minimalist MTG Deck Builder',
+  description: 'A minimalist Magic: The Gathering deck builder.',
+  manifest: '/manifest.webmanifest',
+  applicationName: 'Project Brew',
+  appleWebApp: {
+    capable: true,
+    title: 'Brew',
+    statusBarStyle: 'black-translucent',
+  },
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/icons/favicon-16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/icons/favicon-32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: [{ url: '/icons/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
+  },
 };
 
 // Explicit viewport so iPad/notched devices get safe-area insets (Next.js

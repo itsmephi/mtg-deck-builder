@@ -5,6 +5,20 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.34.0] — PWA install icons & web manifest
+
+The app had no home-screen / install identity: no web manifest and no app icons, so installing it (Add to Home Screen, or pinning as a desktop PWA) produced a blank/generic placeholder, and the browser tab fell back to the default favicon.
+
+### Added
+- **App icon set** — a brand mark for Project Brew: a brewing flask with a potion layered in the five Magic colors (W/U/B/R/G) and a spark, on the Warm Stone surface (`#1c1917`). SVG sources in `assets/icons/` (`icon.svg`, `icon-maskable.svg`, `apple-icon.svg`); rasters generated into `public/icons/` (192/512 `any` + 192/512 `maskable`, a 180px `apple-touch-icon`, 16/32px favicons) and a multi-res `src/app/favicon.ico`.
+- **Web manifest** (`src/app/manifest.ts`) — App Router manifest served at `/manifest.webmanifest`: name "Project Brew" / short name "Brew", `standalone` display, theme & background `#1c1917`, and the `any` + `maskable` icon entries.
+- **Icon generator** (`assets/icons/generate.mjs`) — regenerates every raster from the SVG sources via `sharp` + `png-to-ico` (`node assets/icons/generate.mjs`).
+
+### Changed
+- **Metadata** (`layout.tsx`) — wired up `manifest`, `icons` (favicon.ico/.svg + 16/32 PNG, apple-touch-icon), and `appleWebApp` (capable, title "Brew", translucent status bar). Document title is "Project Brew".
+
+---
+
 ## [1.33.0] — Mobile simulator layout
 
 The Opening Hand Simulator (`SampleHandModal.tsx`) was unusable on a phone: the `flex-col lg:flex-row` split stacked the stats sidebar (mana curve + current hand + draw odds — three tall sections) full-width **on top** of the card grid, so the actual drawn hand — the main view — was pushed far below the fold and felt non-functional.
