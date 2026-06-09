@@ -1,44 +1,36 @@
 <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Project Brew">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="0" y2="512" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#2a2421"/>
-      <stop offset="1" stop-color="#15120f"/>
+      <stop offset="0" stop-color="#2a2421"/><stop offset="1" stop-color="#15120f"/>
     </linearGradient>
-    <radialGradient id="glow" cx="256" cy="300" r="200" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#c89172" stop-opacity="0.32"/>
-      <stop offset="1" stop-color="#c89172" stop-opacity="0"/>
+    <radialGradient id="glow" cx="256" cy="350" r="160" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#c89172" stop-opacity="0.40"/><stop offset="1" stop-color="#c89172" stop-opacity="0"/>
     </radialGradient>
+    <clipPath id="inner">
+      <path d="M232 124 L232 214 L139 386 Q133 400 149 400 L363 400 Q379 400 373 386 L280 214 L280 124 Z"/>
+    </clipPath>
   </defs>
 
   <!-- Apple applies its own rounded mask, so the background is full-bleed (no transparency) -->
   <rect width="512" height="512" fill="url(#bg)"/>
-
-  <!-- Card fan, lightly recentred to sit within Apple's rounding -->
-  <g transform="translate(256 256) scale(0.9) translate(-256 -282)">
-    <ellipse cx="256" cy="300" rx="200" ry="170" fill="url(#glow)"/>
-    <g transform="rotate(-38 256 438)">
-      <rect x="196" y="214" width="120" height="224" rx="15" fill="#ece4d3" stroke="#15120f" stroke-width="5"/>
-      <circle cx="224" cy="256" r="14" fill="#fbf7ec" stroke="#c9bda3" stroke-width="3"/>
-    </g>
-    <g transform="rotate(-19 256 438)">
-      <rect x="196" y="214" width="120" height="224" rx="15" fill="#4f86b8" stroke="#15120f" stroke-width="5"/>
-      <circle cx="224" cy="256" r="14" fill="#a9cce6" stroke="#2f6391" stroke-width="3"/>
-    </g>
-    <g transform="rotate(0 256 438)">
-      <rect x="196" y="214" width="120" height="224" rx="15" fill="#46414b" stroke="#15120f" stroke-width="5"/>
-      <circle cx="224" cy="256" r="14" fill="#b9b2c0" stroke="#2c2830" stroke-width="3"/>
-    </g>
-    <g transform="rotate(19 256 438)">
-      <rect x="196" y="214" width="120" height="224" rx="15" fill="#c0523f" stroke="#15120f" stroke-width="5"/>
-      <circle cx="224" cy="256" r="14" fill="#e9a596" stroke="#8f3a2c" stroke-width="3"/>
-    </g>
-    <g transform="rotate(38 256 438)">
-      <rect x="196" y="214" width="120" height="224" rx="15" fill="#4f9560" stroke="#15120f" stroke-width="5"/>
-      <circle cx="256" cy="256" r="16" fill="#a7d4b2" stroke="#327046" stroke-width="3"/>
-    </g>
-    <g transform="translate(256 132)">
-      <path d="M0 -26 L7 -7 L26 0 L7 7 L0 26 L-7 7 L-26 0 L-7 -7 Z" fill="#e7e0d6"/>
-      <circle cx="0" cy="0" r="5" fill="#fff"/>
-    </g>
+  <ellipse cx="256" cy="358" rx="160" ry="125" fill="url(#glow)"/>
+  <g clip-path="url(#inner)">
+    <rect x="110" y="296" width="292" height="26" fill="#ece4d3"/>
+    <rect x="110" y="322" width="292" height="22" fill="#4f86b8"/>
+    <rect x="110" y="344" width="292" height="22" fill="#46414b"/>
+    <rect x="110" y="366" width="292" height="20" fill="#c0523f"/>
+    <rect x="110" y="386" width="292" height="20" fill="#4f9560"/>
+    <rect x="110" y="296" width="292" height="6" fill="#fbf7ec" opacity="0.85"/>
+    <circle cx="226" cy="360" r="8" fill="#ffffff" opacity="0.35"/>
+    <circle cx="288" cy="338" r="6" fill="#ffffff" opacity="0.30"/>
+    <circle cx="250" cy="384" r="5" fill="#ffffff" opacity="0.30"/>
+  </g>
+  <path d="M232 124 L232 214 L139 386 Q133 400 149 400 L363 400 Q379 400 373 386 L280 214 L280 124"
+        fill="none" stroke="#e7e0d6" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M216 122 L296 122" stroke="#e7e0d6" stroke-width="15" stroke-linecap="round"/>
+  <path d="M214 246 L176 318" stroke="#ffffff" stroke-width="8" stroke-linecap="round" opacity="0.30"/>
+  <g transform="translate(330 150)">
+    <path d="M0 -24 L7 -7 L24 0 L7 7 L0 24 L-7 7 L-24 0 L-7 -7 Z" fill="#e7e0d6"/>
+    <circle cx="0" cy="0" r="4.5" fill="#fff"/>
   </g>
 </svg>
