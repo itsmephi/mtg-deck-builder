@@ -30,6 +30,9 @@ export default function SampleHandModal({
   const [marked, setMarked] = useState<Set<string>>(new Set());
   const [showLands, setShowLands] = useState(true);
   const [mulliganCount, setMulliganCount] = useState(0);
+  // Mobile only: the stats sidebar collapses into a slide-up sheet so the
+  // hand grid owns the screen. Desktop ignores this (sidebar is always inline).
+  const [isStatsOpen, setIsStatsOpen] = useState(false);
   const scrollEndRef = useRef<HTMLDivElement>(null);
 
   // Format-aware probability thresholds
@@ -173,41 +176,189 @@ export default function SampleHandModal({
     setLibrary(pool.slice(7));
   }, [deck]);
 
+  // Stats sections — rendered inline in the desktop sidebar and inside the
+  // mobile slide-up sheet. Single source so the two layouts can't drift.
+  const statsSections = (
+    <>
+      {/* Section 1 — Mana Curve */}
+      <section>
+        <h4 className="text-[11px] font-bold text-content-muted uppercase tracking-widest mb-3">
+          Mana Curve
+        </h4>
+        {/* Histogram bars */}
+        <div className="flex items-end gap-1 mb-0.5" style={{ height: "64px" }}>
+          {[1, 2, 3, 4, 5, 6, 7].map((cmc) => {
+            const count = curveBuckets.counts[cmc] || 0;
+            const heightPct =
+              count > 0 ? (count / curveBuckets.maxCount) * 100 : 0;
+            return (
+              <div
+                key={cmc}
+                className="flex-1 flex flex-col items-center justify-end h-full gap-0.5"
+              >
+                <span className="text-[11px] text-content-tertiary font-bold leading-none">
+                  {count > 0 ? count : ""}
+                </span>
+                <div
+                  className="w-full bg-blue-500 rounded-t-sm"
+                  style={{
+                    height: count > 0 ? `${heightPct}%` : "0",
+                    minHeight: count > 0 ? "4px" : "0",
+                  }}
+                />
+              </div>
+            );
+          })}
+        </div>
+        {/* CMC labels */}
+        <div className="flex gap-1 mb-3">
+          {[1, 2, 3, 4, 5, 6, 7].map((cmc) => (
+            <div key={cmc} className="flex-1 text-center">
+              <span className="text-[11px] text-content-faint font-bold">
+                {cmc === 7 ? "7+" : cmc}
+              </span>
+            </div>
+          ))}
+        </div>
+        {/* Lands strip */}
+        <div className="flex items-center gap-2 pt-2.5 border-t border-line-subtle">
+          <div className="w-2.5 h-2.5 rounded-sm bg-emerald-500 shrink-0" />
+          <span className="text-[11px] text-content-tertiary">Lands</span>
+          <span className="ml-auto text-[11px] font-bold text-content-secondary">
+            {curveBuckets.landCount} / {totalCards}
+          </span>
+          <span className="text-[11px] font-bold text-emerald-400">
+            {curveBuckets.landPct.toFixed(0)}%
+          </span>
+        </div>
+      </section>
+
+      {/* Section 2 — Current Hand */}
+      <section>
+        <h4 className="text-[11px] font-bold text-content-muted uppercase tracking-widest mb-3">
+          Current Hand
+        </h4>
+        <div className="space-y-2.5">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-content-tertiary">Cards in hand</span>
+            <span className="text-sm font-bold text-content-primary">{hand.length}</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-content-tertiary">Lands</span>
+            <span className="text-sm font-bold text-content-primary">{handStats.lands}</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-content-tertiary">Avg. CMC</span>
+            <span className="text-sm font-bold text-content-primary">
+              {handStats.avgCMC !== null ? handStats.avgCMC.toFixed(1) : "—"}
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* Section 3 — Draw Odds */}
+      <section>
+        <div className="flex items-center justify-between mb-3">
+          <h4 className="text-[11px] font-bold text-content-muted uppercase tracking-widest">
+            Draw Odds
+          </h4>
+          <button
+            onClick={() => setShowLands((prev) => !prev)}
+            className={`text-[11px] font-bold uppercase tracking-widest px-2.5 py-1 rounded border transition-colors ${
+              showLands
+                ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-400"
+                : "bg-surface-raised border-line-default text-content-muted hover:text-content-tertiary"
+            }`}
+          >
+            Lands
+          </button>
+        </div>
+        <div className="space-y-1.5">
+          {drawOdds.length === 0 && (
+            <p className="text-[11px] text-content-faint italic">
+              No cards remaining in library.
+            </p>
+          )}
+          {drawOdds.map(({ card, copiesInLibrary, liveProb, barFill, isPinned }) => (
+            <div
+              key={card.id}
+              onClick={() => toggleMark(card.id)}
+              className={`rounded-lg px-2.5 py-2 cursor-pointer transition-all border ${
+                isPinned
+                  ? "bg-blue-500/10 border-blue-500/30"
+                  : "bg-surface-base border-transparent hover:border-line-default"
+              }`}
+            >
+              <div className="flex items-center gap-1 mb-1.5">
+                {isPinned && (
+                  <Star className="w-3 h-3 text-blue-400 fill-blue-400 shrink-0" />
+                )}
+                <span
+                  className={`text-[11px] font-medium truncate flex-1 ${
+                    isPinned ? "text-blue-300" : "text-content-secondary"
+                  }`}
+                >
+                  {card.name}
+                </span>
+                <span className="text-[11px] text-content-faint shrink-0 ml-1">
+                  ×{copiesInLibrary}
+                </span>
+                <span
+                  className={`text-[11px] font-bold shrink-0 ml-1 ${getProbColor(liveProb)}`}
+                >
+                  {(liveProb * 100).toFixed(1)}%
+                </span>
+              </div>
+              <div className="w-full h-1 bg-surface-raised rounded-full overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all duration-300 ${getBarColor(liveProb)}`}
+                  style={{ width: `${Math.min(barFill * 100, 100)}%` }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </>
+  );
+
   return (
     <div
       className="fixed inset-0 z-[60] flex items-center justify-center p-2 md:p-10 bg-surface-backdrop backdrop-blur-xl animate-in fade-in duration-300"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-[1600px] h-full flex flex-col bg-surface-base rounded-2xl border border-line-subtle shadow-2xl overflow-hidden"
+        className="relative w-full max-w-[1600px] h-full flex flex-col bg-surface-base rounded-2xl border border-line-subtle shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-line-subtle p-4 md:p-6 bg-surface-base z-10">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 min-w-0">
             <div className="p-2 bg-blue-500/10 rounded-lg hidden sm:block">
               <BarChart3 className="w-6 h-6 text-blue-400" />
             </div>
-            <div>
-              <h2 className="text-lg md:text-xl font-bold text-content-primary">
+            <div className="min-w-0">
+              <h2 className="text-lg md:text-xl font-bold text-content-primary truncate">
                 Opening Hand Simulator
               </h2>
-              <p className="text-content-muted text-[11px] md:text-xs uppercase tracking-widest font-bold">
+              <p className="text-content-muted text-[11px] md:text-xs uppercase tracking-widest font-bold truncate">
                 Hand: {hand.length} · Library: {library.length} · Mulligans: {mulliganCount}
               </p>
             </div>
           </div>
-          <div className="flex gap-2 md:gap-3">
+          <div className="flex gap-2 md:gap-3 shrink-0">
+            {/* Draw / Mulligan live in the header on desktop; on mobile they
+                move to the bottom action bar for thumb reach. */}
             <button
               onClick={drawCard}
               disabled={library.length === 0}
-              className="flex items-center gap-2 px-3 md:px-4 py-2 bg-blue-600 border border-blue-500 rounded-lg text-xs md:text-sm font-bold text-content-primary hover:bg-blue-500 disabled:opacity-30 transition-all"
+              className="hidden lg:flex items-center gap-2 px-4 py-2 bg-blue-600 border border-blue-500 rounded-lg text-sm font-bold text-content-primary hover:bg-blue-500 disabled:opacity-30 transition-all"
             >
               <PlusCircle className="w-4 h-4" /> Draw
             </button>
             <button
               onClick={shuffleAndDraw}
-              className="flex items-center gap-2 px-3 md:px-4 py-2 bg-surface-raised border border-line-default rounded-lg text-xs md:text-sm font-bold text-content-primary hover:bg-surface-overlay transition-colors"
+              className="hidden lg:flex items-center gap-2 px-4 py-2 bg-surface-raised border border-line-default rounded-lg text-sm font-bold text-content-primary hover:bg-surface-overlay transition-colors"
             >
               <RefreshCw className="w-4 h-4" /> Mulligan
             </button>
@@ -222,156 +373,14 @@ export default function SampleHandModal({
         </div>
 
         <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
-          {/* Stats Sidebar */}
-          <div className="w-full lg:w-72 border-b lg:border-b-0 lg:border-r border-line-subtle bg-surface-base overflow-y-auto shrink-0 custom-scrollbar">
-            <div className="p-4 lg:p-5 flex flex-col gap-7">
-
-              {/* Section 1 — Mana Curve */}
-              <section>
-                <h4 className="text-[11px] font-bold text-content-muted uppercase tracking-widest mb-3">
-                  Mana Curve
-                </h4>
-                {/* Histogram bars */}
-                <div className="flex items-end gap-1 mb-0.5" style={{ height: "64px" }}>
-                  {[1, 2, 3, 4, 5, 6, 7].map((cmc) => {
-                    const count = curveBuckets.counts[cmc] || 0;
-                    const heightPct =
-                      count > 0 ? (count / curveBuckets.maxCount) * 100 : 0;
-                    return (
-                      <div
-                        key={cmc}
-                        className="flex-1 flex flex-col items-center justify-end h-full gap-0.5"
-                      >
-                        <span className="text-[11px] text-content-tertiary font-bold leading-none">
-                          {count > 0 ? count : ""}
-                        </span>
-                        <div
-                          className="w-full bg-blue-500 rounded-t-sm"
-                          style={{
-                            height: count > 0 ? `${heightPct}%` : "0",
-                            minHeight: count > 0 ? "4px" : "0",
-                          }}
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
-                {/* CMC labels */}
-                <div className="flex gap-1 mb-3">
-                  {[1, 2, 3, 4, 5, 6, 7].map((cmc) => (
-                    <div key={cmc} className="flex-1 text-center">
-                      <span className="text-[11px] text-content-faint font-bold">
-                        {cmc === 7 ? "7+" : cmc}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-                {/* Lands strip */}
-                <div className="flex items-center gap-2 pt-2.5 border-t border-line-subtle">
-                  <div className="w-2.5 h-2.5 rounded-sm bg-emerald-500 shrink-0" />
-                  <span className="text-[11px] text-content-tertiary">Lands</span>
-                  <span className="ml-auto text-[11px] font-bold text-content-secondary">
-                    {curveBuckets.landCount} / {totalCards}
-                  </span>
-                  <span className="text-[11px] font-bold text-emerald-400">
-                    {curveBuckets.landPct.toFixed(0)}%
-                  </span>
-                </div>
-              </section>
-
-              {/* Section 2 — Current Hand */}
-              <section>
-                <h4 className="text-[11px] font-bold text-content-muted uppercase tracking-widest mb-3">
-                  Current Hand
-                </h4>
-                <div className="space-y-2.5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-content-tertiary">Cards in hand</span>
-                    <span className="text-sm font-bold text-content-primary">{hand.length}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-content-tertiary">Lands</span>
-                    <span className="text-sm font-bold text-content-primary">{handStats.lands}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-content-tertiary">Avg. CMC</span>
-                    <span className="text-sm font-bold text-content-primary">
-                      {handStats.avgCMC !== null ? handStats.avgCMC.toFixed(1) : "—"}
-                    </span>
-                  </div>
-                </div>
-              </section>
-
-              {/* Section 3 — Draw Odds */}
-              <section>
-                <div className="flex items-center justify-between mb-3">
-                  <h4 className="text-[11px] font-bold text-content-muted uppercase tracking-widest">
-                    Draw Odds
-                  </h4>
-                  <button
-                    onClick={() => setShowLands((prev) => !prev)}
-                    className={`text-[11px] font-bold uppercase tracking-widest px-2.5 py-1 rounded border transition-colors ${
-                      showLands
-                        ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-400"
-                        : "bg-surface-raised border-line-default text-content-muted hover:text-content-tertiary"
-                    }`}
-                  >
-                    Lands
-                  </button>
-                </div>
-                <div className="space-y-1.5">
-                  {drawOdds.length === 0 && (
-                    <p className="text-[11px] text-content-faint italic">
-                      No cards remaining in library.
-                    </p>
-                  )}
-                  {drawOdds.map(({ card, copiesInLibrary, liveProb, barFill, isPinned }) => (
-                    <div
-                      key={card.id}
-                      onClick={() => toggleMark(card.id)}
-                      className={`rounded-lg px-2.5 py-2 cursor-pointer transition-all border ${
-                        isPinned
-                          ? "bg-blue-500/10 border-blue-500/30"
-                          : "bg-surface-base border-transparent hover:border-line-default"
-                      }`}
-                    >
-                      <div className="flex items-center gap-1 mb-1.5">
-                        {isPinned && (
-                          <Star className="w-3 h-3 text-blue-400 fill-blue-400 shrink-0" />
-                        )}
-                        <span
-                          className={`text-[11px] font-medium truncate flex-1 ${
-                            isPinned ? "text-blue-300" : "text-content-secondary"
-                          }`}
-                        >
-                          {card.name}
-                        </span>
-                        <span className="text-[11px] text-content-faint shrink-0 ml-1">
-                          ×{copiesInLibrary}
-                        </span>
-                        <span
-                          className={`text-[11px] font-bold shrink-0 ml-1 ${getProbColor(liveProb)}`}
-                        >
-                          {(liveProb * 100).toFixed(1)}%
-                        </span>
-                      </div>
-                      <div className="w-full h-1 bg-surface-raised rounded-full overflow-hidden">
-                        <div
-                          className={`h-full rounded-full transition-all duration-300 ${getBarColor(liveProb)}`}
-                          style={{ width: `${Math.min(barFill * 100, 100)}%` }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
-
-            </div>
+          {/* Stats Sidebar — desktop only; mobile uses the slide-up sheet below */}
+          <div className="hidden lg:block lg:w-72 lg:border-r border-line-subtle bg-surface-base overflow-y-auto shrink-0 custom-scrollbar">
+            <div className="p-4 lg:p-5 flex flex-col gap-7">{statsSections}</div>
           </div>
 
-          {/* Card Grid Area */}
+          {/* Card Grid Area — the primary view, full height on mobile */}
           <div className="flex-1 overflow-y-auto p-4 md:p-8 bg-surface-base custom-scrollbar">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-3 md:gap-5 pb-20 justify-items-center max-w-full mx-auto">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-3 md:gap-5 pb-8 justify-items-center max-w-full mx-auto">
               {hand.map((card, i) => {
                 const isPinned = marked.has(card.id);
                 return (
@@ -386,7 +395,7 @@ export default function SampleHandModal({
                           card.image_uris?.normal ||
                           card.card_faces?.[0]?.image_uris?.normal
                         }
-                        className={`w-full rounded-lg shadow-xl border transition-all cursor-pointer hover:scale-105 ${
+                        className={`w-full rounded-lg shadow-xl border transition-all cursor-pointer hover:scale-105 active:scale-95 ${
                           isPinned
                             ? "border-blue-500 ring-2 ring-blue-500"
                             : "border-line-subtle hover:border-blue-500/50"
@@ -425,6 +434,61 @@ export default function SampleHandModal({
             </div>
           </div>
         </div>
+
+        {/* Mobile action bar — thumb-reachable Draw / Mulligan / Stats.
+            Hidden on desktop, where these live in the header / inline sidebar. */}
+        <div className="lg:hidden shrink-0 flex items-center gap-2 border-t border-line-subtle bg-surface-base p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+          <button
+            onClick={drawCard}
+            disabled={library.length === 0}
+            className="flex-1 flex items-center justify-center gap-2 min-h-11 px-4 bg-blue-600 border border-blue-500 rounded-lg text-sm font-bold text-content-primary hover:bg-blue-500 disabled:opacity-30 transition-all"
+          >
+            <PlusCircle className="w-4 h-4" /> Draw
+          </button>
+          <button
+            onClick={shuffleAndDraw}
+            className="flex-1 flex items-center justify-center gap-2 min-h-11 px-4 bg-surface-raised border border-line-default rounded-lg text-sm font-bold text-content-primary hover:bg-surface-overlay transition-colors"
+          >
+            <RefreshCw className="w-4 h-4" /> Mulligan
+          </button>
+          <button
+            onClick={() => setIsStatsOpen(true)}
+            aria-label="Open stats"
+            className="flex items-center justify-center gap-2 min-h-11 px-4 bg-surface-raised border border-line-default rounded-lg text-sm font-bold text-content-primary hover:bg-surface-overlay transition-colors"
+          >
+            <BarChart3 className="w-4 h-4" /> Stats
+          </button>
+        </div>
+
+        {/* Mobile stats sheet — slides up over the grid, dismiss via backdrop / X */}
+        {isStatsOpen && (
+          <div
+            className="lg:hidden absolute inset-0 z-30 flex flex-col justify-end"
+            onClick={() => setIsStatsOpen(false)}
+          >
+            <div className="absolute inset-0 bg-black/50 animate-in fade-in duration-200" />
+            <div
+              className="relative max-h-[85%] flex flex-col bg-surface-base rounded-t-2xl border-t border-line-subtle shadow-2xl animate-in slide-in-from-bottom duration-300"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between border-b border-line-subtle p-4 shrink-0">
+                <h3 className="text-sm font-bold text-content-primary uppercase tracking-widest">
+                  Stats
+                </h3>
+                <button
+                  onClick={() => setIsStatsOpen(false)}
+                  aria-label="Close stats"
+                  className="w-11 h-11 flex items-center justify-center -mr-2 rounded-full text-content-tertiary hover:text-content-primary hover:bg-surface-raised transition-all"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="overflow-y-auto custom-scrollbar p-4 flex flex-col gap-7 pb-[max(1rem,env(safe-area-inset-bottom))]">
+                {statsSections}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
