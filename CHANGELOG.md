@@ -5,7 +5,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-## [1.33.0] — PWA install icons & web manifest
+## [1.34.0] — PWA install icons & web manifest
 
 The app had no home-screen / install identity: no web manifest and no app icons, so installing it (Add to Home Screen, or pinning as a desktop PWA) produced a blank/generic placeholder, and the browser tab fell back to the default favicon.
 
@@ -16,6 +16,22 @@ The app had no home-screen / install identity: no web manifest and no app icons,
 
 ### Changed
 - **Metadata** (`layout.tsx`) — wired up `manifest`, `icons` (favicon.ico/.svg + 16/32 PNG, apple-touch-icon), and `appleWebApp` (capable, title "Brew", translucent status bar). Document title is "Project Brew".
+
+---
+
+## [1.33.0] — Mobile simulator layout
+
+The Opening Hand Simulator (`SampleHandModal.tsx`) was unusable on a phone: the `flex-col lg:flex-row` split stacked the stats sidebar (mana curve + current hand + draw odds — three tall sections) full-width **on top** of the card grid, so the actual drawn hand — the main view — was pushed far below the fold and felt non-functional.
+
+### Changed
+- **Hand grid is the primary mobile view** — the card grid now owns the screen on touch/narrow viewports. The desktop stats sidebar is gated behind `hidden lg:block` so it no longer stacks above the grid.
+- **Stats collapse into a slide-up sheet** — below the `lg` breakpoint the three stats sections move into a bottom sheet toggled by a new **Stats** button. It slides up over the grid (`absolute inset-0 z-30`, `animate-in slide-in-from-bottom`), scrolls internally (`max-h-[85%]`), and dismisses via its `X` or the backdrop.
+- **Thumb-reachable action bar** — a mobile-only bottom bar (`lg:hidden`) holds **Draw / Mulligan / Stats** as 44px targets with `env(safe-area-inset-bottom)` padding. On desktop, Draw / Mulligan stay in the header as before.
+- **No layout drift** — both the desktop sidebar and the mobile sheet render a single shared `statsSections` node, so the two layouts can't diverge.
+- **Touch feedback** — card tiles gained `active:scale-95` (hover-scale is pointer-only); the existing pin-on-tap interaction means there are no hover-gated affordances.
+
+### Unchanged
+- Desktop (`lg+`) renders exactly as before — inline left sidebar, Draw/Mulligan in the header. The mobile bar and sheet only appear below `lg`.
 
 ---
 
