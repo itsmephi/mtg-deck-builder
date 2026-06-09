@@ -10,12 +10,12 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 The app had no home-screen / install identity: no web manifest and no app icons, so installing it (Add to Home Screen, or pinning as a desktop PWA) produced a blank/generic placeholder, and the browser tab fell back to the default favicon.
 
 ### Added
-- **App icon set** — a brand mark for "The Brew Lab": a warm copper potion in a lab flask with a magic spark, on the Warm Stone surface (`#1c1917`). SVG sources in `assets/icons/` (`icon.svg`, `icon-maskable.svg`, `apple-icon.svg`); rasters generated into `public/icons/` (192/512 `any` + 192/512 `maskable`, a 180px `apple-touch-icon`, 16/32px favicons) and a multi-res `src/app/favicon.ico`.
-- **Web manifest** (`src/app/manifest.ts`) — App Router manifest served at `/manifest.webmanifest`: name "The Brew Lab" / short name "Brew Lab", `standalone` display, theme & background `#1c1917`, and the `any` + `maskable` icon entries.
+- **App icon set** — a brand mark for Project Brew: a fanned hand of cards in the five Magic colors (W/U/B/R/G) with a brewing spark, on the Warm Stone surface (`#1c1917`). SVG sources in `assets/icons/` (`icon.svg`, `icon-maskable.svg`, `apple-icon.svg`); rasters generated into `public/icons/` (192/512 `any` + 192/512 `maskable`, a 180px `apple-touch-icon`, 16/32px favicons) and a multi-res `src/app/favicon.ico`.
+- **Web manifest** (`src/app/manifest.ts`) — App Router manifest served at `/manifest.webmanifest`: name "Project Brew" / short name "Brew", `standalone` display, theme & background `#1c1917`, and the `any` + `maskable` icon entries.
 - **Icon generator** (`assets/icons/generate.mjs`) — regenerates every raster from the SVG sources via `sharp` + `png-to-ico` (`node assets/icons/generate.mjs`).
 
 ### Changed
-- **Metadata** (`layout.tsx`) — wired up `manifest`, `icons` (favicon.ico/.svg + 16/32 PNG, apple-touch-icon), and `appleWebApp` (capable, title "Brew Lab", translucent status bar). Document title is now "The Brew Lab".
+- **Metadata** (`layout.tsx`) — wired up `manifest`, `icons` (favicon.ico/.svg + 16/32 PNG, apple-touch-icon), and `appleWebApp` (capable, title "Brew", translucent status bar). Document title is "Project Brew".
 
 ---
 

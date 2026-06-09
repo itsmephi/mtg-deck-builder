@@ -6,13 +6,13 @@ import { DeckProvider } from '@/hooks/useDeckManager';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'The Brew Lab',
+  title: 'Project Brew',
   description: 'A minimalist Magic: The Gathering deck builder.',
   manifest: '/manifest.webmanifest',
-  applicationName: 'The Brew Lab',
+  applicationName: 'Project Brew',
   appleWebApp: {
     capable: true,
-    title: 'Brew Lab',
+    title: 'Brew',
     statusBarStyle: 'black-translucent',
   },
   icons: {

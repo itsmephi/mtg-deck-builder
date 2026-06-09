@@ -6,8 +6,8 @@ import type { MetadataRoute } from 'next';
 // match the Warm Stone surface-base (see THEME_COLORS in src/lib/theme.ts).
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'The Brew Lab',
-    short_name: 'Brew Lab',
+    name: 'Project Brew',
+    short_name: 'Brew',
     description: 'A minimalist Magic: The Gathering deck builder.',
     start_url: '/',
     display: 'standalone',
