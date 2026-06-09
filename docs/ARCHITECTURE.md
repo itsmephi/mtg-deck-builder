@@ -12,7 +12,7 @@ Living reference for file structure, state ownership, and key technical patterns
 
 | File | Responsibility |
 |---|---|
-| `layout.tsx` | Next.js root layout; wraps app in `DeckProvider`; inline `<script>` in `<head>` applies saved theme before first paint to prevent flash |
+| `layout.tsx` | Next.js root layout; wraps app in `AuthProvider` → `DeckProvider`; inline `<script>` in `<head>` applies saved theme before first paint to prevent flash |
 | `page.tsx` (Dashboard) | Top-level shell; owns settings open/tab state, tile size, toast, drag-drop handling, and import plumbing; decides which main-area panel renders (HomeScreen / Workspace / SettingsView) |
 
 ### `src/components/layout/`
@@ -44,7 +44,8 @@ Living reference for file structure, state ownership, and key technical patterns
 
 | File | Responsibility |
 |---|---|
-| `useDeckManager.tsx` | `DeckProvider` + `useDeckManager` — all deck CRUD, commander ops, sideboard ops, sort state, thumbnail toggle, `lastAddedId`; persists to localStorage |
+| `useDeckManager.tsx` | `DeckProvider` + `useDeckManager` — all deck CRUD, commander ops, sideboard ops, sort state, thumbnail toggle, `lastAddedId`; persists to localStorage and (signed in, v2.0.0) syncs to Supabase |
+| `useAuth.tsx` | `AuthProvider` + `useAuth` — Google sign-in/out, session `status`, `user` (v2.0.0); no-op when Supabase unconfigured |
 | `useDeckImportExport.tsx` | File import parsing (`.txt` deck lists) and export formatting; owned by `page.tsx` |
 | `useDeckStats.ts` | Pure derived stats from `activeDeck` — `totalCards`, `totalValue`, `remainingCost`, `hasPriceData`, `targetDeckSize`, `isAtTarget`, `isOverTarget`, `buyOnTCGPlayer()`, `buyOnCardKingdom()` |
 | `useIsTouch.ts` | `useIsTouch()` — `matchMedia("(hover: none)")` listener; single source of truth for touch-only affordances (see Touch & Sizing System) |
@@ -86,6 +87,8 @@ All deck data lives here. Persists to `localStorage` via `useEffect` watchers ga
 | `showThumbnail` | `boolean` | Card preview toggle |
 | `lastAddedId` | `string \| null` | Set by Sidebar on add; cleared by Workspace after scroll+highlight |
 | `isMounted` | `boolean` | Guards localStorage writes; prevents SSR/client hydration mismatch |
+| `syncState` | `"local" \| "syncing" \| "synced" \| "error"` | v2.0.0 — cloud sync status for the Account UI; `local` = signed out |
+| `lastSyncedAt` | `number \| null` | v2.0.0 — epoch ms of last successful cloud sync |
 
 ### Page-Level State (`page.tsx`)
 
@@ -108,6 +111,48 @@ All deck data lives here. Persists to `localStorage` via `useEffect` watchers ga
 | `mtg-tile-size` | `"xs" \| "s" \| "m" \| "l" \| "xl"` | `page.tsx` / `gridConfig` |
 | `mtg-theme` | `"warm-stone" \| "zed-dark" \| "light"`, absent = `system` | `SettingsView` / `layout.tsx` / `lib/theme.ts` |
 | `mtg-last-backup` | ISO 8601 timestamp of last backup | `SettingsView` |
+| `mtg-merged-<userId>` | `"true"` once local decks merged to cloud | `useDeckManager` (v2.0.0) |
+
+---
+
+## Auth & Cloud Sync (v2.0.0)
+
+Optional Google sign-in for cross-device deck sync. **Local-first**: signed out,
+the app is localStorage-only exactly as before; signed in, decks additionally
+sync to Supabase Postgres. Gated entirely on env vars — absent →
+`isSupabaseConfigured` is false, `supabase` is `null`, no Account UI, behaviour
+identical to pre-v2.0.0. Full design in
+`docs/specs/v2.0.0-google-auth-cloud-sync.md`; data shapes in `docs/SCHEMA.md`.
+
+**Providers (in `layout.tsx`):** `AuthProvider` wraps `DeckProvider` (the latter
+reads auth state). `AuthProvider` (`useAuth`) owns `status`
+(`loading | signedIn | signedOut`), `user`, `signInWithGoogle`, `signOut`,
+subscribing to `supabase.auth.onAuthStateChange`.
+
+**Files:**
+- `src/lib/supabase.ts` — single browser client (`@supabase/supabase-js`,
+  `detectSessionInUrl` so the OAuth redirect needs no callback route); `null`
+  when unconfigured.
+- `src/hooks/useAuth.tsx` — `AuthProvider` / `useAuth`.
+- `src/lib/deckStore.ts` — shared `migrateDecks`, `loadLocalDecks`, row⇄deck
+  mappers, and `SupabaseDeckStore` (per-deck `loadAll`/`upsert`/`remove`).
+- `src/components/workspace/SettingsView.tsx` — `AccountSection` (sign in/out +
+  sync status; renders null when unconfigured).
+- `supabase/schema.sql` — `decks` table + RLS (run once in the project).
+
+**Sync mechanics (in `DeckProvider`):** the existing whole-array localStorage
+write is untouched (warm offline cache). Cloud is additive:
+- *Load / merge:* on `authStatus → signedIn`, build `SupabaseDeckStore`, load
+  cloud decks, and (once per user per device, guarded by `mtg-merged-<userId>`)
+  push local-only decks up — `mergeFlag` prevents resurrecting cloud-deleted
+  decks. The diff baseline is seeded **before** `setDecks` so the push effect
+  doesn't echo the just-loaded decks back.
+- *Push:* an effect diffs `decks` against the last-synced snapshot
+  (`lastSyncedDecksRef`, id→JSON) and debounces (800ms) per-deck
+  `upsert`/`remove`. Refs (not state) hold the store, baseline, and timer.
+- *Sign-out:* reverts to the local cache; decks remain on-device.
+- *Conflict:* last-write-wins per deck by `updated_at`. RLS scopes all I/O to
+  `auth.uid()` — the isolation that makes multi-tester use safe.
 
 ---
 

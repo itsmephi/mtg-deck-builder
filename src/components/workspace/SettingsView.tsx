@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ChevronLeft, Coffee, Download, Upload } from "lucide-react";
+import { ChevronLeft, Coffee, Download, Upload, LogIn, LogOut } from "lucide-react";
 import { APP_VERSION, CHANGELOG } from "@/config/version";
 import { useDeckManager } from "@/hooks/useDeckManager";
+import { useAuth } from "@/hooks/useAuth";
 import { Deck } from "@/types";
 import {
   ThemePreference,
@@ -54,6 +55,82 @@ const THEME_OPTIONS: { id: ThemePreference; label: string; swatch: string }[] = 
     swatch: "linear-gradient(135deg, #ece5da, #f1ebe2 50%, #ffffff)",
   },
 ];
+
+// ─── Account ─────────────────────────────────────────────────────────────────
+
+// Optional Google sign-in for cross-device sync. Renders nothing when Supabase
+// isn't configured, so the local-only build looks exactly as before.
+function AccountSection() {
+  const { status, user, authEnabled, signInWithGoogle, signOut } = useAuth();
+  const { syncState, lastSyncedAt } = useDeckManager();
+
+  if (!authEnabled) return null;
+
+  const syncLabel = (() => {
+    switch (syncState) {
+      case "syncing":
+        return "Syncing your decks…";
+      case "error":
+        return "Couldn't sync — your decks are still saved on this device";
+      case "synced":
+        return lastSyncedAt
+          ? `Synced · ${new Date(lastSyncedAt).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}`
+          : "Synced across your devices";
+      default:
+        return null;
+    }
+  })();
+
+  return (
+    <div className="py-3 border-b border-line-subtle">
+      <p className="text-sm text-content-heading">Account</p>
+      <p className="text-xs text-content-muted mt-0.5">
+        Sync your decks across devices. Optional — Project Brew works fine
+        without an account.
+      </p>
+
+      {status === "loading" && (
+        <p className="text-[11px] text-content-faint mt-3">Checking…</p>
+      )}
+
+      {status === "signedOut" && (
+        <button
+          onClick={signInWithGoogle}
+          className="flex items-center gap-2 px-4 py-2.5 min-h-11 mt-3 bg-surface-raised hover:bg-surface-overlay border border-line-default rounded-lg text-xs text-content-secondary hover:text-content-primary transition-colors"
+        >
+          <LogIn className="w-4 h-4" />
+          Sign in with Google
+        </button>
+      )}
+
+      {status === "signedIn" && (
+        <div className="mt-3">
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <div className="min-w-0">
+              <p className="text-sm text-content-heading truncate">
+                {user?.email ?? "Signed in"}
+              </p>
+              {syncLabel && (
+                <p
+                  className={`text-[11px] mt-0.5 ${syncState === "error" ? "text-red-400" : "text-content-faint"}`}
+                >
+                  {syncLabel}
+                </p>
+              )}
+            </div>
+            <button
+              onClick={signOut}
+              className="flex items-center gap-1.5 px-4 py-2.5 min-h-11 bg-surface-raised hover:bg-surface-overlay border border-line-default rounded-lg text-xs text-content-secondary hover:text-content-primary transition-colors shrink-0"
+            >
+              <LogOut className="w-4 h-4" />
+              Sign out
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 // ─── Preferences ─────────────────────────────────────────────────────────────
 
@@ -171,6 +248,9 @@ function PreferencesTab({ showToast, onClose }: PreferencesTabProps) {
 
   return (
     <div>
+      {/* Account (Google sign-in / cloud sync) — hidden when not configured */}
+      <AccountSection />
+
       {/* Card Preview */}
       <div className="flex items-center justify-between border-b border-line-subtle py-3">
         <div>

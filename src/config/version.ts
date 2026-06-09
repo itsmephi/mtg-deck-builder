@@ -1,10 +1,15 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.34.0";
+export const APP_VERSION = "2.0.0";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "2.0.0": [
+    "New: optional accounts. Sign in with Google (Settings › Preferences › Account) to sync your decks across devices — build on your computer, pick up on your phone. It's completely optional: Project Brew still works with no account, keeping your decks on your device exactly as before.",
+    "New: when you're signed in, your decks live safely in the cloud, private to your account. The first time you sign in on a device, any decks already there are carried up to your account automatically — nothing is lost.",
+    "Enhancement: signing out returns to local-only mode and leaves your decks on the device; the Account panel shows when your decks last synced.",
+  ],
   "1.34.0": [
     "New: Project Brew now installs as an app. Adding it to your home screen (or pinning it as a browser app) gives it a proper icon — a brewing flask whose potion is layered in the five Magic colors (white, blue, black, red, green), with a little spark — instead of a blank or generic placeholder. The browser tab also gets a matching favicon, and on iPhone/iPad the home-screen icon and full-screen app name are set up correctly.",
   ],

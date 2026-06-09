@@ -3,39 +3,26 @@
 import {
   useState,
   useEffect,
+  useRef,
   createContext,
   useContext,
   ReactNode,
 } from "react";
 import { Deck, DeckCard, ScryfallCard } from "@/types";
 import { DeckFormat } from "@/lib/formatRules";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/lib/supabase";
+import {
+  migrateDecks,
+  loadLocalDecks,
+  SupabaseDeckStore,
+} from "@/lib/deckStore";
 
 const STORAGE_KEY = "mtg_builder_decks";
 
-function migrateDecks(rawDecks: any[]): Deck[] {
-  return rawDecks.map((deck: any) => {
-    // Migrate commanderId (singular) → commanderIds (array)
-    const commanderIds: string[] | undefined =
-      deck.commanderIds ??
-      (deck.commanderId ? [deck.commanderId] : undefined);
-    return {
-      ...deck,
-      format: deck.format ?? "freeform",
-      commanderIds,
-      cards: deck.cards.map((card: any) => {
-        // Legacy migration: boolean isOwned → ownedQty (pre-v1.0.6)
-        const ownedQty = card.ownedQty !== undefined
-          ? card.ownedQty
-          : (card.isOwned ? card.quantity : 0);
-        // v1.18.0: backfill isOwned from ownedQty
-        const isOwned = typeof card.isOwned === 'boolean'
-          ? card.isOwned
-          : ownedQty > 0;
-        return { ...card, ownedQty, isOwned };
-      }),
-    };
-  });
-}
+/** Cloud-sync status for the account UI. `local` = not syncing (signed out). */
+export type SyncState = "local" | "syncing" | "synced" | "error";
+
 const SORT_PREF_KEY = "mtg-sort-preference";
 const ACTIVE_DECK_KEY = "mtg-active-deck";
 const DECK_VIEW_MODE_KEY = "mtg-deck-view-mode";
@@ -78,6 +65,8 @@ interface DeckContextType {
   createNamedDeck: (name: string, format?: DeckFormat) => string;
   addCardToSpecificDeck: (deckId: string, card: ScryfallCard, pool: "main" | "sideboard") => void;
   removeCardFromDeckById: (deckId: string, cardId: string, pool: "main" | "sideboard", decrementOnly: boolean) => void;
+  syncState: SyncState;
+  lastSyncedAt: number | null;
 }
 
 const DeckContext = createContext<DeckContextType | null>(null);
@@ -91,6 +80,19 @@ export function DeckProvider({ children }: { children: ReactNode }) {
   const [sortBy, setSortBy] = useState<SortBy>("original");
   const [sortDir, setSortDir] = useState<SortDir>("asc");
   const [deckViewMode, setDeckViewMode] = useState<"main" | "sideboard">("main");
+
+  // ─── Cloud sync (v2.0.0) ───────────────────────────────────────────────────
+  // Signed out, this provider behaves exactly as before: state mirrored to
+  // localStorage. Signed in, deck changes are additionally diffed and pushed to
+  // Supabase (debounced); localStorage stays a warm offline cache either way.
+  const { status: authStatus, user } = useAuth();
+  const [syncState, setSyncState] = useState<SyncState>("local");
+  const [lastSyncedAt, setLastSyncedAt] = useState<number | null>(null);
+  const storeRef = useRef<SupabaseDeckStore | null>(null);
+  const cloudLoadedRef = useRef(false);
+  // id → JSON of the last value we know is in the cloud, for change diffing.
+  const lastSyncedDecksRef = useRef<Map<string, string>>(new Map());
+  const pushTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -183,6 +185,109 @@ export function DeckProvider({ children }: { children: ReactNode }) {
       localStorage.setItem(THUMBNAIL_KEY, String(showThumbnail));
     }
   }, [showThumbnail, isMounted]);
+
+  // Cloud load / first-login merge / sign-out revert. Local-first: the mount
+  // effect above already painted local decks, so this only swaps in the cloud
+  // copy once auth resolves.
+  useEffect(() => {
+    if (!supabase) return;
+    if (authStatus === "loading") return;
+
+    if (authStatus === "signedIn" && user) {
+      let cancelled = false;
+      const store = new SupabaseDeckStore(supabase, user.id);
+      storeRef.current = store;
+      setSyncState("syncing");
+      (async () => {
+        try {
+          const cloudDecks = await store.loadAll();
+          // First-login merge: push local-only decks up exactly once per user
+          // per device, so deleting a deck on another device doesn't resurrect
+          // it on the next sign-in here.
+          const mergeFlagKey = `mtg-merged-${user.id}`;
+          const alreadyMerged =
+            localStorage.getItem(mergeFlagKey) === "true";
+          let merged = cloudDecks;
+          if (!alreadyMerged) {
+            const localDecks = loadLocalDecks();
+            const cloudIds = new Set(cloudDecks.map((d) => d.id));
+            const toUpload = localDecks.filter((d) => !cloudIds.has(d.id));
+            for (const d of toUpload) {
+              if (cancelled) return;
+              await store.upsert(d);
+            }
+            merged = [...cloudDecks, ...toUpload];
+            localStorage.setItem(mergeFlagKey, "true");
+          }
+          if (cancelled) return;
+          // Seed the diff baseline *before* applying state so the push effect
+          // sees no change and doesn't echo the just-loaded decks back up.
+          lastSyncedDecksRef.current = new Map(
+            merged.map((d) => [d.id, JSON.stringify(d)]),
+          );
+          cloudLoadedRef.current = true;
+          setDecks(merged);
+          setActiveDeckIdState((prev) =>
+            prev && merged.find((d) => d.id === prev)
+              ? prev
+              : (merged[0]?.id ?? null),
+          );
+          setSyncState("synced");
+          setLastSyncedAt(Date.now());
+        } catch (e) {
+          if (cancelled) return;
+          console.error("Cloud sync failed", e);
+          setSyncState("error");
+        }
+      })();
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    if (authStatus === "signedOut" && cloudLoadedRef.current) {
+      // Was signed in, now signed out — revert to the local cache.
+      cloudLoadedRef.current = false;
+      storeRef.current = null;
+      lastSyncedDecksRef.current = new Map();
+      setSyncState("local");
+      setLastSyncedAt(null);
+      const local = loadLocalDecks();
+      setDecks(local);
+      setActiveDeckIdState(local[0]?.id ?? null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authStatus, user?.id]);
+
+  // Push deck changes to the cloud (debounced) while signed in. Diffs the
+  // current decks against the last-synced snapshot so only changed/deleted
+  // decks hit the network.
+  useEffect(() => {
+    if (authStatus !== "signedIn") return;
+    if (!cloudLoadedRef.current || !storeRef.current) return;
+
+    const store = storeRef.current;
+    const current = new Map(decks.map((d) => [d.id, JSON.stringify(d)]));
+    const prev = lastSyncedDecksRef.current;
+    const toUpsert = decks.filter((d) => prev.get(d.id) !== current.get(d.id));
+    const toRemove = [...prev.keys()].filter((id) => !current.has(id));
+    if (toUpsert.length === 0 && toRemove.length === 0) return;
+
+    if (pushTimerRef.current) clearTimeout(pushTimerRef.current);
+    setSyncState("syncing");
+    pushTimerRef.current = setTimeout(async () => {
+      try {
+        for (const d of toUpsert) await store.upsert(d);
+        for (const id of toRemove) await store.remove(id);
+        lastSyncedDecksRef.current = current;
+        setSyncState("synced");
+        setLastSyncedAt(Date.now());
+      } catch (e) {
+        console.error("Cloud push failed", e);
+        setSyncState("error");
+      }
+    }, 800);
+  }, [decks, authStatus]);
 
   const setActiveDeckId = (id: string | null) => {
     setActiveDeckIdState(id);
@@ -486,6 +591,8 @@ export function DeckProvider({ children }: { children: ReactNode }) {
         createNamedDeck,
         addCardToSpecificDeck,
         removeCardFromDeckById,
+        syncState,
+        lastSyncedAt,
       }}
     >
       {children}

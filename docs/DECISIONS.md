@@ -7,6 +7,41 @@
   Purpose: preserve the "why" that lives in Claude.ai conversations but evaporates between sessions
 -->
 
+## v2.0.0 — Google Auth + Cloud Sync (Phase 4 pulled forward)
+
+> Recorded by Claude Code at Phi's direction. PRODUCT.md's "Where it's heading"
+> still lists accounts/Supabase as Phase 4 (last); that section is now stale and
+> is Phi's to update.
+
+### Accounts + sync resequenced ahead of brew mode
+`PRODUCT.md` sequenced accounts + Supabase sync as Phase 4 — after the surface
+rebuild, IA/mobile, and brew mode — explicitly to avoid "redesigning the data
+layer twice." Pulled forward to v2.0.0 to meet two concrete present needs:
+Thurgood building across devices, and giving a few invited testers private deck
+libraries. The "redesign twice" risk is mitigated by storing decks as opaque
+JSONB blobs (no surface assumptions encoded in the schema) and keeping all sync
+behind the existing `DeckProvider` chokepoint. Approved by Phi.
+
+### Local-first, optional — never required
+Signed out, the app stays localStorage-only exactly as before; sign-in is purely
+additive. Upholds PRODUCT.md's "no account required to try." Gated on env vars,
+so the local-only build is unchanged when Supabase isn't configured.
+
+### Google-only, last-write-wins, JSONB blobs, preferences stay local
+One auth provider (Google) for now; per-deck last-write-wins by `updated_at`
+(no realtime/CRDT — unjustified for this user base); cards stored as JSONB
+mirroring the in-app shape (revisit only if cross-deck collection queries
+arrive); device preferences (theme/view/tile size) deliberately not synced.
+Rationale in `docs/specs/v2.0.0-google-auth-cloud-sync.md`.
+
+### Version is a major bump
+v2.0.0 (not a minor) — accounts + a backend + a data layer is the kind of
+milestone semver-major exists for, and it matches `SCHEMA.md`'s earlier "v2.0"
+reference. The change is additive/local-first, so it's not *breaking*; the bump
+reflects magnitude, not breakage.
+
+---
+
 ## v1.21.0 — Search as Find-by-Name
 
 ### Search tab replaced with inline FindByNameBar
