@@ -19,12 +19,12 @@
 
   <!-- Five-colour layered potion (W U B R G) brewing inside the flask, clipped to the interior -->
   <g clip-path="url(#inner)">
-    <rect x="110" y="296" width="292" height="26" fill="#ece4d3"/>
-    <rect x="110" y="322" width="292" height="22" fill="#4f86b8"/>
-    <rect x="110" y="344" width="292" height="22" fill="#46414b"/>
-    <rect x="110" y="366" width="292" height="20" fill="#c0523f"/>
-    <rect x="110" y="386" width="292" height="20" fill="#4f9560"/>
-    <rect x="110" y="296" width="292" height="6" fill="#fbf7ec" opacity="0.85"/>
+    <rect x="110" y="250" width="292" height="34" fill="#f4ecd6"/>
+    <rect x="110" y="284" width="292" height="32" fill="#4f9fe0"/>
+    <rect x="110" y="316" width="292" height="30" fill="#7a6c8f"/>
+    <rect x="110" y="346" width="292" height="28" fill="#e0563c"/>
+    <rect x="110" y="374" width="292" height="26" fill="#46b269"/>
+    <rect x="110" y="250" width="292" height="6" fill="#fbf7ec" opacity="0.85"/>
     <circle cx="226" cy="360" r="8" fill="#ffffff" opacity="0.35"/>
     <circle cx="288" cy="338" r="6" fill="#ffffff" opacity="0.30"/>
     <circle cx="250" cy="384" r="5" fill="#ffffff" opacity="0.30"/>
@@ -35,10 +35,4 @@
         fill="none" stroke="#e7e0d6" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
   <path d="M216 122 L296 122" stroke="#e7e0d6" stroke-width="15" stroke-linecap="round"/>
   <path d="M214 246 L176 318" stroke="#ffffff" stroke-width="8" stroke-linecap="round" opacity="0.30"/>
-
-  <!-- Brew spark -->
-  <g transform="translate(330 150)">
-    <path d="M0 -24 L7 -7 L24 0 L7 7 L0 24 L-7 7 L-24 0 L-7 -7 Z" fill="#e7e0d6"/>
-    <circle cx="0" cy="0" r="4.5" fill="#fff"/>
-  </g>
 </svg>

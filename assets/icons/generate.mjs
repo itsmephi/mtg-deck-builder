@@ -38,6 +38,18 @@ const buffers = await Promise.all(
 );
 const { default: pngToIco } = await import('png-to-ico');
 const ico = await pngToIco(buffers);
-const { writeFile } = await import('node:fs/promises');
+const { writeFile, copyFile } = await import('node:fs/promises');
 await writeFile(join(here, '..', '..', 'src', 'app', 'favicon.ico'), ico);
 console.log('✓ src/app/favicon.ico (16/32/48)');
+
+// Copy the master SVG to the two paths served as vector favicons, so they
+// never drift from the source (layout.tsx links /favicon.svg; /icons/icon.svg
+// is the manifest-adjacent copy). The generator owns these — don't hand-edit.
+const svgCopies = [
+  join(here, '..', '..', 'public', 'favicon.svg'),
+  join(out, 'icon.svg'),
+];
+for (const dest of svgCopies) {
+  await copyFile(src('icon.svg'), dest);
+  console.log(`✓ ${dest.replace(join(here, '..', '..'), '.')} (copied from icon.svg)`);
+}

@@ -1,10 +1,13 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.34.1";
+export const APP_VERSION = "1.34.2";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.34.2": [
+    "Polish: the app icon dropped its little spark. At home-screen and favicon sizes the four-point spark blurred into a faint smudge — and worse, it read as a plus/cross sign rather than a sparkle. The icon is now just the brewing flask and its five-color potion: a cleaner, more balanced mark that reads instantly at every size.",
+  ],
   "1.34.1": [
     "Polish: the app icon's five-color potion is easier to read. The Magic-color stripes were thin, muted bands at the bottom of the flask — at home-screen and favicon sizes they blurred into a dark smear. The flask is now fuller with thicker stripes and brighter, more saturated colors, and the black-mana stripe shifted to its classic purple-gray so it no longer vanishes against the dark background.",
   ],

@@ -32,9 +32,5 @@
           fill="none" stroke="#e7e0d6" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
     <path d="M216 122 L296 122" stroke="#e7e0d6" stroke-width="15" stroke-linecap="round"/>
     <path d="M214 246 L176 318" stroke="#ffffff" stroke-width="8" stroke-linecap="round" opacity="0.30"/>
-    <g transform="translate(330 150)">
-      <path d="M0 -24 L7 -7 L24 0 L7 7 L0 24 L-7 7 L-24 0 L-7 -7 Z" fill="#e7e0d6"/>
-      <circle cx="0" cy="0" r="4.5" fill="#fff"/>
-    </g>
   </g>
 </svg>
