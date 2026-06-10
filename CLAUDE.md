@@ -38,6 +38,7 @@ Default to direct work. Tier up only when the change earns it.
 - **Speak up when something feels wrong.** If a request removes a working pattern, reverses a recent decision, or feels worth sitting with — raise it in one sentence before doing the work. Don't ask when the request feels right.
 - **Version sync.** `APP_VERSION` in `src/config/version.ts` is the source of truth. On every version bump, also update `CHANGELOG.md`. Two files change together.
 - **Commits.** Conventional format: `feat:` `fix:` `docs:` `chore:`. One-liner unless the why isn't obvious from the diff. GitHub issue syntax: `Closes #27, Closes #28` (each separately).
+- **Pull requests.** Open a PR at your own discretion when work is ready — no need to ask first. Default to opening one for any committed work worth reviewing. Merging is still a separate step: merge only when Phi asks, OR when the change is trivial, verified, and unambiguous (e.g. copy/icon polish, dependency bumps, doc updates). When in doubt, open the PR and leave the merge to Phi.
 - **Specs are immutable after implementation.** Never edit a spec in place — create a new versioned file.
 - **Emergent tasks/bugs.** Add to `docs/BACKLOG.md` inbox section during sessions. Triage when inbox has new items.
 
