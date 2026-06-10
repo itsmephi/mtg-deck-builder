@@ -1,10 +1,13 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.34.0";
+export const APP_VERSION = "1.34.1";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.34.1": [
+    "Polish: the app icon's five-color potion is easier to read. The Magic-color stripes were thin, muted bands at the bottom of the flask — at home-screen and favicon sizes they blurred into a dark smear. The flask is now fuller with thicker stripes and brighter, more saturated colors, and the black-mana stripe shifted to its classic purple-gray so it no longer vanishes against the dark background.",
+  ],
   "1.34.0": [
     "New: Project Brew now installs as an app. Adding it to your home screen (or pinning it as a browser app) gives it a proper icon — a brewing flask whose potion is layered in the five Magic colors (white, blue, black, red, green), with a little spark — instead of a blank or generic placeholder. The browser tab also gets a matching favicon, and on iPhone/iPad the home-screen icon and full-screen app name are set up correctly.",
   ],

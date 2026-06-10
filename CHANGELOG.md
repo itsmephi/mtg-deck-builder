@@ -5,6 +5,18 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.34.1] — Icon potion legibility
+
+The five-color potion in the new app icon (1.34.0) was hard to read: the stripes were thin (~20–26px in the 512 canvas, ≈1px each at favicon sizes), the colors muted, and the black-mana stripe nearly disappeared against the dark Warm Stone tile.
+
+### Changed
+- **Fuller flask, thicker stripes** — the potion fill rises from y=296 to y=250 in all three SVG sources, giving each of the five bands ~26–34px instead of ~20–26px, so they survive downscaling to 32/48px.
+- **Brighter, more saturated palette** — W `#ece4d3 → #f4ecd6`, U `#4f86b8 → #4f9fe0`, B `#46414b → #7a6c8f` (the classic purple-gray read for black mana, instead of a near-background dark gray), R `#c0523f → #e0563c`, G `#4f9560 → #46b269`.
+- **Regenerated rasters** — all `public/icons/` PNGs and `src/app/favicon.ico` rebuilt via `node assets/icons/generate.mjs`.
+- **Declared generator deps** — `sharp` and `png-to-ico` added to `devDependencies`; the generator previously relied on `sharp` arriving transitively and failed on `png-to-ico` from a fresh clone.
+
+---
+
 ## [1.34.0] — PWA install icons & web manifest
 
 The app had no home-screen / install identity: no web manifest and no app icons, so installing it (Add to Home Screen, or pinning as a desktop PWA) produced a blank/generic placeholder, and the browser tab fell back to the default favicon.
