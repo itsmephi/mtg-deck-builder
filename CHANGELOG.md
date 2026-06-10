@@ -5,6 +5,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.34.2] — Icon: drop the spark
+
+The four-point spark beside the flask didn't survive downscaling: at favicon sizes (16–32px) it blurred into a faint smudge, and because its points sat on the vertical/horizontal axes it read as a plus/cross rather than a sparkle. At every size the flask + five-color potion already carried the mark on their own.
+
+### Changed
+- **Removed the spark** from all three SVG sources (`icon.svg`, `icon-maskable.svg`, `apple-icon.svg`) — the icon is now the brewing flask and its WUBRG potion alone, more balanced and symmetric at install sizes and unambiguous at favicon scale.
+- **Regenerated rasters** — all `public/icons/` PNGs and `src/app/favicon.ico` rebuilt via `node assets/icons/generate.mjs`.
+
+---
+
 ## [1.34.1] — Icon potion legibility
 
 The five-color potion in the new app icon (1.34.0) was hard to read: the stripes were thin (~20–26px in the 512 canvas, ≈1px each at favicon sizes), the colors muted, and the black-mana stripe nearly disappeared against the dark Warm Stone tile.
