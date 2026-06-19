@@ -66,6 +66,33 @@ export function loadLocalDecks(): Deck[] {
   }
 }
 
+// ─── Synced-id tracking ──────────────────────────────────────────────────────
+// Per-user record of which deck ids are known to live in the cloud. Used at
+// sign-in merge time to tell a genuinely-new local deck (never synced → upload)
+// apart from one that was synced and later deleted on another device (absent
+// from cloud but previously synced → do NOT resurrect). Rebuilt on every merge.
+
+const syncedIdsKey = (userId: string) => `mtg-synced-${userId}`;
+
+export function loadSyncedIds(userId: string): Set<string> {
+  try {
+    const raw = localStorage.getItem(syncedIdsKey(userId));
+    if (!raw) return new Set();
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? new Set(parsed as string[]) : new Set();
+  } catch {
+    return new Set();
+  }
+}
+
+export function saveSyncedIds(userId: string, ids: Set<string>): void {
+  try {
+    localStorage.setItem(syncedIdsKey(userId), JSON.stringify([...ids]));
+  } catch {
+    // ignore quota / unavailable storage
+  }
+}
+
 // ─── Cloud row mapping ───────────────────────────────────────────────────────
 
 // Row shape in the `decks` table. `sideboard` and `commander_ids` are nullable:

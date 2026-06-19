@@ -111,7 +111,7 @@ All deck data lives here. Persists to `localStorage` via `useEffect` watchers ga
 | `mtg-tile-size` | `"xs" \| "s" \| "m" \| "l" \| "xl"` | `page.tsx` / `gridConfig` |
 | `mtg-theme` | `"warm-stone" \| "zed-dark" \| "light"`, absent = `system` | `SettingsView` / `layout.tsx` / `lib/theme.ts` |
 | `mtg-last-backup` | ISO 8601 timestamp of last backup | `SettingsView` |
-| `mtg-merged-<userId>` | `"true"` once local decks merged to cloud | `useDeckManager` (v2.0.0) |
+| `mtg-synced-<userId>` | JSON `string[]` of cloud-known deck ids | `useDeckManager` / `deckStore` (v2.0.0) |
 
 ---
 
@@ -143,10 +143,12 @@ subscribing to `supabase.auth.onAuthStateChange`.
 **Sync mechanics (in `DeckProvider`):** the existing whole-array localStorage
 write is untouched (warm offline cache). Cloud is additive:
 - *Load / merge:* on `authStatus → signedIn`, build `SupabaseDeckStore`, load
-  cloud decks, and (once per user per device, guarded by `mtg-merged-<userId>`)
-  push local-only decks up — `mergeFlag` prevents resurrecting cloud-deleted
-  decks. The diff baseline is seeded **before** `setDecks` so the push effect
-  doesn't echo the just-loaded decks back.
+  cloud decks, and push up local decks that are neither in the cloud nor in
+  `mtg-synced-<userId>` (the per-user set of cloud-known ids, rebuilt each
+  merge). This uploads genuinely-new local decks — including ones built offline
+  after first login — while *not* resurrecting decks that were synced and later
+  deleted on another device. The diff baseline is seeded **before** `setDecks`
+  so the push effect doesn't echo the just-loaded decks back.
 - *Push:* an effect diffs `decks` against the last-synced snapshot
   (`lastSyncedDecksRef`, id→JSON) and debounces (800ms) per-deck
   `upsert`/`remove`. Refs (not state) hold the store, baseline, and timer.

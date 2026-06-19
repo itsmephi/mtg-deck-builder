@@ -20,7 +20,7 @@ Primary state lives in `useDeckManager` (hook) and is threaded down via props. N
 | `mtg-sidebar-collapsed` | `'true' \| 'false'` | Sidebar expanded/collapsed state |
 | `mtg-theme` | `'warm-stone' \| 'zed-dark' \| 'light'` | Theme *preference*. Absent = `system` (default → dark OS: Warm Stone, light OS: Light) |
 | `mtg-last-backup` | ISO date string | Timestamp of last deck backup |
-| `mtg-merged-<userId>` | `'true'` | v2.0.0 — set once after a user's local decks are merged up to the cloud, so sign-in never re-uploads (and never resurrects cloud-deleted decks) |
+| `mtg-synced-<userId>` | `string[]` (JSON) | v2.0.0 — deck ids known to be in this user's cloud library; rebuilt each sign-in merge to tell a genuinely-new local deck (upload) from one synced-then-deleted-elsewhere (don't resurrect) |
 | `sb-<ref>-auth-token` | JSON | v2.0.0 — Supabase session (set/managed by `@supabase/supabase-js`; present only when signed in) |
 
 ## sessionStorage
@@ -65,8 +65,10 @@ isolation that makes inviting testers safe.
 
 **Sync model:** per-deck upsert/remove diffed against a last-synced snapshot,
 debounced 800ms (`DeckProvider`). Conflicts: last-write-wins per deck by
-`updated_at`. Preferences (theme/view/tile size) are **not** synced — they stay
-device-local.
+`updated_at`. On sign-in, local decks that are neither in the cloud nor in
+`mtg-synced-<userId>` merge up (so offline-built decks sync, deleted-elsewhere
+decks don't resurrect). Preferences (theme/view/tile size) are **not** synced —
+they stay device-local.
 
 ### Not synced
 The 10 non-deck localStorage preference keys above remain device-local by design.

@@ -15,6 +15,8 @@ import { supabase } from "@/lib/supabase";
 import {
   migrateDecks,
   loadLocalDecks,
+  loadSyncedIds,
+  saveSyncedIds,
   SupabaseDeckStore,
 } from "@/lib/deckStore";
 
@@ -201,24 +203,28 @@ export function DeckProvider({ children }: { children: ReactNode }) {
       (async () => {
         try {
           const cloudDecks = await store.loadAll();
-          // First-login merge: push local-only decks up exactly once per user
-          // per device, so deleting a deck on another device doesn't resurrect
-          // it on the next sign-in here.
-          const mergeFlagKey = `mtg-merged-${user.id}`;
-          const alreadyMerged =
-            localStorage.getItem(mergeFlagKey) === "true";
-          let merged = cloudDecks;
-          if (!alreadyMerged) {
-            const localDecks = loadLocalDecks();
-            const cloudIds = new Set(cloudDecks.map((d) => d.id));
-            const toUpload = localDecks.filter((d) => !cloudIds.has(d.id));
-            for (const d of toUpload) {
-              if (cancelled) return;
-              await store.upsert(d);
-            }
-            merged = [...cloudDecks, ...toUpload];
-            localStorage.setItem(mergeFlagKey, "true");
+          // Merge local-only decks up. Upload a local deck only when it's
+          // neither in the cloud nor previously synced — so a genuinely new
+          // deck (incl. ones built offline after first login) syncs up, while a
+          // deck that was synced and later deleted on another device is NOT
+          // resurrected. Runs every sign-in; idempotent.
+          const cloudIds = new Set(cloudDecks.map((d) => d.id));
+          const syncedIds = loadSyncedIds(user.id);
+          const localDecks = loadLocalDecks();
+          const toUpload = localDecks.filter(
+            (d) => !cloudIds.has(d.id) && !syncedIds.has(d.id),
+          );
+          for (const d of toUpload) {
+            if (cancelled) return;
+            await store.upsert(d);
           }
+          const merged = [...cloudDecks, ...toUpload];
+          // Record everything now in the cloud as synced (rebuilt each merge),
+          // so a future delete-elsewhere is remembered and not re-uploaded.
+          saveSyncedIds(
+            user.id,
+            new Set(merged.map((d) => d.id)),
+          );
           if (cancelled) return;
           // Seed the diff baseline *before* applying state so the push effect
           // sees no change and doesn't echo the just-loaded decks back up.
@@ -287,6 +293,11 @@ export function DeckProvider({ children }: { children: ReactNode }) {
         setSyncState("error");
       }
     }, 800);
+    // Cancel a pending push if deps change again (debounce) or on sign-out /
+    // unmount, so it can't fire against a torn-down store.
+    return () => {
+      if (pushTimerRef.current) clearTimeout(pushTimerRef.current);
+    };
   }, [decks, authStatus]);
 
   const setActiveDeckId = (id: string | null) => {
