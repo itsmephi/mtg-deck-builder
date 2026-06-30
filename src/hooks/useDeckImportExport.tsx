@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useDeckManager } from "@/hooks/useDeckManager";
 import { ScryfallCard, DeckCard } from "@/types";
-import { searchCards } from "@/lib/scryfall";
+import { searchCards, pickCanonical } from "@/lib/scryfall";
 import { DeckFormat } from "@/lib/formatRules";
 
 export type TextCaptureResult =
@@ -129,8 +129,9 @@ async function fetchCards(parsedCards: ParsedLine[]): Promise<DeckCard[]> {
           let cardToUse = scryfallCard;
           if (!scryfallCard.prices.usd || scryfallCard.prices.usd === "0.00") {
             const results = await searchCards(`!"${scryfallCard.name}"`);
-            if (results.length > 0 && results[0].prices.usd && results[0].prices.usd !== "0.00") {
-              cardToUse = results[0];
+            const best = results.length > 0 ? pickCanonical(results, scryfallCard.name) : null;
+            if (best?.prices.usd && best.prices.usd !== "0.00") {
+              cardToUse = best;
             }
           }
           const ownedQty = parsed?.ownedQty ?? 0;

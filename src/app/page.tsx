@@ -10,7 +10,7 @@ import DropOverlay from "@/components/layout/DropOverlay";
 import { useDeckImportExport, parseDroppedText } from "@/hooks/useDeckImportExport";
 import { useDeckManager } from "@/hooks/useDeckManager";
 import { TILE_SIZE_STOPS, TileSizeKey, DEFAULT_TILE_SIZE, TILE_SIZE_STORAGE_KEY } from "@/config/gridConfig";
-import { searchCardsForDrop, lookupSetCode, lookupCardFuzzy, searchCards, getCardByTcgplayerId } from "@/lib/scryfall";
+import { searchCardsForDrop, lookupSetCode, lookupCardFuzzy, searchCards, getCardByTcgplayerId, pickCanonical } from "@/lib/scryfall";
 
 // TCGPlayer appends variant/treatment words to slugs that are NOT part of the card name.
 const SLUG_TREATMENT_SINGLES = new Set([
@@ -296,12 +296,13 @@ export default function Dashboard() {
           if (!fuzzy) { showToast(`Couldn't find "${parsed.name}".`); return; }
           card = fuzzy;
         } else {
-          card = results[0];
+          card = pickCanonical(results, parsed.name);
         }
         if (!card.prices.usd || card.prices.usd === "0.00") {
           const rescue = await searchCards(`!"${card.name}" order:usd`);
-          if (rescue.length > 0 && rescue[0].prices.usd && rescue[0].prices.usd !== "0.00") {
-            card = { ...rescue[0], id: card.id };
+          const best = rescue.length > 0 ? pickCanonical(rescue, card.name) : null;
+          if (best?.prices.usd && best.prices.usd !== "0.00") {
+            card = { ...best, id: card.id };
           }
         }
       } catch {

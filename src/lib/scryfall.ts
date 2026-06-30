@@ -6,6 +6,21 @@ const HEADERS = {
   Accept: "application/json",
 };
 
+// Scryfall's exact-name operator !"..." matches a card's FACE names, not just
+// its full "Front // Back" name — so !"Swords to Plowshares" returns both the
+// standalone card and any multi-face card (split / adventure / reversible) that
+// merely has Swords to Plowshares on one side. Picking results[0] blindly can
+// resolve a typed/clicked name to the wrong (double-faced) card. Prefer the
+// result whose full name is exactly the name we asked for; fall back to the
+// first result.
+export function pickCanonical(
+  results: ScryfallCard[],
+  name: string,
+): ScryfallCard {
+  const target = name.trim().toLowerCase();
+  return results.find((c) => c.name.toLowerCase() === target) ?? results[0];
+}
+
 export async function searchCards(query: string): Promise<ScryfallCard[]> {
   if (!query) return [];
   try {

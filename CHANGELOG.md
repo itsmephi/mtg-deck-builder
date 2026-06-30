@@ -5,6 +5,18 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.34.4] — Find-by-name: resolve the clicked name to the standalone card
+
+A follow-up to 1.34.3. Re-ranking got the standalone *name* to the top of the dropdown, but clicking it could still open the double-faced card. The selection step runs `searchCards(`!"<name>"`)`, and Scryfall's exact-name operator `!"..."` matches a card's **face** names, not just its full `Front // Back` name — so `!"Swords to Plowshares"` returns both the standalone card and any multi-face card with that face. The code then took `results[0]`, which could be the double-faced card.
+
+### Fixed
+- **`pickCanonical()`** — new exported helper in `src/lib/scryfall.ts` that selects the result whose **full** name exactly matches the requested name (case-insensitive), falling back to the first result. Replaces the blind `results[0]` picks at every name-resolution site:
+  - `FindByNameBar.tsx` — the three preview resolutions (`handleSelectSuggestion`, `openExternalCardPreview`, `openWithCard`) and the add-time price rescue.
+  - `page.tsx` — the paste/drag `direct-add` path and its price rescue (so pasting/dragging a card name adds the standalone, not the look-alike).
+  - `useDeckImportExport.tsx` — the bulk-import price rescue (so a priced reprint lookup can't swap a standalone for a double-faced card).
+
+---
+
 ## [1.34.3] — Find-by-name: surface the standalone card
 
 Searching a card name (e.g. `swords to plowshares`) could return a multi-face card — a split / adventure / reversible card whose combined `Front // Back` name contains the query as one face — ranked at or above the standalone card, where it was visually indistinguishable in the truncated dropdown. Worse, the app caps the dropdown at the first 8 names *as Scryfall returns them*, so the real standalone card could be pushed off the list entirely and become unreachable.

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo } from "react";
 import { Search, X, RotateCw, AlertTriangle, Loader2, Menu } from "lucide-react";
-import { autocompleteCards, searchCards, getCardPrintings } from "@/lib/scryfall";
+import { autocompleteCards, searchCards, getCardPrintings, pickCanonical } from "@/lib/scryfall";
 import { useDeckManager } from "@/hooks/useDeckManager";
 import { parseDroppedText } from "@/hooks/useDeckImportExport";
 import { ScryfallCard, DeckCard } from "@/types";
@@ -212,7 +212,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
         showToast("Card not found. Try another search.");
         return;
       }
-      const canonical = results[0];
+      const canonical = pickCanonical(results, name);
       const allPrintings = await getCardPrintings(canonical.name, canonical.oracle_id);
       const available = allPrintings.length > 0 ? allPrintings : [canonical];
       setSelectedPrinting(available[0]);
@@ -277,8 +277,9 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
     if (!cardToAdd.prices?.usd || cardToAdd.prices.usd === "0.00") {
       try {
         const rescued = await searchCards(`!"${cardToAdd.name}" order:usd`);
-        if (rescued.length > 0 && rescued[0].prices?.usd && rescued[0].prices.usd !== "0.00") {
-          cardToAdd = { ...cardToAdd, prices: rescued[0].prices };
+        const best = rescued.length > 0 ? pickCanonical(rescued, cardToAdd.name) : null;
+        if (best?.prices?.usd && best.prices.usd !== "0.00") {
+          cardToAdd = { ...cardToAdd, prices: best.prices };
         }
       } catch { /* keep original */ }
     }
@@ -535,7 +536,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
         showToast(`Couldn't find "${name}".`);
         return;
       }
-      const canonical = results[0];
+      const canonical = pickCanonical(results, name);
       const allPrintings = await getCardPrintings(canonical.name, canonical.oracle_id);
       const available = allPrintings.length > 0 ? allPrintings : [canonical];
       const match = setCode
@@ -576,7 +577,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
         showToast(`Couldn't find "${card.name}".`);
         return;
       }
-      const canonical = results[0];
+      const canonical = pickCanonical(results, card.name);
       const allPrintings = await getCardPrintings(canonical.name, canonical.oracle_id);
       const available = allPrintings.length > 0 ? allPrintings : [canonical];
       const match = available.find((p) => p.id === card.id) ?? available[0];
