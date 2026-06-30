@@ -5,6 +5,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.34.3] — Find-by-name: surface the standalone card
+
+Searching a card name (e.g. `swords to plowshares`) could return a multi-face card — a split / adventure / reversible card whose combined `Front // Back` name contains the query as one face — ranked at or above the standalone card, where it was visually indistinguishable in the truncated dropdown. Worse, the app caps the dropdown at the first 8 names *as Scryfall returns them*, so the real standalone card could be pushed off the list entirely and become unreachable.
+
+### Fixed
+- **Re-rank autocomplete before capping** — new `rankNameSuggestions()` in `FindByNameBar.tsx` runs over the raw Scryfall autocomplete names *before* the `slice(0, 8)`: an exact (case-insensitive) full-name match floats to the top, then single-face cards, then multi-face (`//`) cards, with Scryfall's relevance order preserved within each tier (stable sort). Applied to both the debounced fetch and the retry path.
+- **Label multi-face suggestions** — any suggestion whose name contains `" // "` now shows a small `double-faced` tag in the dropdown, so a two-sided card can't be mistaken for the standalone with the same face name.
+
+---
+
 ## [1.34.2] — Icon: drop the spark
 
 The four-point spark beside the flask didn't survive downscaling: at favicon sizes (16–32px) it blurred into a faint smudge, and because its points sat on the vertical/horizontal axes it read as a plus/cross rather than a sparkle. At every size the flask + five-color potion already carried the mark on their own.

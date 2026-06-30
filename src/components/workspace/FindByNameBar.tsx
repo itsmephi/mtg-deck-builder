@@ -23,6 +23,27 @@ interface FindByNameBarProps {
   onOpenMobileSidebar?: () => void;
 }
 
+// Scryfall autocomplete mixes single-face cards with multi-face cards (split /
+// adventure / reversible) whose combined "Front // Back" name contains the query
+// as one face. Those can rank above — or be visually mistaken for — the standalone
+// card the user is usually after (e.g. typing "swords to plowshares" surfaces a
+// double-faced card that has Swords to Plowshares on one side, burying the real
+// Swords to Plowshares past the 8-suggestion cap). Re-rank before capping so an
+// exact full-name match wins, then single-face cards, then multi-face cards —
+// preserving Scryfall's relevance order within each tier (stable sort).
+function rankNameSuggestions(names: string[], query: string): string[] {
+  const q = query.trim().toLowerCase();
+  const tier = (name: string): number => {
+    if (name.toLowerCase() === q) return 0; // exact full-name match
+    if (!name.includes(" // ")) return 1; // single-face card
+    return 2; // multi-face card (split / adventure / DFC)
+  };
+  return names
+    .map((name, i) => ({ name, i, t: tier(name) }))
+    .sort((a, b) => a.t - b.t || a.i - b.i)
+    .map((x) => x.name);
+}
+
 function renderManaSymbols(manaCost: string | undefined): React.ReactNode {
   if (!manaCost) return null;
   const symbols = manaCost.match(/\{[^}]+\}/g) || [];
@@ -159,7 +180,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
       setAcError(false);
       try {
         const results = await autocompleteCards(query);
-        setSuggestions(results.slice(0, 8));
+        setSuggestions(rankNameSuggestions(results, query).slice(0, 8));
         setShowDropdown(true);
         setFocusedIndex(-1);
       } catch {
@@ -398,7 +419,7 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
     setAcError(false);
     setIsLoadingAC(true);
     autocompleteCards(query)
-      .then((r) => { setSuggestions(r.slice(0, 8)); setShowDropdown(true); })
+      .then((r) => { setSuggestions(rankNameSuggestions(r, query).slice(0, 8)); setShowDropdown(true); })
       .catch(() => setAcError(true))
       .finally(() => setIsLoadingAC(false));
   }, [query]);
@@ -746,7 +767,14 @@ export default function FindByNameBar({ showToast, registerFocusFn, registerSear
                     onMouseEnter={() => setFocusedIndex(i)}
                     onClick={() => handleSelectSuggestion(name)}
                   >
-                    <span className="truncate block">{name}</span>
+                    <span className="flex items-center gap-2 min-w-0">
+                      <span className="truncate">{name}</span>
+                      {name.includes(" // ") && (
+                        <span className="shrink-0 text-[10px] uppercase tracking-wide text-content-muted border border-line-subtle rounded px-1 py-0.5">
+                          double-faced
+                        </span>
+                      )}
+                    </span>
                   </button>
                 ))}
             </>
