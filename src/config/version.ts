@@ -1,10 +1,16 @@
 // Keep in sync with `Current Version` in CLAUDE.md and CHANGELOG.md.
 // Three files change together on every version bump.
-export const APP_VERSION = "1.34.2";
+export const APP_VERSION = "1.34.4";
 
 // Each entry is an array of bullet points — one string per item.
 // New versions should follow this same format.
 export const CHANGELOG: Record<string, string[]> = {
+  "1.34.4": [
+    "Fix: clicking a card name now opens the actual standalone card, not a double-faced look-alike. Even with the right name at the top of the suggestions (1.34.3), selecting \"Swords to Plowshares\" could still pull up a double-faced card that happens to have Swords to Plowshares on one side — because the lookup matched on the card's face name and grabbed the first hit. The app now picks the result whose full name exactly matches what you chose, so you get the real standalone card. Same fix applied to pasting/dragging a card name and to deck import, so those add the correct card too.",
+  ],
+  "1.34.3": [
+    "Fix: searching for a card by name now surfaces the real standalone card instead of a look-alike double-faced one. Typing something like \"swords to plowshares\" could turn up a double-faced card that merely has Swords to Plowshares printed on one side, while the actual standalone Swords to Plowshares got pushed past the short suggestion list — so you couldn't add it. The name suggestions now put an exact match first and rank normal single-faced cards above two-sided ones, and any two-sided card in the list is labeled \"double-faced\" so it's easy to tell apart from the standalone.",
+  ],
   "1.34.2": [
     "Polish: the app icon dropped its little spark. At home-screen and favicon sizes the four-point spark blurred into a faint smudge — and worse, it read as a plus/cross sign rather than a sparkle. The icon is now just the brewing flask and its five-color potion: a cleaner, more balanced mark that reads instantly at every size.",
   ],
